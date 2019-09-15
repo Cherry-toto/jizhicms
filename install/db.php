@@ -334,6 +334,7 @@ CREATE TABLE `jz_message` (
   `addtime` int(11) NOT NULL DEFAULT '0',
   `orders` int(4) NOT NULL DEFAULT '0',
   `email` varchar(255) DEFAULT NULL,
+  `isshow` tinyint(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 -- ----------------------------

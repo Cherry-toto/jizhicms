@@ -17,7 +17,16 @@
         <div class="x-body">
           <div class="layui-row">
 			<form class="layui-form layui-col-md12 x-so" method="get" id="myform">
+			<div class="layui-input-inline">
+			  <select name="isshow" lay-filter="isshow" class="layui-inline autosubmit">
+			  <option value="">是否审核</option>
+			   
+			   <option {if($isshow==1)} selected="selected" {/if}value="1">已审核</option>
+			   <option {if($isshow==2)} selected="selected" {/if}value="2">未审核</option>
+			   
 			
+			  </select>
+			</div>
 			<div class="layui-input-inline">
 			  <select name="tid" lay-filter="tid" class="layui-inline autosubmit">
 			  <option value="">请选择栏目</option>
@@ -54,6 +63,9 @@
 						
 						<th>
                             所属栏目
+                        </th>
+						<th>
+                            是否审核
                         </th>
 						<th>
                             留言标题
@@ -96,6 +108,9 @@
 						<td>
                             {if($v['tid']!=0)}{fun get_info_table('classtype',array('id'=>$v['tid']),'classname')}{else}-{/if}
                         </td>
+						<td>
+						{if($v['isshow']==1)}<span class="layui-badge layui-bg-green">已审核</span>{else}<span class="layui-badge">未审核</span>{/if}
+						</td>
 						<td>
                            {$v['title']}
                         </td>
@@ -156,7 +171,11 @@
 					$("#myform").submit();
 				
 			 });
-             
+               form.on('select(isshow)', function(data){
+					
+					$("#myform").submit();
+				
+			 });
               
             });
 		 /*删除*/

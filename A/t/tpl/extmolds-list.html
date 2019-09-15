@@ -18,6 +18,18 @@
 		
           <div class="layui-row">
 			<form class="layui-form layui-col-md12 x-so" method="get" id="myform">
+			
+			<div class="layui-input-inline">
+			  <select name="isshow" lay-filter="isshow" class="layui-inline autosubmit">
+			  <option value="">是否显示</option>
+			   
+			   <option {if($isshow==1)} selected="selected" {/if}value="1">显示</option>
+			   <option {if($isshow==2)} selected="selected" {/if}value="2">隐藏</option>
+			   
+			
+			  </select>
+			</div>
+			
 			<div class="layui-input-inline">
 			  <select name="tid" lay-filter="tid" class="layui-inline autosubmit">
 			  <option value="">请选择栏目</option>
@@ -124,7 +136,11 @@
               layer = layui.layer;//弹出层
 			  form = layui.form;
               //以上模块根据需要引入
-              
+               form.on('select(isshow)', function(data){
+					
+					$("#myform").submit();
+				
+			 });
 			 
               
             });

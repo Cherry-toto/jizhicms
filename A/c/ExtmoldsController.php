@@ -62,6 +62,11 @@ class ExtmoldsController extends CommonController
 		$data = $this->frparam();
 		$res = molds_search($molds,$data);
 		$sql = '1=1';
+		if($this->frparam('isshow')){
+			$isshow = $this->frparam('isshow')==1 ? 1 : 0;
+			$sql .= ' and isshow='.$isshow;
+		}
+		$this->isshow = $this->frparam('isshow');
 		$get_sql = ($res['fields_search_check']!='') ? (' and '.$res['fields_search_check']) : '';
 		$sql .= $get_sql;
 		

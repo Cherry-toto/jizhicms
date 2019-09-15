@@ -1,7 +1,7 @@
 <?php die();?>/*
 MySQL Database Backup Tools
 Server:127.0.0.1:3306
-Database:1_3demo
+Database:demo
 Data:2019-09-15
 */
 SET FOREIGN_KEY_CHECKS=0;
@@ -194,6 +194,7 @@ CREATE TABLE `jz_fields` (
 -- Records of jz_fields
 -- ----------------------------
 INSERT INTO `jz_fields` (`id`,`field`,`molds`,`fieldname`,`tips`,`fieldtype`,`tids`,`fieldlong`,`body`,`orders`,`ismust`,`isshow`,`issearch`,`islist`,`format`,`vdata`) VALUES ('22','url','links','链接','','1',',1,2,6,7,8,9,3,4,5,10,','255','','0','1','1','0','1','','');
+INSERT INTO `jz_fields` (`id`,`field`,`molds`,`fieldname`,`tips`,`fieldtype`,`tids`,`fieldlong`,`body`,`orders`,`ismust`,`isshow`,`issearch`,`islist`,`format`,`vdata`) VALUES ('23','isshow','links','是否显示','','7',',1,2,6,7,8,9,3,4,5,10,','','显示=1,不显示=0','0','1','1','0','1','','');
 INSERT INTO `jz_fields` (`id`,`field`,`molds`,`fieldname`,`tips`,`fieldtype`,`tids`,`fieldlong`,`body`,`orders`,`ismust`,`isshow`,`issearch`,`islist`,`format`,`vdata`) VALUES ('21','title','links','链接名称','','1',',1,2,6,7,8,9,3,4,5,10,','255','','0','1','1','1','1','','');
 INSERT INTO `jz_fields` (`id`,`field`,`molds`,`fieldname`,`tips`,`fieldtype`,`tids`,`fieldlong`,`body`,`orders`,`ismust`,`isshow`,`issearch`,`islist`,`format`,`vdata`) VALUES ('30','email','message','联系邮箱','','1',',1,6,7,8,9,2,10,11,12,13,3,4,5,','255','','0','0','1','1','1','','');
 INSERT INTO `jz_fields` (`id`,`field`,`molds`,`fieldname`,`tips`,`fieldtype`,`tids`,`fieldlong`,`body`,`orders`,`ismust`,`isshow`,`issearch`,`islist`,`format`,`vdata`) VALUES ('24','categories','product','类别','商品类别','7',',1,6,7,8,9,2,10,11,12,13,3,4,5,','','Phones=1,Laptops=2,PC=3,Tablets=4','0','0','1','1','1','','');
@@ -206,6 +207,7 @@ INSERT INTO `jz_fields` (`id`,`field`,`molds`,`fieldname`,`tips`,`fieldtype`,`ti
 INSERT INTO `jz_fields` (`id`,`field`,`molds`,`fieldname`,`tips`,`fieldtype`,`tids`,`fieldlong`,`body`,`orders`,`ismust`,`isshow`,`issearch`,`islist`,`format`,`vdata`) VALUES ('33','newname','tags','替换词','尽量简短，但不能重复，20字以内，可不填。','1',',1,6,15,16,7,8,9,2,10,18,11,19,12,20,13,3,4,5,14,17,','50','','0','0','1','1','1','','');
 INSERT INTO `jz_fields` (`id`,`field`,`molds`,`fieldname`,`tips`,`fieldtype`,`tids`,`fieldlong`,`body`,`orders`,`ismust`,`isshow`,`issearch`,`islist`,`format`,`vdata`) VALUES ('34','url','tags','内链','填写详细链接，带http','1',',1,6,15,16,7,8,9,2,10,18,11,19,12,20,13,3,4,5,14,17,','255','','0','0','1','1','1','','');
 INSERT INTO `jz_fields` (`id`,`field`,`molds`,`fieldname`,`tips`,`fieldtype`,`tids`,`fieldlong`,`body`,`orders`,`ismust`,`isshow`,`issearch`,`islist`,`format`,`vdata`) VALUES ('35','num','tags','替换次数','一篇文章内替换的次数，默认-1，全部替换','4',',1,6,15,16,7,8,9,2,10,18,11,19,12,20,13,3,4,5,14,17,','4','','0','0','1','0','1','','-1');
+INSERT INTO `jz_fields` (`id`,`field`,`molds`,`fieldname`,`tips`,`fieldtype`,`tids`,`fieldlong`,`body`,`orders`,`ismust`,`isshow`,`issearch`,`islist`,`format`,`vdata`) VALUES ('36','isshow','tags','状态','','12',',1,6,15,16,7,8,9,2,10,18,11,19,12,20,13,3,4,5,14,17,','20','显示=1,不显示=0','0','0','1','1','1','','1');
 INSERT INTO `jz_fields` (`id`,`field`,`molds`,`fieldname`,`tips`,`fieldtype`,`tids`,`fieldlong`,`body`,`orders`,`ismust`,`isshow`,`issearch`,`islist`,`format`,`vdata`) VALUES ('37','target','tags','打开方式','','7',',1,6,15,16,7,8,9,2,10,18,11,19,12,20,13,3,4,5,14,17,','50','新窗口=_blank,本窗口=_self','0','0','1','0','1','','_blank');
 
 -- ----------------------------
@@ -303,7 +305,7 @@ CREATE TABLE `jz_links` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `title` varchar(255) DEFAULT NULL,
   `url` varchar(255) DEFAULT NULL,
-  `isshow` tinyint(1) DEFAULT 1,
+  `isshow` text,
   `tid` int(11) NOT NULL DEFAULT '0',
   `htmlurl` varchar(50) DEFAULT NULL,
   `orders` int(11) NOT NULL DEFAULT '0',
@@ -398,13 +400,14 @@ CREATE TABLE `jz_message` (
   `addtime` int(11) NOT NULL DEFAULT '0',
   `orders` int(4) NOT NULL DEFAULT '0',
   `email` varchar(255) DEFAULT NULL,
+  `isshow` tinyint(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
 -- ----------------------------
 -- Records of jz_message
 -- ----------------------------
-INSERT INTO `jz_message` (`id`,`title`,`userid`,`tid`,`aid`,`user`,`ip`,`body`,`tel`,`addtime`,`orders`,`email`) VALUES ('1','我想问下极致CMS的二次开发如何收费？','0','4','0','小明','127.0.0.1','我想接入微信登录，做公众号开发，请问如何收费？','','1566004821','0','');
-INSERT INTO `jz_message` (`id`,`title`,`userid`,`tid`,`aid`,`user`,`ip`,`body`,`tel`,`addtime`,`orders`,`email`) VALUES ('2','如何套模板标签？','0','4','0','小白','127.0.0.1','常用的模板标签有哪些？如何使用？','13800138000','1566056033','0','123456@qq.com');
+INSERT INTO `jz_message` (`id`,`title`,`userid`,`tid`,`aid`,`user`,`ip`,`body`,`tel`,`addtime`,`orders`,`email`,`isshow`) VALUES ('1','我想问下极致CMS的二次开发如何收费？','0','4','0','小明','127.0.0.1','我想接入微信登录，做公众号开发，请问如何收费？','','1566004821','0','',1);
+INSERT INTO `jz_message` (`id`,`title`,`userid`,`tid`,`aid`,`user`,`ip`,`body`,`tel`,`addtime`,`orders`,`email`,`isshow`) VALUES ('2','如何套模板标签？','0','4','0','小白','127.0.0.1','常用的模板标签有哪些？如何使用？','13800138000','1566056033','0','123456@qq.com',1);
 
 -- ----------------------------
 -- Table structure for jz_molds
@@ -810,7 +813,7 @@ CREATE TABLE `jz_sysconfig` (
 -- ----------------------------
 -- Records of jz_sysconfig
 -- ----------------------------
-INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`) VALUES ('1','web_version','系统版号','','0','1.4');
+INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`) VALUES ('1','web_version','系统版号','','0','1.3');
 INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`) VALUES ('2','web_name','网站SEO名称','','0','极致CMS建站系统');
 INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`) VALUES ('3','web_keyword','网站SEO关键词','','0','极致CMS');
 INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`) VALUES ('4','web_desc','网站SEO描述','','0','极致CMS');
@@ -891,7 +894,7 @@ CREATE TABLE `jz_tags` (
   `newname` varchar(50) DEFAULT NULL,
   `url` varchar(255) DEFAULT NULL,
   `num` int(4) DEFAULT '-1',
-  `isshow` tinyint(1) DEFAULT 1,
+  `isshow` varchar(20) DEFAULT NULL,
   `target` varchar(50) DEFAULT '_blank',
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;

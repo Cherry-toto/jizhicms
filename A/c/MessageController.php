@@ -36,6 +36,11 @@ class MessageController extends CommonController
 	function messagelist(){
 		$page = new Page('Message');
 		$sql = ' 1=1 ';
+		if($this->frparam('isshow')){
+			$isshow = $this->frparam('isshow')==1 ? 1 : 0;
+			$sql .= ' and isshow='.$isshow;
+		}
+		$this->isshow = $this->frparam('isshow');
 		
 		if($this->frparam('tid')!=0){
 			$sql = 'tid='.$this->frparam('tid');

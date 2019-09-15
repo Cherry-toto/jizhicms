@@ -29,6 +29,11 @@ class ArticleController extends CommonController
 		}
 		
 		$sql = ' 1=1 ';
+		if($this->frparam('isshow')){
+			$isshow = $this->frparam('isshow')==1 ? 1 : 0;
+			$sql .= ' and isshow='.$isshow;
+		}
+		$this->isshow = $this->frparam('isshow');
 		if($this->frparam('tid')){
 			$sql .= ' and tid in('.implode(",",$classtypedata[$this->frparam('tid')]["children"]["ids"]).')';
 			//$sql .= ' and tid='.$this->frparam('tid');

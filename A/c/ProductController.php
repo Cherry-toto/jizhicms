@@ -23,6 +23,11 @@ class ProductController extends CommonController
 	function productlist(){
 		$page = new Page('product');
 		$sql = ' 1=1 ';
+		if($this->frparam('isshow')){
+			$isshow = $this->frparam('isshow')==1 ? 1 : 0;
+			$sql .= ' and isshow='.$isshow;
+		}
+		$this->isshow = $this->frparam('isshow');
 		
 		if($this->frparam('tid')){
 			$sql .= ' and tid='.$this->frparam('tid');

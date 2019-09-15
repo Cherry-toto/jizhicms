@@ -116,7 +116,7 @@ class HomeController extends CommonController
 			
 			$sql = ' isshow=1 ';
 			$molds = $res['molds'];
-			$sql = ' and tid in ('.implode(',',$this->classtypedata[$res['id']]['children']['ids']).') ';
+			$sql .= ' and tid in ('.implode(',',$this->classtypedata[$res['id']]['children']['ids']).') ';
 			$page = new Page($molds);
 			
 			//手动设置分页条数
@@ -260,7 +260,7 @@ class HomeController extends CommonController
 		if($isclass){
 			$sql = ' isshow=1 ';
 			$molds = $res['molds'];
-			$sql = ' and tid in ('.implode(',',$this->classtypedata[$res['id']]['children']['ids']).') ';
+			$sql .= ' and tid in ('.implode(',',$this->classtypedata[$res['id']]['children']['ids']).') ';
 			$page = new Page($molds);
 			
 			//手动设置分页条数

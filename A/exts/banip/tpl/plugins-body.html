@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	{include="style"}
+
+</head>
+<body >
+  <div class="layui-rows" style="    margin: 10px;">
+    <form class="layui-form layui-form-pane" action="">
+	<!--表单必须要携带ID-->
+	<input name="id" value="{$plugins['id']}" type="hidden">
+    <div class="layui-form-item layui-form-text">
+		<label class="layui-form-label">屏蔽IP列表（用||分割）</label>
+		<div class="layui-input-block">
+		  <textarea name="ips" placeholder="请输入IP，用||分割" class="layui-textarea">{$config['ips']}</textarea>
+		</div>
+	  </div>
+	 <div class="layui-form-item layui-form-text">
+		<label class="layui-form-label">屏蔽提示</label>
+		<div class="layui-input-block">
+		  <textarea name="tip" placeholder="请输入屏蔽提醒" class="layui-textarea">{$config['tip']}</textarea>
+		</div>
+	  </div>
+  <div class="layui-form-item">
+    <div class="layui-input-block">
+      <button class="layui-btn" lay-submit lay-filter="formDemo">立即提交</button>
+      <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+    </div>
+  </div>
+</form>
+</div>
+
+    <script>
+        $(function  () {
+			
+            layui.use('form', function(){
+              var form = layui.form;
+             
+              //监听提交
+              form.on('submit(formDemo)', function(data){
+           
+				$.post("{fun U('setconf')}",data.field,function(res){
+				    //console.log(res);return false;
+					 var res = JSON.parse(res);
+					 if(res.code==1){
+						layer.msg(res.msg);
+					 }else{
+						layer.msg(res.msg, {icon: 6,time: 2000},function(){
+						window.location.reload();
+						});
+                     
+						
+						 
+					 }
+				})
+				
+                return false;
+              });
+            });
+        })
+
+        
+    </script>
+
+    
+ 
+</body>
+</html>

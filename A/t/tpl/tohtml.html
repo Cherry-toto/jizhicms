@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+       {include="style"}
+	   <style>
+	   .cache-s{
+	   width:6rem !important;
+	   }
+	   </style>
+    </head>
+    <body>
+    <div class="x-body layui-anim layui-anim-up">
+      
+        <fieldset class="layui-elem-field">
+            <legend>生成静态文件</legend>
+            <div class="layui-field-box">
+                <div class="layui-col-md12">
+				<blockquote class="layui-elem-quote">更新静态HTML需要预留足够的空间，如：总内存500M，已用280M（过半），不建议生成HMTL，可能会导致内存不够！</blockquote>
+                    <form class="layui-form " action="">
+					
+					<table class="layui-table">
+					<tr>
+					<th>模块名称</th>
+					<th>输出范围</th>
+					<th>操作</th>
+					
+					</tr>
+					<tr>
+					<td>栏目模块<input name="model[]" value="classtype" type="hidden"></td>
+					
+					<td><select class="isshow" name="isshow[]"  >
+						<option value="1">显示的栏目</option>
+						<option value="2">所有的栏目</option>
+						</select>
+						</td>
+					<td><button onclick="tohtml(this)" data="classtype" class="layui-btn" type="button">生成</button></td>
+					
+					</tr>
+					
+					<tr>
+					<td>文章模块<input name="model[]" value="article" type="hidden"></td>
+					
+					<td><select class="isshow" name="isshow[]"  >
+						<option value="1">显示的文章</option>
+						<option value="2">所有的文章</option>
+						</select>
+						</td>
+					<td><button onclick="tohtml(this)" data="article" class="layui-btn" type="button">生成</button></td>
+					
+					</tr>
+					<tr>
+					<td>商品模块<input name="model[]" value="product" type="hidden"></td>
+					
+					<td><select class="isshow" name="isshow[]"  >
+						<option value="1">显示的商品</option>
+						<option value="2">所有的商品</option>
+						</select>
+						</td>
+					<td><button onclick="tohtml(this)" data="product" class="layui-btn" type="button">生成</button></td>
+					
+					</tr>
+					{loop table="molds" sys="0" as="v"}
+					{if($v['biaoshi']!='links' && $v['biaoshi']!='tags')}
+					<tr>
+					<td>{$v['name']}模块<input name="model[]" value="{$v['biaoshi']}" type="hidden"></td>
+					
+					<td><select class="isshow" name="isshow[]"  >
+						<option value="1">显示的{$v['name']}</option>
+						<option value="2">所有的{$v['name']}</option>
+						</select>
+						</td>
+					<td><button onclick="tohtml(this)" data="{$v['biaoshi']}" class="layui-btn" type="button">生成</button></td>
+					</tr>
+					{/if}
+					{/loop}
+					
+					
+					
+					
+					<input type="hidden" name="type" value="2">
+					
+					</table>
+					
+					
+					  
+					  <div class="layui-form-item" style="text-align:center;">
+						 <button class="layui-btn layui-btn-danger" lay-submit lay-filter="formDemo">批量生成</button>
+						 
+					  </div>
+					</form>
+                </div>
+            </div>
+        </fieldset>
+       
+       
+    </div>
+        <script>
+		layui.use(['laydate','form','layer','upload'], function(){
+                $ = layui.jquery;
+              var form = layui.form
+              ,layer = layui.layer;
+			  laydate = layui.laydate;
+			  var upload = layui.upload;
+			     //监听提交
+              form.on('submit(formDemo)', function(data){
+				//console.log(data.field);return false;
+					$.ajax({
+						 url:"{fun U('Index/tohtml')}",
+						 dataType:"json",
+						 async:true,
+						 data:data.field,
+						 type:"POST",
+						 beforeSend:function(){
+							//请求前的处理
+							var index = layer.load(1, {
+							  shade: [0.1,'#fff'] //0.1透明度的白色背景
+							});
+							//layui-icon-loading
+						},
+						 success:function(r){
+						//请求成功时处理
+						console.log(r);
+							layer.closeAll();
+							if(r.code==0){
+								layer.msg(r.msg,{icon:6});
+								
+							}else{
+								layer.alert(r.msg, {icon: 5});
+							}
+						},
+						 complete:function(){
+						//请求完成的处理
+						},
+						 error:function(){
+						//请求出错处理
+						}
+
+								
+						
+					})
+				
+				
+				
+				
+               
+                return false;
+              });
+		})
+		
+		function tohtml(t){
+			var isshow = $(t).parent().prev().children('.isshow').val();
+			var model = $(t).attr('data');
+			$.ajax({
+				 url:"{fun U('Index/tohtml')}",
+				 dataType:"json",
+				 async:true,
+				 data:{type:1,model:model,isshow:isshow},
+				 type:"POST",
+				 beforeSend:function(){
+					//请求前的处理
+					var index = layer.load(1, {
+					  shade: [0.1,'#fff'] //0.1透明度的白色背景
+					});
+					//layui-icon-loading
+				},
+				 success:function(r){
+				//请求成功时处理
+				
+					layer.closeAll();
+					if(r.code==0){
+						layer.msg(r.msg,{icon:6});
+						
+					}else{
+						layer.alert(r.msg, {icon: 5});
+					}
+				},
+				 complete:function(){
+				//请求完成的处理
+				},
+				 error:function(){
+				//请求出错处理
+				}
+
+						
+				
+			})
+			
+			
+			
+		
+			
+			
+		}
+		
+		
+		
+
+        </script>
+    </body>
+</html>

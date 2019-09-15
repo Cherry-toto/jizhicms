@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+    <title>订单详情页 - {$webconf['web_name']}</title>
+<meta name="keywords" content="{$webconf['web_keyword']}" />
+<meta name="description" content="{$webconf['web_desc']}" />
+
+   {include="style"}
+</head>
+
+<body>
+  {include="nav"}
+    <main class="page shopping-cart-page">
+        <section class="clean-block clean-cart dark">
+            <div class="container">
+                <div class="block-heading">
+                    <h2 class="text-info">订单详情页DEMO</h2>
+                    <p>展示订单详情</p>
+                </div>
+                <div class="content">
+                    <div class="row no-gutters">
+                        <div class="col-md-12 col-lg-8">
+                            <div class="items">
+							{foreach $carts as $v}
+                                <div class="product product-{$v['tid']}-{$v['info']['id']}">
+                                    <div class="row justify-content-center align-items-center">
+										<!--分情况处理，判断商品是否已存在-->
+										{if($v['info'])}
+                                        <div class="col-md-2">
+                                            <div class="product-image"><img class="img-fluid d-block mx-auto image" src="{$v['info']['litpic']}"></div>
+                                        </div>
+                                        <div class="col-md-5 product-info"><a href="{fun gourl($v['info']['id'],$v['info']['htmlurl'])}" target="_blank" class="product-name">{$v['info']['title']}</a>
+                                            <div class="product-specs">
+                                                <div><span>显示屏:&nbsp;</span><span class="value">{$v['info']['display']}</span></div>
+                                                <div><span>运行内存:&nbsp;</span><span class="value">{$v['info']['ram']}</span></div>
+                                                <div><span>像素:&nbsp;</span><span class="value">{$v['info']['camera']}</span></div>
+                                            </div>
+                                        </div>
+                                        <div class="col-6 col-md-2 quantity"><label class="d-none d-md-block" for="quantity">购买数量</label>{$v['num']}</div>
+										<input id="price_per_{$v['tid']}_{$v['info']['id']}" value="{$v['info']['price']}" type="hidden" />
+                                        <div class="col-6 col-md-2 price">
+										<span class="price_{$v['tid']}_{$v['info']['id']}">￥{$v['price']*$v['num']}</span></div>
+										{else}
+										<!--商品已被删除-->
+											 <div class="col-md-2">
+												<div class="product-image">商品已下架</div>
+											</div>
+											<div class="col-md-5 product-info"><a href="{fun gourl($v['info']['id'],$v['info']['htmlurl'])}" target="_blank" class="product-name">[商品已下架}</a>
+												<div class="product-specs">
+													<div>[商品已下架]</div>
+												</div>
+											</div>
+											<div class="col-6 col-md-2 quantity"><label class="d-none d-md-block" for="quantity">购买数量</label>{$v['num']}</div>
+											<input id="price_per_{$v['tid']}_{$v['info']['id']}" value="{$v['info']['price']}" type="hidden" />
+											<div class="col-6 col-md-2 price">
+											<span class="price_{$v['tid']}_{$v['info']['id']}">￥{$v['price']*$v['num']}</span></div>
+										{/if}
+										
+                                    </div>
+                                </div>
+							{/foreach}
+                               
+                            </div>
+                        </div>
+                        <div class="col-md-12 col-lg-4">
+						<form action="{fun U('order/payment')}" method="POST">
+						<input name="go" value="1" type="hidden" />
+						<input name="orderno" value="{$order['orderno']}" type="hidden" />
+                            <div class="summary">
+                                <h3>合计</h3>
+                                <h4><span class="text">总价</span><span class="price" id="allmoney">{$order['price']+$order['yunfei']+$order['discount']}</span></h4>
+                                <h4><span class="text">折扣</span><span class="price" id="alldiscount">{$order['discount']}</span></h4>
+                                <h4><span class="text">运费</span><span class="price" id="yunfei">{$order['yunfei']}</span></h4>
+                                <h4><span class="text">总计</span><span class="price" id="summary">{$order['price']}</span></h4>
+								{if($order['isshow']==1)}
+								<button class="btn btn-primary btn-block btn-lg" type="submit">继续支付</button>
+					
+								{else if($order['isshow']==3)}
+								<button class="btn btn-warm btn-block btn-lg" disabled type="button">订单已过期</button>
+								{/if}
+							</div>
+						</form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+    {include="footer"}
+
+</body>
+
+</html>

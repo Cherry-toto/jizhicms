@@ -1,0 +1,1046 @@
+<!DOCTYPE html>
+<html>
+    
+    <head>
+       <meta charset="UTF-8">
+        {include="style"}
+		<style>
+		.layui-code-view .layui-code-ol li{
+		    font-size: 15px;
+/*line-height: 40px !important;*/
+		}
+		</style>
+    </head>
+    
+    <body>
+	 <div class="x-nav">
+            <span class="layui-breadcrumb">
+              <a><cite>首页</cite></a>
+              <a><cite>系统扩展</cite></a>
+             
+			 <a><cite>模板制作手册</cite></a>
+            </span>
+            <a class="layui-btn layui-btn-small" style="line-height:1.6em;margin-top:3px;float:right"  href="javascript:location.replace(location.href);" title="刷新"><i class="iconfont" style="line-height:30px">&#xe6aa;</i></a>
+        </div>
+        <div class="x-body">
+			<div class="layui-row">
+				<form class="layui-form" >
+				<div class="layui-tab-content">
+				<input type="hidden" name="go" value="1" />
+				
+				<div class="layui-tab">
+					  <ul class="layui-tab-title">
+						<li class="layui-this">公共配置输出</li>
+						<li>栏目相关输出</li>
+						<li>文章详情输出</li>
+						<li>商品详情输出</li>
+						<li>友情链接输出</li>
+						<li>轮播图输出</li>
+						<li>loop标签解析</li>
+						<li>常用标签</li>
+						<li>标签生成</li>
+						
+					  </ul>
+					  <div class="layui-tab-content">
+						<div class="layui-tab-item layui-show">
+							
+							  <div class="layui-field-box">
+								<blockquote class="layui-elem-quote">系统配置统一使用规则：{!--$webconf[配置参数]--}  或者    通过方法获取{!--fun webConf(配置参数)--}
+								</blockquote>
+								<blockquote class="layui-elem-quote">扩展配置统一使用规则：      标签值{!--$customconf[配置参数]--}  或者    通过方法获取标签值{!--fun get_custom(配置参数)--}</blockquote>
+								
+								<fieldset class="layui-elem-field">
+								<legend>系统配置</legend>
+									<div class="layui-field-box">
+									网站SEO名称<pre class="layui-code">{!--$webconf['web_name']--}</pre>
+									网站SEO关键词<pre class="layui-code">{!--$webconf['web_keyword']--}</pre>
+									网站SEO描述<pre class="layui-code">{!--$webconf['web_desc']--}</pre>
+									底部版权<pre class="layui-code">{!--$webconf['web_copyright']--}</pre>
+									备案号<pre class="layui-code">{!--$webconf['web_beian']--}</pre>
+									网站电话<pre class="layui-code">{!--$webconf['web_tel']--}</pre>
+									400电话<pre class="layui-code">{!--$webconf['web_tel_400']--}</pre>
+									网站QQ<pre class="layui-code">{!--$webconf['web_qq']--}</pre>
+									网站邮箱<pre class="layui-code">{!--$webconf['web_email']--}</pre>
+									公司地址<pre class="layui-code">{!--$webconf['web_address']--}</pre>
+									统计代码<pre class="layui-code">{!--$webconf['web_js']--}</pre>
+									
+									</div>
+								</fieldset>
+								
+								
+							  </div>
+							
+						</div>
+						
+						<div class="layui-tab-item">
+						
+						 <div class="layui-form-item layui-form-text">
+							<fieldset class="layui-elem-field">
+							  <legend>全局栏目属性输出</legend>
+							  <div class="layui-field-box">
+							  所谓全局也就是整个前台模板体系里都能够使用的标签
+							  <pre class="layui-code">{!--$classtypedata[$id][$str]--}
+							  $id:栏目的ID
+							  $str:栏目对应的字段参数
+							  如：针对于栏目ID等于1的栏目，我们可以这样输出以下内容：
+							  栏目名：{!--$classtypedata[1]['classname']--}
+								模块标识：{!--$classtypedata[1]['molds']--}
+								缩略图：{!--$classtypedata[1]['litpic']--}
+								当前栏目URL：{!--$classtypedata[1]['url']--}
+								描述：{!--$classtypedata[1]['description']--}
+								关键词：{!--$classtypedata[1]['keywords']--}
+								内容：{!--$classtypedata[1]['body']--}
+								列表输出条数：{!--$classtypedata[1]['lists_num']--}
+								栏目评论数：{!--$classtypedata[1]['comment_num']--}
+								上级栏目ID：{!--$classtypedata[1]['pid']--}
+								上级栏目名：{!--$classtypedata[$classtypedata[1]['pid']]['classname']--}
+								上级栏目URL：{!--$classtypedata[$classtypedata[1]['pid']]['url']--}</pre>
+							  </div>
+							</fieldset>
+							
+							<fieldset class="layui-elem-field">
+							  <legend>导航高亮及输出</legend>
+							  <div class="layui-field-box">
+							  推荐使用，执行速度快，性能高
+							  <pre class="layui-code">//判断是否首页，输出高亮代码
+								<li><a class="a1 {!--if(!isset($type))--}color{!--/if--}" href="/">首页</a></li>
+								{!--foreach $classtypedata as $v--} 
+								//判断输出可显示的栏目
+								{!--if($v['isshow']==1)--}
+								//输出一级栏目
+								{!--if($v['pid']==0)--}  
+								<li>
+								//判断是否当前栏目，输出高亮代码
+								<a class="a1 {!--if(isset($type) && in_array($type['id'],$v['children']['ids']))--}color{!--/if--}" href="{!--$v['url']--}">{!--$v['classname']--}</a>
+								//判断是否有下级，输出下级分类
+								{!--if($v['haschild'])--}
+								<ul>
+								{!--foreach $v['children']['list'] as $vv--}
+								<li><a href="{!--$vv['url']--}">{!--$vv['classname']--}</a></li>
+								{!--/foreach--}
+								</ul>
+								{!--/if--}
+								</li>
+								{!--/if--}
+								{!--/if--}
+								{!--/foreach--}</pre>
+								不推荐使用，但也能实现.【loop遍历】
+								<pre class="layui-code">{!--loop table="classtype" isshow="1" pid="0" as="v"--}
+								栏目名：{!--$v['classname']--}
+								栏目URL：{!--$v['url']--}
+								栏目简介：{!--$v['description']--}
+								栏目缩略图[banner]：{!--$v['litpic']--}
+								判断是否有下级：
+								{!--if(haschild($classtypedata,$v['id']))--}
+								有下级则输出，输出下级栏目
+								{!--foreach $classtypedata[$v['id']]['children']['list'] as $vv--}
+									栏目名：{!--$vv['classname']--}
+									栏目URL：{!--$vv['url']--}
+									栏目简介：{!--$vv['description']--}
+									栏目缩略图[banner]：{!--$vv['litpic']--}
+									
+								{!--/foreach--}
+								{!--else--}
+								没有下级则输出
+								{!--/if--}
+								{!--/loop--}</pre>
+								输出下级栏目的方式（两种）
+								<pre class="layui-code">①推荐使用.如输出栏目ID为1的下级栏目
+								{!--foreach $classtypedata[1]['children']['list'] as $v--}
+								{!--/foreach--}
+								</pre>
+								<pre class="layui-code">②不推荐，但是也能输出loop
+								{!--loop table="classtype" pid="2" isshow="1" as="v"}
+								栏目名：{!--$v['classname']--}
+								栏目URL：{!--$v['url']--}
+								栏目简介：{!--$v['description']--}
+								栏目缩略图[banner]：{!--$v['litpic']--}
+								{!--/loop--}</pre>
+								
+							  </div>
+							</fieldset>
+							
+							<fieldset class="layui-elem-field">
+							  <legend>输出当前栏目下的同级分类</legend>
+							  <div class="layui-field-box">
+							  <pre class="layui-code">{!--foreach $classtypedata as $v--}
+							  {!--if($type['pid']==$v['pid'])--}//父类相同，那么他们就是同级了，需要注意的是当前栏目为顶级栏目(pid=0)的时候是输出所有顶级栏目的
+							  栏目名：{!--$v['classname']--}   栏目链接：{!--$v['url']--}
+							  {!--/if--}
+							  {!--/foreach--}</pre>
+							  </div>
+							</fieldset>
+							<fieldset class="layui-elem-field">
+							  <legend>输出当前栏目下的直系上级同级分类</legend>
+							  <div class="layui-field-box">
+							  <pre class="layui-code">{!--foreach $classtypedata as $v--}
+							  {!--if($classtypedata[$type['pid']]['pid']==$v['pid'])--}//父类相同，那么他们就是同级了，需要注意的是当前栏目为顶级栏目(pid=0)的时候是输出所有顶级栏目的
+							  栏目名：{!--$v['classname']--}   栏目链接：{!--$v['url']--}
+							  {!--/if--}
+							  {!--/foreach--}</pre>
+							  </div>
+							</fieldset>
+							<fieldset class="layui-elem-field">
+							  <legend>栏目详情页输出</legend>
+							  <div class="layui-field-box">
+							  基本信息输出
+								<pre class="layui-code">ID：{!--$type['id']--}
+								当前位置：{!--$positions--}
+								栏目名：{!--$type['classname']--}
+								模块标识：{!--$type['molds']--}
+								缩略图：{!--$type['litpic']--}
+								当前栏目URL：{!--$type['url']--} 或 {!--$classtypedata[type['id']]['url']--}
+								描述：{!--$type['description']--}
+								关键词：{!--$type['keywords']--}
+								内容：{!--$type['body']--}
+								列表输出条数：{!--$type['lists_num']--}
+								栏目评论数：{!--$type['comment_num']--}
+								上级栏目ID：{!--$type['pid']--}
+								上级栏目名：{!--$classtypedata[$type['pid']]['classname']--}
+								上级栏目URL：{!--$classtypedata[$type['pid']]['url']--}</pre>
+								</div>
+							</fieldset>
+							<fieldset class="layui-elem-field">
+							  <legend>栏目列表输出</legend>
+							  <div class="layui-field-box">
+								
+								<pre class="layui-code">{!--foreach $lists as $v--}
+								内容输出规则：{!--$v[字段名]--}
+								标题：{!--$v['title']--}
+								内容链接:{!--$v['url']--}
+								热度/点击量:{!--$v['hits']--}
+								评论数:{!--$v['comment_num']--}
+								所属栏目id:{!--$v['tid']--}
+								所属栏目名:{!--$classtypedata[$v['tid']]['classname']--}
+								所属栏目URL:{!--$classtypedata[$v['tid']]['url']--}
+								简介：{!--$v['description']--}
+								链接：{!--$v['url']--}
+								缩略图：{!--$v['litpic']--}
+								内容：{!--$v['body']--}
+								时间：[了解更多日期格式请查看底部附录]
+									格式：年-月-日：{!--fun date('Y-m-d',$v['addtime'])--}
+									格式：年-月-日 时:分:秒：{!--fun date('Y-m-d H:i:s',$v['addtime'])--}
+									格式：年/月/日：{!--fun date('Y/m/d',$v['addtime'])--}
+								{!--/foreach--}</pre>
+							</div>
+							</fieldset>
+							<fieldset class="layui-elem-field">
+							  <legend>栏目分页输出</legend>
+							  <div class="layui-field-box">
+								
+								<pre class="layui-code">默认输出:
+								{!--$pages--}
+								自定义输出：
+								{!--if($listpage['list'])--}//判断是否有分页数据
+								<ul class="pagination">
+						<li class="page-item {!--if($listpage['prev'])--}disabled{!--/if--}"><a class="page-link" href="{!--$listpage['prev']--}" aria-label="Previous"><span aria-hidden="true">«</span></a></li>
+						{!--foreach $listpage['list'] as $ss--}
+						<li class="page-item {!--if($ss['num']==$listpage['current_num'])--}active background{!--/if--}"><a href="{!--$ss['url']--}" class="page-link">{!--$ss['num']--}</a></li>
+						{!--/foreach--}
+						<li class="page-item {!--if($listpage['next'])--}disabled{!--/if--}"><a class="page-link" href="{!--$listpage['next']--}" aria-label="Next"><span aria-hidden="true">»</span></a></li>
+						</ul>
+					{!--/if--}</pre>
+							  </div>
+							</fieldset>
+			
+						
+							 
+						</div>
+					  </div>
+					  <!--文章-->
+					  <div class="layui-tab-item">
+						 <div class="layui-form-item layui-form-text">
+						 <blockquote class="layui-elem-quote">$jz变量可以输出所有内容</blockquote>
+						 <blockquote class="layui-elem-quote">内容页也可以使用$type调用栏目所有内容的哦~</blockquote>
+						 <pre class="layui-code">文章标题：{!--$jz['title']--}
+						 当前位置：{!--$positions--}
+						 文章SEO标题：{!--$jz['seo_title']--}
+						 文章关键词：{!--$jz['keywords']--}
+						 文章点击量：{!--$jz['hits']--}自增操作{!--fun incrData('article',$jz['id'],'hits')--}
+						 文章缩略图：{!--$jz['litpic']--}
+						 文章简介：{!--$jz['description']--}
+						 文章内容：{!--$jz['body']--}
+						 文章作者：{!--fun adminInfo($jz['userid'],'name')--}
+						 文章更新时间：{!--fun date('Y-m-d',$jz['addtime'])--}
+						 其他字段内容统一输出：{!--$v[字段参数]--}
+						 *自定义当前位置：【不要求完全掌握，知道可以遍历输出面包屑导航即可】
+						 {!--loop $positions_data as $v--}
+						 {!--php echo '<a href="'.$v['url'].'">'.$v['classname'].'</a>'/--}
+						 {!--/loop--}</pre>
+						 上一页
+							<pre class="layui-code">判断是否有上一篇
+							{!--if($aprev)--}
+							上一篇链接：{!--$aprev['url']--}
+							上一篇标题：{!--$aprev['title']--}
+							{!--else--}
+							如果没有上一篇，则输出这里的内容
+							{!--/if--}
+							</pre>
+						下一页
+						<pre class="layui-code">判断是否有下一篇
+						{!--if($anext)--}
+							下一篇的链接：{!--$anext['url']--}
+							下一篇的标题：{!--$anext['title']--}
+							{!--else--}
+							如果没有下一篇，则输出这里的内容
+							{!--/if--}</pre>
+						点赞
+						<pre class="layui-code">{!--if(checkLikes($type['id'],$jz['id']))--}
+						<span style="color:#f00;cursor:pointer;" onclick="likes({!--$type['id']--},{!--$jz['id']--})" class="icon-like">已点赞</span>
+						{!--else--}
+						<span style="color:gray;cursor:pointer;" onclick="likes({!--$type['id']--},{!--$jz['id']--})" class="icon-like">点赞</span>
+						{!--/if--}</pre>
+						相关点赞js
+						<pre class="layui-code">function likes(tid,id){
+		$.ajax({
+				 url:"{!--fun U('user/likesAction')--}",//请求的url地址
+				 dataType:"json",//返回格式为json
+				 async:true,//请求是否异步，默认为异步，这也是ajax重要特性
+				 data:{tid:tid,id:id,ajax:1},//参数值
+				 type:"POST",//请求方式
+				 beforeSend:function(){
+					//请求前的处理
+					},
+					 success:function(r){
+						if(r.code==0){
+							alert(r.msg);
+							window.location.reload();
+						}else{
+							alert(r.msg);
+						}
+							
+					},
+					 complete:function(){
+					//请求完成的处理
+					},
+					 error:function(){
+					//请求出错处理
+						alert('网络错误');
+					}
+
+						
+				
+			})
+	}</pre>
+						收藏
+						<pre class="layui-code">{!--if(checkCollect($type['id'],$jz['id']))--}
+						<span style="color:#f00;cursor:pointer;" onclick="collect({!--$type['id']--},{!--$jz['id']--})"  >已收藏</span>
+						{!--else--}
+						<span style="color:gray;cursor:pointer;" onclick="collect({!--$type['id']--},{!--$jz['id']--})" >收藏</span>
+						{!--/if--}</pre>
+						相关收藏js
+						<pre class="layui-code">function collect(tid,id){
+		$.ajax({
+				 url:"{!--fun U('user/collectAction')--}",//请求的url地址
+				 dataType:"json",//返回格式为json
+				 async:true,//请求是否异步，默认为异步，这也是ajax重要特性
+				 data:{tid:tid,id:id,ajax:1},//参数值
+				 type:"POST",//请求方式
+				 beforeSend:function(){
+					//请求前的处理
+					},
+					 success:function(r){
+						if(r.code==0){
+							alert(r.msg);
+							window.location.reload();
+						}else{
+							alert(r.msg);
+						}
+							
+					},
+					 complete:function(){
+					//请求完成的处理
+					},
+					 error:function(){
+					//请求出错处理
+						alert('网络错误');
+					}
+
+						
+				
+			})
+	}</pre>
+						
+						 </div>
+					   </div>
+					    <!--商品-->
+					  <div class="layui-tab-item">
+						 <div class="layui-form-item layui-form-text">
+						  <blockquote class="layui-elem-quote">$jz变量可以输出所有内容</blockquote>
+						  <blockquote class="layui-elem-quote">内容页也可以使用$type调用栏目所有内容的哦~</blockquote>
+						 <pre class="layui-code">商品标题：{!--$jz['title']--}
+						 当前位置：{!--$positions--}
+						 商品SEO标题：{!--$jz['seo_title']--}
+						 商品关键词：{!--$jz['keywords']--}
+						 商品点击量：{!--$jz['hits']--}自增操作{!--fun incrData('product',$jz['id'],'hits')--}
+						 商品主图：{!--$jz['litpic']--}
+						 商品价格：{!--$jz['price']--}
+						 商品库存：{!--$jz['stock_num']--}
+						 商品简介：{!--$jz['description']--}
+						 商品内容：{!--$jz['body']--}
+						 商品上传管理员：{!--fun adminInfo($jz['userid'],'name')--}
+						 商品更新时间：{!--fun date('Y-m-d',$jz['addtime'])--}
+						 其他字段内容统一输出：{!--$v[字段参数]--}
+						 *自定义当前位置：【不要求完全掌握，知道可以遍历输出面包屑导航即可】
+						 {!--loop $position_data as $v--}
+						 {!--php echo '<a href="'.$v['url'].'">'.$v['classname'].'</a>'/--}
+						 {!--/loop--}</pre>
+						 商品图集
+						  <pre class="layui-code">{!--php $pictures = explode('||',$jz['pictures'])/--}
+									{!--foreach $pictures as $v--}
+									{!--if($v!='')--}
+									图片链接：{!--$v--}	
+									{!--/if--}
+									{!--/foreach--}</pre>
+						 商品属性
+						 <pre class="layui-code">{!--php $product_fields = get_fields_show($jz['tid'],$type['molds'])/--}
+						{!--foreach $product_fields as $v--}
+						属性名：{!--$v['fieldname']--}
+						{!--if($v['fieldtype']==7)--}
+						<!--单选-->
+						输出单选值：{!--fun get_key_field_select($jz[$v['field']],$type['molds'],$v['field'])--}
+						{!--else if($v['fieldtype']==8)--}
+						<!--多选-->
+						输出多选值，并用空格分隔：{!--fun implode(' ',get_key_field_select($jz[$v['field']],$type['molds'],$v['field']))--}
+						{!--else--}
+						<!--默认值-->
+						输出原值：{!--$jz[$v['field']]--}
+						{!--/if--}
+						{!--/foreach--}</pre>
+						点评/星星数【五颗星为满分，评分数为总星数/投票数，点了星星并提交评论才算评分成功】
+						<pre class="layui-code"><div class="rating">
+									<!--获取当前商品的点评数据-->
+									{!--php $comment = show_comment($jz['tid'],$jz['id'])/--}
+									<!--判断是否有评论-->
+									{!--php $star_num = $comment['average']/--}
+									{!--if($comment['data'])--}
+									{!--for $i=1;$i<=$star_num;$i++--}
+									<!--输出满星-->
+									<img src="assets/img/star.svg">
+									{!--/for--}
+									{!--if(round($star_num)!=$star_num)--}
+									<!--输出半星-->
+									<img src="assets/img/star-half-empty.svg">
+									{!--/if--}
+									{!--if($star_num<5)--}
+									{!--for $i=1;$i<=(5-$star_num);$i++--}
+									<!--输出空星-->
+									<img src="assets/img/star-empty.svg">
+									{!--/for--}
+									{!--/if--}
+										{!--$star_num--} - {!--$comment['count']--} 票
+									{!--else--}
+									<img src="assets/img/star-empty.svg">
+									<img src="assets/img/star-empty.svg">
+									<img src="assets/img/star-empty.svg">
+									<img src="assets/img/star-empty.svg">
+									<img src="assets/img/star-empty.svg">
+									0 - 0 票
+									{!--/if--}</pre>
+						加入购物车
+						<pre class="layui-code"><button onclick="addcart({!--$type['id']--},{!--$jz['id']--},1)" class="btn btn-primary" type="button"><i class="icon-basket"></i>加入购物车</button></pre>
+						加入购物车JS
+						<pre class="layui-code">function addcart(tid,id,num){
+								$.ajax({
+									 url:"{!--fun U('user/addcart')--}",//请求的url地址
+									 dataType:"json",//返回格式为json
+									 async:true,//请求是否异步，默认为异步，这也是ajax重要特性
+									 data:{tid:tid,id:id,num:num,ajax:1},//参数值
+									 type:"POST",//请求方式
+									 beforeSend:function(){
+										//请求前的处理
+										},
+										 success:function(r){
+											if(r.code==0){
+												window.location.href=r.url;
+											}else{
+												alert(r.msg);
+											}
+												
+										},
+										 complete:function(){
+										//请求完成的处理
+										},
+										 error:function(){
+										//请求出错处理
+											alert('网络错误');
+										}
+
+											
+									
+								})
+						   }
+						   </pre>
+						   相关产品
+						   <pre class="layui-code">{!--loop table="$type['molds']" notin="id|$jz['id']" limit="3" as="v"--}
+						   notin：表示除当前ID外的产品
+						   {!--/loop--}</pre>
+						  上一个
+							<pre class="layui-code">判断是否有上一个
+							{!--if($aprev)--}
+							上一个链接：{!--$aprev['url']--}
+							上一个标题：{!--$aprev['title']--}
+							{!--else--}
+							如果没有上一个，则输出这里的内容
+							{!--/if--}
+							</pre>
+						下一个
+						<pre class="layui-code">判断是否有下一个
+						{!--if($anext)--}
+							下一个的链接：{!--$anext['url']--}
+							下一个的标题：{!--$anext['title']--}
+							{!--else--}
+							如果没有下一个，则输出这里的内容
+							{!--/if--}</pre>
+						点赞
+						<pre class="layui-code">判断是否有点赞
+						{!--if(checkLikes($type['id'],$jz['id']))--}
+						有点赞，则输出这里
+						<span style="color:#f00;cursor:pointer;" onclick="likes({!--$type['id']--},{!--$jz['id']--})" class="icon-like">已点赞</span>
+						{!--else--}
+						没有点赞则输出这里
+						<span style="color:gray;cursor:pointer;" onclick="likes({!--$type['id']--},{!--$jz['id']--})" class="icon-like">点赞</span>
+						{!--/if--}</pre>
+						相关点赞js
+						<pre class="layui-code">function likes(tid,id){
+		$.ajax({
+				 url:"{!--fun U('user/likesAction')--}",//请求的url地址
+				 dataType:"json",//返回格式为json
+				 async:true,//请求是否异步，默认为异步，这也是ajax重要特性
+				 data:{tid:tid,id:id,ajax:1},//参数值
+				 type:"POST",//请求方式
+				 beforeSend:function(){
+					//请求前的处理
+					},
+					 success:function(r){
+						if(r.code==0){
+							alert(r.msg);
+							window.location.reload();
+						}else{
+							alert(r.msg);
+						}
+							
+					},
+					 complete:function(){
+					//请求完成的处理
+					},
+					 error:function(){
+					//请求出错处理
+						alert('网络错误');
+					}
+
+						
+				
+			})
+	}</pre>
+						收藏
+						<pre class="layui-code">{!--if(checkCollect($type['id'],$jz['id']))--}
+						<span style="color:#f00;cursor:pointer;" onclick="collect({!--$type['id']--},{!--$jz['id']--})"  >已收藏</span>
+						{!--else--}
+						<span style="color:gray;cursor:pointer;" onclick="collect({!--$type['id']--},{!--$jz['id']--})" >收藏</span>
+						{!--/if--}</pre>
+						相关收藏js
+						<pre class="layui-code">function collect(tid,id){
+		$.ajax({
+				 url:"{!--fun U('user/collectAction')--}",//请求的url地址
+				 dataType:"json",//返回格式为json
+				 async:true,//请求是否异步，默认为异步，这也是ajax重要特性
+				 data:{tid:tid,id:id,ajax:1},//参数值
+				 type:"POST",//请求方式
+				 beforeSend:function(){
+					//请求前的处理
+					},
+					 success:function(r){
+						if(r.code==0){
+							alert(r.msg);
+							window.location.reload();
+						}else{
+							alert(r.msg);
+						}
+							
+					},
+					 complete:function(){
+					//请求完成的处理
+					},
+					 error:function(){
+					//请求出错处理
+						alert('网络错误');
+					}
+
+						
+				
+			})
+	}</pre>	
+						 
+						 </div>
+					   </div>
+					  
+					  <!--友情链接-->
+						<div class="layui-tab-item">
+							 <div class="layui-form-item layui-form-text">
+							 <pre class="layui-code">{!--loop table="links" isshow="1" orderby="orders desc" as="v"--}
+							 链接名：{!--$v['title']--}
+							 链接URL：{!--$v['url']--}
+							 {!--/loop--}</pre>
+							 </div>
+						</div>
+					  <!--轮播图-->
+						<div class="layui-tab-item">
+							 <div class="layui-form-item layui-form-text">
+							 <fieldset class="layui-elem-field">
+							  <legend>轮播图分类输出</legend>
+							  <div class="layui-field-box">
+							  <pre class="layui-code">{!--loop table="collect_type" as="v"--}
+							 轮播图分类名字：{!--$v['name']--}
+							 创建时间：{!--fun date('Y-m-d',$v['addtime'])--}
+							 {!--/loop--}</pre>
+							  </div>
+							 </fieldset>
+							  <fieldset class="layui-elem-field">
+							  <legend>根据分类输出轮播图</legend>
+							  <div class="layui-field-box">
+							  <pre class="layui-code">{!--loop table="collect" orderby="orders desc" tid="1" isshow="1" as="v"--}
+							 轮播图标题：{!--$v['title']--}
+							 轮播图描述：{!--$v['description']--}
+							 轮播图图片：{!--$v['litpic']--}
+							 轮播图链接：{!--$v['url']--}
+							 创建时间：{!--fun date('Y-m-d',$v['addtime'])--}
+							 {!--/loop--}</pre>
+							  </div>
+							 </fieldset>
+							 
+							 </div>
+						</div>
+					  
+					  <!--loop-->
+					  <div class="layui-tab-item">
+						
+						 <div class="layui-form-item layui-form-text">
+						 通用说明
+						 <pre class="layui-code">{!--loop table="表名" tid="栏目ID" limit="输出条数" ispage="值1" isall="值1" notin="字段|值" like="字段|值,字段2|值2" as="变量标签,默认v"--}
+						 这里面输出内容格式：{!--$v[字段参数]--}
+						 {!--$n--}：计数，从1开始计
+						 table：数据库的表名
+						 tid：对应表中的栏目ID，默认每条数据都会有tid字段，可以根据此值输出对应的栏目数据
+						 limit：输出的条数
+						 ispage：数值可以是非0的任何数字，如果填写了该参数，则loop循环结束后可以调出分页
+						 isall：数值可以是非0的任何数字，如果填写了该参数，则查询数据的时候会调用tid栏目的下级数据（如果没有tid，则忽略）
+						 notin：表示查询除某个字段值意外的数据，如:id|1，表示除id=1以外的数据 as：默认循环变量为小写字母v，可以自定义非数字开头的字母（严格意义上说，不能出现PHP的关键字）
+						 like：表示查询存在某个值的数据，目前仅支持的形式有:[字段|值],[字段1|值1,字段2|值2],[字段|变量] 如:title|测试，表示title中含有‘测试’这个单词的数据。
+						 as：默认循环变量为小写字母v，可以自定义非数字开头的字母（严格意义上说，不能出现PHP的关键字）
+						 {!--/loop--}</pre>
+						 如果有ispage参数，那么loop后面可以调用分页【特别说明：$v是loop里面的as="v"里面的v，要灵活转换】
+						 <pre class="layui-code">默认tpl模板输出：{!--$v_pages--}
+						 总条数：{!--$v_sum--}
+						 总页数：{!--$v_allpage--}
+						 分页列表：{!--$v_listpage--}
+						 分页前一条：{!--$v_prevpage--}
+						 分页后一条：{!--$v_nextpage--}
+						 自定义输出：
+						 <ul class="pagination">
+				{!--if($v_listpage['list'])--}
+					<li class="page-item {!--if($v_listpage['prev'])--}disabled{!--/if--}"><a class="page-link" href="{!--$v_listpage['prev']--}" aria-label="Previous"><span aria-hidden="true">«</span></a></li>
+					{!--foreach $v_listpage['list'] as $ss--}
+					<li class="page-item {!--if($ss['num']==$v_listpage['current_num'])--}active background{!--/if--}"><a href="{!--$ss['url']--}" class="page-link">{!--$ss['num']--}</a></li>
+					{!--/foreach--}
+					<li class="page-item {!--if($v_listpage['next'])--}disabled{!--/if--}"><a class="page-link" href="{!--$v_listpage['next']--}" aria-label="Next"><span aria-hidden="true">»</span></a></li>
+				{!--/if--}
+				</ul></pre>
+						 举例说明：输出文章栏目ID为2,3,4的所有数据，并输出分页，每页10条，变量为v
+						 <pre class="layui-code">{!--loop table="article" tid="2,3,4" isall="1" ispage="1" limit="10" as="v"--}
+						 标题:{!--$v['title']--}
+						 简介:{!--$v['description']--} 截取20个字：{!--fun newstr($v['description'],40)--}
+						 缩略图:{!--$v['litpic']--}
+						 时间:{!--fun date('Y-m-d',$v['addtime'])--}
+						 内容:{!--$v['body']--}
+						 其余内容按照统一规则：{!--$v[字段参数]--}
+						 {!--/loop--}
+						 输出分页
+						 <ul class="pagination">
+						{!--if($v_listpage['list'])--}
+							<li class="page-item {!--if($v_listpage['prev'])--}disabled{!--/if--}"><a class="page-link" href="{!--$v_listpage['prev']--}" aria-label="Previous"><span aria-hidden="true">«</span></a></li>
+							{!--foreach $v_listpage['list'] as $ss--}
+							<li class="page-item {!--if($ss['num']==$v_listpage['current_num'])--}active background{!--/if--}"><a href="{!--$ss['url']--}" class="page-link">{!--$ss['num']--}</a></li>
+							{!--/foreach--}
+							<li class="page-item {!--if($v_listpage['next'])--}disabled{!--/if--}"><a class="page-link" href="{!--$v_listpage['next']--}" aria-label="Next"><span aria-hidden="true">»</span></a></li>
+						{!--/if--}
+						</ul>
+						 </pre>
+						 
+						 </div>
+				      </div>
+					  <!--常用标签-->
+					  <div class="layui-tab-item">
+						<div class="layui-form-item layui-form-text">
+						输出任何一条数据的万能标签【一条数据】
+						<pre class="layui-code">{!--fun get_info_table($table,$where=null,$str=null)--}
+						$table:表名，模块名，从数据库或模块列表可查看
+						$where:查询条件。如：['id'=>1],表示查询条件为id=1
+						$str:获取字段，默认null，返回数组，如果有对应的字段，则返回查询得到的数据的对应字段值。字段可以从数据库中查看。</pre>
+						输出任意多条数据的万能标签【多条数据】
+						<pre class="layui-code">{!--fun get_all_info_table($table,$where=null,$order=null,$limit=null)--}
+						$table:表名，模块名，从数据库或模块列表可查看
+						$where:查询条件。如：['id'=>1],表示查询条件为id=1
+						$order:查询排序，默认null，表示按系统排序ID正序。如：'id desc'表示ID倒序，'addtime desc,id desc'表示按最新时间，并且ID倒序
+						$limit:查询条数，默认null，表示查询所有数据。</pre>
+						IF逻辑判断
+						<pre class="layui-code">{!--if(判断1)--}
+						//如果判断1为真，则输出这里
+						{!--else if(判断2)--}
+						//如果判断1为假，判断2为真，则输出这里
+						{!--else--}
+						//否则输出这里（判断1、判断2都为假）
+						{!--/if--}</pre>
+						Foreach循环输出
+						<pre class="layui-code">{!--foreach $lists as $v--}
+						这里循环输出{!--$v--}对应的参数值
+						{!--/foreach--}</pre>
+						For循环输出
+						<pre class="layui-code">{!--for $i=1;$i<5;$i++--}
+						这里输出{!--$i--}从1开始递增
+						{!--/for--}</pre>
+						使用PHP函数/方法【要求一定要掌握的技能】
+						<pre class="layui-code">{!--fun 函数--}   如输出当前日期函数：{!--fun date('Y-m-d',time())--}</pre>
+						通过函数方式获取默认配置参数
+						<pre class="layui-code">{!--fun webConf(配置参数)--}</pre>
+						通过函数方式获取自定义配置参数值【只能获取值或者数组】
+						<pre class="layui-code">{!--fun get_custom(配置参数=null)--}  如果没有输入配置参数，则返回自定义配置数组</pre>
+						各种端口检测【手机端检测】【微信端检测】
+						<pre class="layui-code">判断是否为手机端：{!--if(isMobile())--}如果真，这里输出手机端内容{!--/if--}
+						判断是否为微信端：{!--if(isWeixin())--}如果真，这里输出微信端内容{!--/if--}</pre>
+						各种链接创建【链接生成】
+						<pre class="layui-code">指定一个模块的一条数据链接生成：{!--fun gourl($id,$htmlurl=null,$molds='article')--}这里的$id指内容ID，$htmlurl指栏目静态链接名，$molds指模块标识
+						指定一个栏目的URL链接：{!--$classtypedata[$id]['url']--}这里的$id指栏目的ID值
+						创建一个自定义URL：{!--fun U($action)--}这里的$action可以是一个方法名，也可以是控制器+方法
+						如：{!--fun U('index')--}则输出当前页面控制器下面的index方法的执行链接
+						如：{!--fun U('Home/index')--}则输出Home控制器下面的index方法的执行链接</pre>
+						通过函数方式获取文章作者，上传商品管理员信息
+						<pre class="layui-code">{!--fun adminInfo($str=null)--}默认传入字段参数为null，返回数组
+						{!--fun adminInfo('name')--}管理员姓名
+						{!--fun adminInfo('tel')--}管理员电话
+						{!--fun adminInfo('email')--}管理员邮箱</pre>
+						字符串截取【默认字符集为UTF-8,且中文为2个字符一个汉字】
+						<pre class="layui-code">{!--fun newstr($data,20)--}表示截取$data中的前20个字符</pre>
+						检查后台管理员的某个操作权限
+						<pre class="layui-code">{!--if( checkAction($action))--}如果真，则执行这里{!--/if--}$action可以是整个模块的控制器名，也可以是单独某个操作名。
+						如：{!--if(checkAction('Article'))--}如果返回真，则只需这里的代码{!--/if--}检查用户对文章模块是否有操作权限。
+						{!--if(checkAction('Article/addarticle'))--}如果返回真，则只需这里的代码{!--/if--}单独检查用户是否有新增文章的权限</pre>
+						PHP变量输出
+						<pre class="layui-code">{!--$v--}输出$v变量的值</pre>
+						模板执行PHP语句【注意中间的空格】
+						<pre class="layui-code">{!--php 这里写PHP的内容/--}</pre>
+						模板输出原生标签
+						<pre class="layui-code">用{!--!------}代替{}</pre>
+						
+							
+						</div>
+				      </div>
+					  <!--标签生成-->
+					  <div class="layui-tab-item">
+							 <div class="layui-form-item layui-form-text">
+							文章模块标签生成
+							  <div class="layui-input-block" style="margin-left:0;">
+								  <table class="layui-table">
+									<tbody>
+									  <tr>
+										<td>选择栏目</div></td>
+										<td>是否分页</div></td>
+										<td>输出子类数据</div></td>
+										<td>排序</td>
+										<td>输出条数</td>
+										<td>操作</td>
+									  </tr>
+									  <tr>
+										<td>
+										
+										<select name="type_tid" lay-filter="type_tid" id="type_tid" >
+										<option value="">选择栏目</option>
+									   {foreach $classtypes as $v}
+										{if($v['molds']=='article')}
+									   <option  value="{$v['id']}-{$v['molds']}">{fun str_repeat('--', $v['level']), $v['classname']}</option>
+										{/if}
+									   {/foreach}
+									   </select>
+									 
+										</div></td>
+										<td>
+										<select name="type_ispage" lay-filter="type_ispage"  >
+											<option value="">是否分页</option>
+											<option value="1" selected>否</option>
+											<option value="2">是</option>
+										   
+										</select>
+										</div></td>
+										<td>
+										<select name="type_isall" lay-filter="type_isall"  >
+											<option value="">输出子类</option>
+											<option value="1">否</option>
+											<option value="2" selected>是</option>
+										   
+										</select>
+										</div></td>
+										<td>
+										<select name="type_orderby" lay-filter="type_orderby">
+											<option value="">排序</option>
+											<option value="">默认</option>
+											<option value="id desc">ID倒序(大靠前)</option>
+											<option value="id asc">ID正序(小靠前)</option>
+											<option value="addtime desc">时间倒序(新靠前)</option>
+											<option value="addtime asc">时间正序(新靠后)</option>
+										</select>
+										</td>
+										<td><input type="text" id="type_limit" value="10" placeholder="条数" name="type_limit" autocomplete="off" class="layui-input"></td>
+										<td>
+										<button  class="layui-btn" lay-filter="type_save" lay-submit="">生成</button></td>
+									  </tr>
+									</tbody>
+								  </table>
+								  <pre id="lable_type" ></pre>
+							  </div>
+							 商品模块标签生成
+							  <div class="layui-input-block" style="margin-left:0;">
+								  <table class="layui-table">
+									<tbody>
+									  <tr>
+										<td>选择栏目</div></td>
+										<td>是否分页</div></td>
+										<td>输出子类数据</div></td>
+										<td>排序</td>
+										<td>输出条数</td>
+										<td>操作</td>
+									  </tr>
+									  <tr>
+										<td>
+										
+										<select name="product_tid" lay-filter="product_tid" id="product_tid" >
+										<option value="">选择栏目</option>
+									   {foreach $classtypes as $v}
+										{if($v['molds']=='product')}
+									   <option  value="{$v['id']}-{$v['molds']}">{fun str_repeat('--', $v['level']), $v['classname']}</option>
+										{/if}
+									   {/foreach}
+									   </select>
+									 
+										</div></td>
+										<td>
+										<select name="product_ispage" lay-filter="product_ispage"  >
+											<option value="">是否分页</option>
+											<option value="1" selected>否</option>
+											<option value="2">是</option>
+										   
+										</select>
+										</div></td>
+										<td>
+										<select name="product_isall" lay-filter="product_isall"  >
+											<option value="">输出子类</option>
+											<option value="1">否</option>
+											<option value="2" selected>是</option>
+										   
+										</select>
+										</div></td>
+										<td>
+										<select name="product_orderby" lay-filter="product_orderby">
+											<option value="">排序</option>
+											<option value="">默认</option>
+											<option value="id desc">ID倒序(大靠前)</option>
+											<option value="id asc">ID正序(小靠前)</option>
+											<option value="addtime desc">时间倒序(新靠前)</option>
+											<option value="addtime asc">时间正序(新靠后)</option>
+										</select>
+										</td>
+										<td><input type="text" id="product_limit" value="10" placeholder="条数" name="product_limit" autocomplete="off" class="layui-input"></td>
+										<td>
+										<button  class="layui-btn" lay-filter="product_save" lay-submit="">生成</button></td>
+									  </tr>
+									</tbody>
+								  </table>
+								  <pre id="lable_product" ></pre>
+							  </div>
+							
+							  
+							  
+							  
+						  </div>
+							 </div>
+						</div>
+					  
+					  
+				  
+				  
+				  <fieldset  class="layui-elem-field">
+							 <legend>附录</legend>
+							<pre id="lable_1" class="layui-code">时间参数表：
+							格式：年-月-日：{!--fun date('Y-m-d',$v['addtime'])--}
+格式：年-月-日 时:分:秒：{!--fun date('Y-m-d H:i:s',$v['addtime'])--}
+格式：年/月/日：{!--fun date('Y/m/d',$v['addtime'])--}
+							a - "am" 或是 "pm"
+A - "AM" 或是 "PM"
+d - 几日，二位数字，若不足二位则前面补零; 如: "01" 至 "31"
+D - 星期几，三个英文字母; 如: "Fri"
+F - 月份，英文全名; 如: "January"
+h - 12 小时制的小时; 如: "01" 至 "12"
+H - 24 小时制的小时; 如: "00" 至 "23"
+g - 12 小时制的小时，不足二位不补零; 如: "1" 至 12"
+G - 24 小时制的小时，不足二位不补零; 如: "0" 至 "23"
+i - 分钟; 如: "00" 至 "59"
+j - 几日，二位数字，若不足二位不补零; 如: "1" 至 "31"
+l - 星期几，英文全名; 如: "Friday"
+m - 月份，二位数字，若不足二位则在前面补零; 如: "01" 至 "12"
+n - 月份，二位数字，若不足二位则不补零; 如: "1" 至 "12"
+M - 月份，三个英文字母; 如: "Jan"
+s - 秒; 如: "00" 至 "59"
+S - 字尾加英文序数，二个英文字母; 如: "th"，"nd"
+t - 指定月份的天数; 如: "28" 至 "31"
+U - 总秒数
+w - 数字型的星期几，如: "0" (星期日) 至 "6" (星期六)
+Y - 年，四位数字; 如: "1999"
+y - 年，二位数字; 如: "99"
+z - 一年中的第几天; 如: "0" 至 "365" </pre>
+							</fieldset>
+				  
+				  
+				</div>
+				
+				
+				
+				
+              
+				
+				</div>
+            </form>
+			</div>
+        </div>
+		<br/>
+		<br/>
+		<br/>
+		<br/>
+		<br/>
+		<br/>
+		<br/>
+		<br/>
+		<br/>
+      
+        <script>
+		
+            layui.use(['laydate','code','form','layer','upload'], function(){
+                $ = layui.jquery;
+              var form = layui.form
+              ,layer = layui.layer;
+			  laydate = layui.laydate;
+			  var upload = layui.upload;
+			  layui.code({
+				 encode: true //是否转义html标签。默认不开启
+				 ,about:false
+				 ,skin: 'notepad'
+				});
+			  
+			  form.on('select(type_tid)', function(data){
+				  /*
+				  console.log(data.elem); //得到select原始DOM对象
+				  console.log(data.value); //得到被选中的值
+				  console.log(data.othis); //得到美化后的DOM对象
+				  */
+				  //console.log(data);
+				 // $("#type_molds").val(data.othis.attr('data-molds'));
+				  
+				  
+				});
+              
+			    //监听提交
+              form.on('submit(type_save)', function(data){
+				
+				if(data.field.type_tid==''){
+					layer.msg('请选择栏目！');return false;
+				}
+				var tid_molds = data.field.type_tid.split('-');
+				var html=`<fieldset class="layui-elem-field"><div class="layui-field-box">{!--loop table="`+tid_molds[1]+`" tid="`+tid_molds[0]+`"  isshow="1"   `;
+				
+				if(data.field.type_ispage==2){
+					html+=` ispage="1" `;
+				}
+				if(data.field.type_isall==2){
+					html+=` isall="1" `;
+				}
+				if(data.field.type_orderby!=''){
+					html+= `  orderby="`+data.field.type_orderby+`"  `;
+				}
+				html+=` limit="`+data.field.type_limit+`" as="v"--}
+计数器:{!--$n--} 从1开始计
+标题:{!--$v['title']--}
+内容链接:{!--$v['url']--}
+热度/点击量:{!--$v['hits']--}
+评论数:{!--$v['comment_num']--}
+所属栏目id:{!--$v['tid']--}
+所属栏目名:{!--$classtypedata[$v['tid']]['classname']--}
+所属栏目URL:{!--$classtypedata[$v['tid']]['url']--}
+简介:{!--$['description']--} 截取20个字：{!--fun newstr($v['description'],40)--}
+缩略图:{!--$v['litpic']--}
+时间:{!--fun date('Y-m-d',$v['addtime'])--}
+内容:{!--$v['body']--}
+其余内容按照统一规则：{!--$v[字段参数]--}
+{!--/loop--}</div></fieldset>`;
+				$("#lable_type").html(html);
+				
+               
+                return false;
+              });
+			   //监听提交
+              form.on('submit(product_save)', function(data){
+				
+				if(data.field.product_tid==''){
+					layer.msg('请选择栏目！');return false;
+				}
+				var tid_molds = data.field.product_tid.split('-');
+				var html=`<fieldset class="layui-elem-field"><div class="layui-field-box">{!--loop table="`+tid_molds[1]+`" tid="`+tid_molds[0]+`"  isshow="1"   `;
+				
+				if(data.field.product_ispage==2){
+					html+=` ispage="1" `;
+				}
+				if(data.field.product_isall==2){
+					html+=` isall="1" `;
+				}
+				if(data.field.product_orderby!=''){
+					html+= `  orderby="`+data.field.product_orderby+`"  `;
+				}
+				html+=` limit="`+data.field.product_limit+`" as="v"--}
+计数器:{!--$n--} 从1开始计
+标题:{!--$v['title']--}
+内容链接:{!--$v['url']--}
+热度/点击量:{!--$v['hits']--}
+价格:{!--$v['price']--}
+库存:{!--$v['stock_num']--}
+评论数:{!--$v['comment_num']--}
+所属栏目id:{!--$v['tid']--}
+所属栏目名:{!--$classtypedata[$v['tid']]['classname']--}
+所属栏目URL:{!--$classtypedata[$v['tid']]['url']--}
+简介:{!--$['description']--} 截取20个字：{!--fun newstr($v['description'],40)--}
+主图/缩略图:{!--$v['litpic']--}
+时间:{!--fun date('Y-m-d',$v['addtime'])--}
+内容:{!--$v['body']--}
+图集：
+{!--php $pictures = explode('||',$v['pictures'])/--}
+{!--foreach $pictures as $v--}
+{!--if($v!='')--}
+图片链接{!--$v--}
+{!--/if--}
+{!--/foreach--}
+其余内容按照统一规则：{!--$v[字段参数]--}
+{!--/loop--}</div></fieldset>`;
+				$("#lable_product").html(html);
+				
+               
+                return false;
+              });
+			
+		
+		
+			
+           
+              
+              
+            });
+        </script>
+      
+    </body>
+
+</html>

@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html>
+    <head>
+	<meta charset="UTF-8">
+        {include="style"}
+    </head>
+    <body>
+        <div class="x-nav">
+            <span class="layui-breadcrumb">
+              <a><cite>首页</cite></a>
+              <a><cite>分组管理</cite></a>
+              <a><cite>权限列表</cite></a>
+              
+            </span>
+            <a class="layui-btn layui-btn-small" style="line-height:1.6em;margin-top:3px;float:right"  href="javascript:location.replace(location.href);" title="刷新"><i class="iconfont" style="line-height:30px">&#xe6aa;</i></a>
+        </div>
+        <div class="x-body">
+          
+          <xblock>
+		  
+		  <button class="layui-btn" onclick="x_admin_show('添加权限','{fun U('Member/addrulers')}')"><i class="layui-icon"></i>添加权限</button>
+		  {if($webconf['isopenhomepower']==0)}<button class="layui-btn">温馨提示：前台权限已关闭，设置权限不会生效。</button>{else}<button class="layui-btn layui-btn-danger">温馨提示：前台权限已开启，权限设置将直接影响前台访问，请谨慎操作！</button>{/if}
+		  </xblock>
+            <table class="layui-table">
+                <thead>
+                    <tr>
+                        
+                        <th>
+                            ID
+                        </th>
+                       
+                        <th>
+                            功能
+                        </th>
+						
+						<th>
+                            控制器/方法
+                        </th>
+						
+                        <th>
+                            操作
+                        </th>
+                    </tr>
+                </thead>
+                <tbody class="x-cate">
+		{foreach $lists as $v}
+          <tr cate-id="{$v['id']}" fid="{$v['pid']}" >
+            
+			
+            <td>{$v['id']}</td>
+            <td>
+			  {fun str_repeat('&nbsp;&nbsp;&nbsp;',$v['level'])}
+			  {if($v['haschild'])}
+			  <i class="layui-icon x-show" status='false'>&#xe625;</i>
+			  {else}
+			  {if($v['level'])}|——{/if}
+			  {/if}
+			  {$v['name']}
+            </td>
+			<td>{$v['action']}</td>
+			
+            <td class="td-manage">
+              <button class="layui-btn layui-btn layui-btn-xs"  onclick="x_admin_show('编辑','{fun U('Member/editrulers',array('id'=>$v['id']))}')" ><i class="layui-icon">&#xe642;</i>编辑</button>
+			  {if($v['pid']==0)}
+			<button class="layui-btn layui-btn-warm layui-btn-xs"  onclick="x_admin_show('添加子功能','{fun U('Member/addrulers',array('pid'=>$v['id']))}')" ><i class="layui-icon">&#xe642;</i>添加子功能</button>
+			{/if}
+              <button class="layui-btn-danger layui-btn layui-btn-xs"  onclick="ruler_del(this,'{$v['id']}')" href="javascript:;" ><i class="layui-icon">&#xe640;</i>删除</button>
+            </td>
+          </tr>
+		 {/foreach}
+         
+        </tbody>
+            </table>
+			
+            
+        </div>
+     
+       <script>
+	  
+	   
+	    layui.use(['laydate','form','element','laypage','layer'], function(){
+                $ = layui.jquery;//jquery
+              laydate = layui.laydate;//日期插件
+              lement = layui.element;//面包导航
+            //  laypage = layui.laypage;//分页
+              layer = layui.layer;//弹出层
+			  form = layui.form;
+             
+              form.on('select(tid)', function(data){
+					
+					$("#myform").submit();
+				
+			 });
+             
+              
+            });
+		 /*删除*/
+            function ruler_del(obj,id){
+                layer.confirm('确认要删除吗？',function(index){
+				
+					$.get("{__APP_URL__}/Member/deleterulers/id/"+id,{},function(r){
+							var r = JSON.parse(r);
+							if(r.code==0){
+							 //发异步删除数据
+								$(obj).parents("tr").remove();
+								
+								layer.msg(r.msg,{icon: 1,time:1000});
+								window.location.reload();
+								
+							}else{
+								
+								layer.msg(r.msg,{icon: 5,time:1000});
+							}
+					})
+					
+				
+                   
+                });
+            }
+			
+			
+			
+       </script>
+    </body>
+</html>

@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html>
+  
+  <head>
+    <meta charset="UTF-8">
+   {include="style"}
+  </head>
+  
+  <body>
+	<div class="x-nav">
+		<span class="layui-breadcrumb">
+		  <a><cite>首页</cite></a>
+		  <a><cite>订单列表</cite></a>
+		 
+		  <a><cite>订单详情</cite></a>
+		</span>
+		<a class="layui-btn layui-btn-small" style="line-height:1.6em;margin-top:3px;float:right"  href="javascript:location.replace(location.href);" title="刷新"><i class="iconfont" style="line-height:30px">&#xe6aa;</i></a>
+	</div>
+    <div class="x-body">
+        <form class="layui-form layui-form-pane" >
+		<input type="hidden" name="id" value="{$data['id']}" />
+          <div class="layui-form-item">
+              <label for="orderno" class="layui-form-label">
+                  <span class="x-red">*</span>订单号
+              </label>
+              <div class="layui-input-inline">
+                  <input type="text" id="orderno" value="{$data['orderno']}" name="orderno" 
+                  autocomplete="off" class="layui-input">
+              </div>
+          </div>
+		  <input name="tid" value="{$data['tid']}" type="hidden">
+		  <div class="layui-form-item">
+           <label for="tid" class="layui-form-label">
+                  <span class="x-red">*</span>所属栏目
+              </label>
+              <div class="layui-input-inline">
+                  <input type="text" id="tids" name="tids" value="{if($data['tid']!=0)}{fun get_info_table('classtype',$data['tid'],'classname')}{else}无{/if}"
+                  autocomplete="off" class="layui-input">
+              </div>
+          </div>
+          <div class="layui-form-item">
+              <label for="username" class="layui-form-label">
+                  <span class="x-red">*</span>姓名
+              </label>
+              <div class="layui-input-inline">
+                  <input type="text" id="username" value="{$data['username']}" name="username" 
+                  autocomplete="off" class="layui-input">
+              </div>
+          </div>
+          <div class="layui-form-item">
+              <label for="tel" class="layui-form-label">
+                  <span class="x-red">*</span>手机
+              </label>
+              <div class="layui-input-inline">
+                  <input type="text" id="tel" name="tel" value="{$data['tel']}"
+                  autocomplete="off" class="layui-input">
+              </div>
+          </div>
+		    <div class="layui-form-item">
+              <label for="price" class="layui-form-label">
+                  <span class="x-red">*</span>金额
+              </label>
+              <div class="layui-input-inline">
+                  <input type="text" id="price" name="price" value="{$data['price']}"
+                  autocomplete="off" class="layui-input">
+              </div>
+          </div>
+		   <div class="layui-form-item">
+              <label for="jifen" class="layui-form-label">
+                  <span class="x-red">*</span>积分
+              </label>
+              <div class="layui-input-inline">
+                  <input type="text" id="jifen" name="jifen" value="{$data['jifen']}"
+                  autocomplete="off" class="layui-input">
+              </div>
+          </div>
+          <div class="layui-form-item">
+              <label for="ispay" class="layui-form-label">
+                  <span class="x-red">*</span>是否支付
+              </label>
+              <div class="layui-input-inline">
+                  <select name="ispay">
+                    <option value="1" {if($data['ispay']==1)}selected{/if}>已支付</option>
+                    <option value="0" {if($data['ispay']==0)}selected{/if}>未支付</option>
+                    
+                  </select>
+              </div>
+          </div>
+          <div class="layui-form-item">
+              <label for="paytime" class="layui-form-label">
+                  <span class="x-red">*</span>支付时间
+              </label>
+              <div class="layui-input-inline">
+                  <input type="text" id="paytime" name="paytime" value="{if($data['paytime']==0)}-{else}{fun date('Y-m-d H:i:s',$data['paytime'])}{/if}"
+                  autocomplete="off" class="layui-input">
+              </div>
+              <div class="layui-form-mid layui-word-aux">
+                  <span class="x-red"></span>
+              </div>
+          </div>
+          <div class="layui-form-item">
+              <label for="addtime" class="layui-form-label">
+                  <span class="x-red">*</span>提交时间
+              </label>
+              <div class="layui-input-inline">
+                  <input type="text" id="addtime" name="addtime" value="{fun date('Y-m-d H:i:s',$data['addtime'])}"
+                  autocomplete="off" class="layui-input">
+              </div>
+              <div class="layui-form-mid layui-word-aux">
+                  <span class="x-red"></span>
+              </div>
+          </div>
+		  {if($admin['gid']==1)}
+          <div class="layui-form-item layui-form-text">
+              <label for="body" class="layui-form-label">
+                 存储内容
+              </label>
+              <div class="layui-input-block">
+                  <textarea placeholder="请输入内容" id="body" name="body" class="layui-textarea">{$data['body']}</textarea>
+              </div>
+          </div>
+		  {/if}
+		   <div class="layui-form-item layui-form-text">
+              <label for="desc" class="layui-form-label">
+                  订单内容
+              </label>
+              <div class="layui-input-block">
+                  <table class="layui-table">
+                    <tbody>
+					 <tr>
+                        <td>主图</div></td>
+                        <td>商品</div></td>
+                        <td>价格</div></td>
+                        <td>购买数量</div></td>
+                        <td>总价</td>
+                        
+                      </tr>
+					{php $body = explode('||',$data['body'])/}
+					
+					<?php					
+					$new = [];
+					foreach($body as $v){
+						if($v!=''){
+							$d = explode('-',$v);
+							//兼容历史订单，可能出现栏目被删除的情况，防止报错
+							if(isset($classtypedata[$d[0]])){
+								$type = $classtypedata[$d[0]];//栏目
+								$new[]=['info'=>M($type['molds'])->find(['id'=>$d[1]]),'num'=>$d[2],'price'=>$d[3],'tid'=>$d[0]];
+							}else{
+								$new[]=['info'=>false,'num'=>$d[2],'price'=>$d[3],'tid'=>$d[0]];
+							}
+						}
+					}
+					?>
+					{foreach $new as $v}
+					{if($v['info'])}
+                      <tr>
+                        <td><img src="{$v['info']['litpic']}" width="100px" /></div></td>
+                        <td>{$v['info']['title']}</div></td>
+                        <td>￥{$v['price']}元</div></td>
+                        <td>{$v['num']}</div></td>
+                        <td>￥{$v['price']*$v['num']}元</td>
+                        
+                      </tr>
+					{else}
+					  <tr>
+                        <td>[商品已删除]</div></td>
+                        <td>[商品已删除]</div></td>
+                        <td>￥{$v['price']}元</div></td>
+                        <td>{$v['num']}</div></td>
+                        <td>￥{$v['price']*$v['num']}元</td>
+                        
+                      </tr>
+					{/if}
+					{/foreach}
+					<tr>
+                        <td>收货信息：</div></td>
+                        <td colspan="4">收件人：{$data['receive_username']}联系手机：{$data['receive_tel']}联系邮箱：{$data['receive_email']}收货地址：{$data['receive_address']}</div></td>
+                        
+                      </tr>
+					<tr>
+                        <td>折扣：</div></td>
+                        <td colspan="4">￥{$data['discount']}元</div></td>
+                        
+                      </tr>
+					  <tr>
+                        <td>运费：</div></td>
+                        <td colspan="4">￥{$data['yunfei']}元</div></td>
+                        
+                      </tr>
+                     <tr>
+                        <td>合计：</div></td>
+                        <td colspan="4">￥{$data['price']}元</div></td>
+                        
+                      </tr>
+                    </tbody>
+                  </table>
+              </div>
+          </div>
+		  
+		   <div class="layui-form-item" pane>
+              <label for="isshow" class="layui-form-label">
+                  <span class="x-red">*</span>订单状态
+              </label>
+			  <!--1提交订单,2已支付,3超时,4待审核待支付,5已发货,6已废弃失效,0删除订单-->
+              <div class="layui-input-inline">
+                 <input type="radio" name="isshow" value="0" title="订单已删除" {if($data['isshow']==0)}checked{/if}>
+				 <input type="radio" name="isshow" value="1" title="已提交未支付"  {if($data['isshow']==1)}checked{/if}>
+				 <input type="radio" name="isshow" value="2" title="已支付"  {if($data['isshow']==2)}checked{/if}>
+				 <input type="radio" name="isshow" value="3" title="超时订单"  {if($data['isshow']==3)}checked{/if}>
+				 <input type="radio" name="isshow" value="4" title="待审核待支付"  {if($data['isshow']==4)}checked{/if}>
+				 <input type="radio" name="isshow" value="5" title="已发货"  {if($data['isshow']==5)}checked{/if}>
+				 <input type="radio" name="isshow" value="6" title="已废弃"  {if($data['isshow']==6)}checked{/if}>
+				   
+              </div>
+			  <div class="layui-form-mid layui-word-aux ">
+				订单更改为‘已出货’，点‘确定修改’后，将发送一封邮件通知客户。订单未变化状态则不会发送邮件
+			  </div>
+          </div>
+		  <div class="layui-form-item">
+              <label for="send_time" class="layui-form-label">
+                  <span class="x-red">*</span>发货时间
+              </label>
+              <div class="layui-input-inline">
+                  <input type="text" id="send_time" name="send_time" value="{if($data['send_time']!=0)}{fun date('Y-m-d H:i:s',$data['send_time'])}{else}{fun date('Y-m-d H:i:s')}{/if}"
+                  autocomplete="off" class="layui-input">
+              </div>
+              <div class="layui-form-mid layui-word-aux">
+                  <span class="x-red"></span>
+              </div>
+          </div>
+		  
+          <div class="layui-form-item" style="text-align:center;">
+             
+              <button  class="layui-btn" lay-filter="close" lay-submit="">
+                  关闭
+              </button>
+			   <button  class="layui-btn" lay-filter="save" lay-submit="">
+                  确定修改
+              </button>
+          </div>
+      </form>
+    </div>
+    <script>
+        layui.use(['form','layer'], function(){
+            $ = layui.jquery;
+          var form = layui.form
+          ,layer = layui.layer;
+        
+         
+
+          //监听提交
+          form.on('submit(close)', function(data){
+            // console.log(data);
+			
+			    var index = parent.layer.getFrameIndex(window.name);
+                //关闭当前frame
+               
+				{if($webconf['admintpl']=='tpl')}
+				 window.location.href="{fun U('Order/index')}";
+				{else}
+				 parent.layer.close(index);
+				{/if}
+            
+            return false;
+          });
+		  
+		     //监听提交
+           form.on('submit(save)', function(data){
+
+				$.post("{fun U('Order/details')}",data.field,function(r){
+				//console.log(r);return false;
+					var r = JSON.parse(r);
+					if(r.code==0){
+						layer.msg(r.msg, {icon: 6,time: 2000},function () {
+							
+							
+							{if($webconf['admintpl']=='tpl')}
+							 window.location.href="{fun U('Order/index')}";
+							{else}
+							 parent.location.reload();
+							{/if}
+						});
+					
+						
+					}else{
+						layer.alert(r.msg, {icon: 5});
+					}
+				});
+				
+               
+                return false;
+              });
+          
+          
+        });
+    </script>
+   
+  </body>
+
+</html>

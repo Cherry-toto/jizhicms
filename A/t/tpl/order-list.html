@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html>
+  
+  <head>
+    <meta charset="UTF-8">
+  {include="style"}
+  </head>
+  
+  <body>
+    <div class="x-nav">
+      <span class="layui-breadcrumb">
+        <a href="">首页</a>
+        <a href="">营收管理</a>
+        <a>
+          <cite>营收列表</cite></a>
+      </span>
+      <a class="layui-btn layui-btn-small" style="line-height:1.6em;margin-top:3px;float:right" href="javascript:location.replace(location.href);" title="刷新">
+        <i class="iconfont" style="line-height:30px">&#xe6aa;</i></a>
+    </div>
+    <div class="x-body">
+      <div class="layui-row">
+        <form class="layui-form layui-col-md12 x-so" method="get">
+          <input class="layui-input" value="{$starttime}" placeholder="开始日" name="start" id="start">
+          <input class="layui-input" value="{$endtime}" placeholder="截止日" name="end" id="end">
+         手机号：
+          <input type="text" name="tel"  style="width:200px" placeholder="请输入前台用户手机号" value="{$tel}" autocomplete="off" class="layui-input">
+          用户昵称：
+          <input type="text" name="username" style="width:200px"   placeholder="请输入用户昵称"  value="{$username}"  autocomplete="off" class="layui-input"><br/>
+		  订单号：
+          <input type="text" name="orderno" style="width:200px"   placeholder="请输入订单号"  value="{$orderno}"  autocomplete="off" class="layui-input">
+          <button class="layui-btn"  lay-submit="" lay-filter="sreach"><i class="layui-icon">&#xe615;</i></button>
+        </form>
+      </div>
+      <xblock>
+       
+        <button class="layui-btn layui-btn-danger" onclick="delAll()"><i class="layui-icon"></i>批量删除</button>
+		<button class="layui-btn">总订单<span class="layui-badge layui-bg-gray">{$all}</span></button>
+		<button class="layui-btn">已支付<span class="layui-badge layui-bg-blue">{$overpay_num}</span></button>
+		<button class="layui-btn">未支付<span class="layui-badge ">{$notpay_num}</span></button>
+		<button class="layui-btn">总收入<span class="layui-badge layui-bg-orange">{$allmoney}</span></button>
+		
+        <span class="x-right" style="line-height:40px">共有数据：{$sum} 条</span>
+      </xblock>
+     <div style="width:100%;  overflow:scroll;overflow-y: hidden">
+        <table border="1" rules="all" style="width:100%; height:100px; text-align:center;white-space:nowrap" class="layui-table layui-form">
+        <thead>
+          <tr>
+            <th>
+			  <div class="layui-unselect header layui-form-checkbox" lay-skin="primary"><i class="layui-icon">&#xe605;</i></div>
+			</th>
+            <th>ID</th>
+            <th>订单号</th>       
+            <th>所属栏目</th>
+            <th>用户昵称</th>
+            <th>手机号</th>
+
+            <th>金额</th>
+            <th>积分</th>
+            <th>状态</th>
+            <th>是否付款</th>
+            <th>付款时间</th>
+            <th>提交时间</th>
+            <th>操作</th>
+            
+            
+           
+            <!--th >操作</th-->
+            </tr>
+        </thead>
+        <tbody>
+          {foreach $lists as $v}
+          <tr>
+           <td>
+			  <div class="layui-unselect layui-form-checkbox" lay-skin="primary" data-id='{$v['id']}'><i class="layui-icon">&#xe605;</i></div>
+			</td>
+			<td>{$v['id']}</td>
+			<td>{$v['orderno']}</td>
+			<td>{if($v['tid'])}{$classtypes[$v['tid']]['classname']}{else}-{/if}</td>
+			<td>{$v['username']}</td>
+			<td>{$v['tel']}</td>
+
+			<td>{$v['price']}</td>
+			<td>{$v['jifen']}</td>
+			<td>{if($v['isshow']==1)}<span style="color:red;">待付款</span>
+			{else if($v['isshow']==2)}<span style="color:green">已付</span>
+			{else if($v['isshow']==3)}<span style="color:yellow">超时</span>
+			{else if($v['isshow']==4)}<span style="color:red">待审核待支付</span>
+			{else if($v['isshow']==5)}<span style="color:green">已发货</span>
+			{else if($v['isshow']==6)}<span style="color:gray">已废弃</span>
+			{else}<span style="color:gray">删除</span>{/if}</td>
+			<td>{if($v['ispay']==1)}<span style="color:green;">已付</span>{else}<span style="color:#F00">未付</span>{/if}</td>
+            <td>{if($v['paytime'])}{fun date('Y-m-d',$v['paytime'])}{else}-{/if}</td>
+            <td>{fun date('Y-m-d',$v['addtime'])}</td>
+           
+            
+            <td class="td-manage">
+				<button class="layui-btn layui-btn layui-btn-xs"  onclick="x_admin_show('查看','{fun U('details',array('id'=>$v['id']))}')" ><i class="layui-icon">&#xe642;</i>查看</button>
+            </td>
+          </tr>
+          {/foreach}
+        </tbody>
+      </table>
+	  </div>
+      <div class="page">
+       {$pages}
+      </div>
+
+    </div>
+    <script>
+      layui.use('laydate', function(){
+        var laydate = layui.laydate;
+        
+        //执行一个laydate实例
+        laydate.render({
+          elem: '#start' //指定元素
+        });
+
+        //执行一个laydate实例
+        laydate.render({
+          elem: '#end' //指定元素
+        });
+      });
+
+       /*用户-停用*/
+      function member_stop(obj,id){
+          layer.confirm('确认要停用吗？',function(index){
+
+              if($(obj).attr('title')=='启用'){
+
+                //发异步把用户状态进行更改
+                $(obj).attr('title','停用')
+                $(obj).find('i').html('&#xe62f;');
+
+                $(obj).parents("tr").find(".td-status").find('span').addClass('layui-btn-disabled').html('已停用');
+                layer.msg('已停用!',{icon: 5,time:1000});
+
+              }else{
+                $(obj).attr('title','启用')
+                $(obj).find('i').html('&#xe601;');
+
+                $(obj).parents("tr").find(".td-status").find('span').removeClass('layui-btn-disabled').html('已启用');
+                layer.msg('已启用!',{icon: 5,time:1000});
+              }
+              
+          });
+      }
+
+      /*用户-删除*/
+      function member_del(obj,id){
+          layer.confirm('确认要删除吗？',function(index){
+              //发异步删除数据
+              $(obj).parents("tr").remove();
+              layer.msg('已删除!',{icon:1,time:1000});
+          });
+      }
+
+
+
+      function delAll (argument) {
+
+				var data = tableCheck.getData();
+				if(data==''){
+					alert('请选择对象！');return false;
+				}
+				layer.confirm('确认要删除吗？'+data,function(index){
+					
+					$.get("{__APP_URL__}/Order/deleteAll/data/"+data,{},function(r){
+					
+							var r = JSON.parse(r);
+							if(r.code==0){
+							  layer.msg('删除成功', {icon: 1});
+							  $(".layui-form-checked").not('.header').parents('tr').remove();
+								
+							}else{
+								
+								layer.msg(r.msg,{icon: 5,time:1000});
+							}
+					})
+					
+					
+					
+				});
+			  }
+    </script>
+    
+  </body>
+
+</html>

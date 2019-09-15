@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+       {include="style"}
+	   <style>
+	   .cache-s{
+	   width:6rem !important;
+	   }
+	   </style>
+    </head>
+    <body>
+    <div class="x-body layui-anim layui-anim-up">
+      
+        <fieldset class="layui-elem-field">
+            <legend>网站地图</legend>
+            <div class="layui-field-box">
+                <div class="layui-col-md12">
+                    <form class="layui-form " action="">
+					
+					<table class="layui-table">
+					<tr>
+					<th>模块名称</th>
+					<th>更新频率</th>
+					<th>站内权重</th>
+					<th>输出范围</th>
+					
+					</tr>
+					<tr>
+					<td>栏目模块<input name="model[]" value="classtype" type="hidden"></td>
+					<td><select name="freq[]"  >
+						<option value="always">经常(always)</option>
+						<option value="hourly">每时(hourly)</option>
+						<option value="daily">每天(daily)</option>
+						<option value="weekly">每周(weekly)</option>
+						<option value="monthly">每月(monthly)</option>
+						<option value="yearly">每年(yearly)</option>
+						
+						</select>
+						</td>
+					<td><input name="priority[]" type="number" class="layui-input" value="0.90"></td>
+					<td><select name="isshow[]"  >
+						<option value="1">显示的栏目</option>
+						<option value="2">所有的栏目</option>
+						</select>
+						</td>
+					</tr>
+					<tr>
+					<td>文章模块<input name="model[]" value="article" type="hidden"></td>
+					<td><select name="freq[]"  >
+						<option value="always">经常(always)</option>
+						<option value="hourly">每时(hourly)</option>
+						<option value="daily">每天(daily)</option>
+						<option value="weekly">每周(weekly)</option>
+						<option value="monthly">每月(monthly)</option>
+						<option value="yearly">每年(yearly)</option>
+						
+						</select>
+						</td>
+					<td><input name="priority[]" type="number" class="layui-input" value="0.80"></td>
+					<td><select name="isshow[]"  >
+						<option value="1">显示的文章</option>
+						<option value="2">所有的文章</option>
+						</select>
+						</td>
+					</tr>
+					<tr>
+					<td>商品模块<input name="model[]" value="product" type="hidden"></td>
+					<td><select name="freq[]"  >
+						<option value="always">经常(always)</option>
+						<option value="hourly">每时(hourly)</option>
+						<option value="daily">每天(daily)</option>
+						<option value="weekly">每周(weekly)</option>
+						<option value="monthly">每月(monthly)</option>
+						<option value="yearly">每年(yearly)</option>
+						
+						</select>
+						</td>
+					<td><input name="priority[]" type="number" class="layui-input" value="0.80"></td>
+					<td><select name="isshow[]"  >
+						<option value="1">显示的商品</option>
+						<option value="2">所有的商品</option>
+						</select>
+						</td>
+					</tr>
+					
+					
+					
+					</table>
+					
+					
+					  
+					  <div class="layui-form-item">
+						<div class="layui-input-block">
+						  <button class="layui-btn" lay-submit lay-filter="formDemo">立即生成</button>
+						 
+						</div>
+					  </div>
+					</form>
+                </div>
+            </div>
+        </fieldset>
+       
+       
+    </div>
+        <script>
+		layui.use(['laydate','form','layer','upload'], function(){
+                $ = layui.jquery;
+              var form = layui.form
+              ,layer = layui.layer;
+			  laydate = layui.laydate;
+			  var upload = layui.upload;
+			     //监听提交
+              form.on('submit(formDemo)', function(data){
+				//console.log(data.field);return false;
+				$.post("{fun U('Index/sitemap')}",data.field,function(r){
+					//console.log(r);return false;
+					var r = JSON.parse(r);
+					if(r.code==0){
+						
+						layer.msg(r.msg,{icon:6},function(){
+							window.location.reload();
+						})
+					
+						
+					}else{
+						layer.alert(r.msg, {icon: 5});
+					}
+				});
+				
+               
+                return false;
+              });
+		})
+
+        </script>
+    </body>
+</html>

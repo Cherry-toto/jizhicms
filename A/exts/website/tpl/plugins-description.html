@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	{include="style"}
+
+</head>
+<body >
+  <div class="layui-rows" style="    margin-top: 10px;">
+    <h1 style="text-align:center">网站多域名绑定模板</h1>
+	<div style="margin:15px;">
+		<ol>
+		<li><h3>1. 需要先去系统设置里开启 [ 网站绑定多域名 ] 开关才生效！</h3></li>
+		<li><h3>2. 设置域名绑定网站前，请先在域名管理中绑定网站的IP</h3></li>
+		<li><h3>3. 可以设置一个域名在不同情况显示不同的模板，与系统配置不同时，此设置优先</h3></li>
+		<li><h3>4. 功能虽好，但也不要乱玩，如果网站访问不了，请开发者喝杯茶抽支烟吧~</h3></li>
+		
+		
+		</ol>
+		<img width="400px" src="/A/exts/website/tpl/alipay.jpg" />
+		<img width="400px" src="/A/exts/website/tpl/wechat.jpg" />
+	</div>
+  </div>
+
+  
+    <script>
+	layui.use('code', function(){ //加载code模块
+		  layui.code(); //引用code方法
+		});
+    </script>
+ 
+</body>
+</html>

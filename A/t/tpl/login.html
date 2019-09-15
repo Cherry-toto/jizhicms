@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	{include="style"}
+
+</head>
+<body class="login-bg">
+    
+    <div class="login layui-anim layui-anim-up">
+        <div class="message">{fun webConf('web_name')}-管理登录</div>
+        <div id="darkbannerwrap"></div>
+        
+        <form method="post" class="layui-form" onsubmit="return false;"  >
+            <input name="cache" id="cache" type="hidden" value="" />
+            <input name="username" placeholder="用户名"  type="text" lay-verify="required" class="layui-input" >
+            <hr class="hr15">
+            <input name="password" lay-verify="required" placeholder="密码"  type="password" class="layui-input">
+            <hr class="hr15">
+			<input name="vercode" style="width:50%;float:left;" lay-verify="required" placeholder="验证码"  type="text" class="layui-input">
+			<img  src="{fun U('vercode')}" style="width:40%;float:right;" onclick="this.src=this.src+'?'+Math.random()" />
+            <hr class="hr15">
+            <input value="登录" lay-submit lay-filter="login" style="width:100%;" type="submit">
+            <hr class="hr20" >
+        </form>
+    </div>
+
+    <script>
+        $(function  () {
+			if (top.location != self.location){
+			top.location = self.location;
+			}
+				
+			$("#cache").val(Math.random());
+		
+            layui.use('form', function(){
+              var form = layui.form;
+             
+              //监听提交
+              form.on('submit(login)', function(data){
+           
+				$.post("{fun U('Login/index')}",data.field,function(res){
+				    //console.log(res);return false;
+					 var res = JSON.parse(res);
+					 if(res.code==1){
+						layer.msg(res.msg);
+					 }else{
+						layer.msg(res.msg, {icon: 6,time: 2000},function(){
+						window.location.href="{fun U('Index/index')}";
+						});
+                     
+						
+						 
+					 }
+				})
+				
+                return false;
+              });
+            });
+        })
+
+        
+    </script>
+
+    
+ 
+</body>
+</html>

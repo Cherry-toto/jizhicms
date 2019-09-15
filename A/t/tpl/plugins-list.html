@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html>
+  
+  <head>
+    <meta charset="UTF-8">
+   {include="style"}
+  </head>
+  
+  <body>
+    <div class="x-nav">
+      <span class="layui-breadcrumb">
+        <a href="/">首页</a>
+        <a >插件管理</a>
+        <a><cite>插件列表</cite></a>
+      </span>
+      <a class="layui-btn layui-btn-small" style="line-height:1.6em;margin-top:3px;float:right" href="javascript:location.replace(location.href);" title="刷新">
+        <i class="iconfont" style="line-height:30px">&#xe6aa;</i></a>
+    </div>
+    <div class="x-body">
+      <div class="layui-row">
+        
+      </div>
+      
+
+        <table border="1" rules="all"  class="layui-table layui-form">
+        <thead>
+          <tr>
+            
+            <th>插件名</th>
+            <th>版本</th>
+            <th >作者</th>
+            <th style="width:200px;">简介</th>
+			<th>应用模块</th>
+            <th>插件文件</th>
+            <th>开关</th>
+            <th>安装说明</th>
+            <th style="width:150px;">操作</th>
+        </thead>
+        <tbody>
+		 {foreach $lists as $v}
+          <tr>
+           
+           
+            <td>{$v['name']}</td>
+            <td>v{$v['version']}</td>
+            <td>{$v['author']}</td>
+            <td >{$v['description']}</td>
+			<td>{if($v['module']=='Home')}前台{else}后台{/if}</td>
+            <td>{$v['filepath']}</td>
+           
+            <td class="td-status">
+			{if($v['isinstall'])}
+			<input type="checkbox" value="{$v['filepath']}" name="switch" lay-filter="status"   lay-text="开|停"  lay-skin="switch" {if($v['isopen']==1)}checked{/if}>
+			{else}
+			-
+			{/if}
+			
+			</td>
+			<td><button type="button" onclick="x_all_show('安装说明','{fun U('Plugins/desc',array('filepath'=>$v['filepath']))}')" class="layui-btn  layui-btn-xs"><i class="iconfont">&#xe6a3;</i>安装说明</button></td>
+            <td class="td-manage">
+            {if($v['isinstall'])}
+            <button type="button" onclick="actionDo('{$v['filepath']}',0)" class="layui-btn layui-btn-danger  layui-btn-xs"><i class="layui-icon layui-icon-close-fill">卸载</i></button> 
+			<button type="button" onclick="x_all_show('配置','{fun U('Plugins/setconf',array('id'=>$v['id']))}')" class="layui-btn layui-btn-normal layui-btn-xs"><i class="layui-icon layui-icon-set">配置</i></button>			
+			{else}
+			<button type="button" onclick="actionDo('{$v['filepath']}',1)" class="layui-btn  layui-btn-xs"><i class="layui-icon layui-icon-download-circle">安装</i></button>
+			
+			{/if}
+			
+             
+              </a>
+            </td>
+          </tr>
+		  {/foreach}
+        </tbody>
+      </table>
+	 
+     
+    </div>
+    <script>
+      layui.use(['laydate','form'], function(){
+        var laydate = layui.laydate;
+        var form = layui.form;
+       
+		form.on('switch(status)', function (data) {
+		
+			$.post("{fun U('change_status')}",{filepath:data.elem.value},function(r){});
+		});
+
+		
+      });
+	  
+	  function actionDo(path,type){
+		  $.post("{fun U('action_do')}",{path:path,type:type},function(r){
+			//console.log(r);
+			var res = JSON.parse(r);
+			if(res.code==0){
+				layer.msg(res.msg,{icon: 1,time:1000},function(){
+					window.location.reload();
+				})
+			}else{
+				layer.alert(res.msg);
+				
+			}
+		  
+		  });
+	  }
+
+    
+
+
+
+    </script>
+   
+  </body>
+
+</html>

@@ -1,0 +1,25 @@
+ <nav class="navbar navbar-light navbar-expand-lg fixed-top bg-white clean-navbar">
+        <div class="container"><a class="navbar-brand logo" href="/"><img src="{$tpl}assets/img/logo.png"/></a><button class="navbar-toggler" data-toggle="collapse" data-target="#navcol-1"><span class="sr-only">Toggle navigation</span><span class="navbar-toggler-icon"></span></button>
+            <div class="collapse navbar-collapse"
+                id="navcol-1">
+                <ul class="nav navbar-nav ml-auto">
+                    <li class="nav-item" role="presentation"><a class="nav-link {if(!isset($type) && APP_CONTROLLER=='Home')}active{/if}" href="/">首页</a></li>
+					{foreach $classtypedata as $v}
+					{if($v['isshow']==1)}
+					{if($v['pid']==0)}
+                    <li class="nav-item" role="presentation"><a class="nav-link {if(isset($type) && in_array($type['id'],$v['children']['ids']))}active{/if}" href="{$v['url']}">{$v['classname']}</a></li>
+					{/if}
+					{/if}
+					{/foreach}
+					{if(!$islogin)}
+                    <li class="nav-item" role="presentation"><a class="nav-link {if(!isset($type) && APP_CONTROLLER=='Login')}active{/if}" href="{fun U('login/index')}">登录</a></li>
+					{else}
+					<!--已登录-->
+					<li class="nav-item" role="presentation"><a class="nav-link {if(APP_CONTROLLER=='User' && APP_ACTION=='cart')}active{/if}" href="{fun U('User/cart')}">购物车</a></li>
+					<li class="nav-item" role="presentation"><a class="nav-link {if(APP_CONTROLLER=='User'  && APP_ACTION!='cart')}active{/if}" href="{fun U('User/index')}">{$member['username']}</a></li>
+					<li class="nav-item" role="presentation" ><a class="nav-link {if(APP_CONTROLLER=='User'  && APP_ACTION!='comment')}active{/if}" href="{fun U('User/comment')}"><i class="icon-bell" style="color:#f00" >{fun has_no_read_comment()}</i></a></li>
+					{/if}
+                </ul>
+            </div>
+        </div>
+    </nav>

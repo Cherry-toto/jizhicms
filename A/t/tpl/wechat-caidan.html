@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html>
+    <head>
+         <meta charset="UTF-8">
+   {include="style"}
+    </head>
+    <body>
+        <div class="x-nav">
+            <span class="layui-breadcrumb">
+              <a><cite>首页</cite></a>
+              <a><cite>微信栏目管理</cite></a>
+              
+            </span>
+           <a class="layui-btn layui-btn-small" style="line-height:1.6em;margin-top:3px;float:right" href="javascript:location.replace(location.href);" title="刷新">
+        <i class="iconfont" style="line-height:30px">&#xe6aa;</i></a>
+        </div>
+        <div class="x-body">
+		<p class="layui-bg-red" style="color:#FF5722">非网站管理员不可随意更改菜单！</p>
+		<span>TYPE<br/>1、click：点击推事件用户点击click类型按钮后，微信服务器会通过消息接口推送消息类型为event的结构给开发者（参考消息接口指南），并且带上按钮中开发者填写的key值，开发者可以通过自定义的key值与用户进行交互；<br/>
+2、view：跳转URL用户点击view类型按钮后，微信客户端将会打开开发者在按钮中填写的网页URL，可与网页授权获取用户基本信息接口结合，获得用户基本信息。<br/>
+3、media_id：下发消息（除文本消息）用户点击media_id类型按钮后，微信服务器会将开发者填写的永久素材id对应的素材下发给用户，永久素材类型可以是图片、音频、视频、图文消息。请注意：永久素材id必须是在“素材管理/新增永久素材”接口上传后获得的合法id。</span>
+         <form class="layui-form layui-col-md12 x-so" method="get" id="myform">
+			<input name="go" value="1" type="hidden" />
+          
+            <table class="layui-table">
+                <thead>
+                    <tr>
+                        
+                        <th>
+                            菜单名称
+                        </th>
+                        <th>
+                            type
+                        </th>
+                        <th>
+                            key
+                        </th>
+						<th>
+                            url
+                        </th>
+						<th>
+                            media_id
+                        </th>
+						<th>
+						操作
+						</th>
+                        
+                    </tr>
+                </thead>
+				
+                <tbody id="x-link">
+				  {foreach $lists['menu']['button'] as $k=>$v}
+					
+				  
+                    <tr data="{$k+1}">
+                     
+                        <td>
+                            <input type="text" class="layui-input" name="caidan_name[]" value="{$v['name']}" />
+                        </td>
+                        <td>
+                            <input type="text" class="layui-input" name="caidan_type[]" value="{if(isset($v['type']))}{$v['type']}{/if}" />
+                        </td>
+						<td>
+                           <input type="text" class="layui-input" name="caidan_key[]" value="{if(array_key_exists('key',$v))}{$v['key']}{/if}" />
+                        </td>
+						<td>
+                            <input type="text" class="layui-input" name="caidan_url[]" value="{if(array_key_exists('url',$v))}{$v['url']}{/if}" />
+                        </td>
+						<td>
+                            <input type="text" class="layui-input" name="caidan_media_id[]" value="{if(array_key_exists('media_id',$v))}{$v['media_id']}{/if}" />
+                        </td>
+						<td>
+						 <a title="新增同级" href="javascript:;" onclick="add_caidan(this)" 
+                            class="ml-5" style="text-decoration:none">
+                                <button class="layui-btn layui-btn-sm" type="button">新增同级</button>
+                            </a>
+							<a title="新增二级" href="javascript:;" onclick="add_caidan_2(this)" 
+                            class="ml-5" style="text-decoration:none">
+                                 <button class="layui-btn layui-btn-sm" type="button">新增二级</button>
+                            </a>
+                            <a title="删除" href="javascript:;" onclick="admin_del(this)" 
+                            style="text-decoration:none">
+                                <button class="layui-btn layui-btn-sm layui-btn-danger" type="button">删除</button>
+                            </a>
+						</td>
+                       
+                    </tr>
+					{if(count($v['sub_button'])>0)}
+					{foreach $v['sub_button'] as $vv}
+					 <tr data="">
+                     
+                        <td>
+                            |--<input type="text" class="layui-input" name="caidan_name_{$k+1}[]" value="{$vv['name']}" />
+                        </td>
+                        <td>
+                            <input type="text" class="layui-input" name="caidan_type_{$k+1}[]" value="{$vv['type']}" />
+                        </td>
+						<td>
+                           <input type="text" class="layui-input" name="caidan_key_{$k+1}[]" value="{if(array_key_exists('key',$vv))}{$vv['key']}{/if}" />
+                        </td>
+						<td>
+                            <input type="text" class="layui-input" name="caidan_url_{$k+1}[]" value="{if(array_key_exists('url',$vv))}{$vv['url']}{/if}" />
+                        </td>
+						<td>
+                            <input type="text" class="layui-input" name="caidan_media_id_{$k+1}[]" value="{if(array_key_exists('media_id',$vv))}{$vv['media_id']}{/if}" />
+                        </td>
+						<td>
+						  <a title="新增同级" href="javascript:;" onclick="add_caidan(this)" 
+                            class="ml-5" style="text-decoration:none">
+                                <button class="layui-btn layui-btn-sm" type="button">新增同级</button>
+                            </a>
+                            <a title="删除" href="javascript:;" onclick="admin_del(this)" 
+                            style="text-decoration:none">
+                                 <button class="layui-btn layui-btn-sm layui-btn-danger" type="button">删除</button>
+                            </a>
+						</td>
+						
+                    </tr>
+					{/foreach}
+					{/if}
+					{/foreach}
+					<input id="menu_data" type="hidden" value="{$k+1}" />
+					<tr><td colspan="7">
+					<div class="layui-form-item">
+                    <label for="L_repass" class="layui-form-label">
+                    </label>
+                     <button  class="layui-btn" lay-filter="save" lay-submit="">
+                        保存
+                    </button>
+                </div>
+					</td></tr>
+                </tbody>
+            </table>
+			</form>
+            <div class="page">
+				
+			  </div>
+        </div>
+		<br/>
+		<br/>
+		<br/>
+		<br/>
+		<br/>
+		<br/>
+     
+       <script>
+	    layui.use(['laydate','element','form','laypage','layer'], function(){
+                $ = layui.jquery;//jquery
+              laydate = layui.laydate;//日期插件
+              lement = layui.element();//面包导航
+            //  laypage = layui.laypage;//分页
+              layer = layui.layer;//弹出层
+			  form = layui.form;
+
+              //以上模块根据需要引入
+             
+             
+              
+            });
+		 function admin_del(obj){
+                layer.confirm('确认要删除吗？',function(index){
+					if($(obj).parents("tr").attr('data')!=''){
+						$("#menu_data").val(parseInt($('#menu_data').val())-1);
+					}
+					$(obj).parents("tr").remove();
+					
+					layer.close();		
+					layer.msg(r.msg,{icon: 1,time:1000});
+					
+				
+                   
+                });
+            }
+		function add_caidan(obj){
+		var cids = $(obj).parents("tr").attr("data");
+		if(cids!=''){
+			var cid = parseInt($('#menu_data').val())+1;
+			$("#menu_data").val(cid);
+			var html = '<tr data="'+cid+'">'+$(obj).parents("tr").html()+'</tr>';
+			
+			$(obj).parents("tr").before(html);
+		}else{
+			var cid = cids;
+			var html = '<tr data="'+cid+'">'+$(obj).parents("tr").html()+'</tr>';
+			
+			$(obj).parents("tr").after(html);
+		}
+		
+			
+		}
+		function add_caidan_2(obj){
+			//var cid = $(obj).parents("tr").attr("data");
+			var cid = parseInt($('#menu_data').val());
+			var html='<tr data=""><td> |--<input type="text" class="layui-input" name="caidan_name_'+cid+'[]" value="" /></td><td> <input type="text" class="layui-input" name="caidan_type_'+cid+'[]" value="" /></td><td><input class="layui-input" type="text" name="caidan_key_'+cid+'[]" value="" /></td><td>   <input class="layui-input" type="text" name="caidan_url_'+cid+'[]" value="" /> </td><td><input type="text" class="layui-input" name="caidan_media_id_'+cid+'[]" value="" /></td><td> <a title="新增同级" href="javascript:;" onclick="add_caidan(this)"  class="ml-5" style="text-decoration:none">    <button class="layui-btn layui-btn-sm" type="button">新增同级</button>  </a><a title="删除" href="javascript:;" onclick="admin_del(this)"       style="text-decoration:none"> <button class="layui-btn layui-btn-sm layui-btn-danger" type="button">删除</button> </a>	</td></tr>';
+			$(obj).parents("tr").after(html);
+		}
+		
+       </script>
+    </body>
+</html>

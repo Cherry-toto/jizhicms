@@ -1,0 +1,11 @@
+<IfModule mod_rewrite.c>
+ RewriteEngine on
+ RewriteBase /
+ #RewriteCond %{REQUEST_URI} !((.*).jpg|.jpeg|.bmp|.gif|.png|.js|.css|.tts|.woff )$
+ RewriteCond %{REQUEST_FILENAME} !-d
+ RewriteCond %{REQUEST_FILENAME} !-f
+ RewriteCond %{DOCUMENT_ROOT}%{REQUEST_URI} !-d
+ RewriteCond %{DOCUMENT_ROOT}%{REQUEST_URI} !-f
+ #RewriteRule ^(.*)$ index.php?/$1 [QSA,PT,L]
+ RewriteRule ^(.*)$ index.php [E=PATH_INFO:$1,QSA,PT,L]
+</IfModule>

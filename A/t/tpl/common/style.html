@@ -1,0 +1,38 @@
+	<title>{fun webConf('web_name')}</title>
+	<meta name="renderer" content="webkit|ie-comp|ie-stand">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width,user-scalable=yes, minimum-scale=0.4, initial-scale=0.8,target-densitydpi=low-dpi" />
+    <meta http-equiv="Cache-Control" content="no-siteapp" />
+	<meta name="author" content="留恋风,2581047041@qq.com"> 
+    <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
+    <link rel="stylesheet" href="{__Tpl_style__}/style/css/font.css">
+	<link rel="stylesheet" href="{__Tpl_style__}/style/css/xadmin.css">
+    <script type="text/javascript" src="{__Tpl_style__}/style/js/jquery.min.js"></script>
+    <script src="{__Tpl_style__}/style/lib/layui/layui.js?v=123" charset="utf-8"></script>
+	<script type="text/javascript" src="{__Tpl_style__}/style/js/xadmin.js"></script>
+	
+	{php
+	
+	switch($webconf['admintpl']){
+		case 'tpl':
+		echo '<script type="text/javascript" src="'.Tpl_style.'/style/js/target_page.js"></script>';
+		break;
+		case 'default':
+		echo '<script type="text/javascript" src="'.Tpl_style.'/style/js/target_window.js"></script>';
+		break;
+	}
+	
+	
+	/}
+	
+
+    
+	<style>
+	.active a{    background: #f00;
+    color: #fff;}
+	.layui-form-item .layui-input-inline {
+		float: left;
+		width: auto;
+		margin-right: 10px;
+	}
+	</style>

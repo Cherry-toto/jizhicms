@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html>
+  
+  <head>
+    <meta charset="UTF-8">
+   {include="style"}
+  </head>
+  
+  <body>
+   <div class="x-nav">
+      <span class="layui-breadcrumb">
+        <a href="/" target="main">首页</a>
+        <a href="{fun U('Member/index')}" >会员管理</a>
+        <a>
+          <cite>会员修改</cite></a>
+      </span>
+      <a class="layui-btn layui-btn-small" style="line-height:1.6em;margin-top:3px;float:right" href="javascript:location.replace(location.href);" title="刷新">
+        <i class="iconfont" style="line-height:30px">&#xe6aa;</i></a>
+    </div>
+    <div class="x-body layui-anim layui-anim-up">
+        <form class="layui-form  layui-form-pane">
+		<input name="go" value="1" type="hidden">
+		<input name="id" value="{$data['id']}" type="hidden">
+		
+		<div class="layui-tab">
+			  <ul class="layui-tab-title">
+				<li class="layui-this">基本信息</li>
+				<li>扩展信息</li>
+				
+			  </ul>
+			  <div class="layui-tab-content">
+				<div class="layui-tab-item layui-show">
+				<div class="layui-form-item">
+              <label for="L_email" class="layui-form-label">
+                  <span class="x-red">*</span>邮箱
+              </label>
+              <div class="layui-input-inline">
+                  <input type="text" id="L_email" value="{$data['email']}" disabled name="email" required="" lay-verify="email"
+                  autocomplete="off" class="layui-input">
+              </div>
+              <div class="layui-form-mid layui-word-aux">
+                  <span class="x-red">*</span>将会成为您唯一的登入名
+              </div>
+          </div>
+		  <div class="layui-form-item">
+              <label for="L_tel" class="layui-form-label">
+                  <span class="x-red"></span>手机号
+              </label>
+              <div class="layui-input-inline">
+                  <input type="text" id="L_tel" value="{$data['tel']}" disabled  name="tel"  
+                  autocomplete="off" class="layui-input">
+              </div>
+          </div>
+          <div class="layui-form-item">
+              <label for="L_username" class="layui-form-label">
+                  <span class="x-red">*</span>昵称
+              </label>
+              <div class="layui-input-inline">
+                  <input type="text" id="L_username" name="username" value="{$data['username']}" required="" lay-verify="nikename"
+                  autocomplete="off" class="layui-input">
+              </div>
+          </div>
+		  <div class="layui-form-item">
+              <label for="L_jifen" class="layui-form-label">
+                  <span class="x-red">*</span>积分
+              </label>
+              <div class="layui-input-inline">
+                  <input type="text" id="L_jifen" name="jifen" value="{$data['jifen']}" 
+                  autocomplete="off" class="layui-input">
+              </div>
+          </div>
+		  
+		   
+		  
+		  
+		   <div class="layui-form-item">
+				<label for="litpic" class="layui-form-label">
+					<span class="x-red">*</span>头像  
+				</label>
+				
+				<div class="layui-input-inline">
+					<input name="litpic" placeholder="上传图片" type="text" class="layui-input" id="litpic"  value="{$data['litpic']}" />
+				</div>
+				<div class="layui-input-inline">
+					<button class="layui-btn layui-btn-primary" id="litpic_upload" type="button" >选择图片</button>
+				</div>
+				<div class="layui-input-inline">
+					<img id="litpic_img" class="img-responsive img-thumbnail" style="max-width: 200px;" src="{$data['litpic']}" onerror="javascipt:this.src='{__Tpl_style__}/style/images/nopic.jpg'; this.title='图片未找到';this.onerror=''">
+					<button type="button" onclick="deleteImage(this)" class="layui-btn layui-btn-sm layui-btn-radius layui-btn-danger " title="删除这张图片" >删除</button>
+				</div>
+			</div>
+	  
+		  
+		  
+          <div class="layui-form-item">
+              <label for="L_pass" class="layui-form-label">
+                  <span class="x-red">*</span>密码
+              </label>
+              <div class="layui-input-inline">
+                  <input type="password" id="L_pass" name="pass"  lay-verify="pass"
+                  autocomplete="off" class="layui-input">
+              </div>
+              <div class="layui-form-mid layui-word-aux">
+                  6到16个字符,不修改请留空
+              </div>
+          </div>
+          <div class="layui-form-item">
+              <label for="L_repass" class="layui-form-label">
+                  <span class="x-red">*</span>确认密码
+              </label>
+              <div class="layui-input-inline">
+                  <input type="password" id="L_repass" name="repass"  lay-verify="repass"
+                  autocomplete="off" class="layui-input">
+              </div>
+          </div>
+				</div>
+				<div class="layui-tab-item">
+				<span id="ext_fields"></span>
+				</div>
+			  </div>
+		</div>
+		
+          
+          <div class="layui-form-item" style="text-align:center;">
+              
+              <button  class="layui-btn" lay-filter="add" lay-submit="">
+                  修改
+              </button>
+          </div>
+      </form>
+    </div>
+    <script>
+	{include="fields"}
+		function deleteImage(elm){
+			$(elm).prev().attr("src", "{__Tpl_style__}/style/images/nopic.jpg");
+			$('#litpic').val("");
+		}
+        layui.use(['form','layer','upload'], function(){
+            $ = layui.jquery;
+          var form = layui.form
+          ,layer = layui.layer,
+		  upload = layui.upload;
+        //图片上传接口
+		  upload.render({
+			elem: '#litpic_upload',
+			url: "{fun U('Common/uploads')}" //上传接口
+			,done: function(res){ //上传成功后的回调
+			 
+				if(res.code==0){
+					 $('#litpic_img').attr('src','/'+res.url);
+					 $('#litpic').val('/'+res.url);
+				}else{
+					 layer.alert(res.error, {icon: 5});
+				}
+			 
+			}
+		  });
+          //自定义验证规则
+          form.verify({
+            nikename: function(value){
+              if(value.length < 5){
+                return '昵称至少得5个字符啊';
+              }
+            }
+           
+          });
+
+          //监听提交
+          form.on('submit(add)', function(data){
+            console.log(data);
+			$.post("{fun U('Member/memberedit')}",data.field,function(res){
+				var r = JSON.parse(res);
+				
+				if(r.code==0){
+					 //发异步，把数据提交给php
+					layer.msg("修改成功", {icon: 6,time:2000},function () {
+						
+						{if($webconf['admintpl']=='tpl')}
+						 window.location.href="{fun U('Member/index')}";
+						{else}
+						parent.location.reload();
+						{/if}
+						
+					});
+				}else{
+					layer.msg(r.msg);
+				}
+			
+				
+				
+			})
+           
+            return false;
+          });
+          
+          get_fields(0,{$data['id']});
+        });
+    </script>
+   
+  </body>
+
+</html>

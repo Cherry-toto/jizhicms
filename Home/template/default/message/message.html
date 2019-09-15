@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+    <title>{$type['classname']}-{$webconf['web_name']}</title>
+<meta name="keywords" content="{$type['keywords']}" />
+<meta name="description" content="{$type['description']}" />
+{include="style"}
+</head>
+
+<body>
+   {include="nav"}
+    <main class="page contact-us-page">
+        <section class="clean-block clean-form dark">
+            <div class="container">
+                <div class="block-heading">
+                    <h2 class="text-info">留言建议</h2>
+                    <p>如果您对极致CMS有什么建议或者想要定制开发，可以通过下面的方式联系我们！</p>
+                </div>
+                <form action="{fun U('message/index')}" onsubmit="return checkform()" method="POST">
+					<input name="tid" type="hidden" value="{$type['id']}" >
+                    <div class="form-group"><label>*您的称呼</label><input name="user" id="user" class="form-control" type="text"></div>
+                    <div class="form-group"><label>*您咨询的问题</label><input name="title" id="title" class="form-control" type="text"></div>
+					<div class="form-group"><label>*您的手机号</label><input name="tel" id="tel" class="form-control" type="tel"></div>
+                    
+					<span id="ext_fields"></span>
+					
+                    <div class="form-group"><label>*问题描述</label><textarea name="body" id="body" class="form-control"></textarea></div>
+                    <div class="form-group"><button class="btn btn-primary btn-block" type="submit">确定发送</button></div>
+                </form>
+            </div>
+        </section>
+    </main>
+    {include="footer"}
+	<script>
+	function checkform(){
+		var user = $.trim($("#user").val());
+		var title = $.trim($("#title").val());
+		var email = $.trim($("#email").val());
+		var tel = $.trim($("#tel").val());
+		var body = $.trim($("#body").val());
+		if(user==''){
+			alert('您的称呼不能为空~');$("#user").focus();return false;
+		}
+		if(title==''){
+			alert('您的咨询的问题不能为空~');$("#title").focus();return false;
+		}
+		if(tel==''){
+			alert('您的手机号不能为空~');$("#tel").focus();return false;
+		}
+		if(body==''){
+			alert('问题描述不能为空~');$("#body").focus();return false;
+		}
+		return true;
+	}
+	function get_fields(tid,id){
+		var id = arguments[1]?arguments[1]:0;
+		$.post("{fun U('Common/get_fields')}",{molds:'message',tid:tid,id:id},function(r){
+			var res = JSON.parse(r);
+			console.log(res);
+			if(res.code==0){
+				//默认 res.tpl输出的是layui的模板HTML,可以审核元素查看res里面的内容
+				//$("#ext_fields").html(res.tpl);
+				var html = '';
+				var len = res.fields_list.length;
+				if(len>0){
+					//根据对应的字段，进行HTML设计
+					for(var i=0;i<len;i++){
+						if(res.fields_list[i].field=='email'){
+							html+='<div class="form-group"><label>您的邮箱</label><input name="email" id="email" class="form-control" type="email"></div>';
+						}
+					}
+					
+				}
+				$("#ext_fields").html(html);
+			}
+			
+		});
+	}
+	$(document).ready(function(){
+		
+		 get_fields({$type['id']});
+	});
+	
+	</script>
+</body>
+
+</html>

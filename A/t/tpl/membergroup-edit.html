@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html>
+  
+  <head>
+    <meta charset="UTF-8">
+    {include="style"}
+  </head>
+  
+  <body>
+	<div class="x-nav">
+            <span class="layui-breadcrumb">
+              <a><cite>首页</cite></a>
+              <a><cite>用户管理</cite></a>
+             
+			 <a><cite>分组管理</cite></a>
+			 <a><cite>分组修改</cite></a>
+            </span>
+            <a class="layui-btn layui-btn-small" style="line-height:1.6em;margin-top:3px;float:right"  href="javascript:location.replace(location.href);" title="刷新"><i class="iconfont" style="line-height:30px">&#xe6aa;</i></a>
+    </div>
+    <div class="x-body">
+        <form  method="post" class="layui-form layui-form-pane">
+			<input type="hidden" name="go" value="1" />
+			<input type="hidden" name="id" value="{$data['id']}" />
+                <div class="layui-form-item">
+                    <label for="name" class="layui-form-label">
+                        分组名
+                    </label>
+                    <div class="layui-input-inline">
+                        <input type="text" id="name" name="name" value="{$data['name']}" required="" lay-verify="required"
+                        autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+				
+				
+                <div class="layui-form-item layui-form-text">
+                    <label class="layui-form-label">
+                        拥有权限
+                    </label>
+                    <table  class="layui-table layui-input-block">
+                        <tbody>
+						{foreach $ruler_top as $v}
+                            <tr>
+                                <td>
+                                    <input type="checkbox" name="ruler[]" lay-skin="primary" value="{$v['action']}" title="{$v['name']}" {if(strpos($data["paction"],','.$v["action"].',')!==false)}checked{/if}>
+                                </td>
+                                <td>
+                                    <div class="layui-input-block">
+									{foreach $ruler_children[$v['id']] as $vv}
+                                        <input name="ruler[]" lay-skin="primary" type="checkbox" title="{$vv['name']}" value="{$vv['action']}" {if(strpos($data["paction"],','.$vv["action"].',')!==false)}checked{/if}> 
+									{/foreach}
+                                        
+                                    </div>
+                                </td>
+                            </tr>
+						{/foreach}
+                           
+                        </tbody>
+                    </table>
+                </div>
+				<div class="layui-form-item">
+                    <label for="discount_type" class="layui-form-label">
+                        <span class="x-red"></span>折扣类型
+                    </label>
+                    <div class="layui-input-inline">
+						<select name="discount_type" lay-filter="discount_type" id="discount_type" >
+						<option {if($data['discount_type']==0)}selected{/if} value="0">无折扣</option>
+					    <option {if($data['discount_type']==1)}selected{/if} value="1">现金折扣</option>
+					    <option {if($data['discount_type']==2)}selected{/if} value="2">百分比折扣</option>
+					    </select>
+                    </div>
+                </div>
+				<div class="layui-form-item">
+                    <label for="discount" class="layui-form-label">
+                        折扣金额
+                    </label>
+                    <div class="layui-input-inline">
+                        <input type="text" value="{$data['discount']}" id="discount" name="discount" required="" lay-verify="required"
+                        autocomplete="off" class="layui-input">
+                    </div>
+					<div class="layui-form-mid layui-word-aux">
+					  百分比折扣请填写0.01-1之间的小数(如5折,填0.5)，无折扣时，该参数设置无效
+					</div>
+                </div>
+				
+                <div class="layui-form-item layui-form-text">
+                    <label for="description" class="layui-form-label">
+                        描述
+                    </label>
+                    <div class="layui-input-block">
+                        <textarea placeholder="请输入内容" id="description" name="description" class="layui-textarea">{$data['description']}</textarea>
+                    </div>
+                </div>
+				<div class="layui-form-item" pane>
+                    <label for="isagree" class="layui-form-label">
+                        <span class="x-red"></span>登录状态
+                    </label>
+                    <div class="layui-input-block">
+                        <input type="radio" name="isagree" value="0" title="封禁" {if($data['isagree']==0)}checked{/if}>
+						<input type="radio" name="isagree" value="1" title="正常" {if($data['isagree']==1)}checked{/if}>
+						
+                    </div>
+					
+					
+                </div>
+				
+                <div class="layui-form-item" style="text-align:center"> 
+                <button class="layui-btn" lay-submit="" lay-filter="save">修改</button>
+              </div>
+            </form>
+    </div>
+    <script>
+        layui.use(['form','layer'], function(){
+            $ = layui.jquery;
+          var form = layui.form
+          ,layer = layui.layer;
+        
+          
+
+          //监听提交
+          form.on('submit(save)', function(data){
+            $.post("{fun U('Member/groupedit')}",data.field,function(r){
+				var r = JSON.parse(r);
+				if(r.code==0){
+					 layer.msg(r.msg, {icon: 6,time: 2000},function () {
+						// 获得frame索引
+						{if($webconf['admintpl']=='tpl')}
+						 window.location.href="{fun U('Member/membergroup')}";
+						{else}
+						parent.location.reload();
+						{/if}
+						
+					});
+				}else{
+					layer.alert(r.msg, {icon: 5});
+				}
+			});
+			
+            return false;
+          });
+          
+          
+        });
+    </script>
+    
+  </body>
+
+</html>

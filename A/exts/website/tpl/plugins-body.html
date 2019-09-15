@@ -1,0 +1,141 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	{include="style"}
+
+</head>
+<body >
+  <div class="layui-rows" style="    margin: 10px;">
+    <form class="layui-form layui-form-pane" action="">
+	<!--表单必须要携带ID-->
+	<input name="id" value="{$plugins['id']}" type="hidden">
+		<blockquote class="layui-elem-quote">{if($webconf['isopenwebsite'])}当前已开启多域名绑定！{else}您未开启多域名绑定~{/if}【系统设置】-【基本设置】-【高级设置】</blockquote>
+        <table border="1" rules="all" class="layui-table layui-form">
+        <thead>
+          <tr>
+            <th >域名（不带http）</th>
+            <th >访问端</th>
+			<th >绑定模板</th>
+			
+            
+           
+        </thead>
+        <tbody class="x-cate">
+		 {if($config)}
+		
+		 {foreach $config as $k=>$v}
+          <tr>
+		
+			<td><input type="text" placeholder="不带http" class="layui-input "  name="data_1[]" value="{$v['website']}"></td>
+			<td>
+			
+			<select name="data_2[]" >
+				<option {if($v['model']==0)}selected{/if} value="0">全局</option>
+				<option {if($v['model']==1)}selected{/if}  value="1">电脑端</option>
+				<option {if($v['model']==2)}selected{/if}  value="2">手机端</option>
+				<option {if($v['model']==3)}selected{/if}  value="3">微信端</option>
+			</select>
+			
+		
+			</td>
+			<td><select name="data_3[]" >
+				<option value="">全局</option>
+				<option {if($v['tpl']==$webconf['pc_template'])}selected{/if}  value="{$webconf['pc_template']}">{$webconf['pc_template']}</option>
+				<option  {if($v['tpl']==$webconf['wap_template'])}selected{/if}  value="{$webconf['wap_template']}">{$webconf['wap_template']}</option>
+				<option  {if($v['tpl']==$webconf['weixin_template'])}selected{/if}  value="{$webconf['weixin_template']}">{$webconf['weixin_template']}</option>
+			</select></td>
+			
+          </tr>
+		  
+		{/foreach}
+		  {else}
+		   <tr>
+		
+			<td><input type="text" placeholder="不带http" class="layui-input "  name="data_1[]" value=""></td>
+			<td>
+			
+			<select name="data_2[]" >
+				<option value="0">全局</option>
+				<option value="1">电脑端</option>
+				<option value="2">手机端</option>
+				<option value="3">微信端</option>
+			</select>
+			
+		
+			</td>
+			<td><select name="data_3[]" >
+				<option value="">全局</option>
+				<option value="{$webconf['pc_template']}">{$webconf['pc_template']}</option>
+				<option value="{$webconf['wap_template']}">{$webconf['wap_template']}</option>
+				<option value="{$webconf['weixin_template']}">{$webconf['weixin_template']}</option>
+			</select></td>
+			
+          </tr>
+		 
+		  {/if}
+		    <tr  class="addone"><td colspan="3" style="text-align:center;"><button class="layui-btn layui-btn-normal " type="button" onclick="addone()">新增+</button>  <button class="layui-btn" lay-submit lay-filter="formDemo">立即提交</button>
+		  
+		  </td></tr>
+		   </tbody>
+      </table>
+	  
+	 
+		  
+	  
+	  </form>
+    
+    
+ 
+</form>
+</div>
+
+    <script>
+         layui.use('form', function(){
+              var form = layui.form;
+             
+              //监听提交
+              form.on('submit(formDemo)', function(data){
+				//console.log(data.field);return false;
+				$.post("{fun U('setconf')}",data.field,function(res){
+				    console.log(res);	
+					 var res = JSON.parse(res);
+					 if(res.code==1){
+						layer.msg(res.msg);
+					 }else{
+						layer.msg(res.msg, {icon: 6,time: 2000},function(){
+						window.location.reload();
+						});
+                     
+						
+						 
+					 }
+				})
+				
+                return false;
+              });
+			  
+			 
+			  
+			  
+            });
+
+		
+		 function addone(){
+				var html='<tr><td><input placeholder="不带http" type="text" class="layui-input "  name="data_1[]" value=""></td><td><select name="data_2[]" ><option value="0">全局</option><option value="1">电脑端</option><option value="2">手机端</option><option value="3">微信端</option></select></td><td><select name="data_3[]" ><option value="">全局</option><option value="{$webconf['pc_template']}">{$webconf['pc_template']}</option><option value="{$webconf['wap_template']}">{$webconf['wap_template']}</option><option value="{$webconf['weixin_template']}">{$webconf['weixin_template']}</option></select></td></tr>';
+				
+				$(".addone").before(html);
+				layui.use('form', function(){
+				var form = layui.form;
+			    form.render();
+			  })
+				
+			 }
+			  
+	
+    </script>
+
+    
+ 
+</body>
+</html>

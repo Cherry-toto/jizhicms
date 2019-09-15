@@ -1,0 +1,171 @@
+{if(isMobile())}
+
+<script src="{$common}user/upload/layer.m.js"></script>
+<script src="{$common}user/upload/touch-0.2.14.min.js"></script>
+<script src="{$common}user/upload/jquery.crop.js"></script>
+
+{/if}
+<!--include modal 可以放在此或直接貼上-->
+<div class="modal fade bd-example-modal-sm" id="member-upload" tabindex="-1" role="dialog" aria-labelledby="myModalLabel_upload" aria-hidden="true">
+<div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title" id="myModalLabel_upload">修改會員頭像</h5>
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+					<span aria-hidden="true">&times;</span>
+				</button>
+			</div>
+			<div class="modal-body">
+				<form id="myupload">
+				<div class="form-group mb-4 pt-3">
+					
+					<div class="modal-footer d-block">
+						<div class="form-group">
+							{if(isMobile())}
+							<div class="cutbox"></div>
+							{else}
+							<span class="view_img"></span><br/>
+							<input name="fileurl" type="hidden" id="fileurl" value="" /><br/>
+							<input type="file" class="btn btn-primary rounded btn-block" name="file" id="fileid">
+							{/if}
+							<a class="btn btn-primary rounded btn-block" id="upload_ok"  style="display:none;"  href="javascript:;">確定更改</a>
+						</div>
+					</div>
+				</div>
+				</form>
+			</div>
+		
+		</div>
+	</div>
+
+</div>
+{if(isMobile())}
+<script>
+		$(function(){
+			var w = $(window).width();
+			var h = $(window).height();
+			$('.cutbox').crop({
+				w:w>h?h:w,
+				h:h,
+				r:(w-30)*0.5,
+				res:'',
+				callback:function(ret){
+					//alert(ret);
+					$.ajax({
+						 url: "{fun U('Common/UploadBase64')}",//处理图片的文件路径
+						 type: "POST",//传输方式
+						 data: {data:ret},
+						 dataType:"json",   //返回格式为json
+						 success: function(response){
+						
+							if(response.code==0){
+								var url = '/'+response.url;
+								$.ajax({
+									url:"{fun U('User/change_img')}",    //请求的url地址
+								    dataType:"json",   //返回格式为json
+								    async:true,//请求是否异步，默认为异步，这也是ajax重要特性
+								    data:{url:url,ajax:1},    //参数值
+								    type:"POST",   //请求方式
+								    success:function(r){
+								        //请求成功时处理
+										if(r.code==0){
+											//window.location.reload();
+											$('#member-upload').modal('hide');
+											$("#userinfo_img").attr('src',url);
+											
+										}else{
+											alert(r.error);
+											return false;
+										}
+								    },
+								    
+								    error:function(){
+								        //请求出错处理
+										alert('网络异常');
+								    }
+
+									
+									
+								})
+							}else{
+								alert(response.msg);
+							}
+							
+						 }
+					});
+					localStorage.setItem("new_avatar",ret);
+					sessionStorage.setItem('edit_baby_avatar',true);
+					//UploadBase64
+				}
+			});
+		});
+		
+</script>
+
+{/if}
+<script>
+
+$(document).ready(function(){
+	$("#fileid").change(function(){
+		var form=document.getElementById("myupload");
+		var data =new FormData(form);
+		$.ajax({
+			 url: "{fun U('Common/uploads')}",//处理图片的文件路径
+			 type: "POST",//传输方式
+			 data: data,
+			 dataType:"json",   //返回格式为json
+			 processData: false,  // 告诉jQuery不要去处理发送的数据
+			 contentType: false,   // 告诉jQuery不要去设置Content-Type请求头
+			 success: function(response){
+				
+				if(response.code==0){
+					
+					var result = '';
+					result +='<img src="/' + response['url'] + '" height="100" style="border-radius: 50%;" />';
+					$("#fileid").hide();
+					$("#upload_ok").show();
+					$('.view_img').html(result);
+					$("#fileurl").val('/'+response['url']);
+				}else{
+					alert(response.error);
+				}
+				
+			 }
+		});
+		
+	});
+	$("#upload_ok").click(function(){
+		var url = $("#fileurl").val();
+		if(url!=''){
+			$.ajax({
+				url:"{fun U('User/change_img')}",    //请求的url地址
+			    dataType:"json",   //返回格式为json
+			    async:true,//请求是否异步，默认为异步，这也是ajax重要特性
+			    data:{url:url,ajax:1},    //参数值
+			    type:"POST",   //请求方式
+			    success:function(r){
+			        //请求成功时处理
+					if(r.code==0){
+						//window.location.reload();
+						$('#member-upload').modal('hide');
+						$("#userinfo_img").attr('src',url);
+						
+					}else{
+						alert(r.error);
+						return false;
+					}
+			    },
+			    
+			    error:function(){
+			        //请求出错处理
+					alert('网络异常');
+			    }
+
+				
+				
+			})
+		}
+	});
+	
+});
+</script>

@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+       {include="style"}
+    </head>
+    <body>
+    <div class="x-body layui-anim layui-anim-up">
+        <blockquote class="layui-elem-quote">欢迎管理员：
+            <span class="x-red">{$admin['name']}</span>！当前时间:<span id="time">{fun date('Y年m月d日 H:i:s')}</span></blockquote>
+        <fieldset class="layui-elem-field">
+            <legend>数据统计</legend>
+            <div class="layui-field-box">
+                <div class="layui-col-md12">
+                    <div class="layui-card">
+                        <div class="layui-card-body">
+                            <div class="layui-carousel x-admin-carousel x-admin-backlog" lay-anim="" lay-indicator="inside" lay-arrow="none" style="width: 100%; height: 90px;">
+                                <div carousel-item="">
+                                    <ul class="layui-row layui-col-space10 layui-this">
+                                        <li class="layui-col-xs3">
+                                            <a href="javascript:;" class="x-admin-backlog-body">
+                                                <h3>站内用户</h3>
+                                                <p>
+                                                    <cite>{$member_count}</cite>人</p>
+                                            </a>
+                                        </li>
+                                        <li class="layui-col-xs3">
+                                            <a href="javascript:;" class="x-admin-backlog-body">
+                                                <h3>站内文章</h3>
+                                                <p>
+                                                    <cite>{$article_num}</cite>篇</p>
+                                            </a>
+                                        </li>
+                                        <li class="layui-col-xs3">
+                                            <a href="javascript:;" class="x-admin-backlog-body">
+                                                <h3>站内产品</h3>
+                                                <p>
+                                                    <cite>{$product_num}</cite>件</p>
+                                            </a>
+                                        </li>
+                                      
+                                        <li class="layui-col-xs3">
+                                            <a href="javascript:;" class="x-admin-backlog-body">
+                                                <h3>站内留言</h3>
+                                                <p>
+                                                    <cite>{$message_num}</cite>条</p>
+                                            </a>
+                                        </li>
+                                    
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </fieldset>
+        <fieldset class="layui-elem-field">
+            <legend>个人信息</legend>
+            <div class="layui-field-box">
+                <table class="layui-table" lay-skin="line">
+                    <tbody>
+                      	
+						 <tr>
+                          	<td>
+                              昵称：{$admin['name']}
+                            </td>
+                        </tr>
+                     	 <tr>
+                          	<td>
+                              手机号：{$admin['tel']}
+                            </td>
+                        </tr>
+						 <tr>
+                          	<td>
+                              邮箱：{$admin['email']}
+                            </td>
+                        </tr>
+						 <tr>
+                          	<td>
+                              注册时间：{fun date('Y-m-d H:i:s',$admin['regtime'])}
+                            </td>
+                        </tr>
+						 <tr>
+                          	<td>
+                              最近登录：{fun date('Y-m-d H:i:s',$admin['logintime'])}
+                            </td>
+                        </tr>
+                       
+                    </tbody>
+                </table>
+            </div>
+        </fieldset>
+      {if($isadmin)}
+        <fieldset class="layui-elem-field">
+            <legend>系统信息</legend>
+            <div class="layui-field-box">
+                <table class="layui-table">
+                    <tbody>
+                        <tr>
+                            <th>系统版本</th>
+                            <td>{$webconf['web_version']}</td></tr>
+                        <tr>
+                            <th>服务器地址</th>
+                            <td>{$_SERVER['SERVER_NAME']}</td></tr>
+                        <tr>
+                            <th>操作系统</th>
+                            <td>{fun php_uname('s')}</td></tr>
+                        <tr>
+                            <th>运行环境</th>
+                            <td>{fun php_uname()}</td></tr>
+                        <tr>
+                            <th>PHP版本</th>
+                            <td>{__PHP_VERSION__}</td></tr>
+                        <tr>
+                            <th>PHP运行方式</th>
+                            <td>{fun php_sapi_name()}</td></tr>
+                       
+                        <tr>
+                            <th>上传附件限制</th>
+                            <td>{fun get_cfg_var ("upload_max_filesize")}</td></tr>
+                       
+                    </tbody>
+                </table>
+            </div>
+        </fieldset>
+      {/if}
+        <fieldset class="layui-elem-field">
+            <legend>开发团队</legend>
+            <div class="layui-field-box">
+                <table class="layui-table">
+                    <tbody>
+                        <tr>
+                            <th>版权所有</th>
+                            <td>极致科技网络有限公司
+                                <a href="http://www.jizhicms.cn" class='x-a' target="_blank">访问官网</a></td>
+                        </tr>
+                        <tr>
+                            <th>开发者</th>
+                            <td><a href="http://wpa.qq.com/msgrd?v=3&uin=2581047041&site=qq&menu=yes&from=message&isappinstalled=0" target="_blank">留恋风(2581047041@qq.com)</a></td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </fieldset>
+
+    </div>
+        <script>
+		function time(){
+			var vWeek,vWeek_s,vDay;
+			vWeek = ["星期天","星期一","星期二","星期三","星期四","星期五","星期六"];
+			var date =  new Date();
+			year = date.getFullYear();
+			month = ((date.getMonth() + 1)>=10)?(date.getMonth() + 1):'0'+(date.getMonth() + 1);
+			//day = date.getDate();
+			day = (date.getDate()>=10)?date.getDate():'0'+date.getDate();
+			hours = (date.getHours()>=10)?date.getHours():'0'+date.getHours();
+			minutes = (date.getMinutes()>=10)?date.getMinutes():'0'+date.getMinutes();
+			seconds = (date.getSeconds()>=10)?date.getSeconds():'0'+date.getSeconds();
+			vWeek_s = date.getDay();
+			document.getElementById("time").innerHTML = year + "年" + month + "月" + day + "日" + "\t" + hours + ":" + minutes +":" + seconds + "\t" + vWeek[vWeek_s] ;
+
+		};
+		setInterval("time()",1000);
+
+        </script>
+    </body>
+</html>

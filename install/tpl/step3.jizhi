@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="robots" content="noindex,noarchive">
+   <?php include('header.tpl');?>
+</head>
+<body>
+<header><div class="text-center"><h1>极致建站系统安装向导</h1></div></header>
+<div class="container">
+	<div class="row justify-content-center">
+		<div class="col-lg-8">
+			
+			<nav>
+				<ol class="cd-breadcrumb triangle custom-icons">
+					<li class="current"><a href="?act=step1">环境需求</a></li>
+					<li class="current"><a href="?act=step2">填写数据信息</a></li>
+					<li class="current"><em>开始安装</em></li>
+					<li><em>安装完成</em></li>
+				</ol>
+			</nav>
+		</div>
+		<div class="col-lg-7">
+			<div class="progress my-5">
+				<div class="progress-bar progress-bar-info progress-bar-striped active" style="width: 100%;">
+					<div class="progress-value">100%</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="row justify-content-center">
+	    <div class="col-lg-10">
+	        <div class="card">
+	            <div class="card-body">
+					<!--body-->
+					<div class="card-title">
+						<h3>安装进度安装过程中请不要做其他操作，安装时间大约需要1分钟。</h3>
+					</div>
+					<div class="my-5">
+						<div id="progress_bar" class="ui-progress-bar ui-container">
+							<div class="ui-progress" style="width: 0%;"><span class="ui-label" style="display:none;">Processing<b class="value">100%</b></span></div>
+							<div id="main_content">正在载入...</div>
+						</div>
+					</div>
+						<script>
+							$(function() { 
+								$('#progress_bar .ui-progress .ui-label').hide();
+									 getinstalling(0,100)
+								});
+								function getinstalling(start,to){
+							  
+								$.post("?act=go_install&db=<?php echo $db;?>",{"start":start,"to":to,"admin_name":"<?php echo $admin_name;?>","admin_pass":"<?php echo $admin_pass;?>"},  function(data){
+								console.log(data);
+								 var count=data.count;
+								  var start =data.to;
+								  var num =Math.round(start/count*100);
+								$('#progress_bar .ui-progress').animateProgress(num)
+								 $('#main_content').html("安装中");
+									 if (num==100){
+										  $('#main_content').html("<span >数据库初始化完成</span>");
+										 $(".button_step5").val("完成安装").removeAttr("disabled");
+										if("0"=="1"){ $(".button_testsql").show(); }
+									 }	
+									else if(num<100){
+									 $(".button_step5").val("正在创建数据，请稍等...").attr({"disabled":"disabled"});
+									getinstalling(to,to+10)		 
+									}
+									else{
+									  alert("安装出错，请检查数据库连接是否稳定，不建议本地连接服务器数据库")
+									  $(".button_step5").val("安装出错").attr({"disabled":"disabled"});
+									  return false;
+									  }
+								},"json");	  
+							}
+						</script>
+						<div class="col-12">
+						<?php if($db==''){?>
+							<div class="row">
+								<div class="col-6">
+									<input class="btn btn-primary rounded btn-block py-2" type="button"  class="button" onclick="location.href='?act=step4'"  value="导入演示数据" />
+								
+								</div>
+								<div class="col-6">
+									<input class="btn btn-success rounded btn-block py-2" type="button" onclick="location.href='?act=step5'" value="安装完成" />
+									
+								</div>
+							</div>
+						<?php }else{?>
+						<input class="btn btn-primary rounded btn-block py-2" type="button" class="button" onclick="location.href='?act=step5'" value="安装完成" />
+						<?php }?>
+						</div>
+					<!-- end -->
+	            </div>
+	        </div>
+	    </div>
+	</div>
+<?php include('footer.tpl');?>
+</body>
+</html>

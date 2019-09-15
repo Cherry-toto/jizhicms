@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+    <title>{$jz['seo_title']}-{$webconf['web_name']}</title>
+	<meta name="keywords" content="{$jz['keywords']}" />
+	<meta name="description" content="{$jz['description']}" />
+	{include="style"}
+</head>
+
+<body>
+    {include="nav"}
+    <main class="page product-page">
+        <section class="clean-block clean-product dark">
+            <div class="container">
+                <div class="block-heading">
+                    <h2 class="text-info">商品详情页DEMO</h2>
+                    <p>介绍商品属性输出、图集输出、评论显示等</p>
+                    <p>当前位置：{$positions} > <a href="{$jz['url']}">{$jz['title']}</a></p>
+                </div>
+                <div class="block-content">
+                    <div class="product-info">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="gallery">
+                                    <div class="sp-wrap">
+									{php $pictures = explode('||',$jz['pictures'])/}
+									{foreach $pictures as $v}
+									{if($v!='')}
+									<a href="{$v}"><img class="img-fluid d-block mx-auto" src="{$v}"></a>
+									{/if}
+									{/foreach}
+									</div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="info">
+                                    <h3>{$jz['title']}</h3>
+                                    <div class="rating">
+									{php $comment = show_comment($jz['tid'],$jz['id'])/}
+									<!--判断是否有评论-->
+									{php $star_num = $comment['average']/}
+									{if($comment['data'])}
+									{for $i=1;$i<=$star_num;$i++}
+									<img src="{$tpl}assets/img/star.svg">
+									{/for}
+									{if(round($star_num)!=$star_num)}
+									<img src="{$tpl}assets/img/star-half-empty.svg">
+									{/if}
+									{if($star_num<5)}
+									{for $i=1;$i<=(5-$star_num);$i++}
+									<img src="{$tpl}assets/img/star-empty.svg">
+									{/for}
+									{/if}
+										{$star_num} - {$comment['count']} 票
+									{else}
+									<img src="{$tpl}assets/img/star-empty.svg">
+									<img src="{$tpl}assets/img/star-empty.svg">
+									<img src="{$tpl}assets/img/star-empty.svg">
+									<img src="{$tpl}assets/img/star-empty.svg">
+									<img src="{$tpl}assets/img/star-empty.svg">
+									0 - 0 票
+									{/if}
+									<span style="color:#f00;margin-left:10px;">热度：{fun incrData('product',$jz['id'],'hits')}</span>
+									</div>
+                                    <div class="price">
+                                        <h3>￥{$jz['price']}</h3>
+										<h5>库存：{$jz['stock_num']}</h5>
+                                    </div>
+									<button onclick="addcart({$type['id']},{$jz['id']},1)" class="btn btn-primary" type="button"><i class="icon-basket"></i>加入购物车</button>
+									{if(checkCollect($type['id'],$jz['id']))}
+									<button onclick="collect({$type['id']},{$jz['id']})"  class="btn btn-danger">已收藏</button>
+									{else}
+									<button onclick="collect({$type['id']},{$jz['id']})" class="btn btn-info">收藏</button>
+									{/if}
+                                    <div class="summary">
+                                        <p>{$jz['description']}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="product-info">
+                        <div>
+                            <ul class="nav nav-tabs" id="myTab">
+                                <li class="nav-item"><a class="nav-link active" role="tab" data-toggle="tab" href="#description" id="description-tab">商品介绍</a></li>
+                                <li class="nav-item"><a class="nav-link" role="tab" data-toggle="tab" href="#specifications" id="specifications-tabs">商品属性</a></li>
+                                <li class="nav-item"><a class="nav-link" role="tab" data-toggle="tab" href="#reviews" id="reviews-tab">相关评论</a></li>
+                            </ul>
+                            <div class="tab-content" id="myTabContent">
+                                <div class="tab-pane active fade show description" role="tabpanel" id="description">
+                                   {$jz['body']}
+                                </div>
+                                <div class="tab-pane fade show specifications" role="tabpanel" id="specifications">
+                                    <div class="table-responsive table-bordered">
+                                        <table class="table table-bordered">
+                                            <tbody>
+											<tr><th>参数</th><th>值</th></tr>
+								{php $product_fields = get_fields_show($jz['tid'],$type['molds'])/}
+								{foreach $product_fields as $v}
+                                                <tr>
+                                                    <td class="stat">{$v['fieldname']}</td>
+													{if($v['fieldtype']==7)}
+													<!--单选-->
+													<td>{fun get_key_field_select($jz[$v['field']],$type['molds'],$v['field'])}</td>
+													
+													{else if($v['fieldtype']==8)}
+													<!--多选-->
+		{fun implode(' ',get_key_field_select($jz[$v['field']],$type['molds'],$v['field']))}
+													
+													{else}
+                                                    <td>{$jz[$v['field']]}</td>
+													{/if}
+                                                </tr>
+								{/foreach}
+                                               
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                                <div class="tab-pane fade show" role="tabpanel" id="reviews">
+									<!--判断是否有评论，调用前面的参数-->
+									{if($comment['data'])}
+										{foreach $comment['data'] as $v}
+										
+										{if($v['level']==0)}
+										<!--评论楼层,level=0代表第一层,且回复的主题-->
+										<div class="reviews">
+											<div class="review-item">
+											{if($v['likes']!=0)}
+												<div class="rating">
+												{for $i=1;$i<=$v['likes'];$i++}
+												<img src="{$tpl}assets/img/star.svg">
+												{/for}
+												{if(round($v['likes'])!=$v['likes'])}
+												<img src="{$tpl}assets/img/star-half-empty.svg">
+												{/if}
+												{if($v['likes']<5)}
+												{for $i=1;$i<=(5-$v['likes']);$i++}
+												<img src="{$tpl}assets/img/star-empty.svg">
+												{/for}
+												{/if}
+												
+												</div>
+											{/if}
+												<span class="text-muted"><a id="comment_level_{$v['id']}" href="#">{$v['userinfo']['username']}</a>, {fun date('Y-m-d H:i:s',$v['addtime'])}</span>
+												<p>{$v['body']}</p>
+												<!--登录后才可以显示回复-->
+												{if($islogin)}<p style="text-align:right;"><a href="javascript:;" onclick="comment({$v['id']},{$v['id']})"><i style="font-size:15px;" class="icon-bubbles">回复</i></a></p>
+												{/if}
+												<!--判断是否有楼中楼回复-->
+												{if($v['haschild'])}
+												<div class="review-item">
+													{foreach $comment['data'] as $vv}
+													<!--判断获取本层回复楼中楼-->
+													{if($vv['zid']==$v['id'])}
+													<span class="text-muted"><a href="#" id="comment_level_{$vv['id']}">{$vv['userinfo']['username']}</a>, {fun date('Y-m-d H:i:s',$vv['addtime'])}</span>
+													<!--楼中楼回复带@回复主题用户-->
+													<p>{if($vv['pid']!=$v['id'])}<b style="color:green;cursor:pointer;">@{fun get_comment_user($vv['pid'])}  </b>{/if}
+													{$vv['body']}</p>
+													{if($islogin)}
+													<p style="text-align:right;"><a onclick="comment({$v['id']},{$vv['id']})" href="javascript:;"><i style="font-size:15px;" class="icon-bubbles">回复</i></a></p>
+													{/if}
+													{/if}
+													{/foreach}
+												</div>
+												{/if}
+												
+												
+											</div>
+										</div>
+										{/if}
+										{/foreach}
+									{else}
+									<div class="reviews">
+										<div class="review-item">
+										暂无评论
+										</div>
+									</div>
+									{/if}
+                                   
+                                    <div class="reviews">
+                                        <div class="review-item">
+                                            {if($islogin)}
+											<div class="rating user">
+										  评分：
+										  
+											<!--检查用户是否评分过-->
+						{php $user_star = M('comment')->find(" aid=".$jz['id']." and userid=".$member['id']." and likes!=0 ",' addtime desc')/}
+											{if($user_star)}
+												<!--已评分-显示评分-->
+												{for $i=1;$i<=$user_star['likes'];$i++}
+												<img class="x-star" src="{$tpl}assets/img/star.svg">
+												{/for}
+												{if(round($user_star['likes'])!=$user_star['likes'])}
+												<img class="x-star half" src="{$tpl}assets/img/star-half-empty.svg">
+												{/if}
+												{if($user_star['likes']<5)}
+												{for $i=1;$i<=(5-$user_star['likes']);$i++}
+												<img class="x-star empty" src="{$tpl}assets/img/star-empty.svg">
+												{/for}
+												{/if}
+												
+											{else}
+											<img class="x-star" src="{$tpl}assets/img/star-empty.svg"><img class="x-star" src="{$tpl}assets/img/star-empty.svg"><img class="x-star" src="{$tpl}assets/img/star-empty.svg"><img class="x-star" src="{$tpl}assets/img/star-empty.svg"><img class="x-star" src="{$tpl}assets/img/star-empty.svg">
+											{/if}
+											
+											
+										  
+									
+											</div>  
+										<div>
+										 <form action="{fun U('Comment/index')}" onsubmit="return checkForm()" method="POST">
+										<input name="go" value="1" placeholder="表示"  id="go" type="hidden" />
+										<input name="star" value="0" placeholder="评论星星数"  id="star" type="hidden" />
+										<input name="tid" value="{$type['id']}"  type="hidden" />
+										<input name="aid" value="{$jz['id']}" placeholder="文章ID"   type="hidden" />
+										<input name="zid" value="0" id="zid" placeholder="评论层ID"  type="hidden" />
+										<input name="pid" value="0" id="pid" placeholder="回复层ID"  type="hidden" />
+										<div class="form-group" >
+										<textarea class="form-control" id="comments" name="body" rows="5" placeholder="文明的评论是交流的开始~"></textarea>
+										</div>
+										<div class="form-group" style="text-align:right"><button class="btn btn-primary btn-inline" type="submit">提交</button></div>
+										</form>	
+											
+											{else}
+											登录后才可以评论~<a href="{fun U('Login/index')}" >立即登录</a>
+											{/if}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="clean-related-items">
+                        <h3>相关商品</h3>
+                        <div class="items">
+                            <div class="row justify-content-center">
+							{loop table="$type['molds']" notin="id|$jz['id']" limit="3" as="v"}
+                                <div class="col-sm-6 col-lg-4">
+                                    <div class="clean-related-item">
+                                        <div class="image"><a href="{fun gourl($v['id'],$v['htmlurl'])}"><img class="img-fluid d-block mx-auto" src="{$v['litpic']}"></a></div>
+                                        <div class="related-name"><a href="{fun gourl($v['id'],$v['htmlurl'])}">【{$v['id']}】{$v['title']}</a>
+                                            <div class="rating">
+											{php $star_num = show_comment($v['tid'],$v['id'],'average')/}
+											{for $i=1;$i<=$star_num;$i++}
+											<img src="{$tpl}assets/img/star.svg">
+											{/for}
+											{if(round($star_num)!=$star_num)}
+											<img src="{$tpl}assets/img/star-half-empty.svg">
+											{/if}
+											{if($star_num<5)}
+											{for $i=1;$i<=(5-$star_num);$i++}
+											<img src="{$tpl}assets/img/star-empty.svg">
+											{/for}
+											{/if}
+												
+											</div>
+                                            <h4>￥{$v['price']}</h4>
+                                        </div>
+                                    </div>
+                                </div>
+							{/loop}
+                               
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+  {include="footer"}
+  
+  <script>
+//检查表单
+function checkForm(){
+	if(parseInt($("#star").val())==0){
+	//	alert('請評分~');
+	//	return false;
+	}
+	if($.trim($("#comments").val())==''){
+		alert('请填写评论内容！');
+		return false;
+	}
+	return true;
+}
+//点击回复时执行
+//zid评论层ID，pid回复层ID
+function comment(zid,pid){
+	$("#zid").val(zid);
+	$("#pid").val(pid);
+	if(pid!=0){
+		//如果不是第一层评论，则@评论人昵称--特殊规则
+		//如果要更改样式，请对应修改Home/CommentController.php里面内容
+		var u = $('#comment_level_'+pid).html();
+		$("#comments").html('[@'+u+']');
+	}
+	$("#comments").focus();//跳到跳到评论框
+}
+$(document).ready(function(){
+	$(document).on("click","img.x-star",function(){
+		var i = $(this).index();
+		var max = 5;
+		var html = '';
+		var star = 0;
+		for(var j=0;j<=i;j++){
+			if(j==i){
+				if(!$(this).hasClass('empty') && !$(this).hasClass('half')){
+					html+='<img class="x-star half" src="{$tpl}assets/img/star-half-empty.svg">';
+					star+=0.5;
+				}else{
+					html+='<img class="x-star" src="{$tpl}assets/img/star.svg">';
+					star+=1;
+				}
+			}else{
+				html+='<img class="x-star" src="{$tpl}assets/img/star.svg">';
+				star+=1;
+			}
+			
+		}
+		
+		for(var jj=i+1;jj<max;jj++){
+			html+='<img class="x-star" src="{$tpl}assets/img/star-empty.svg">';
+		}
+		//console.log(star);
+		$("#star").val(star);
+		$(".rating.user").html('评分：'+html);
+	});
+
+});
+
+
+</script>
+</body>
+
+</html>

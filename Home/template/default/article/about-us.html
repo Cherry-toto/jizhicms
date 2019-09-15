@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+    <title>{$type['classname']}-{$webconf['web_name']}</title>
+<meta name="keywords" content="{$type['keywords']}" />
+<meta name="description" content="{$type['description']}" />
+{include="style"}
+</head>
+
+<body>
+    {include="nav"}
+    <main class="page">
+        <section class="clean-block about-us">
+            <div class="container">
+                <div class="block-heading">
+                    <h2 class="text-info">关于我们</h2>
+                    <p>栏目单页内容输出展示</p>
+                </div>
+                <div class="justify-content-center">
+                    {$type['body']}
+                </div>
+            </div>
+        </section>
+    </main>
+   {include="footer"}
+</body>
+
+</html>

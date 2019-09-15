@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="robots" content="noindex,noarchive">
+    <?php include("header.tpl");?>
+</head>
+<body>
+<header><div class="text-center"><h1>极致建站系统安装向导</h1></div></header>
+<div class="container">
+	<div class="row justify-content-center">
+		<div class="col-lg-8">
+			
+			<nav>
+				<ol class="cd-breadcrumb triangle custom-icons">
+					<li class="current"><a href="?act=step1">环境需求</a></li>
+					<li class="current"><a href="?act=step2">填写数据信息</a></li>
+					<li class="current"><a href="?act=step3">开始安装</a></li>
+					<li class="current"><em>导入数据</em></li>
+				</ol>
+			</nav>
+		</div>
+		<div class="col-lg-7">
+			<div class="progress my-5">
+				<div class="progress-bar progress-bar-info progress-bar-striped active" style="width: 100%;">
+					<div class="progress-value">100%</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="row justify-content-center">
+	    <div class="col-lg-10">
+	        <div class="card">
+	            <div class="card-body">
+					<!--body-->					
+					<div class="card-title">
+						<h3>安装进度安装过程中请不要做其他操作，安装时间大约需要1分钟。</h3>
+					</div>
+					<div class="my-5">
+						<div id="progress_bar" class="ui-progress-bar ui-container">
+							<div class="ui-progress" style="width: 0%;"><span class="ui-label" style="display:none;">Processing<b class="value">100%</b></span></div>
+							<div id="main_content">正在载入...</div>
+						</div>
+					</div>
+<script>
+	 $(function() { 
+	  $('#progress_bar .ui-progress .ui-label').hide();  	  
+	  getinstalling(0,100);
+	});
+	  function getinstalling(start,to){
+		var index = layer.load();
+		$('#main_content').html("正在安装中，请耐心等待！大概需要10-30秒");		
+		$.post("?act=install_testdb",{"start":start,"to":to},  function(data){
+		  var count=data.count;
+		  var start =data.to;
+		  var num =Math.round(start/count*100);
+		$('#progress_bar .ui-progress').animateProgress(num)	  
+			 if (num==100){
+				 layer.close(index)
+				 $('#main_content').html("测试数据安装完成，请点击[完成安装]。");
+				 $(".button_step5").val("完成安装").removeAttr("disabled");
+				 if("0"=="1"){ $(".button_testsql").show(); }
+			 }else{
+			  layer.close(index)
+			  layer.alert("安装出错，请检查服务器环境，写入权限是否开启");
+			  $(".button_step5").val("安装出错").attr({"disabled":"disabled"});
+			  return false;
+			  }
+		 },"json");	  
+	  }
+</script>
+						<div class="col-12">
+							<input class="btn btn-primary rounded btn-block py-2" type="button" class="button" onclick="location.href='?act=step5'" value="安装完成" />
+						</div>
+					<!-- end -->
+	            </div>
+	        </div>
+	    </div>
+	</div>
+<?php include('footer.tpl');?>
+</body>
+</html>

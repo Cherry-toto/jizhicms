@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html>
+  
+  <head>
+    <meta charset="UTF-8">
+   {include="style"}
+  </head>
+  
+  <body>
+    <div class="x-nav">
+      <span class="layui-breadcrumb">
+        <a href="/">首页</a>
+        <a >会员管理</a>
+        <a><cite>会员分组</cite></a>
+      </span>
+      <a class="layui-btn layui-btn-small" style="line-height:1.6em;margin-top:3px;float:right" href="javascript:location.replace(location.href);" title="刷新">
+        <i class="iconfont" style="line-height:30px">&#xe6aa;</i></a>
+    </div>
+    <div class="x-body">
+      <div class="layui-row">
+        
+      </div>
+      <xblock>
+       
+        <button class="layui-btn" onclick="x_admin_show('添加分组','{fun U('Member/groupadd')}')"><i class="layui-icon"></i>添加分组</button>
+         {if($webconf['isopenhomepower']==0)}<button class="layui-btn">温馨提示：前台权限已关闭，设置权限不会生效。</button>{else}<button class="layui-btn layui-btn-danger">温馨提示：前台权限已开启，权限设置将直接影响前台访问，请谨慎操作！</button>{/if}
+      </xblock>
+      <table class="layui-table layui-form">
+        <thead>
+          <tr>
+           
+            <th>ID</th>
+			<th width="50">排序</th>
+            <th>分组名</th>
+            <th>描述</th>
+            <th>状态</th>
+            <th>操作</th>
+        </thead>
+        <tbody class="x-cate">
+		
+		{foreach $lists as $v}
+          <tr cate-id="{$v['id']}" fid="{$v['pid']}" >
+            <td>{$v['id']}</td>
+			<td><input type="text" class="layui-input x-sort"  name="order" value="{$v['orders']}"></td>
+            <td>
+			  {fun str_repeat('&nbsp;&nbsp;&nbsp;',$v['level'])}
+			  {if($v['haschild'])}
+			  <i class="layui-icon x-show" status='false'>&#xe625;</i>
+			  {else}
+			  {if($v['level'])}|——{/if}
+			  {/if}
+			  {$v['name']}
+            </td>
+			 <td>{$v['description']}</td>
+			 <td class="td-status">
+             <input type="checkbox" value="{$v['id']}" name="switch" lay-filter="status"   lay-text="开|停"  lay-skin="switch" {if($v['isagree']==1)}checked{/if}>
+			 </td>
+			
+           
+            <td class="td-manage">
+              <button class="layui-btn layui-btn layui-btn-xs"  onclick="x_admin_show('编辑','{fun U('Member/groupedit',array('id'=>$v['id']))}')" ><i class="layui-icon">&#xe642;</i>编辑</button>
+              <button class="layui-btn-danger layui-btn layui-btn-xs"  onclick="member_del(this,'{$v['id']}')" href="javascript:;" ><i class="layui-icon">&#xe640;</i>删除</button>
+            </td>
+          </tr>
+		 {/foreach}
+		
+		
+		 
+        </tbody>
+      </table>
+      <div class="page">
+         
+      </div>
+
+    </div>
+    <script>
+      layui.use(['laydate','form'], function(){
+        var laydate = layui.laydate;
+        var form = layui.form;
+       
+		form.on('switch(status)', function (data) {
+			$.post("{fun U('change_group_status')}",{id:data.elem.value},function(r){ });
+		});
+      });
+
+    $(document).ready(function(){
+		$(".x-sort").change(function(){
+			//alert($(this).val());
+			var id = $(this).parent().parent().attr('cate-id');
+			var order = $(this).val();
+		
+			$.post("{fun U('Member/editOrders')}",{id:id,orders:order},function(r){
+				window.location.reload();
+			});
+		
+		})
+	});
+
+      /*用户-删除*/
+      function member_del(obj,id){
+          layer.confirm('确认要删除吗？',function(index){
+              //发异步删除数据
+			  
+			  $.post("{fun U('group_del')}",{id:id},function(r){
+					var r = JSON.parse(r);
+					if(r.code==0){
+						$(obj).parents("tr").remove();
+						layer.msg('已删除!',{icon:1,time:1000});
+					}else{
+						layer.msg(r.msg,{icon:5,time:1000});
+					}
+				 
+			  });
+			  
+             
+          });
+      }
+
+
+
+    </script>
+   
+  </body>
+
+</html>

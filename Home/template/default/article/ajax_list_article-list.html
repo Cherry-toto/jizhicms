@@ -1,0 +1,15 @@
+{if($lists)}
+{foreach $lists as $v}
+	<div class="clean-blog-post">
+		<div class="row">
+			<div class="col-lg-5"><img class="rounded img-fluid" src="{if($v['litpic']=='')}{$tpl}assets/img/tech/image4.jpg{else}{$v['litpic']}{/if}"></div>
+			<div class="col-lg-7">
+				<h3>【{$v['id']}】{$v['title']}</h3>
+				<div class="info"><span class="text-muted">{fun date('Y-m-d',$v['addtime'])}&nbsp;<a >{fun get_info_table('level',['id'=>$v['userid']],'name')}</a></span></div>
+				<p>{fun newstr($v['description'],150)}</p><a href="{$v['url']}"><button class="btn btn-outline-primary btn-sm" type="button">了解更多</button></a></div>
+		</div>
+	</div>
+{/foreach}
+{else}
+1
+{/if}

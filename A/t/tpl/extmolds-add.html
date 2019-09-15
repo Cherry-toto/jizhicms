@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html>
+    
+    <head>
+       <meta charset="UTF-8">
+        {include="style"}
+		<!--新增编辑器-->
+		<script type="text/javascript" charset="utf-8" src="{__Tpl_style__}/uedit/ueditor.config.js"></script>
+		<script type="text/javascript" charset="utf-8" src="{__Tpl_style__}/uedit/editor_api.js?v=333"> </script>
+		<!--建议手动加在语言，避免在ie下有时因为加载语言失败导致编辑器加载失败-->
+		<!--这里加载的语言文件会覆盖你在配置项目里添加的语言类型，比如你在配置项目里配置的是英文，这里加载的中文，那最后就是中文-->
+		<script type="text/javascript" charset="utf-8" src="{__Tpl_style__}/uedit/lang/zh-cn/zh-cn.js"></script>
+		
+    </head>
+    
+    <body>
+	 <div class="x-nav">
+            <span class="layui-breadcrumb">
+              <a><cite>首页</cite></a>
+              <a><cite>扩展模块管理</cite></a>
+              <a><cite>新增{$molds['name']}</cite></a>
+            </span>
+            <a class="layui-btn layui-btn-small" style="line-height:1.6em;margin-top:3px;float:right"  href="javascript:location.replace(location.href);" title="刷新"><i class="iconfont" style="line-height:30px">&#xe6aa;</i></a>
+        </div>
+        <div class="x-body">
+            <form class="layui-form layui-form-pane" >
+			<input type="hidden" name="go" value="1" />
+			
+			<div class="layui-tab">
+			  <ul class="layui-tab-title">
+				<li class="layui-this">基本信息</li>
+				
+			  </ul>
+			  <div class="layui-tab-content">
+				<div class="layui-tab-item layui-show">
+				
+				<div class="layui-form-item">
+                    <label for="tid" class="layui-form-label">
+                        <span class="x-red">*</span>所属栏目
+                    </label>
+                    <div class="layui-input-inline">
+						<select name="tid" lay-filter="tid" id="tid" >
+						<option value="0">不限栏目</option>
+					   {foreach $classtypes as $v}
+					   {if($v['molds']==$molds['biaoshi'])}
+					   <option {if($tid==$v['id'])}selected{/if} value="{$v['id']}">{fun str_repeat('--', $v['level']), $v['classname']}</option>
+					   {/if}
+					   {/foreach}
+					   </select>
+                    </div>
+					
+                </div>
+				
+				
+				 <span id="ext_fields"></span>
+				 <div class="layui-form-item" pane>
+                    <label for="isshow" class="layui-form-label">
+                        <span class="x-red"></span>是否显示
+                    </label>
+                    <div class="layui-input-inline">
+                        <input type="radio" name="isshow" value="0" title="不显示">
+						<input type="radio" name="isshow" value="1" title="显示" checked>
+                    </div>
+					 
+					
+                 </div>
+			
+				</div>
+				
+				
+			  </div>
+			</div>
+						
+               
+                
+                <div class="layui-form-item" style="text-align:center;">
+                    
+                     <button  class="layui-btn" lay-filter="save" lay-submit="">
+                        保存
+                    </button>
+                </div>
+            </form>
+        </div>
+		<br/>
+		<br/>
+		<br/>
+		<br/>
+		<br/>
+		<br/>
+		<br/>
+		<br/>
+		<br/>
+      
+        <script>
+		{include="fields"}
+            layui.use(['laydate','form','layer','upload'], function(){
+                $ = layui.jquery;
+              var form = layui.form
+              ,layer = layui.layer;
+			  laydate = layui.laydate;
+			 
+			    //监听提交
+              form.on('submit(save)', function(data){
+				
+				
+                //发异步，把数据提交给php
+				$.post("{fun U('Extmolds/addmolds',array('molds'=>$molds['biaoshi']))}",data.field,function(r){
+					//console.log(r);return false;
+					var r = JSON.parse(r);
+					if(r.code==0){
+						 layer.msg(r.msg, {icon: 6,time: 2000},function () {
+							// 获得frame索引
+							
+							{if($webconf['admintpl']=='tpl')}
+							window.location.href="{fun U('Extmolds/index',['molds'=>$molds['biaoshi']])}";
+							{else}
+							parent.location.reload();
+							{/if}
+						});
+						 parent.layer.close(index);
+					}else{
+						layer.alert(r.msg, {icon: 5});
+					}
+				});
+				
+               
+                return false;
+              });
+			get_fields(0);
+            
+			form.on('select(tid)', function(data){
+			  
+			  get_fields(data.value);
+			  
+			  
+			});
+		
+			
+           
+              
+              
+            });
+        </script>
+      
+    </body>
+
+</html>

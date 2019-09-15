@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	{include="style"}
+
+</head>
+<body >
+  <div class="layui-rows" style="    margin-top: 10px;">
+    <h1 style="text-align:center">屏蔽IP插件安装</h1>
+	<div style="margin:15px;">
+		<ol>
+		<li><h3>1. 填写屏蔽IP的时候，用||分割，如：127.0.0.1|192.168.0.1</h3></li>
+		<li><h3>2. 如果要屏蔽IP段，则最后一个数字用*表示，如：127.0.0.*,代表屏蔽127.0.0这个网段（127.0.0.1~127.0.0.255）</h3></li>
+		<li><h3>3. 屏蔽提示语指屏蔽IP用户进入网站后提示的内容，如果不填，则提示：抱歉，网站已关闭！</h3></li>
+		<li><h3>4. 该插件直接影响前台浏览，如果已安装有相关插件的，请联系作者协助进行合并处理！</h3></li>
+		</ol>
+	</div>
+  </div>
+
+  
+    <script>
+	layui.use('code', function(){ //加载code模块
+		  layui.code(); //引用code方法
+		});
+    </script>
+ 
+</body>
+</html>

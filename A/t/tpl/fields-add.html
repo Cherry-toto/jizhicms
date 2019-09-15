@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html>
+    
+    <head>
+       <meta charset="UTF-8">
+        {include="style"}
+		
+    </head>
+    
+    <body>
+	 <div class="x-nav">
+            <span class="layui-breadcrumb">
+              <a><cite>首页</cite></a>
+              <a><cite>系统扩展</cite></a>
+              <a><cite>模块管理</cite></a>
+              <a><cite>字段管理</cite></a>
+			  <a><cite>新增字段</cite></a>
+            </span>
+            <a class="layui-btn layui-btn-small" style="line-height:1.6em;margin-top:3px;float:right"  href="javascript:location.replace(location.href);" title="刷新"><i class="iconfont" style="line-height:30px">&#xe6aa;</i></a>
+        </div>
+        <div class="x-body">
+            <form class="layui-form layui-form-pane" >
+			<input type="hidden" name="go" value="1" />
+			<input type="hidden" name="molds" value="{$molds}" />
+			
+			
+			<div class="layui-tab">
+			  <ul class="layui-tab-title">
+				<li class="layui-this">基本信息</li>
+				<li>栏目绑定</li>
+				
+			  </ul>
+			  <div class="layui-tab-content">
+				<div class="layui-tab-item layui-show">
+				 <div class="layui-form-item">
+                    <label for="fieldname" class="layui-form-label">
+                        <span class="x-red">*</span>字段名称
+                    </label>
+                    <div class="layui-input-inline">
+                        <input type="text" id="fieldname" value=""  name="fieldname" required="" lay-verify="required"
+                        autocomplete="off" class="layui-input">
+                    </div>
+					<div class="layui-form-mid layui-word-aux" >
+					  简短的名称
+				    </div>
+                </div>
+				
+				 <div class="layui-form-item">
+                    <label for="field" class="layui-form-label">
+                        <span class="x-red">*</span>字段标识
+                    </label>
+                    <div class="layui-input-inline">
+                        <input type="text" id="field" value=""  name="field" 
+                        autocomplete="off" required="" lay-verify="required" class="layui-input">
+                    </div>
+					<div class="layui-form-mid layui-word-aux" >
+					  只能英文字母[或者后面+数字]，必须含有英文字母，小写字母，简短
+				    </div>
+                </div>
+				<div class="layui-form-item" pane>
+                    <label for="fieldtxt" class="layui-form-label">
+                        <span class="x-red">*</span>字段类型
+                    </label>
+                    <div class="layui-input-block">
+					  <table class="layui-table">
+						<tbody>
+						  <tr>
+							<td>选择</div></td>
+							<td>类型</div></td>
+							<td>长度</div></td>
+							<td>内容</div></td>
+							<td>说明</td>
+						
+						  </tr>
+						  <tr>
+							<td><input type="radio" name="fieldtype" checked value="1" /></div></td>
+							<td>字符串<br/>varchar</div></td>
+							<td><input type="text" class="layui-input" name="fieldlong_1" value="255"></div></td>
+							<td>无</div></td>
+							<td>简短的一句话录入内容，价格小数也是这个属性</td>
+						  </tr>
+						  <tr>
+							<td><input type="radio" name="fieldtype" value="2" /></div></td>
+							<td>字符串<br/>varchar</div></td>
+							<td><input type="text" class="layui-input" name="fieldlong_2" value="500"></div></td>
+							<td>无</div></td>
+							<td>内容简短，需要文本框录入</td>
+						  </tr>
+						  <tr>
+							<td><input type="radio" name="fieldtype" value="3" /></div></td>
+							<td>字符串<br/>txt</div></td>
+							<td>不限</div></td>
+							<td>无</div></td>
+							<td>内容很多，需要编辑器录入</td>
+						   </tr>
+						   <tr>
+							<td><input type="radio" name="fieldtype" value="4" /></div></td>
+							<td>数字<br/>int</div></td>
+							<td><input type="text" class="layui-input" name="fieldlong_4" value="11"></div></td>
+							<td>无</div></td>
+							<td>只能填写数字，长度不能超过11位</td>
+						   </tr>
+						   <tr>
+							<td><input type="radio" name="fieldtype" value="11" /></div></td>
+							<td>时间<br/>int</div></td>
+							<td><input type="text" class="layui-input" name="fieldlong_11" value="11"></div></td>
+							<td>无</div></td>
+							<td>选择时间插件</td>
+						   </tr>
+						   <tr>
+							<td><input type="radio" name="fieldtype" value="5" /></div></td>
+							<td>单图片<br/>varchar</div></td>
+							<td><input type="text" class="layui-input" name="fieldlong_5" value="255"></div></td>
+							<td>无</div></td>
+							<td>一张图片</td>
+						   </tr>
+						   <tr>
+							<td><input type="radio" name="fieldtype" value="6" /></div></td>
+							<td>多图片<br/>varchar</div></td>
+							<td><input type="text" class="layui-input" name="fieldlong_6" value="500"></div></td>
+							<td>无</div></td>
+							<td>多个图片</td>
+						   </tr>
+						   <tr>
+							<td><input type="radio" name="fieldtype" value="7" /></div></td>
+							<td>单选<br/>varchar</div></td>
+							<td><input type="text" class="layui-input" name="fieldlong_7" value="500"></div></td>
+							<td><textarea placeholder="选项1=值1,选项2=值2"  name="body_7" class="layui-textarea"></textarea></div></td>
+							<td>单项选择，select类型，如：选项1=值1,选项2=值2</td>
+						   </tr>
+						    <tr>
+							<td><input type="radio" name="fieldtype" value="12" /></div></td>
+							<td>单选<br/>varchar</div></td>
+							<td><input type="text" class="layui-input" name="fieldlong_12" value="500"></div></td>
+							<td><textarea placeholder="选项1=值1,选项2=值2"  name="body_12" class="layui-textarea"></textarea></div></td>
+							<td>单项选择，radio类型，如：选项1=值1,选项2=值2</td>
+						   </tr>
+						   <tr>
+							<td><input type="radio" name="fieldtype" value="8" /></div></td>
+							<td>多选<br/>varchar</div></td>
+							<td><input type="text" class="layui-input" name="fieldlong_8" value="500"></div></td>
+							<td><textarea placeholder="选项1=值1,选项2=值2"  name="body_8" class="layui-textarea"></textarea></div></td>
+							<td>多项选择，如：选项1=值1,选项2=值2</td>
+						   </tr>
+						   <tr>
+							<td><input type="radio" name="fieldtype" value="9" /></div></td>
+							<td>单附件<br/>varchar</div></td>
+							<td><input type="text" class="layui-input" name="fieldlong_9" value="255"></div></td>
+							<td>无</div></td>
+							<td>一个附件，图片除外</td>
+						   </tr>
+						   <tr>
+							<td><input type="radio" name="fieldtype" value="10" /></div></td>
+							<td>多附件<br/>varchar</div></td>
+							<td><input type="text" class="layui-input" name="fieldlong_10" value="500"></div></td>
+							<td>无</div></td>
+							<td>多个附件，图片除外</td>
+						   </tr>
+						</tbody>
+					  </table>
+				    </div>
+                </div>
+				<div class="layui-form-item">
+                    <label for="vdata" class="layui-form-label">
+                        <span class="x-red">*</span>默认值
+                    </label>
+                    <div class="layui-input-inline" style="width:200px;">
+                        <input type="text" id="vdata" value=""   name="vdata" 
+                        autocomplete="off"  class="layui-input">
+                    </div>
+					<div class="layui-form-mid layui-word-aux" >
+					  默认字段值，不填默认int类型的值是0，string类型的值是null。多选参数的值是两边带【,】，如【,1,】表示值为1
+				    </div>
+                </div>
+				<div class="layui-form-item">
+                    <label for="tips" class="layui-form-label">
+                        <span class="x-red">*</span>字段提示
+                    </label>
+                    <div class="layui-input-inline" style="width:500px;">
+                        <input type="text" id="tips" value=""   name="tips" 
+                        autocomplete="off"  class="layui-input">
+                    </div>
+					<div class="layui-form-mid layui-word-aux" >
+					  用于填写时的提示信息，50字以内
+				    </div>
+                </div>
+				<div class="layui-form-item">
+                    <label for="orders" class="layui-form-label">
+                        <span class="x-red"></span>排序
+                    </label>
+                    <div class="layui-input-inline">
+                        <input type="number" id="orders" value="0" name="orders" 
+                        autocomplete="off" class="layui-input">
+                    </div>
+					<div class="layui-form-mid layui-word-aux">
+					  数字越大越靠前
+					</div>
+					
+                </div>
+				<div class="layui-form-item" pane>
+                    <label for="ismust" class="layui-form-label">
+                        <span class="x-red"></span>是否必填
+                    </label>
+                    <div class="layui-input-inline">
+						<input type="radio" name="ismust" value="1" title="必填" >
+                        <input type="radio" name="ismust" value="0" title="非必填" checked>
+						
+                    </div>
+					<div class="layui-form-mid layui-word-aux">
+					  带有文本框编辑器的除外
+					</div> 
+					
+                </div>
+				
+				
+			
+				
+				
+				
+				
+				<div class="layui-form-item" pane>
+                    <label for="isshow" class="layui-form-label">
+                        <span class="x-red"></span>前台显示
+                    </label>
+                    <div class="layui-input-inline">
+                        <input type="radio" name="isshow" value="0" title="不显示">
+						<input type="radio" name="isshow" value="1" title="显示" checked>
+                    </div>
+					 
+					
+                </div>
+				<div class="layui-form-item" pane>
+                    <label for="issearch" class="layui-form-label">
+                        <span class="x-red"></span>后台搜索
+                    </label>
+                    <div class="layui-input-inline">
+						<input type="radio" name="issearch" value="1" title="显示" >
+						<input type="radio" name="issearch" value="0" title="不显示" checked>
+                    </div>
+					<div class="layui-form-mid layui-word-aux">
+					  仅用于后台列表头部带有该字段搜索
+					</div> 
+					
+                </div>
+				<div class="layui-form-item" pane>
+                    <label for="islist" class="layui-form-label">
+                        <span class="x-red"></span>列表中显示
+                    </label>
+                    <div class="layui-input-inline">
+						<input type="radio" name="islist" value="1" title="显示" >
+						<input type="radio" name="islist" value="0" title="不显示" checked>
+                    </div>
+					<div class="layui-form-mid layui-word-aux">
+					  仅用于后台列表显示该字段
+					</div> 
+					
+                </div>
+				<div class="layui-form-item">
+                    <label for="format" class="layui-form-label">
+                        <span class="x-red"></span>显示格式化
+                    </label>
+                    <div class="layui-input-inline">
+						<select name="format" lay-filter="format" id="format" >
+						<option value="">不做处理</option>
+						{foreach format_fields() as $k=>$v}
+						<option value="{$k}">{$v}</option>
+						{/foreach}
+						
+					   </select>
+                    </div>
+					<div class="layui-form-mid layui-word-aux">
+					  仅用于后台列表显示该字段内容处理
+					</div>
+                </div>
+				
+				
+				
+				</div>
+				<div class="layui-tab-item">
+				 <table class="layui-table layui-form">
+					<thead>
+					  <tr>
+						<th width="20">
+						  <div class="layui-unselect header layui-form-checkbox layui-form-checked" lay-skin="primary"><i class="layui-icon">&#xe605;</i></div>
+						</th>
+						
+						<th>栏目名</th>
+						
+					</thead>
+					<tbody class="x-cate">
+					{foreach $classtypes as $v}
+					  <tr cate-id="{$v['id']}" fid="{$v['pid']}" >
+						<td>
+						  <div class="layui-unselect layui-form-checkbox layui-form-checked" lay-skin="primary" data-id='{$v['id']}'><i class="layui-icon">&#xe605;</i></div>
+						</td>
+						
+						<td>
+						  {fun str_repeat('&nbsp;&nbsp;&nbsp;',$v['level'])}
+						  {if($v['haschild'])}
+						  <i class="layui-icon x-show" status='false'>&#xe625;</i>
+						  {else}
+						  {if($v['level'])}|——{/if}
+						  {/if}
+						  {$v['classname']}
+						</td>
+						
+					  </tr>
+					 {/foreach}
+					 
+					</tbody>
+				  </table>
+				
+				</div>
+				
+			  </div>
+			</div>
+			
+			
+			
+               
+				
+				
+                <div class="layui-form-item" style="text-align:center;">
+                   
+                     <button  class="layui-btn" lay-filter="save" lay-submit="">
+                        保存
+                    </button>
+                </div>
+            </form>
+        </div>
+		<br/>
+		<br/>
+		<br/>
+		<br/>
+		<br/>
+		<br/>
+		<br/>
+		<br/>
+		<br/>
+      
+        <script>
+			
+            layui.use(['laydate','form','layer','upload'], function(){
+                $ = layui.jquery;
+              var form = layui.form
+              ,layer = layui.layer;
+			  laydate = layui.laydate;
+			
+			  
+			    //监听提交
+              form.on('submit(save)', function(data){
+                var tids = tableCheck.getData().join(',');
+				if(tids==''){
+					layer.alert('请选择绑定栏目！', {icon: 5});
+					return false;
+				}
+				data.field.tids = tids;
+				
+                //发异步，把数据提交给php
+				$.post("{fun U('Fields/addFields')}",data.field,function(r){
+					
+					//console.log(r);return false;
+					var r = JSON.parse(r);
+					if(r.code==0){
+						 layer.msg(r.msg, {icon: 6,time: 2000},function () {
+							// 获得frame索引
+							{if($webconf['admintpl']=='tpl')}
+							window.location.href="{fun U('Fields/index',['molds'=>$molds])}";
+							{else}
+							var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
+							 parent.layer.close(index);
+							 parent.location.reload();
+							{/if}
+							
+							 
+						});
+						 
+					}else{
+						layer.alert(r.msg, {icon: 5});
+					}
+				});
+				
+               
+                return false;
+              });
+            
+
+           
+              
+              
+            });
+        </script>
+      
+    </body>
+
+</html>

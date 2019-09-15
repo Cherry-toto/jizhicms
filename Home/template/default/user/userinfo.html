@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="robots" content="noindex,noarchive">
+
+	<title>个人资料-{$webconf['web_name']}</title>
+	<meta property="og:title" 	content="个人资料-{$webconf['web_name']}" />
+	<meta name="twitter:title" 	content="个人资料-{$webconf['web_name']}" />
+	<meta name="keywords" content="个人资料-{$webconf['web_keyword']}" />
+	<meta name="description"  content="个人资料-{$webconf['web_desc']}" />
+	{include="user/user-style"}
+	
+</head>
+<body>
+{include="user/user-top"}
+<section class="container py-3">
+	<div class="row justify-content-center">
+		<div class="col-lg-10 step mb-2">
+			{include="user/user-content"}
+		</div>
+		<div class="col-12 col-lg-10 step">
+			<form class="was-validated" >
+			<fieldset>
+				<div class="input-group mb-2">
+					<div class="input-group-prepend">
+						<div class="input-group-text">昵称</div>
+					</div>
+					<input type="text" class="form-control"  maxLength="10" name="username" id="t_username" value="{$member['username']}" placeholder="Username" required>
+					<div class="invalid-feedback pl-2">昵称长度最多不超过5个中文字</div>
+				</div>
+			</fieldset>
+			<fieldset>
+				<div class="input-group mb-2">				
+					<div class="input-group-prepend">
+						<div class="input-group-text">手机</div>
+					</div>
+					<input type="number" value="{$member['tel']}" class="form-control" id="t_tel" name="tel" placeholder="phone" required>
+					<div class="invalid-feedback pl-2">请输入您的手机号码</div>
+				</div>
+			</fieldset>
+			<fieldset>
+				<div class="input-group mb-2">				
+					<div class="input-group-prepend">
+						<div class="input-group-text">邮箱</div>
+					</div>
+					<input type="email" value="{$member['email']}" class="form-control" id="t_email" name="email" placeholder="例：myname@mail.com">
+					<div class="invalid-feedback pl-2">请输入您的点子邮件信箱</div>
+				</div>
+			</fieldset>
+			<fieldset>
+
+				<div class="input-group mb-2">
+					<div class="input-group-prepend">
+						<div class="input-group-text" for="password">更改密码</div>
+					</div>
+					<input type="password" class="form-control" id="t_password" name="password" placeholder="**********" minLength="8" maxLength="16" oninput="checkPassword()" autocomplete="off">
+					<div class="invalid-feedback pl-2">密码请设定8~16位数</div>
+				</div>
+				<div class="input-group mb-2">
+					<div class="input-group-prepend">
+						<label class="input-group-text" for="repassword">重复密码</label>
+					</div>
+					<input type="password" class="form-control" id="t_repassword" name="repassword" placeholder="**********" minLength="8" maxLength="16" oninput="checkPassword()" autocomplete="off">
+					<div class="invalid-feedback pl-2">两次密码必须相同哦！</div>
+				</div>
+
+			</fieldset>
+			<fieldset class="my-3">
+					<button type="button" onclick="change_info()" value="submit" class="btn btn-primary rounded text-white btn-block py-2">更新资料</button>
+			</fieldset>
+			</form>
+		</div>
+
+	</div>
+</section>
+{include="user/common"}
+
+<script>
+function change_info(){
+		var username = $.trim($("#t_username").val());
+		var tel = $.trim($("#t_tel").val());
+		var email = $.trim($("#t_email").val());
+		var password = $.trim($("#t_password").val());
+		var repassword = $.trim($("#t_repassword").val());
+		console.log(username);
+		if(username==''){
+			alert('账户名称不能为空！');$("#t_username").focus();return false;
+		}
+		if(email==''){
+			alert('邮箱不能为空！');$("#t_email").focus();return false;
+		}
+		if(password!=repassword){
+			alert('两次密码不同！');$("#t_password").focus();return false;
+		}
+	
+		$.ajax({
+			url:"{fun U('User/userinfo')}",    //请求的url地址
+		    dataType:"json",   //返回格式为json
+		    async:true,//请求是否异步，默认为异步，这也是ajax重要特性
+		    data:{username:username,password:password,repassword:repassword,tel:tel,email:email,ajax:1},    //参数值
+		    type:"POST",   //请求方式
+		    beforeSend:function(){
+		        //请求前的处理
+		    },
+		    success:function(r){
+		        //请求成功时处理
+				if(r.code==0){
+					window.location.reload();
+				}else{
+					alert(r.msg);
+					return false;
+				}
+		    },
+		    complete:function(){
+		        //请求完成的处理
+		    },
+		    error:function(){
+		        //请求出错处理
+				alert('网络异常');
+		    }
+
+			
+			
+		})
+	}
+
+</script>
+
+</body>
+</html>

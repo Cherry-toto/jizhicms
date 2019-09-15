@@ -1,0 +1,130 @@
+   <footer class="page-footer dark">
+        <div class="container">
+            <div class="row">
+			{foreach $classtypedata as $v}
+			{if($v['isshow']==1)}
+			{if($v['pid']==0)}
+                <div class="col-sm-2">
+                    <h5>{$v['classname']}</h5>
+                    <ul>
+					
+					{foreach $classtypedata as $vv}
+					{if($vv['pid']==$v['id'])}
+                        <li><a href="{$vv['url']}">{$vv['classname']}</a></li>
+					{/if}
+					{/foreach}
+                        
+                    </ul>
+                </div>
+			{/if}
+			{/if}
+			{/foreach}
+               
+            </div>
+        </div>
+        <div class="footer-copyright">
+            <p>{$webconf['web_beian']} {$webconf['web_copyright']} All Rights Reserved</p>
+        </div>
+    </footer>
+
+   {include="js"}
+   
+   <script>
+   function addcart(tid,id,num){
+		$.ajax({
+			 url:"{fun U('user/addcart')}",//请求的url地址
+			 dataType:"json",//返回格式为json
+			 async:true,//请求是否异步，默认为异步，这也是ajax重要特性
+			 data:{tid:tid,id:id,num:num,ajax:1},//参数值
+			 type:"POST",//请求方式
+			 beforeSend:function(){
+				//请求前的处理
+				},
+				 success:function(r){
+					if(r.code==0){
+						window.location.href=r.url;
+					}else{
+						alert(r.msg);
+					}
+						
+				},
+				 complete:function(){
+				//请求完成的处理
+				},
+				 error:function(){
+				//请求出错处理
+					alert('网络错误');
+				}
+
+					
+			
+		})
+   }
+   
+   //收藏 
+	function collect(tid,id){
+		$.ajax({
+				 url:"{fun U('user/collectAction')}",//请求的url地址
+				 dataType:"json",//返回格式为json
+				 async:true,//请求是否异步，默认为异步，这也是ajax重要特性
+				 data:{tid:tid,id:id,ajax:1},//参数值
+				 type:"POST",//请求方式
+				 beforeSend:function(){
+					//请求前的处理
+					},
+					 success:function(r){
+						if(r.code==0){
+							alert(r.msg);
+							window.location.reload();
+						}else{
+							alert(r.msg);
+						}
+							
+					},
+					 complete:function(){
+					//请求完成的处理
+					},
+					 error:function(){
+					//请求出错处理
+						alert('网络错误');
+					}
+
+						
+				
+			})
+	}
+	   
+   //点赞
+	function likes(tid,id){
+		$.ajax({
+				 url:"{fun U('user/likesAction')}",//请求的url地址
+				 dataType:"json",//返回格式为json
+				 async:true,//请求是否异步，默认为异步，这也是ajax重要特性
+				 data:{tid:tid,id:id,ajax:1},//参数值
+				 type:"POST",//请求方式
+				 beforeSend:function(){
+					//请求前的处理
+					},
+					 success:function(r){
+						if(r.code==0){
+							alert(r.msg);
+							window.location.reload();
+						}else{
+							alert(r.msg);
+						}
+							
+					},
+					 complete:function(){
+					//请求完成的处理
+					},
+					 error:function(){
+					//请求出错处理
+						alert('网络错误');
+					}
+
+						
+				
+			})
+	}
+
+   </script>

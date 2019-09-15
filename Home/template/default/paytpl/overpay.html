@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<meta http-equiv="refresh" content="3;URL={fun U('Order/details',['orderno'=>$order['orderno']])}">
+	<title>支付完成-{$webconf['web_name']}</title>
+<meta name="keywords" content="{$webconf['web_keyword']}" />
+<meta name="description" content="{$webconf['web_desc']}" />
+
+    {include="style"}
+    <style>
+	.rows a{
+	display: inline-block;
+    width: 50%;
+    text-align: center;
+	}
+    </style>
+</head>
+
+<body>
+    {include="nav"}
+    <main class="page pricing-table-page">
+        <section class="clean-block clean-pricing dark">
+            <div class="container">
+                <div class="block-heading">
+                    <h2 class="text-info">订单{$order['orderno']}支付成功！</h2>
+                    <p></p>
+                </div>
+				<div class="rows">
+				<a href="/"><button class="btn btn-primary">返回首页</button></a><a href="{fun U('Order/details',['orderno'=>$order['orderno']])}"><button class="btn btn-info">跳转订单</button></a>
+				</div>
+                
+            </div>
+        </section>
+    </main>
+   {include="footer"}
+</body>
+
+</html>

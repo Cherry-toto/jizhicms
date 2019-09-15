@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+    <title>{$type['classname']}-{$webconf['web_name']}</title>
+<meta name="keywords" content="{$type['keywords']}" />
+<meta name="description" content="{$type['description']}" />
+{include="style"}
+</head>
+
+<body>
+    {include="nav"}
+    <main class="page catalog-page">
+        <section class="clean-block clean-catalog dark">
+            <div class="container">
+                <div class="block-heading">
+                    <h2 class="text-info">商品列表DEMO</h2>
+                    <p>商品分类输出、商品筛选、商品购买等</p>
+                    <p>当前位置：{$positions}</p>
+                </div>
+                <div class="content">
+                    <div class="row">
+                        <div class="col-md-3">
+                            <div class="d-none d-md-block">
+                                <div class="filters">
+				{screen molds="product"   orderby="orders desc"  as="s"}
+                                    <div class="filter-item">
+                                        <h3>{$s['fieldname']}</h3>
+										
+										{foreach $s['list'] as $ss}
+                                        <div class="form-check">
+										<input target-url="{$ss['url']}" class="form-check-input" {if(isset($filters[$s['field']]) && strpos(','.$filters[$s['field']].',',','.$ss['key'].',')!==false)} checked {/if}	type="checkbox" name="{$s['field']}" value="{$ss['key']}" >
+										<label class="form-check-label" for="formCheck-1">{$ss['value']}</label></div>
+										{/foreach}
+                                       
+                                    </div>
+				{/screen}
+
+                                </div>
+                            </div>
+							<div class="d-md-none">
+							<a class="btn btn-link d-md-none filter-collapse" data-toggle="collapse" aria-expanded="false" aria-controls="filters" role="button" href="#filters">筛选<i class="icon-arrow-down filter-caret"></i></a>
+                                <div class="collapse" id="filters">
+                                    <div class="filters">
+				{screen molds="product"  orderby="orders desc"  as="s"}
+                                        <div class="filter-item">
+                                            <h3>{$s['fieldname']}</h3>
+											
+											{foreach $s['list'] as $ss}
+                                            <div class="form-check"><input  target-url="{$ss['url']}" class="form-check-input wap" value="{$ss['key']}" name="{$s['field']}" type="checkbox" ><label class="form-check-label" for="formCheck-1">{$ss['value']}</label></div>
+											{/foreach}
+                                            
+                                        </div>
+				{/screen}
+                                        
+                                    </div>
+                                </div>
+                            </div>
+							
+                        </div>
+                        <div class="col-md-9">
+                            <div class="products">
+                                <div class="row no-gutters">
+								{if($lists)}
+								{foreach $lists as $v}
+                                    <div class="col-12 col-md-6 col-lg-4">
+                                        <div class="clean-product-item">
+                                            <div class="image"><a href="{$v['url']}"><img class="img-fluid d-block mx-auto" src="{$v['litpic']}"></a></div>
+                                            <div class="product-name"><a href="{$v['url']}">[{$v['id']}]{$v['title']}</a></div>
+                                            <div class="about">
+                                                <div class="rating">
+												{php $star_num = show_comment($v['tid'],$v['id'],'average')/}
+												{for $i=1;$i<=$star_num;$i++}
+												<img src="{$tpl}assets/img/star.svg">
+												{/for}
+												{if(round($star_num)!=$star_num)}
+												<img src="{$tpl}assets/img/star-half-empty.svg">
+												{/if}
+												{if($star_num<5)}
+												{for $i=1;$i<=(5-$star_num);$i++}
+												<img src="{$tpl}assets/img/star-empty.svg">
+												{/for}
+												{/if}
+												
+												
+												</div>
+                                                <div class="price">
+                                                    <h3>￥{$v['price']}</h3>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+								{/foreach}
+								{else}
+								暂无数据~
+								{/if}
+                                   
+                                </div>
+								{if(!isMobile())}
+                                <nav>
+                                    <ul class="pagination">
+									
+									{if($listpage['list'])}
+                                        <li class="page-item {if($listpage['prev'])}disabled{/if}"><a class="page-link" href="{$listpage['prev']}" aria-label="Previous"><span aria-hidden="true">«</span></a></li>
+										{foreach $listpage['list'] as $ss}
+                                        <li class="page-item {if($ss['num']==$listpage['current_num'])}active background{/if}"><a href="{$ss['url']}" class="page-link">{$ss['num']}</a></li>
+										{/foreach}
+                                        <li class="page-item {if($listpage['next'])}disabled{/if}"><a class="page-link" href="{$listpage['next']}" aria-label="Next"><span aria-hidden="true">»</span></a></li>
+									{/if}
+                                    </ul>
+                                </nav>
+								{/if}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+	<input id="gourl" type="hidden" value="" />
+    {include="footer"}
+	<script>
+	function get_tpl(jz_screen){
+		var tid = {$type['id']};
+		var molds = "{$type['molds']}";
+		//Screen/index/molds/$1/tid/$2/jz_screen/$3
+		//screen-molds-tid-jz_screen
+		var gourl = '{fun get_domain()}/screen-'+molds+'-'+tid+'-'+jz_screen+'.html';
+		$("#gourl").val(gourl);
+		$.ajax({
+			 url:"{fun U('screen/index')}",//请求的url地址
+			// dataType:"json",//返回格式为json
+			 async:true,//请求是否异步，默认为异步，这也是ajax重要特性
+			 data:{tid:tid,molds:molds,jz_screen:jz_screen,ajax:1,ajax_tpl:1},//参数值
+			 type:"GET",//请求方式
+			 beforeSend:function(){
+				//请求前的处理
+				},
+				 success:function(r){
+					if(r==1){
+						$(".products").html('暂无数据~');return false;
+					}
+					$(".products").html(r);
+						
+				},
+				 complete:function(){
+				//请求完成的处理
+				},
+				 error:function(){
+				//请求出错处理
+					alert('网络错误');
+				}
+
+					
+			
+		})
+	}
+	//PC端
+	$(".form-check-input,.form-check-input.wap").click(function(){
+		
+		var categories_v_arr = [];
+		$(".form-check-input[name='categories']").each(function(){
+			if($(this).is(":checked")){
+				categories_v_arr.push($(this).val());
+			}
+		});
+		var brands_v_arr = [];
+		$(".form-check-input[name='brands']").each(function(){
+			if($(this).is(":checked")){
+				brands_v_arr.push($(this).val());
+			}
+		});
+		var os_v_arr = [];
+		$(".form-check-input[name='os']").each(function(){
+			if($(this).is(":checked")){
+				os_v_arr.push($(this).val());
+			}
+		});
+		var colors_v_arr = [];
+		$(".form-check-input[name='colors']").each(function(){
+			if($(this).is(":checked")){
+				colors_v_arr.push($(this).val());
+			}
+		});
+		var jz_screen = 'categories-'+categories_v_arr.join(',')+'-brands-'+brands_v_arr.join(',')+'-os-'+os_v_arr.join(',')+'-colors-'+colors_v_arr.join(',');
+		//console.log(jz_screen);
+		get_tpl(jz_screen);
+		
+		window.history.pushState({},0,$('#gourl').val());
+		
+	});
+	
+	<!--判断端口，手机端下拉加载-->
+{if(isMobile())}
+var p={$frpage};
+var istrue = true;
+$(window).scroll(function () {
+	
+	if ($(window).scrollTop() === ($(document).height() - $(window).height()) ) {
+		//防止过度加载
+		if(!istrue){
+			return false;
+		}
+		p+=1;
+		//Screen/index/molds/$1/tid/$2/jz_screen/$3
+		$.ajax({
+			url:window.location.href,//请求的url地址
+			// dataType:"json",//返回格式为json
+			async:true,//请求是否异步，默认为异步，这也是ajax重要特性
+			data:{page:p,ajax:1,ajax_tpl:1},//参数值
+			type:"GET",//请求方式
+			beforeSend:function(){
+				//请求前的处理
+				istrue = false;
+				
+			},
+			success:function(r){
+			
+				if(r==1){
+					alert('没有了~');
+					return false;
+				}
+				$(".row.no-gutters").append(r);
+					
+			},
+			complete:function(){
+			//请求完成的处理
+				istrue = true;
+			},
+			 error:function(){
+			//请求出错处理
+				alert('网络错误');
+			}
+
+					
+			
+		})
+	}
+	
+})
+{/if}
+	</script>
+	
+	
+</body>
+
+</html>

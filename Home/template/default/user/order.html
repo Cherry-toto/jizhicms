@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="robots" content="noindex,noarchive">
+	<title>订单列表-{$webconf['web_name']}</title>
+	<meta property="og:title" 	content="订单列表-{$webconf['web_name']}" />
+	<meta name="twitter:title" 	content="订单列表-{$webconf['web_name']}" />
+	<meta name="keywords" content="订单列表-{$webconf['web_keyword']}" />
+	<meta name="description"  content="订单列表-{$webconf['web_desc']}" />
+	{include="user/user-style"}
+
+</head>
+<body>
+{include="user/user-top"}
+<section class="container py-3">
+	<div class="row justify-content-center">
+		<div class="col-lg-10 step mb-2">
+			{include="user/user-content"}
+		</div>
+		<div class="col-12 step">
+			<fieldset>
+			<div style="width:100%;  overflow:scroll;overflow-y: hidden">
+				<table border="1" rules="all" style="width:100%; height:100px; text-align:center;white-space:nowrap" class="table table-striped table-bordered">
+					<thead><!--好像沒必要-->
+						<label class="h5">订单列表</label>
+					</thead>
+					<tbody class="text-center">
+					
+						<tr class="table-primary">
+							<th class="num">订单号</th>
+							<th class="num">订单日期</th>
+							<th class="num">金额</th>
+							<th class="num">状态</th>
+							<th class="num">操作</th>
+						</tr>
+						{if($lists)}
+						{foreach $lists as $v}
+						<tr>
+							<td>{$v['orderno']}</td>
+							<td>{fun date('Y/m/d',$v['addtime'])}</td>
+							<td>￥{$v['price']}</td>
+							<td>
+							 <!--1提交订单,2已支付,3超时,4待审核待支付,5已发货,6已废弃失效,0删除订单-->
+							{if($v['isshow']==1)}待支付
+							{else if($v['isshow']==2)}已支付
+							{else if($v['isshow']==3)}超时订单
+							{else if($v['isshow']==4)}待审核待支付
+							{else if($v['isshow']==5)}已发货
+							{else if($v['isshow']==6)}已废弃
+							{/if}</td>
+							<td><a href="{fun U('order/details',['orderno'=>$v['orderno']])}"><button class="btn btn-primary">查看</button></a><a href="javascript:if(confirm('确定要删除订单吗？'))window.location.href='{fun U('User/order_del',['orderno'=>$v['orderno']])}'"><button class="btn btn-danger">删除</button></a></td>
+						</tr>
+						{/foreach}
+						{if(!isMobile())}
+						<tr><td colspan="5">{$pages}</td></tr>
+						{/if}
+						{else}
+						<tr><td colspan="5">暂无订单</td></tr>
+						{/if}
+						<tr id="more"></tr>
+					</tbody>
+				</table>
+			</div>
+			</fieldset>
+		</div>
+	</div>
+</section>
+
+
+
+{include="user/common"}
+<script>
+{if(isMobile())}
+var p=1;
+$(window).scroll(function () {
+	//判断是否滑动到页面底部
+	
+	if ($(window).scrollTop() === ($(document).height() - $(window).height()) ) {	
+		p++;
+		$.ajax({
+		 url:"{fun U('User/order')}", 
+		 dataType:"json",
+		 async:true,
+		 data:{page:p,ajax:1,iscode:1},
+		 type:"POST",//请求方式
+		 beforeSend:function(){
+		//请求前的处理
+		},
+		 success:function(r){
+		//请求成功时处理
+				if(r.code==0){
+					var html = '';
+					var leng = r.data.length;
+					if(leng>0){
+						for(var i=0;i<leng;i++){
+							html+='<tr>'+
+							'<td>'+r.data[i].orderno+'</td>'+
+							'<td>'+r.data[i].addtime+'</td>'+
+							'<td>'+r.data[i].price+'</td>';
+							switch(r.data[i].isshow){
+								case 1:
+								html+='<td>待支付</td>';
+								break;
+								case 2:
+								html+='<td>已支付</td>';
+								break;
+								case 3:
+								html+='<td>已过期</td>';
+								break;
+								case 4:
+								html+='<td>订单已提交</td>';
+								break;
+								default:
+								break;
+							}
+							html+='<td><a href="'+r.data[i].order_details+'">查看</a><a href="javascript:if(confirm(\'确定要删除订单吗？\'))window.location.href=\''+r.data[i].order_details+'\'">删除</a></td></tr>';
+						}
+						$("#more").before(html);
+						
+					}
+				}else{
+					alert(r.msg);
+					return false;
+				}
+		},
+		 complete:function(){
+		//请求完成的处理
+		},
+		 error:function(){
+		//请求出错处理
+				alert('网络异常');
+		}
+
+			
+			
+		})
+	
+	
+	}
+})
+{/if}
+</script>
+</body>
+</html>

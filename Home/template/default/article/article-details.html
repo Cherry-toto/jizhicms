@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+    <title>{$jz['seo_title']}-{$webconf['web_name']}</title>
+	<meta name="keywords" content="{$jz['keywords']}" />
+	<meta name="description" content="{$jz['description']}" />
+	{include="style"}
+</head>
+
+<body>
+    {include="nav"}
+    <main class="page blog-post">
+        <section class="clean-block clean-post dark">
+            <div class="container">
+                <div class="block-content">
+                   <div class="post-body">
+						<p style="float:right;">当前位置：{$positions} > <a href="{$jz['url']}">{$jz['title']}</a></p>
+                        <h3>{$jz['title']}</h3>
+                        <div class="post-info"><span>作者：{fun adminInfo($jz['userid'],'name')}</span><span>{fun date('Y-m-d H:i',$jz['addtime'])}</span>
+						{if(checkLikes($type['id'],$jz['id']))}
+						<span style="color:#f00;cursor:pointer;" onclick="likes({$type['id']},{$jz['id']})" class="icon-like">已点赞</span>
+						{else}
+						<span style="color:gray;cursor:pointer;" onclick="likes({$type['id']},{$jz['id']})" class="icon-like">点赞</span>
+						{/if}									
+									
+						{if(checkCollect($type['id'],$jz['id']))}
+						<span style="color:#f00;cursor:pointer;" onclick="collect({$type['id']},{$jz['id']})"  >已收藏</span>
+						{else}
+						<span style="color:gray;cursor:pointer;" onclick="collect({$type['id']},{$jz['id']})" >收藏</span>
+						{/if}
+						<span style="color:#f00;margin-left:10px;">热度：{fun incrData('article',$jz['id'],'hits')}</span>
+						</div>
+                        {$jz['body']}
+                    </div>
+					<div class="bts" style="padding:12px;clear:both;">
+					{if($aprev)}
+					<a href="{$aprev['url']}">上一篇：{$aprev['title']}</a>
+					{else}
+					<a >上一篇：没有了~</a>
+					{/if}
+					{if($anext)}
+					<a href="{$anext['url']}" style="float: right;">下一篇：{$anext['title']}</a>
+					{else}
+					<a  style="float: right;">下一篇：没有了</a>
+					{/if}
+					</div>
+                </div>
+				
+				
+            </div>
+			
+        </section>
+		
+    </main>
+    {include="footer"}
+</body>
+
+</html>

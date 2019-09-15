@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+    <title>支付</title>
+    
+</head>
+
+<body style="background:#fff;opacity: 0;">
+
+<form method="post" action="<?php echo $url;?>" id="formdata" >
+<h2 class="sr-only">订单信息</h2>
+<div class="form-group"><input class="form-control" type="text" name="mchid" value="<?php echo $order['mchid'];?>" /></div>
+<div class="form-group"><input class="form-control" type="text" name="appid" value="<?php echo $order['appid'];?>" /></div>
+<div class="form-group"><input class="form-control" type="text" name="secretkey" value="<?php echo $order['secretkey'];?>" /></div>
+<div class="form-group"><input class="form-control" type="text" name="paytype" value="<?php echo $order['paytype'];?>" /></div>
+<div class="form-group"><input class="form-control" type="text" name="money" value="<?php echo $order['money'];?>" /></div>
+<div class="form-group"><input class="form-control" type="text" name="title" value="<?php echo $order['title'];?>" /></div>
+<div class="form-group"><input class="form-control" type="text" name="orderno" value="<?php echo $order['orderno'];?>" /></div>
+
+</form>
+<script>
+var form = document.getElementById('formdata');
+//再次修改input内容
+form.submit();
+</script>
+</body>
+</html>

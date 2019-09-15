@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html>
+    <head>
+	<meta charset="UTF-8">
+        {include="style"}
+    </head>
+    <body>
+        <div class="x-nav">
+            <span class="layui-breadcrumb">
+              <a><cite>首页</cite></a>
+              <a><cite>扩展模块管理</cite></a>
+              <a><cite>{$molds['name']}列表</cite></a>
+              
+            </span>
+            <a class="layui-btn layui-btn-small" style="line-height:1.6em;margin-top:3px;float:right"  href="javascript:location.replace(location.href);" title="刷新"><i class="iconfont" style="line-height:30px">&#xe6aa;</i></a>
+        </div>
+        <div class="x-body">
+		
+          <div class="layui-row">
+			<form class="layui-form layui-col-md12 x-so" method="get" id="myform">
+			<div class="layui-input-inline">
+			  <select name="tid" lay-filter="tid" class="layui-inline autosubmit">
+			  <option value="">请选择栏目</option>
+			   {foreach $classtypes as $v}
+			   <option {if($tid==$v['id'])} selected="selected" {/if}value="{$v['id']}">{$v['classname']}</option>
+			   {/foreach}
+			
+			  </select>
+			</div>
+			{$fields_search}
+			  <button class="layui-btn"  lay-submit="" lay-filter="sreach"><i class="layui-icon">&#xe615;</i></button>
+			</form>
+		  </div>
+		
+          <xblock>
+		  <button class="layui-btn layui-btn-danger" onclick="delAll()"><i class="layui-icon"></i>批量删除</button>
+		  <button class="layui-btn" onclick="x_admin_show('新增{$molds['name']}','{fun U('Extmolds/addmolds',array('molds'=>$molds['biaoshi']))}')"><i class="layui-icon"></i>新增{$molds['name']}</button>
+		   <span class="x-right" style="line-height:40px">共有数据：{$sum} 条</span>
+		  </xblock>
+             <div style="width:100%;  overflow:scroll;overflow-y: hidden">
+        <table border="1" rules="all" style="width:100%; height:100px; text-align:center;white-space:nowrap" class="layui-table layui-form">
+                <thead>
+                    <tr>
+                        <th>
+						  <div class="layui-unselect header layui-form-checkbox" lay-skin="primary"><i class="layui-icon">&#xe605;</i></div>
+						</th>
+                        <th>
+                            ID
+                        </th>
+						<th width="50px">
+                            排序
+                        </th>
+						<th>
+                            所属栏目
+                        </th>
+						{foreach $fields_list as $v}
+						<th>
+                            {$v['fieldname']}
+                        </th>
+						{/foreach}
+                        <th>
+                            是否显示
+                        </th>
+						
+                        <th>
+                            操作
+                        </th>
+                    </tr>
+                </thead>
+                <tbody id="x-link">
+				  {foreach $lists as $v}
+                    <tr>
+                     <td>
+					  <div class="layui-unselect layui-form-checkbox" lay-skin="primary" data-id='{$v['id']}'><i class="layui-icon">&#xe605;</i></div>
+					</td>
+                        <td>
+                            {$v['id']}
+                        </td>
+						<td cate-id="{$v['id']}">
+                         <input type="text" class="layui-input x-sort"  name="order" value="{$v['orders']}">
+                        </td>
+						<td>
+                            {if($v['tid']!=0)}
+							{fun get_info_table('classtype',$v['tid'],'classname')}
+							{else}
+							不限
+							{/if}
+                        </td>
+						{foreach $fields_list as $vv}
+                        <td>
+                            {fun format_fields($vv,$v[$vv['field']])}
+                        </td>
+						{/foreach}
+						<td>{if($v['isshow']==1)}<span class="layui-badge layui-bg-green">显示</span>{else}<span class="layui-badge">不显示</span>{/if}</td>
+                        <td class="td-manage">
+							<button class="layui-btn layui-btn layui-btn-xs"  onclick="x_admin_show('编辑','{fun U('Extmolds/editmolds',array('id'=>$v['id'],'molds'=>$molds['biaoshi']))}')" ><i class="layui-icon">&#xe642;</i>编辑</button>
+							{if($v['htmlurl']!='')}
+							<a href="/{$v['htmlurl']}/{$v['id']}" target="_blank"><button class="layui-btn layui-btn-normal layui-btn layui-btn-xs"   ><i class="layui-icon">&#xe615;</i>预览</button></a>
+							{/if}
+							<button class="layui-btn-danger layui-btn layui-btn-xs"  onclick="admin_del(this,'{$v['id']}')" href="javascript:;" ><i class="layui-icon">&#xe640;</i>删除</button>
+							<button class="layui-btn layui-btn-warm layui-btn-xs"  onclick="admin_copy(this,'{$v['id']}')" ><i class="iconfont">&#xe744;</i>复制</button>
+
+							
+                        </td>
+						
+                    </tr>
+					{/foreach}
+                </tbody>
+            </table>
+			</div>
+            <div class="page">
+				{$pages}
+			  </div>
+        </div>
+     
+       <script>
+	  
+	   
+	    layui.use(['laydate','form','element','laypage','layer'], function(){
+                $ = layui.jquery;//jquery
+              laydate = layui.laydate;//日期插件
+              lement = layui.element;//面包导航
+            //  laypage = layui.laypage;//分页
+              layer = layui.layer;//弹出层
+			  form = layui.form;
+              //以上模块根据需要引入
+              
+			 
+              
+            });
+			
+			$(document).ready(function(){
+				$(".x-sort").change(function(){
+					//alert($(this).val());
+					var id = $(this).parent().attr('cate-id');
+					var order = $(this).val();
+				
+					$.post("{fun U('Extmolds/editOrders')}",{id:id,orders:order,biaoshi:'{$molds['biaoshi']}'},function(r){
+						var r = JSON.parse(r);
+						if(r.code==0){
+							window.location.replace(location.href);
+						}else{
+							
+							layer.msg(r.info,{icon: 5,time:1000});
+						}
+						
+					});
+				
+				})
+			});
+			  
+			
+			
+		 /*删除*/
+            function admin_del(obj,id){
+                layer.confirm('确认要删除吗？',function(index){
+				
+					$.get("{__APP_URL__}/Extmolds/deletemolds/id/"+id+"/molds/{$molds['biaoshi']}",{},function(r){
+							var r = JSON.parse(r);
+							if(r.code==0){
+							 //发异步删除数据
+								$(obj).parents("tr").remove();
+								
+								layer.msg(r.msg,{icon: 1,time:1000});
+								window.location.reload();
+								
+							}else{
+								
+								layer.msg(r.msg,{icon: 5,time:1000});
+							}
+					})
+					
+				
+                   
+                });
+            }
+			
+			 function admin_copy(obj,id){
+                $.get("{__APP_URL__}/Extmolds/copymolds/id/"+id+"/molds/{$molds['biaoshi']}",{},function(r){
+							var r = JSON.parse(r);
+							if(r.code==0){
+								
+								layer.msg(r.msg,{icon: 1,time:1000});
+								window.location.reload();
+								
+							}else{
+								
+								layer.msg(r.msg,{icon: 5,time:1000});
+							}
+					})
+            }
+			
+			 function delAll (argument) {
+
+				var data = tableCheck.getData();
+				if(data==''){
+					alert('请选择对象！');return false;
+				}
+				layer.confirm('确认要删除吗？'+data,function(index){
+					
+					$.get("{__APP_URL__}/Extmolds/deleteAll/data/"+data+"/molds/{$molds['biaoshi']}",{},function(r){
+					
+							var r = JSON.parse(r);
+							if(r.code==0){
+							  layer.msg('删除成功', {icon: 1});
+							  $(".layui-form-checked").not('.header').parents('tr').remove();
+								
+							}else{
+								
+								layer.msg(r.msg,{icon: 5,time:1000});
+							}
+					})
+					
+					
+					
+				});
+			  }
+			
+       </script>
+    </body>
+</html>

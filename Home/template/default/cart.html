@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+    <title>购物车 - {$webconf['web_name']}</title>
+<meta name="keywords" content="{$webconf['web_keyword']}" />
+<meta name="description" content="{$webconf['web_desc']}" />
+
+   {include="style"}
+</head>
+
+<body>
+  {include="nav"}
+    <main class="page shopping-cart-page">
+        <section class="clean-block clean-cart dark">
+            <div class="container">
+                <div class="block-heading">
+                    <h2 class="text-info">购物车DEMO</h2>
+                    <p>购物车处理页面，购物车订单创建，购物车商品增减处理等</p>
+                </div>
+                <div class="content">
+                    <div class="row no-gutters">
+                        <div class="col-md-12 col-lg-8">
+                            <div class="items">
+							{if($carts)}
+							{foreach $carts as $v}
+                                <div class="product product-{$v['tid']}-{$v['info']['id']}">
+                                    <div class="row justify-content-center align-items-center">
+										
+                                        <div class="col-md-2">
+                                            <div class="product-image"><img class="img-fluid d-block mx-auto image" src="{$v['info']['litpic']}"></div>
+                                        </div>
+                                        <div class="col-md-5 product-info"><a href="{fun gourl($v['info']['id'],$v['info']['htmlurl'])}" target="_blank" class="product-name">[{$v['info']['id']}]{$v['info']['title']}</a>
+                                            <div class="product-specs">
+                                                <div><span>显示屏:&nbsp;</span><span class="value">{$v['info']['display']}</span></div>
+                                                <div><span>运行内存:&nbsp;</span><span class="value">{$v['info']['ram']}</span></div>
+                                                <div><span>像素:&nbsp;</span><span class="value">{$v['info']['camera']}</span></div>
+                                            </div>
+                                        </div>
+                                        <div class="col-6 col-md-2 quantity"><label class="d-none d-md-block" for="quantity">购买数量</label><input type="number" value="{$v['num']}"  class="form-control quantity-input" data-id="{$v['info']['id']}" data-tid="{$v['tid']}"></div>
+										<input id="price_per_{$v['tid']}_{$v['info']['id']}" value="{$v['info']['price']}" type="hidden" />
+                                        <div class="col-6 col-md-2 price">
+										<span class="price_{$v['tid']}_{$v['info']['id']}">￥{$v['info']['price']*$v['num']}</span></div>
+										<div class="col-sm-12 col-md-1">
+                                            <button class="btn btn-danger" onclick="delcart({$v['tid']},{$v['info']['id']})" type="button">删除</button>
+                                        </div>
+                                    </div>
+                                </div>
+							{/foreach}
+							{else}
+							<p style="text-align:center">您还没有购物哦~</p>
+							{/if}
+                               
+                            </div>
+                        </div>
+                        <div class="col-md-12 col-lg-4">
+						<form action="{fun U('order/create')}" method="POST">
+						<input name="go" value="1" type="hidden" />
+                            <div class="summary">
+                                <h3>合计</h3>
+                                <h4><span class="text">总价</span><span class="price" id="allmoney"></span></h4>
+                                <h4><span class="text">折扣</span><span class="price" id="alldiscount"></span></h4>
+                                <h4><span class="text">运费</span><span class="price" id="yunfei"></span></h4>
+                                <h4><span class="text">总计</span><span class="price" id="summary"></span></h4><button class="btn btn-primary btn-block btn-lg" type="submit">提交订单</button>
+							</div>
+						</form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+    {include="footer"}
+	<script>
+	
+
+		var floatObj = function () {
+ 
+        /*
+         * 判断obj是否为一个整数
+         */
+        function isInteger(obj) {
+            return Math.floor(obj) === obj
+        }
+ 
+        /*
+         * 将一个浮点数转成整数，返回整数和倍数。如 3.14 >> 314，倍数是 100
+         * @param floatNum {number} 小数
+         * @return {object}
+         *   {times:100, num: 314}
+         */
+        function toInteger(floatNum) {
+            var ret = {times: 1, num: 0};
+            if (isInteger(floatNum)) {
+                ret.num = floatNum;
+                return ret
+            }
+            var strfi = floatNum + '';
+            var dotPos = strfi.indexOf('.');
+            var len = strfi.substr(dotPos + 1).length;
+            var times = Math.pow(10, len);
+            var intNum = parseInt(floatNum * times + 0.5, 10);
+            ret.times = times;
+            ret.num = intNum;
+            return ret
+        }
+ 
+		/*
+         * 核心方法，实现加减乘除运算，确保不丢失精度
+         * 思路：把小数放大为整数（乘），进行算术运算，再缩小为小数（除）
+         *
+         * @param a {number} 运算数1
+         * @param b {number} 运算数2
+         * @param op {string} 运算类型，有加减乘除（add/subtract/multiply/divide）
+         *
+         */
+        function operation(a, b, op) {
+            var o1 = toInteger(a);
+            var o2 = toInteger(b);
+            var n1 = o1.num;
+            var n2 = o2.num;
+            var t1 = o1.times;
+            var t2 = o2.times;
+            var max = t1 > t2 ? t1 : t2;
+            var result = null;
+            switch (op) {
+                case 'add':
+                    if (t1 === t2) { // 两个小数位数相同
+                        result = n1 + n2
+                    } else if (t1 > t2) { // o1 小数位 大于 o2
+                        result = n1 + n2 * (t1 / t2)
+                    } else { // o1 小数位 小于 o2
+                        result = n1 * (t2 / t1) + n2
+                    }
+                    return result / max;
+                case 'subtract':
+                    if (t1 === t2) {
+                        result = n1 - n2
+                    } else if (t1 > t2) {
+                        result = n1 - n2 * (t1 / t2)
+                    } else {
+                        result = n1 * (t2 / t1) - n2
+                    }
+                    return result / max;
+                case 'multiply':
+                    result = (n1 * n2) / (t1 * t2);
+                    return result;
+                case 'divide':
+                    result = (n1 / n2) * (t2 / t1);
+                    return result
+            }
+        }
+ 
+        // 加减乘除的四个接口
+        function add(a, b) {
+            return operation(a, b, 'add')
+        }
+ 
+        function subtract(a, b) {
+            return operation(a, b, 'subtract')
+        }
+ 
+        function multiply(a, b) {
+            return operation(a, b, 'multiply')
+        }
+ 
+        function divide(a, b) {
+            return operation(a, b, 'divide')
+        }
+ 
+        // exports
+        return {
+            add: add,
+            subtract: subtract,
+            multiply: multiply,
+            divide: divide
+        }
+    }();
+	
+	//删除商品
+	function delcart(tid,id){
+		
+		$.ajax({
+			 url:"{fun U('user/delcart')}",//请求的url地址
+			 dataType:"json",//返回格式为json
+			 async:true,//请求是否异步，默认为异步，这也是ajax重要特性
+			 data:{tid:tid,id:id,ajax:1},//参数值
+			 type:"POST",//请求方式
+			 beforeSend:function(){
+				//请求前的处理
+				},
+				 success:function(r){
+					if(r.code==0){
+						//window.location.href=r.url;
+						$(".product-"+tid+"-"+id).remove();
+						total();
+					}else{
+						alert(r.msg);
+					}
+						
+				},
+				 complete:function(){
+				//请求完成的处理
+				},
+				 error:function(){
+				//请求出错处理
+					alert('网络错误');
+				}
+
+					
+			
+		})
+		
+	}
+	//更改商品数量
+	 $(document).on("change",".quantity-input",function () {
+		//console.log($(this).val());
+		var num = $(this).val();
+		if(num==0){
+			alert('购买数量不能等于0');
+			$(this).val(1);
+			return false;
+		}
+		
+		var tid = $(this).attr('data-tid');
+		var id = $(this).attr('data-id');
+		var price = parseFloat($("#price_per_"+tid+"_"+id).val());
+		var money = floatObj.multiply(num,price);
+		$(".price_"+tid+"_"+id).html('￥'+money);
+		$.ajax({
+			 url:"{fun U('user/addcart')}",//请求的url地址
+			 dataType:"json",//返回格式为json
+			 async:true,//请求是否异步，默认为异步，这也是ajax重要特性
+			 data:{tid:tid,id:id,num:num,ajax:1},//参数值
+			 type:"POST",//请求方式
+			 beforeSend:function(){
+				//请求前的处理
+				},
+				 success:function(r){
+					if(r.code==0){
+						//window.location.href=r.url;
+						total();
+					}else{
+						alert(r.msg);
+						window.location.reload();
+					}
+						
+				},
+				 complete:function(){
+				//请求完成的处理
+				},
+				 error:function(){
+				//请求出错处理
+					alert('网络错误');
+				}
+
+					
+			
+		})
+		
+	 });
+	 
+	 //统计商品金额及折扣
+	 	<!--会员折扣信息-->
+	var discount_type= {$member_group['discount_type']};//折扣类型
+	var discount = parseFloat({$member_group['discount']});//折扣价
+	var yunfei = {$webconf['yunfei']};//自由设定
+	function total(){
+		var num=0,id=0,tid=0,price=0.00,money=0.00;
+		var allmoney = 0.00;
+		var alldiscount = 0.00;
+		var summary = 0.00;
+		$(".quantity-input").each(function(){
+			 num = $(this).val();
+			 id = $(this).attr('data-id');
+			 tid = $(this).attr('data-tid');
+			 price =  parseFloat($("#price_per_"+tid+"_"+id).val());
+			 money = floatObj.multiply(num,price);
+			 allmoney = floatObj.add(allmoney,money);
+		});
+		if(discount_type==1){
+			//现金折扣
+			alldiscount = floatObj.subtract(allmoney,discount);
+		}else if(discount_type==2){
+			//百分比折扣
+			alldiscount = floatObj.multiply(allmoney,discount);
+		}
+		var summary1 = floatObj.subtract(allmoney,alldiscount);//减去折扣
+		summary = floatObj.subtract(summary1,yunfei);//减去运费
+		
+		//赋值统计
+		$("#allmoney").html('￥'+allmoney);
+		$("#alldiscount").html('￥'+alldiscount);
+		$("#yunfei").html('￥'+yunfei);
+		$("#summary").html('￥'+summary);
+	
+	}
+	
+	$(function(){
+		total();
+	});
+	
+	</script>
+</body>
+
+</html>

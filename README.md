@@ -1,1 +1,2 @@
-# jizhicms
+极致CMS（以下简称:JIZHICMS）是一款免费开源的PHP建站CMS系统，在同意条款下可以免授权商业使用该系统。
+

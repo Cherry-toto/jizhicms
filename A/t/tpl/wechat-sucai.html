@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html>
+    <head>
+         <meta charset="UTF-8">
+   {include="style"}
+    </head>
+    <body>
+        <div class="x-nav">
+            <span class="layui-breadcrumb">
+              <a><cite>首页</cite></a>
+              <a><cite>微信栏目管理</cite></a>
+              
+            </span>
+           <a class="layui-btn layui-btn-small" style="line-height:1.6em;margin-top:3px;float:right" href="javascript:location.replace(location.href);" title="刷新">
+        <i class="iconfont" style="line-height:30px">&#xe6aa;</i></a>
+        </div>
+        <div class="x-body">
+		<a title="图文素材" href="{fun U('sucai',array('type'=>'news'))}"  class="ml-5" style="text-decoration:none"><button class="layui-btn layui-btn-sm" type="button">图文素材</button></a>
+		<a title="图片素材" href="{fun U('sucai',array('type'=>'image'))}"  class="ml-5" style="text-decoration:none"><button class="layui-btn layui-btn-sm" type="button">图片素材</button></a>
+		<a title="视频素材" href="{fun U('sucai',array('type'=>'video'))}"  class="ml-5" style="text-decoration:none"><button class="layui-btn layui-btn-sm" type="button">视频素材</button></a>
+		<a title="语音素材" href="{fun U('sucai',array('type'=>'voice'))}"  class="ml-5" style="text-decoration:none"><button class="layui-btn layui-btn-sm" type="button">语音素材</button></a>
+         <form class="layui-form layui-col-md12 x-so" method="get" id="myform">
+			<input name="go" value="1" type="hidden" />
+          {if($data['type']=='news')}
+            <table class="layui-table">
+                <thead>
+                    <tr>
+                        <th>media_id</th>
+                        <th>
+                            title
+                        </th>
+                        <th>
+                            thumb_media_id
+                        </th>
+                        <th>
+                            show_cover_pic
+                        </th>
+						<th>
+                            author
+                        </th>
+						<th>
+                            digest
+                        </th>
+						<th>
+                            content
+                        </th>
+						<th>
+                            url
+                        </th>
+						<th>
+                            content_source_url
+                        </th>
+						
+                        
+                    </tr>
+                </thead>
+				
+                <tbody id="x-link">
+				  {foreach $lists as $k=>$v}
+					
+				  
+                    <tr data="{$k+1}">
+                     
+                        <td 
+						
+						rowspan="{$v['count']}"
+						
+						>
+						{$v['media_id']}
+                        </td>
+						<td>{$v['news_item'][0]['title']}</td>
+						<td>{$v['news_item'][0]['thumb_media_id']}</td>
+						<td>{$v['news_item'][0]['show_cover_pic']}</td>
+						<td>{$v['news_item'][0]['author']}</td>
+						<td>{$v['news_item'][0]['digest']}</td>
+						<td>{fun newstr($v['news_item'][0]['content'],30)}</td>
+						<td>{$v['news_item'][0]['url']}</td>
+						<td>{$v['news_item'][0]['content_source_url']}</td>
+						
+						
+                    </tr>
+					{foreach $v['news_item'] as $kk=>$vv}
+					{if($kk>0)}
+					<tr data="{$k+1}">
+                     
+                        
+						<td>{$vv['title']}</td>
+						<td>{$vv['thumb_media_id']}</td>
+						<td>{$vv['show_cover_pic']}</td>
+						<td>{$vv['author']}</td>
+						<td>{$vv['digest']}</td>
+						<td>{fun newstr($vv['content'],30)}</td>
+						<td>{$vv['url']}</td>
+						<td>{$vv['content_source_url']}</td>
+						
+						
+                    </tr>
+					{/if}
+					{/foreach}
+					
+					{/foreach}
+					<tr><td colspan="10">
+					总共{$total_count}条
+					{if($data['offset']>0)}
+					<a title="上一页" href="{fun U('sucai',array('type'=>$data['type'],'offset'=>$data['count']-20))}"  
+                            class="ml-5" style="text-decoration:none">
+                                <button class="layui-btn layui-btn-sm" type="button">上一页</button>
+                            </a>
+					{/if}
+					{if($item_count<$total_count)}
+					<a title="下一页" href="{fun U('sucai',array('type'=>$data['type'],'offset'=>$data['count']+20))}"  
+                            class="ml-5" style="text-decoration:none">
+                                <button class="layui-btn layui-btn-sm" type="button">下一页</button>
+                            </a>
+					{/if}		
+					</td></tr>
+                </tbody>
+            </table>
+			{else}
+			 <table class="layui-table">
+                <thead>
+                    <tr>
+                        <th>media_id</th>
+                        <th>
+                            name
+                        </th>
+                        
+                        </th>
+						<th>
+                            update_time
+                        </th>
+						<th>
+                            url
+                        </th>
+						
+						
+                        
+                    </tr>
+                </thead>
+				 <tbody id="x-link">
+				 
+				 {foreach $lists['item'] as $v}
+				 {if($v['media_id'])}
+				 <tr>
+					<td rowspan="{$v['count']}">
+					{$v['media_id']}
+					</td>
+					<td>{$v['name']}</td>
+					<td>{fun date('Y-m-d H:i:s',$v['update_time'])}</td>
+					<td>{$v['url']}</td>
+				 </tr>
+				 {/if}
+				 {/foreach}
+				 <tr><td colspan="10">
+					总共{$total_count}条
+					{if($data['offset']>0)}
+					<a title="上一页" href="{fun U('sucai',array('type'=>$data['type'],'offset'=>$data['count']-20))}"  
+                            class="ml-5" style="text-decoration:none">
+                                <button class="layui-btn layui-btn-sm" type="button">上一页</button>
+                            </a>
+					{/if}
+					{if($item_count<$total_count)}
+					<a title="下一页" href="{fun U('sucai',array('type'=>$data['type'],'offset'=>$data['count']+20))}"  
+                            class="ml-5" style="text-decoration:none">
+                                <button class="layui-btn layui-btn-sm" type="button">下一页</button>
+                            </a>
+					{/if}		
+					</td></tr>
+				 </tbody>
+			</table>
+			{/if}
+			</form>
+            
+        </div>
+		<br/>
+		<br/>
+		<br/>
+		<br/>
+		<br/>
+		<br/>
+    
+       <script>
+	    layui.use(['laydate','element','form','laypage','layer'], function(){
+                $ = layui.jquery;//jquery
+              laydate = layui.laydate;//日期插件
+              lement = layui.element();//面包导航
+            //  laypage = layui.laypage;//分页
+              layer = layui.layer;//弹出层
+			  form = layui.form;
+
+              //以上模块根据需要引入
+             
+             
+              
+            });
+		
+		
+       </script>
+    </body>
+</html>

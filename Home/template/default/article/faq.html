@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+	<title>{$type['classname']}-{$webconf['web_name']}</title>
+<meta name="keywords" content="{$type['keywords']}" />
+<meta name="description" content="{$type['description']}" />
+{include="style"}
+</head>
+
+<body>
+     {include="nav"}
+    <main class="page faq-page">
+        <section class="clean-block clean-faq dark">
+            <div class="container">
+                <div class="block-heading">
+                    <h2 class="text-info">FAQ</h2>
+                    <p>用极致CMS建站有哪些常见问题？这里会告诉大家一些需要注意的事项</p>
+                </div>
+                <div class="block-content">
+				{if($lists)}
+				{foreach $lists as $v}
+                    <div class="faq-item">
+                        <h4 class="question">{$v['title']}</h4>
+                        <div class="answer">
+                            <p>{$v['description']}</p>
+                        </div>
+                    </div>
+				{/foreach}
+				{else}
+				<div class="faq-item">
+                <p>暂时没有数据~</p>      
+                </div>
+				{/if}
+                   
+			{if($lists)}
+			{if(!isMobile())}
+			<div style="    width: 215px;margin: 0 auto;margin-top:20px">
+			 <nav>
+				<ul class="pagination">
+				{if($listpage['list'])}
+					<li class="page-item {if($listpage['prev'])}disabled{/if}"><a class="page-link" href="{$listpage['prev']}" aria-label="Previous"><span aria-hidden="true">«</span></a></li>
+					{foreach $listpage['list'] as $ss}
+					<li class="page-item {if($ss['num']==$listpage['current_num'])}active background{/if}"><a href="{$ss['url']}" class="page-link">{$ss['num']}</a></li>
+					{/foreach}
+					<li class="page-item {if($listpage['next'])}disabled{/if}"><a class="page-link" href="{$listpage['next']}" aria-label="Next"><span aria-hidden="true">»</span></a></li>
+				{/if}
+				</ul>
+			</nav>
+			</div>
+			{/if}
+			{/if}
+                </div>
+            </div>
+        </section>
+    </main>
+   {include="footer"}
+   
+    <script>
+<!--判断端口，手机端下拉加载-->
+{if(isMobile())}
+var p={$frpage};
+var istrue = true;
+$(window).scroll(function () {
+	//判断是否滑动到页面底部
+	
+	if ($(window).scrollTop() === ($(document).height() - $(window).height()) ) {
+		//防止过度加载
+		if(!istrue){
+			return false;
+		}
+		p+=1;
+		var tid = {$type['id']};
+		var molds = "{$type['molds']}";
+		//Screen/index/molds/$1/tid/$2/jz_screen/$3
+		$.ajax({
+			url:window.location.href,//请求的url地址
+			// dataType:"json",//返回格式为json
+			async:true,//请求是否异步，默认为异步，这也是ajax重要特性
+			data:{tid:tid,molds:molds,ajax:1,ajax_tpl:1,page:p},//参数值
+			type:"GET",//请求方式
+			beforeSend:function(){
+				//请求前的处理
+				istrue = false;
+				
+			},
+			 success:function(r){
+				if(r==1){
+					alert('没有了~');return false;
+				}
+				$(".block-content").append(r);
+					
+			},
+			complete:function(){
+			//请求完成的处理
+				istrue = true;
+			},
+			 error:function(){
+			//请求出错处理
+				alert('网络错误');
+			}
+
+					
+			
+		})
+	}
+})
+
+{/if}
+   </script>
+   
+</body>
+
+</html>

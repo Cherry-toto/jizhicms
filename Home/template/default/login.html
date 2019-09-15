@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+    <title>登录会员 - {$webconf['web_name']}</title>
+<meta name="keywords" content="{$webconf['web_keyword']}" />
+<meta name="description" content="{$webconf['web_desc']}" />
+   {include="style"}
+</head>
+
+<body>
+   {include="nav"}
+    <main class="page login-page">
+        <section class="clean-block clean-form dark">
+            <div class="container">
+                <div class="block-heading">
+                    <h2 class="text-info">登录会员</h2>
+                    <p>会员系统登录展示页</p>
+                </div>
+                <form method="POST" onsubmit="return checklogin()">
+                    <div class="form-group"><label for="tel">手机号</label><input class="form-control item" type="tel" name="tel" id="tel"></div>
+                    <div class="form-group"><label for="password">密码</label><input class="form-control" type="password" name="password" id="password"></div>
+                    <div class="form-group">
+                        <div class="form-check"><input class="form-check-input" type="checkbox" id="jz_login"><label class="form-check-label" for="checkbox">记住密码</label><a style="float:right" href="{fun U('login/register')}">还没有账号？立即注册</a></div>
+                    </div>
+					<button class="btn btn-primary btn-block" type="submit">登	录</button>
+					{if(isWeixin())}
+					<button onclick="wechat_login()" class="btn btn-success btn-block" type="button">微信登录</button>
+					{/if}
+					<div class="form-group"><a style="margin-left:10px;color:#f00" href="{fun U('forget')}">忘记密码？</a></div>
+					<input id="isremember" name="isremember" value="0" type="hidden" />
+					<input id="token" name="token" value="{$token}" type="hidden" />
+				</form>
+            </div>
+        </section>
+    </main>
+   {include="footer"}
+</body>
+<script>
+function setCookie(name,value,day)
+{
+var Days = parseInt(day);
+var exp = new Date();
+exp.setTime(exp.getTime() + Days*24*60*60*1000);
+document.cookie = name + "="+ escape (value) + ";expires=" + exp.toGMTString();
+}
+function getCookie(name)
+{
+var arr,reg=new RegExp("(^| )"+name+"=([^;]*)(;|$)");
+if(arr=document.cookie.match(reg)){
+return unescape(arr[2]);
+}else{
+return null;
+}
+
+}
+
+$(function(){
+//页面执行时处理
+var name = getCookie('jizhi_username');
+var jizhi_login_token = getCookie('jizhi_login_token');
+if(name!=null && jizhi_login_token!=null){
+	$("#tel").val(name);
+	$("#password").val(jizhi_login_token);
+}
+
+})
+
+function checklogin(){
+	if($.trim($("#tel").val())=='' || $.trim($("#password").val())==''){
+		alert('账号密码不能为空~');
+		return false;
+	}
+	if($("#jz_login").is(":checked")){
+		$("#isremember").val(1);
+		setCookie('jizhi_username',$("#tel").val());//设置用户名
+		setCookie('jizhi_login_token',$("#token").val(),7);//设置7天有效期
+	}else{
+		$("#isremember").val(0);
+	}
+	
+	return true;
+
+}
+
+function wechat_login(){
+	window.location.href="{fun U('Wechat/login')}"
+}
+
+</script>
+
+</html>

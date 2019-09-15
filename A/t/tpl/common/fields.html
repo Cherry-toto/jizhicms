@@ -1,0 +1,14 @@
+$(function(){
+	$(document).on('click','.delete_file',function(){
+		//删除页面信息
+		
+		$(this).parent().remove();
+	})
+})
+
+function get_fields(tid,id){
+	var id = arguments[1]?arguments[1]:0;
+	$.post("{fun U('Fields/get_fields')}",{molds:'{$fields_biaoshi}',tid:tid,id:id},function(r){
+		$("#ext_fields").html(r);
+	});
+}

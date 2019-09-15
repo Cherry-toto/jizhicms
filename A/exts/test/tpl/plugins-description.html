@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	{include="style"}
+
+</head>
+<body >
+  <div class="layui-rows" style="    margin-top: 10px;">
+    <h1 style="text-align:center">这里写你的插件安装说明</h1>
+	<div style="margin:15px;">
+		插件模板文件/说明文件如何引入css、js等资源？
+		<pre class="layui-code">这个是插件模板目录标签：{!--$tpl--}
+		解析后路径是：{fun str_replace("\\",'/',$tpl)}     [@是系统内置的功能参数，无需管它的作用]
+		示例：引入模板文件里的一个css文件style.css，你可以在模板中写：{!--$tpl--}style.css</pre> 
+		插件控制器Pluginscontroller.php里面需要保留哪些不可缺的代码？
+		<pre class="layui-code">namespace A\exts;
+
+use FrPHP\lib\Controller;
+use FrPHP\Extend\Page;
+class PluginsController extends Controller {
+	//自动执行
+	public function _init(){
+		/**
+			继承系统默认配置
+		
+		**/
+		
+		//检查当前账户是否合乎操作
+		if(!isset($_SESSION['admin']) || $_SESSION['admin']['id']==0){
+			Redirect(U('Login/index'));
+			
+		}
+ 
+	    if($_SESSION['admin']['isadmin']!=1){
+		    if(strpos($_SESSION['admin']['paction'],','.APP_CONTROLLER.',')!==false){
+		   
+		    }else{
+			     $action = APP_CONTROLLER.'/'.APP_ACTION;
+			if(strpos($_SESSION['admin']['paction'],','.$action.',')==false){
+				$ac = M('Ruler')->find(array('fc'=>$action));
+			   Error('您没有【'.$ac['name'].'】的权限！',U('Index/index'));
+			}
+		}
+	   
+	  
+	  }
+	  
+	    $webconf = webConf();
+	    $this->webconf = $webconf;
+	    $customconf = get_custom();
+	    $this->customconf = $customconf;
+		
+		//插件模板页目录
+		
+		$this->tpl = '@'.dirname(__FILE__).'/tpl/';
+		
+		/**
+			在下面添加自定义操作
+		**/
+		
+		
+	}
+	
+	//执行SQL语句在此处处理,或者移动文件也可以在此处理
+	public  function install(){
+		//下面是新增test表的SQL操作
+		
+		
+		return true;
+		
+	}
+	
+	//卸载程序,对新增字段、表等进行删除SQL操作，或者其他操作
+	public function uninstall(){
+		//下面是删除test表的SQL操作
+		
+		return true;
+	}
+	
+	//安装页面介绍,操作说明
+	public function desc(){
+		
+		$this->display($this->tpl.'plugins-description.html');
+	}
+	
+	//配置文件,插件相关账号密码等操作
+	public  function setconf($plugins){
+		//将插件赋值到模板中
+		$this->plugins = $plugins;
+		$this->config = json_decode($plugins['config'],1);
+		
+		$this->display($this->tpl.'plugins-test.html');
+	}
+	
+	
+	
+	
+}</pre>
+	config.php文件相关说明：
+	<pre class="layui-code">return [
+	'name'=>'极致插件DEMO',//插件名,必须与插件文件夹名字相同
+	'desc'=>'这是一个极致插件开发的案例展示',//插件介绍
+	'author'=>'留恋风2581047041@qq.com',//作者介绍,这里可以把自己的联系方式带上去,方便用户沟通
+	'version'=>'1.0',//插件版本,默认1.0为最低版本
+	'update_time'=>'2019-08-14',//插件更新时间,格式：Y-m-d
+	'path'=>'Home',//插件应用的模块,Home表示前台模块,Admin表示后台模块.插件安装的时候会据此加载控制器到对应的目录中
+];</pre>
+	插件功能开发需要注意的代码：
+	<pre class="layui-code">namespace Home\plugins;//空间命名
+use Home\c\CommonController;//使用空间类
+use FrPHP\lib\Controller;//使用系统类
+use FrPHP\Extend\Page;//使用分页
+class TestController extends CommonController
+{
+	function index(){
+		echo '这是一个插件页面！';
+	}
+
+	
+}</pre>
+	</div>
+  </div>
+
+  
+    <script>
+	layui.use('code', function(){ //加载code模块
+		  layui.code(); //引用code方法
+		});
+    </script>
+ 
+</body>
+</html>

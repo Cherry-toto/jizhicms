@@ -1,7 +1,7 @@
-#极致CMS建站系统
-##一款免费开源的PHP建站CMS系统，可以免授权商业使用该系统。
+# 极致CMS建站系统
+## 一款免费开源的PHP建站CMS系统，可以免授权商业使用该系统。
 
-[![极致CMS建站系统](https://img.kancloud.cn/78/9f/789f15c672f807686ab8b9edab6f35f1_1920x700.png)](http://pwokcc6tu.bkt.clouddn.com/jizhicms_Dev1.3.zip)
+[![极致CMS建站系统](https://img.kancloud.cn/78/9f/789f15c672f807686ab8b9edab6f35f1_1920x700.png)](http://pwokcc6tu.bkt.clouddn.com/jizhicms_Beta1.4.zip)
 
 官网：[jizhicms.cn](http://jizhicms.cn) |&nbsp;&nbsp;&nbsp;[jizhicms.com](http://jizhicms.cn)
 演示：[demo.jizhicms.cn](http://demo.jizhicms.cn)   后台：[地址](http://demo.jizhicms.cn/admin.php) [账户：test,密码：123456]

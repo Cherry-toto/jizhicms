@@ -759,7 +759,7 @@ function classTypeData(){
 
 //内容url
 function gourl($id,$htmlurl=null,$molds='article'){
-		if(!$id){Errpr_msg('缺少ID！');}
+		if(!$id){Error_msg('缺少ID！');}
 		if($htmlurl!=null){
 			return get_domain().'/'.$htmlurl.'/'.$id.File_TXT;
 		}
@@ -771,7 +771,7 @@ function gourl($id,$htmlurl=null,$molds='article'){
 
 //输出任何模块的内容URL
 function all_url($id,$molds='article',$htmlurl=null){
-	if(!$id){Errpr_msg('缺少ID！');}
+	if(!$id){Error_msg('缺少ID！');}
 		if($htmlurl!=null){
 			return get_domain().'/'.$htmlurl.'/'.$id.File_TXT;
 		}

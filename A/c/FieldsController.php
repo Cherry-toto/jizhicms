@@ -209,7 +209,9 @@ class FieldsController extends CommonController
 						$x = M()->runSql($sql);
 						
 					}
-					
+					if($data['fieldtype']==7 || $data['fieldtype']==8 || $data['fieldtype']==12){
+                    	$data['body'] = $this->frparam('body_'.$data['fieldtype'],1);
+                    }
 					
 					if(M('Fields')->update(array('id'=>$this->frparam('id')),$data)){
 						JsonReturn(array('code'=>0,'msg'=>'字段修改成功！'));

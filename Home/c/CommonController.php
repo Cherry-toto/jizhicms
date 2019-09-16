@@ -166,9 +166,9 @@ class CommonController extends Controller
 		$l = '';
 		foreach($fields_list as $k=>$v){
 			if(!array_key_exists($v['field'],$data)){
-				$data[$v['field']] = '';
+				//使用默认值
+				$data[$v['field']] = $v['vdata'];
 			}
-			$fields_list[$k]['data'] = $data[$v['field']];
 			switch($v['fieldtype']){
 				case 1:
 				$l .= '<div class="layui-form-item">
@@ -404,6 +404,32 @@ layui.use("laydate", function(){
 							 
 						</script>';
 				break;
+				case 12:
+				$l .= '<div class="layui-form-item" pane>
+                    <label for="'.$v['field'].'" class="layui-form-label">
+                        <span class="x-red">*</span>'.$v['fieldname'].'  
+                    </label>
+                    <div class="layui-input-inline">';
+				foreach(explode(',',$v['body']) as $vv){
+					$s=explode('=',$vv);
+					$l.='<input type="radio" name="'.$v['field'].'" value="'.$s[1].'" title="'.$s[0].'" ';
+					if($data[$v['field']]==$s[1]){
+						$l.='checked="checked"';
+					}
+					$l.=' >';
+				}
+					$l.='</div>
+					<div class="layui-form-mid layui-word-aux">
+					  '.$v['tips'].'
+					</div>
+					</div><script>
+							layui.use("form", function () {
+								var form_'.$v['field'].' = layui.form;
+								form_'.$v['field'].'.render();
+							});
+							 
+						</script>';
+				break;
 				case 8:
 				$l .= '<div class="layui-form-item">
 						<label for="'.$v['field'].'" class="layui-form-label">
@@ -412,10 +438,10 @@ layui.use("laydate", function(){
 						<div class="layui-input-block">';
 				foreach(explode(',',$v['body']) as $vv){
 					$s=explode('=',$vv);
-					$l.='<input type="checkbox" name="'.$v['field'].'[]" value="'.$s[1].'" ';
+					$l.='<input type="checkbox" title="'.$s[0].'" name="'.$v['field'].'[]" value="'.$s[1].'" ';
 					if(strpos($data[$v['field']],','.$s[1].',')!==false){
 						$l.='checked="checked"';};
-					$l.='>'.$s[0];
+					$l.='>';
 				}
 				$l 	.= '</div>
 					<div class="layui-form-mid layui-word-aux">
@@ -466,7 +492,7 @@ layui.use("laydate", function(){
 						elem: "#LAY_'.$v['field'].'_upload" //绑定元素
 						,url: "'.U('Common/uploads').'" //上传接口
 						,accept:"file"
-						,exts: "zip|rar|7z|pdf|PDF"
+						,exts: "'.$this->webconf['fileType'].'"
 						,done: function(res){
 							if(res.code==0){
 								
@@ -519,7 +545,7 @@ layui.use("laydate", function(){
 						,url: "'.U('Common/uploads').'" //上传接口
 						,multiple: true
 						,accept:"file"
-						,exts: "zip|rar|7z|pdf|PDF"
+						,exts: "'.$this->webconf['fileType'].'"
 						,before: function(obj){ 		
 							layer.load(); //上传loading
 						  }
@@ -542,8 +568,6 @@ layui.use("laydate", function(){
 				</script>';
 				break;
 			}
-				
-			
 			
 		}
 		//echo $l;

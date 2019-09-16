@@ -89,6 +89,7 @@ namespace FrPHP\Extend;
 						}
 					break;
 					case 'tpl':
+						$this->file_ext = '';
 						$url = str_ireplace('.html','',$request_uri);
 						if(strpos($url,'?')!==false){
 							$urls = explode('?',$url);

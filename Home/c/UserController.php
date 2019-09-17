@@ -86,9 +86,9 @@ class UserController extends Controller
 	
     function index(){
 		//统计用户订单
-		$this->order_num = M('orders')->getCount(['userid'=>$this->member['id']]);
+		$this->order_num = M('orders')->getCount(['userid'=>$this->member['id'],'isshow'=>1]);
 		//统计评论数
-		$this->comment_num = M('comment')->getCount(['userid'=>$this->member['id']]);
+		$this->comment_num = M('comment')->getCount(['userid'=>$this->member['id'],'isshow'=>1]);
 		//统计点赞数
 		if($this->member['likes']!=''){
 			//,1,2,3,4,

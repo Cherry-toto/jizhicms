@@ -372,7 +372,7 @@ class View
 					if(strpos($a['tid'],'$')!==false){
 						if($isall){
 							
-							$w.= ' and  tid in(\'.implode(",",$classtypedata["'.trim($v,"'").'"]["children"]["ids"]).\') ';
+							$w.= ' and  tid in(\'.implode(",",$classtypedata['.trim($v,"'").']["children"]["ids"]).\') ';
 						}else{
 							$w.="and tid='.".trim($v,"'").".' ";
 						}

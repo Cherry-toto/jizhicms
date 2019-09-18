@@ -69,6 +69,13 @@ class FrPHP
 			}
 		}
 		
+		//检查缓存文件是否存在
+		if(!is_dir(Cache_Path)){
+			mkdir(Cache_Path);
+		}
+		if(!is_dir(Cache_Path.'/tmp')){
+			mkdir(Cache_Path.'/tmp');
+		}
 		
 		//设置时区
 		@date_default_timezone_set('PRC');
@@ -89,6 +96,7 @@ class FrPHP
     // 路由处理
     public function route()
     {
+		
 		
 		//检查是否开启redis_session ---2019/09/05 留恋风
 		if(open_redis_session){
@@ -133,7 +141,6 @@ class FrPHP
 		$method = '';
 		if(open_url_route){
 			$open_url_route = include (APP_PATH.'Conf/route.php');
-		
 			$urls = '';
 			foreach($open_url_route as $k=>$v){
 				if($v!='' && $v[0]!='' && $v[1]!=''){

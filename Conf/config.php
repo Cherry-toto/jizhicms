@@ -3,8 +3,8 @@
   array (
     'host' => '127.0.0.1',
     'dbname' => '',
-    'username' => 'root',
-    'password' => 'root',
+    'username' => '',
+    'password' => '',
     'prefix' => 'jz_',
     'port' => '3306',
   ),

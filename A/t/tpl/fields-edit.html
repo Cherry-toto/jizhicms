@@ -157,6 +157,31 @@
 							<td>无</div></td>
 							<td>多个附件，图片除外</td>
 						   </tr>
+						    <tr>
+							<td><input type="radio" name="fieldtype" {if($data['fieldtype']==13)} checked {/if} value="13" /></div></td>
+							<td>关联模块<br/>int</div></td>
+							<td><input type="text" class="layui-input" name="fieldlong_13" value="2"></div></td>
+							<td>
+							{if($data['fieldtype']==13)}
+							{php $vdata = explode(',',$data['body']) /}
+							<select name="molds_select">
+							{loop table="molds"  as="v"}
+							<option {if($vdata[0]==$v['id'])}selected{/if}  value="{$v['id']}">{$v['name']}</option>
+							{/loop}
+							</select>
+							<input type="text" placeholder="列表显示字段" class="layui-input" name="molds_list_field" value="{$vdata[1]}">
+							{else}
+							<select name="molds_select">
+							{loop table="molds"  as="v"}
+							<option  value="{$v['id']}">{$v['name']}</option>
+							{/loop}
+							</select>
+							<input type="text" placeholder="列表显示字段" class="layui-input" name="molds_list_field" value="">
+							{/if}
+							
+							</div></td>
+							<td>关联模块内容ID</td>
+						   </tr>
 						</tbody>
 					  </table>
 				    </div>

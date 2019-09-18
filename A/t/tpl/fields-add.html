@@ -156,6 +156,19 @@
 							<td>无</div></td>
 							<td>多个附件，图片除外</td>
 						   </tr>
+						    <tr>
+							<td><input type="radio" name="fieldtype" value="13" /></div></td>
+							<td>关联模块<br/>int</div></td>
+							<td><input type="text" class="layui-input" name="fieldlong_13" value="2"></div></td>
+							<td><select name="molds_select" id="molds_select">
+							<option  value="">请选择关联模块</option>
+							{loop table="molds"  as="v"}
+							<option  value="{$v['id']}">{$v['name']}</option>
+							{/loop}
+							</select><input type="text"  placeholder="列表显示字段" class="layui-input" name="molds_list_field" id="molds_list_field" value=""></div></td>
+							<td>可以直接调用关联模块内容列表，列表显示对应字段内容</td>
+						   </tr>
+						   
 						</tbody>
 					  </table>
 				    </div>

@@ -567,6 +567,37 @@ layui.use("laydate", function(){
 					});
 				</script>';
 				break;
+				case 13:
+				//tid,field
+				$l .= '<div class="layui-form-item">
+                    <label for="'.$v['field'].'" class="layui-form-label">
+                        <span class="x-red">*</span>'.$v['fieldname'].'  
+                    </label>
+                    <div class="layui-input-inline">
+						<select name="'.$v['field'].'" id="'.$v['field'].'" >';
+						$body = explode(',',$v['body']);
+				$biaoshi = M('molds')->getField(['id'=>$body[0]],'biaoshi');
+				$datalist = M($biaoshi)->findAll();
+				foreach($datalist as $vv){
+					$l.='<option value="'.$vv['id'].'" ';
+					if($data[$v['field']]==$vv['id']){
+						$l.='selected="selected"';
+					}
+					$l.='>'.$vv[$body[1]].'</option>';
+				}
+					$l.=  '</select>
+                    </div>
+					<div class="layui-form-mid layui-word-aux">
+					  '.$v['tips'].'
+					</div>
+                </div><script>
+							layui.use("form", function () {
+								var form_'.$v['field'].' = layui.form;
+								form_'.$v['field'].'.render();
+							});
+							 
+						</script>';
+				break;
 			}
 			
 		}

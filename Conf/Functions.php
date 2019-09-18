@@ -443,13 +443,10 @@ function show_tree($array){
 				 $data[$v['field']] = format_param($data[$v['field']],4);
 				 break;
 				 case 4:
+				 case 13:
 				 $data[$v['field']] = format_param($data[$v['field']]);
 				 break;
-				 // case 6:
-				 // case 10:
-				 // $data[$v['field']] = implode('||',format_param($data[$v['field'].'_urls'],2));
 				 
-				 // break;
 				 case 8:
 				 $r = implode(',',format_param($data[$v['field']],2));
 				 if($r!=''){
@@ -578,6 +575,33 @@ layui.use("laydate", function(){
 				
 			 }
 			 break;
+			 case 13:
+			  $body = explode(',',$v['body']);
+			  $moldsdata = M('molds')->find(['id'=>$body[0]],'');
+			  $datalist = M($moldsdata['biaoshi'])->findAll();
+			 $fields_search .= '<div class="layui-input-inline">
+			  <select name="'.$v['field'].'" class="layui-inline">
+			  <option value="">请选择关联'.$moldsdata['name'].'</option>';
+			 foreach($datalist as $vv){
+			   $fields_search .= '<option ';
+			   if(array_key_exists($v['field'],$data)){
+				   if(format_param($data[$v['field']])==$vv['id']){
+					  $fields_search .= 'selected="selected"'; 
+				   }
+			   }
+			   $fields_search .= 'value="'.$vv['id'].'">'.$vv[$body[1]].'</option>';
+			 }
+			
+			 $fields_search .=  '</select>
+			 </div>';
+			 if(array_key_exists($v['field'],$data)){
+				 if(format_param($data[$v['field']],1)!=''){
+					$fields_search_check[] =" ".$v['field']." =".format_param($data[$v['field']])." ";
+				 }
+				
+			 }
+			 
+			 break;
 			
 			 
 			 
@@ -643,6 +667,13 @@ layui.use("laydate", function(){
 					return implode(',',$rr);
 			 }else if($fields['fieldtype']==5){
 				 return '<img src="'.$data.'" width="100px" />';
+			 }else if($fields['fieldtype']==13){
+				    $body = explode(',',$fields['body']);
+					$biaoshi = M('molds')->getField(['id'=>$body[0]],'biaoshi');
+					$res = M($biaoshi)->getField(['id'=>$data],$body[1]);
+					return $res;
+					
+					
 			 }
 			 return $data;
 			 break;
@@ -820,6 +851,10 @@ function get_key_field_select($key=0,$molds=null,$field=null){
 				}
 			}
 			return false;
+		}else if($res['fieldtype']==13) {
+			$biaoshi = M('molds')->getField(['id'=>$value[0]],'biaoshi');
+			$data = M($biaoshi)->getField(['id'=>$key],$value[1]);
+			return $data;
 		}else{
 			$s = array();
 			foreach($value as $v){

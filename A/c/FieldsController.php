@@ -53,7 +53,7 @@ class FieldsController extends CommonController
 			if(M('Fields')->find(array('field'=>$data['field'],'molds'=>$data['molds']))){
 				JsonReturn(array('code'=>1,'msg'=>'字段标识已存在！'));
 			}
-			$sql = "select count(*) as n from information_schema.columns where table_name = '".DB_PREFIX.$data['molds']."' and column_name = '".$data['field']."'";
+			$sql = "select count(*) as n from information_schema.columns where table_name = '".DB_PREFIX.$data['molds']."' and TABLE_SCHEMA='".DB_PREFIX.$data['molds']."' and column_name = '".$data['field']."'";
 			$check = M()->findSql($sql);
 			if($check[0]['n']){
 				JsonReturn(array('code'=>1,'msg'=>'字段标识已存在！'));
@@ -75,16 +75,10 @@ class FieldsController extends CommonController
 				case 3:
 				$sql .= "TEXT CHARACTER SET utf8 default ";
 				$sql .= ' NULL ';
-				// if($data['vdata']){
-					// $sql .= $data['vdata'];
-				// }else{
-					// $sql .= ' NULL ';
-				// }
+				
 				break;
 				case 4:
-				//$data['fieldlong'] = $this->frparam('fieldlong_4');
 				if($data['fieldlong']>11 || $data['fieldlong']<=0){
-					//Error('字段长度不对！');
 					JsonReturn(array('code'=>1,'msg'=>'字段长度不对！'));
 				}
 				$sql .= "INT(".$data['fieldlong'].") DEFAULT ";
@@ -95,9 +89,7 @@ class FieldsController extends CommonController
 				}
 				break;
 				case 11:
-				//$data['fieldlong'] = $this->frparam('fieldlong_11');
 				if($data['fieldlong']!=11){
-					//Error('字段长度不对！');
 					JsonReturn(array('code'=>1,'msg'=>'字段长度不对,时间属性必须长度为11'));
 				}
 				$sql .= "INT(".$data['fieldlong'].") DEFAULT ";
@@ -136,13 +128,21 @@ class FieldsController extends CommonController
 					$sql .= " NULL ";
 				}
 				break;
+				case 13:
+				if($data['fieldlong']>11 || $data['fieldlong']<=0){
+					JsonReturn(array('code'=>1,'msg'=>'字段长度不对！'));
+				}
+				$sql .= "INT(".$data['fieldlong'].") DEFAULT ";
+				if($data['vdata']){
+					$sql .=  "'".$data['vdata']."'";
+				}else{
+					$sql .= " '0' NOT NULL ";
+				}
+				$data['body'] = $this->frparam('molds_select',1).','.$this->frparam('molds_list_field',1);
+				break;
 				
 			}
 			$x = M()->runSql($sql);
-			// if(!$x){
-				
-				// JsonReturn(array('code'=>1,'msg'=>'字段创建失败，请重新提交！'));
-			// }
 			
 			$n = M('Fields')->add($data);
 			if(!$n){
@@ -156,9 +156,7 @@ class FieldsController extends CommonController
 			
 		}
 		
-		//$classtype = M('classtype')->findAll(null,'orders desc');
-		//$classtype = getTree($classtype);
-		//dump($classtype);
+		
 		$this->classtypes = $this->classtypetree;
 		$this->molds = $this->frparam('molds',1);
 		$this->display('fields-add');
@@ -212,7 +210,9 @@ class FieldsController extends CommonController
 					if($data['fieldtype']==7 || $data['fieldtype']==8 || $data['fieldtype']==12){
                     	$data['body'] = $this->frparam('body_'.$data['fieldtype'],1);
                     }
-					
+					if($data['fieldtype']==13){
+						$data['body'] = $this->frparam('molds_select',1).','.$this->frparam('molds_list_field',1);
+					}
 					if(M('Fields')->update(array('id'=>$this->frparam('id')),$data)){
 						JsonReturn(array('code'=>0,'msg'=>'字段修改成功！'));
 					}else{
@@ -237,16 +237,10 @@ class FieldsController extends CommonController
 					case 3:
 					$sql .= "TEXT CHARACTER SET utf8 default ";
 					$sql .= ' NULL ';
-					// if($data['vdata']){
-						// $sql .= $data['vdata'];
-					// }else{
-						// $sql .= ' NULL ';
-					// }
+					
 					break;
 					case 4:
-					//$data['fieldlong'] = $this->frparam('fieldlong_4');
 					if($data['fieldlong']>11 || $data['fieldlong']<=0){
-						
 						JsonReturn(array('code'=>1,'msg'=>'字段长度不对！'));
 					}
 					$sql .= "INT(".$data['fieldlong'].") DEFAULT ";
@@ -257,9 +251,7 @@ class FieldsController extends CommonController
 					}
 					break;
 					case 11:
-					//$data['fieldlong'] = $this->frparam('fieldlong_11');
 					if($data['fieldlong']!=11){
-						
 						JsonReturn(array('code'=>1,'msg'=>'字段长度不对,时间属性必须长度为11'));
 					}
 					$sql .= "INT(".$data['fieldlong'].") DEFAULT ";
@@ -298,12 +290,23 @@ class FieldsController extends CommonController
 					}
 					$data['body'] = $this->frparam('body_'.$data['fieldtype'],1);
 					break;
+					case 13:
+					if($data['fieldlong']>11 || $data['fieldlong']<=0){
+						
+						JsonReturn(array('code'=>1,'msg'=>'字段长度不对！'));
+					}
+					$sql .= "INT(".$data['fieldlong'].") DEFAULT ";
+					if($data['vdata']){
+						$sql .=  "'".$data['vdata']."'";
+					}else{
+						$sql .= " '0' NOT NULL ";
+					}
+					$data['body'] = $this->frparam('molds_select',1).','.$this->frparam('molds_list_field',1);
+					break;
 					
 				}
 				$x = M()->runSql($sql);
-				// if(!$x){
-					// JsonReturn(array('code'=>1,'msg'=>'字段修改失败，请重新提交！'));
-				// }
+				
 				if(M('Fields')->update(array('id'=>$this->frparam('id')),$data)){
 					JsonReturn(array('code'=>0,'msg'=>'字段修改成功！'));
 					exit;
@@ -319,8 +322,7 @@ class FieldsController extends CommonController
 		if($this->frparam('id')){
 			$this->data = M('Fields')->find(array('id'=>$this->frparam('id')));
 		}
-		//$classtype = M('classtype')->findAll(null,'orders desc');
-		//$classtype = getTree($classtype);
+		
 		$this->classtypes = $this->classtypetree;
 		$this->display('fields-edit');
 		
@@ -746,6 +748,39 @@ layui.use("laydate", function(){
 					});
 				</script>';
 				break;
+				case 13:
+				//tid,field
+				$l .= '<div class="layui-form-item">
+                    <label for="'.$v['field'].'" class="layui-form-label">
+                        <span class="x-red">*</span>'.$v['fieldname'].'  
+                    </label>
+                    <div class="layui-input-inline">
+						<select name="'.$v['field'].'" id="'.$v['field'].'" >';
+						$body = explode(',',$v['body']);
+				$biaoshi = M('molds')->getField(['id'=>$body[0]],'biaoshi');
+				$datalist = M($biaoshi)->findAll();
+				foreach($datalist as $vv){
+					$l.='<option value="'.$vv['id'].'" ';
+					if($data[$v['field']]==$vv['id']){
+						$l.='selected="selected"';
+					}
+					$l.='>'.$vv[$body[1]].'</option>';
+				}
+					$l.=  '</select>
+                    </div>
+					<div class="layui-form-mid layui-word-aux">
+					  '.$v['tips'].'
+					</div>
+                </div><script>
+							layui.use("form", function () {
+								var form_'.$v['field'].' = layui.form;
+								form_'.$v['field'].'.render();
+							});
+							 
+						</script>';
+				break;
+				
+				
 			}
 			
 		}
@@ -764,9 +799,7 @@ layui.use("laydate", function(){
 			if(M('Fields')->delete('id='.$id)){
 				$sql = "ALTER TABLE ".DB_PREFIX.$fields['molds']." DROP COLUMN ".$fields['field'];
 				$x = M()->runSql($sql);
-				// if(!$x){
-					// JsonReturn(array('code'=>1,'msg'=>'字段表已删除，但模块中的字段未删除，请检查数据库用户操作权限！'));
-				// }
+				
 				JsonReturn(array('code'=>0,'msg'=>'删除成功！'));
 			}else{
 				JsonReturn(array('code'=>1,'msg'=>'删除失败！'));

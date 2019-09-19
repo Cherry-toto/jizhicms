@@ -208,7 +208,7 @@ class CommonController extends Controller
 				break;
 				case 3:
 				$rd = time();
-				$l .= '<div class="layui-form-item">
+				$l .= '<div class="layui-form-item layui-form-text">
 							<label for="'.$v['field'].'" class="layui-form-label">
 								<span class="x-red">*</span>'.$v['fieldname'].'
 							</label>
@@ -224,7 +224,7 @@ class CommonController extends Controller
 						$l.= 'toolbars : [['.$this->webconf['ueditor_config'].']]';
 					}		
 						$l.='}		
-						});	
+						);	
 						});
 						</script>';
 				

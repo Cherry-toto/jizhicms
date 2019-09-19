@@ -22,9 +22,7 @@
                 <li>高级设置</li>
                 <li>邮箱订单</li>
                 <li>支付配置</li>
-                <li>公众号绑定</li>
-               
-                
+                <li>公众号绑定</li> 
               </ul>
 			 
               <div class="layui-tab-content" >
@@ -37,6 +35,15 @@
                             </label>
                             <div style="margin-left:150px" class="layui-input-block">
                                 <input type="text" name="web_name" value="{$config['web_name']}" autocomplete="off" placeholder="控制在25个字、50个字节以内"
+                                class="layui-input">
+                            </div>
+                        </div>
+						 <div class="layui-form-item">
+                            <label style="width:150px" class="layui-form-label">
+                                <span class='x-red'>*</span>网站SEO网址
+                            </label>
+                            <div style="margin-left:150px" class="layui-input-block">
+                                <input type="text" name="domain" value="{$config['domain']}" autocomplete="off" placeholder="全局网址,最后不带/"
                                 class="layui-input">
                             </div>
                         </div>

@@ -117,7 +117,7 @@ class LoginController extends Controller
 		}
 		//检测是否已经设置过return_url,防止多次登录覆盖
 		if(!isset($_SESSION['return_url'])){
-			$referer = ($_SERVER['HTTP_REFERER']=='') ? U('user/index') : $_SERVER['HTTP_REFERER'];
+			$referer = (!isset($_SERVER['HTTP_REFERER']) || $_SERVER['HTTP_REFERER']=='') ? U('user/index') : $_SERVER['HTTP_REFERER'];
 			$_SESSION['return_url'] = $referer;
 		
 		}

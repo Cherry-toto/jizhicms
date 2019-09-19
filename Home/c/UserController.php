@@ -152,7 +152,8 @@ class UserController extends Controller
 				unset($w['repass']);
 			}
 			$re = M('member')->update(['id'=>$this->member['id']],$w);
-			$_SESSION['member'] = M('member')->find(['id'=>$this->member['id']]);
+			$member = M('member')->find(['id'=>$this->member['id']]);
+			$_SESSION['member'] = array_merge($_SESSION['member'],$member);
 			JsonReturn(['code'=>0,'msg'=>'success']);
 			
 		}
@@ -225,12 +226,16 @@ class UserController extends Controller
 		
 		$this->sum = $page->sum;
 		foreach($data as $k=>$v){
-			$data[$k]['title'] = get_info_table($this->classtypedata[$v['tid']]['molds'],['id'=>$v['aid']],'title');
-			$data[$k]['date'] = date('Y/m/d H:i:s',$v['addtime']);
-			$data[$k]['url'] =  U('User/read_comment',['id'=>$v['id']]);
-			$data[$k]['body'] = newstr($v['body'],60);
-			$data[$k]['comment_num'] =  get_comment_num($v['tid'],$v['aid']);
-			$data[$k]['comment_del'] =  U('User/comment_del',['id'=>$v['id']]);
+			$xmolds = M($this->classtypedata[$v['tid']]['molds'])->find(['id'=>$v['aid']]);
+			if($xmolds){
+				$data[$k]['title'] = $xmolds['title'];
+				$data[$k]['date'] = date('Y/m/d H:i:s',$v['addtime']);
+				$data[$k]['url'] =  U('User/read_comment',['id'=>$v['id']]);
+				$data[$k]['body'] = newstr($v['body'],60);
+				$data[$k]['comment_num'] =  get_comment_num($v['tid'],$v['aid']);
+				$data[$k]['comment_del'] =  U('User/comment_del',['id'=>$v['id']]);
+			}
+			
 		}
 		$this->lists = $data;
 		if($this->frparam('ajax')){
@@ -310,7 +315,10 @@ class UserController extends Controller
 					$d = explode('-',$v);
 					//tid-id
 					if($d!=''){
-						$lists[]=M($this->classtypedata[$d[0]]['molds'])->find(['id'=>$d[1]]);
+						$xdata=M($this->classtypedata[$d[0]]['molds'])->find(['id'=>$d[1]]);
+						if($xdata){
+							$lists[]=$xdata;
+						}
 					}
 				}
 			}
@@ -348,7 +356,7 @@ class UserController extends Controller
 	
 	function collectAction(){
 		if(!isset($_SESSION['return_url'])){
-			$referer = ($_SERVER['HTTP_REFERER']=='') ? U('user/collect') : $_SERVER['HTTP_REFERER'];
+			$referer = (!isset($_SERVER['HTTP_REFERER']) || $_SERVER['HTTP_REFERER']=='') ? U('user/collect') : $_SERVER['HTTP_REFERER'];
 			$_SESSION['return_url'] = $referer;
 		
 		}
@@ -402,7 +410,10 @@ class UserController extends Controller
 					$d = explode('-',$v);
 					//tid-id
 					if($d!=''){
-						$lists[]=M($this->classtypedata[$d[0]]['molds'])->find(['id'=>$d[1]]);
+						$xdata=M($this->classtypedata[$d[0]]['molds'])->find(['id'=>$d[1]]);
+						if($xdata){
+							$lists[] = $xdata;
+						}
 					}
 				}
 			}

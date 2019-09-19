@@ -60,6 +60,25 @@
                   autocomplete="off" class="layui-input">
               </div>
           </div>
+		  
+		  {if($admin['isadmin'])}
+		 
+          <div class="layui-form-item">
+              <label class="layui-form-label"><span class="x-red">*</span>分组</label>
+              <div class="layui-input-inline">
+			  
+                <select class="layui-input" name="gid" lay-verify="required">
+				{loop table="member_group" as="v"}
+				<option {if($data['gid']==$v['id'])}selected{/if} value="{$v['id']}">{$v['name']}</option>
+				{/loop}
+				
+				</select>
+              </div>
+          </div>
+		  {else}
+		  <input name="gid" type="hidden"	value="{$data['gid']}" />
+		  {/if}
+		  
 		  <div class="layui-form-item">
               <label for="L_jifen" class="layui-form-label">
                   <span class="x-red">*</span>积分
@@ -155,15 +174,7 @@
 			 
 			}
 		  });
-          //自定义验证规则
-          form.verify({
-            nikename: function(value){
-              if(value.length < 5){
-                return '昵称至少得5个字符啊';
-              }
-            }
-           
-          });
+        
 
           //监听提交
           form.on('submit(add)', function(data){

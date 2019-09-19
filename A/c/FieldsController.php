@@ -370,12 +370,12 @@ class FieldsController extends CommonController
                 </div>';
 				break;
 				case 2:
-				$l .= '<div class="layui-form-item">
+				$l .= '<div class="layui-form-item  layui-form-text">
                     <label for="'.$v['field'].'" class="layui-form-label">
                         <span class="x-red"></span>'.$v['fieldname'].'
                     </label>
                     <div class="layui-input-block">
-                        <textarea  style="width:500px;height:150px;" id="'.$v['field'].'"  name="'.$v['field'].'" ';
+                        <textarea  class="layui-textarea" id="'.$v['field'].'"  name="'.$v['field'].'" ';
 				if($v['ismust']==1){
 					$l.=' required="" lay-verify="required" ';
 				}		

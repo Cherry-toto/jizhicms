@@ -242,6 +242,11 @@ class HomeController extends CommonController
 			$res = M('classtype')->find(array('id'=>$tid));
 			if(!$res){ $this->error('链接错误！');}
 			
+		}else{
+			//html只有栏目页
+			$res = M('classtype')->find(array('htmlurl'=>$html));
+			if(!$res){ $this->error('链接错误！');}
+			
 		}
 		
 		$res['url'] = $this->classtypedata[$res['id']]['url'];
@@ -268,19 +273,15 @@ class HomeController extends CommonController
 			if($this->frparam('limit')){
 				$limit = $this->frparam('limit');
 			}
-			
 			$data = $page->where($sql)->orderby('orders desc,id desc')->limit($limit)->page($this->frpage)->go();
 			$pages = $page->pageList(3,'-');
-			
 			$this->pages = $pages;//组合分页
-			
 			foreach($data as $k=>$v){
 				if(isset($v['htmlurl'])){
 					$data[$k]['url'] = gourl($v['id'],$v['htmlurl']);
 				}
 				
 			}
-			
 			$this->lists = $data;//列表数据
 			$this->sum = $page->sum;//总数据
 			$this->listpage = $page->listpage;//分页数组-自定义分页可用
@@ -413,8 +414,11 @@ class HomeController extends CommonController
 		
 		
 		$this->jz = $details;
-		$aprev = M($this->type['molds'])->find('id<'.$id.' and tid='.$this->type['id'],'id desc');
-		$anext = M($this->type['molds'])->find('id>'.$id.' and tid='.$this->type['id'],'id desc');
+		
+		$aprev_sql = ' id<'.$id.' and tid in ('.implode(',',$this->classtypedata[$this->type['id']]['children']['ids']).') ';
+		$anext_sql = ' id>'.$id.' and tid in ('.implode(',',$this->classtypedata[$this->type['id']]['children']['ids']).') ';
+		$aprev = M($this->type['molds'])->find($aprev_sql,'id desc');
+		$anext = M($this->type['molds'])->find($anext_sql,'id desc');
 		if($aprev){
 			$aprev['url'] = gourl($aprev['id'],$aprev['htmlurl']);
 		}

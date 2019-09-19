@@ -715,7 +715,7 @@ CREATE TABLE `jz_sysconfig` (
 -- ----------------------------
 -- Records of jz_sysconfig
 -- ----------------------------
-INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`) VALUES ('1','web_version','系统版号','','0','1.4');
+INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`) VALUES ('1','web_version','系统版号','','0','1.5');
 INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`) VALUES ('2','web_name','网站SEO名称','','0','极致CMS建站系统');
 INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`) VALUES ('3','web_keyword','网站SEO关键词','','0','极致CMS');
 INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`) VALUES ('4','web_desc','网站SEO描述','','0','极致CMS');
@@ -783,6 +783,7 @@ INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`) VALUES ('5
 INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`) VALUES ('55','jz_55','测试ABC','','1','');
 INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`) VALUES ('56','admintpl','后台模板风格','默认tpl,原始风格default','0','tpl');
 INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`) VALUES ('58','isopenwebsite','是否绑定多域名','开启绑定多域名后，需要到插件中配置','0','1');
+INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`) VALUES ('59','domain','网址网址','全局网址，最后不带/斜杠','0','');
 
 -- ----------------------------
 -- Table structure for jz_tags

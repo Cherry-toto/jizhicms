@@ -391,7 +391,7 @@ class FieldsController extends CommonController
 				$rd = time();
 				$l .= '<div class="layui-form-item">
 							<label for="'.$v['field'].'" class="layui-form-label">
-								<span class="x-red">*</span>内容
+								<span class="x-red">*</span>'.$v['fieldname'].'
 							</label>
 							<div class="layui-input-block" style="width:100%;">
 							<script id="'.$v['field'].$rd.'" name="'.$v['field'].'" type="text/plain" style="width:100%;height:400px;">'.$data[$v['field']].'</script>

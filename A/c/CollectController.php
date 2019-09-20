@@ -62,6 +62,7 @@ class CollectController extends CommonController
 	function addcollect(){
 		$this->fields_biaoshi = 'collect';
 		if($this->frparam('go',1)==1){
+			$data = $this->frparam();
 			$data['addtime'] = strtotime($this->frparam('addtime',1));
 			$data['title'] = $this->frparam("title",1);
 			$data['description'] = $this->frparam("description",1);

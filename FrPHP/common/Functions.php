@@ -622,7 +622,7 @@ function getCache($str=false){
 	}
 	//获取
 	$s = md5($str).'frphp'.md5($str);
-	$cache_file_data = APP_PATH.'cache/data/'.$s;
+	$cache_file_data = APP_PATH.'cache/data/'.$s.'.php';
 	if(!file_exists($cache_file_data)){
 		return false;
 	}

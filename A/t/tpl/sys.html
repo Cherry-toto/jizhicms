@@ -168,7 +168,7 @@
 							   
 							  //执行实例
 							  var uploadInst = upload_'.$v['field'].'.render({
-								elem: "#LAY_'.$k.'_upload" //绑定元素
+								elem: "#LAY_'.$v['field'].'_upload" //绑定元素
 								,url: "'.U('Common/uploads').'" //上传接口
 								,accept:"images"
 								,acceptMime:"image/*"

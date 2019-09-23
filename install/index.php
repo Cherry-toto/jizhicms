@@ -59,6 +59,7 @@ function new_is_writeable($file) {
             $writeable = 1;
         } else {
             $writeable = 0;
+			$GLOBALS['errmsg']=1;
         }
     } else {
         if ($fp = @fopen($file, 'a+')) {
@@ -66,6 +67,7 @@ function new_is_writeable($file) {
             $writeable = 1;
         } else {
             $writeable = 0;
+			$GLOBALS['errmsg']=1;
         }
     }
  

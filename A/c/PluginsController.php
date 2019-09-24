@@ -86,7 +86,7 @@ class PluginsController extends CommonController
 	function action_do(){
 		$filepath = $this->frparam('path',1);
 		$type = $this->frparam('type');
-		$dir = APP_PATH.'/'.APP_HOME.'/exts';
+		$dir = APP_PATH.APP_HOME.'/exts';
 		if($filepath){
 			if($type){
 				//安装
@@ -108,50 +108,58 @@ class PluginsController extends CommonController
 				//复制文件到对应文件夹
 				//移动前台插件控制器
 				$sourcefile = $dir.'/'.$filepath.'/controller/home';
-				$target = APP_PATH.'/Home/plugins';
-				if (false != ($handle = opendir ( $sourcefile ))) {
+				$target = APP_PATH.'Home/plugins';
+				if(is_dir($sourcefile) && is_dir($target)){
+					if (false != ($handle = opendir ( $sourcefile ))) {
 					
-					while ( false !== ($file = readdir ( $handle )) ) {
-						//去掉"“.”、“..”以及带“.xxx”后缀的文件
-						if ($file != "." && $file != "..") {
-							$fs = $sourcefile.'/'.$file;
-							$ft = $target.'/'.$file;
-							$r = $this->file2dir($fs,$ft);
-							if(!$r){
-								JsonReturn(array('code'=>1,'msg'=>'插件安装失败！sourcefile:'.$fs.' targetfile:'.$ft));
+						while ( false !== ($file = readdir ( $handle )) ) {
+							//去掉"“.”、“..”以及带“.xxx”后缀的文件
+							if ($file != "." && $file != "..") {
+								$fs = $sourcefile.'/'.$file;
+								$ft = $target.'/'.$file;
+								$r = $this->file2dir($fs,$ft);
+								if(!$r){
+									JsonReturn(array('code'=>1,'msg'=>'插件安装失败！sourcefile:'.$fs.' targetfile:'.$ft));
+								}
 							}
 						}
+						//关闭句柄
+						closedir ( $handle );
 					}
-					//关闭句柄
-					closedir ( $handle );
+					
 				}
+				
 				//移动后台插件控制器
 				$sourcefile = $dir.'/'.$filepath.'/controller/admin';
-				$target = APP_PATH.'/A/plugins';
-				if (false != ($handle = opendir ( $sourcefile ))) {
-					
-					while ( false !== ($file = readdir ( $handle )) ) {
-						//去掉"“.”、“..”以及带“.xxx”后缀的文件
-						if ($file != "." && $file != "..") {
-							$fs = $sourcefile.'/'.$file;
-							$ft = $target.'/'.$file;
-							$r = $this->file2dir($fs,$ft);
-							if(!$r){
-								JsonReturn(array('code'=>1,'msg'=>'插件安装失败！sourcefile:'.$fs.' targetfile:'.$ft));
+				$target = APP_PATH.'A/plugins';
+				if(is_dir($sourcefile) && is_dir($target)){
+					if (false != ($handle = opendir ( $sourcefile ))) {
+						
+						while ( false !== ($file = readdir ( $handle )) ) {
+							//去掉"“.”、“..”以及带“.xxx”后缀的文件
+							if ($file != "." && $file != "..") {
+								$fs = $sourcefile.'/'.$file;
+								$ft = $target.'/'.$file;
+								$r = $this->file2dir($fs,$ft);
+								if(!$r){
+									JsonReturn(array('code'=>1,'msg'=>'插件安装失败！sourcefile:'.$fs.' targetfile:'.$ft));
+								}
 							}
 						}
+						//关闭句柄
+						closedir ( $handle );
 					}
-					//关闭句柄
-					closedir ( $handle );
+				
 				}
-				
-				
 				
 				
 				//移动扩展类文件
 				$src = $dir.'/'.$filepath.'/class';
-				$dst = APP_PATH.'/FrPHP/Extend';
-				$this->recurse_copy($src,$dst);
+				$dst = APP_PATH.'FrPHP/Extend';
+				if(is_dir($src)){
+					$this->recurse_copy($src,$dst);
+				}
+				
 				
 				$res = M('plugins')->add($w);
 				
@@ -168,45 +176,52 @@ class PluginsController extends CommonController
 					JsonReturn(array('code'=>1,'msg'=>'插件已移除，请勿重复操作！'));
 				}
 				//移除文件夹
-				$target = APP_PATH.'/Home/plugins';
+				$target = APP_PATH.'Home/plugins';
 				$sourcefile = $dir.'/'.$filepath.'/controller/home';
-				if (false != ($handle = opendir ( $sourcefile ))) {
-					
-					while ( false !== ($file = readdir ( $handle )) ) {
-						//去掉"“.”、“..”以及带“.xxx”后缀的文件
-						if ($file != "." && $file != "..") {
-							$ft = $target.'/'.$file;
-							if(file_exists($ft)){
-								unlink($ft);
+				if(is_dir($sourcefile) && is_dir($target)){
+					if (false != ($handle = opendir ( $sourcefile ))) {
+						
+						while ( false !== ($file = readdir ( $handle )) ) {
+							//去掉"“.”、“..”以及带“.xxx”后缀的文件
+							if ($file != "." && $file != "..") {
+								$ft = $target.'/'.$file;
+								if(file_exists($ft)){
+									unlink($ft);
+								}
+								
 							}
-							
 						}
+						//关闭句柄
+						closedir ( $handle );
 					}
-					//关闭句柄
-					closedir ( $handle );
 				}
-				$target = APP_PATH.'/A/plugins';
+				$target = APP_PATH.'A/plugins';
 				$sourcefile = $dir.'/'.$filepath.'/controller/admin';
-				if (false != ($handle = opendir ( $sourcefile ))) {
-					
-					while ( false !== ($file = readdir ( $handle )) ) {
-						//去掉"“.”、“..”以及带“.xxx”后缀的文件
-						if ($file != "." && $file != "..") {
-							$ft = $target.'/'.$file;
-							if(file_exists($ft)){
-								unlink($ft);
+				if(is_dir($sourcefile) && is_dir($target)){
+					if (false != ($handle = opendir ( $sourcefile ))) {
+						
+						while ( false !== ($file = readdir ( $handle )) ) {
+							//去掉"“.”、“..”以及带“.xxx”后缀的文件
+							if ($file != "." && $file != "..") {
+								$ft = $target.'/'.$file;
+								if(file_exists($ft)){
+									unlink($ft);
+								}
+								
 							}
-							
 						}
+						//关闭句柄
+						closedir ( $handle );
 					}
-					//关闭句柄
-					closedir ( $handle );
 				}
-				
 				//移动扩展类文件
 				$src = $dir.'/'.$filepath.'/class';
-				$dst = APP_PATH.'/FrPHP/Extend';
-				$this->recurse_copy($src,$dst);
+				$dst = APP_PATH.'FrPHP/Extend';
+				if(is_dir($src)){
+					$this->recurse_copy($src,$dst);
+				}
+				
+				
 				
 				
 				//执行插件控制器卸载程序
@@ -217,7 +232,7 @@ class PluginsController extends CommonController
 				if(!$step1){
 					JsonReturn(array('code'=>1,'msg'=>'执行插件卸载程序失败！'));
 				}
-				$res = M('plugins')->delete($plugins['id']);
+				$res = M('plugins')->delete(['id'=>$plugins['id']]);
 				
 				setCache('hook',null);
 				

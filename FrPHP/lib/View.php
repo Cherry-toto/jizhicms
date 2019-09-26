@@ -258,7 +258,7 @@ class View
 			$fields = " field in ('".$a['fields']."') ";
 		}
 
-		$sql=' fieldtype in(7,8) and  isshow=1 and molds='.$molds.'  and '.$tids.' and '.$fields;
+		$sql=' fieldtype in(7,8,12) and  isshow=1 and molds='.$molds.'  and '.$tids.' and '.$fields;
 		$txt="<?php
 		\$table ='fields';
 		\$w=\"".$sql."\";

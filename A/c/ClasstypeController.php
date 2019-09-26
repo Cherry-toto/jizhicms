@@ -245,7 +245,7 @@ class ClasstypeController extends CommonController
 			JsonReturn(['code'=>0,'msg'=>'success']);
 		}
 		$this->molds = M('molds')->find(['biaoshi'=>'classtype']);
-		$this->moldslist = M('molds')->findAll();
+		$this->moldslist = M('molds')->findAll(['isopen'=>1]);
 		$this->classtypes = $this->classtypetree;;
 		
 		$this->display('classtype-addmany');

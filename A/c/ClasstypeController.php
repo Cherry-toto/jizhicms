@@ -176,6 +176,11 @@ class ClasstypeController extends CommonController
 	function deleteclass(){
 		$id = $this->frparam('id');
 		if($id){
+			//检测栏目是否有下级
+			if(M('classtype')->find(['pid'=>$id])){
+				JsonReturn(array('status'=>0,'info'=>'该栏目有子栏目，请先删除子栏目！'));
+			}
+			
 			$a = M('classtype')->delete(array('id'=>$id));
 			if($a){
 				setCache('classtypetree',null);

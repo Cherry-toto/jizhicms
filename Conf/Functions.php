@@ -987,6 +987,9 @@ function change_parse_url($arr,$str){
 		return '';
 	}
 	unset($arr[$str]);
+	if(count($arr)==0){
+		return '';
+	}
 	$url = str_replace('=','-',http_build_query($arr,false,'-'));
 	return '-'.$url;
 }

@@ -252,7 +252,10 @@ class View
 		}
 		$fields = '1=1';
 		if(isset($a['fields'])){
-			$fields = " field='".$a['fields']."' ";
+			if(strpos($a['fields'],',')!==false){
+				$a['fields'] = str_replace(',',"','",$a['fields']);
+			}
+			$fields = " field in ('".$a['fields']."') ";
 		}
 
 		$sql=' fieldtype in(7,8) and  isshow=1 and molds='.$molds.'  and '.$tids.' and '.$fields;

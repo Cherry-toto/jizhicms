@@ -47,8 +47,9 @@ class HomeController extends CommonController
 		//检查缓存
 		$cache_file = APP_PATH.'cache/data/'.md5(frencode($url));
 		$this->cache_file = $cache_file;
-		$this->start_cache($cache_file);
-		
+		if(!$this->frparam('ajax')){
+			$this->start_cache($cache_file);
+		}
 		//  news/123.html  news-123.html  news-list-123.html
 		$url = str_ireplace(File_TXT,'',$url);
 		
@@ -108,9 +109,9 @@ class HomeController extends CommonController
 				//默认是详情页-非详情页另做处理
 				$this->id = $id;
 				$this->jizhi_details($this->id);
-			
+				if(!$this->frparam('ajax')){
 				$this->end_cache($this->cache_file);
-			
+				}
 				
 			}
 			
@@ -203,7 +204,9 @@ class HomeController extends CommonController
 			$this->positions = $positions;
 			
 			$this->display($this->template.'/'.$res['molds'].'/'.$res['lists_html']);
+			if(!$this->frparam('ajax')){
 			$this->end_cache($this->cache_file);
+			}
 
 			
 		}else{
@@ -226,7 +229,9 @@ class HomeController extends CommonController
 		$url = REQUEST_URI;
 		$cache_file = APP_PATH.'cache/data/'.md5(frencode($url));
 		$this->cache_file = $cache_file;
+		if(!$this->frparam('ajax')){
 		$this->start_cache($cache_file);
+		}
 		if($id && $html){
 			//详情页+html
 			$res = M('classtype')->find(array('htmlurl'=>$html));
@@ -348,15 +353,18 @@ class HomeController extends CommonController
 			$this->positions = $positions;
 			
 			$this->display($this->template.'/'.$res['molds'].'/'.$res['lists_html']);
+			if(!$this->frparam('ajax')){
 			$this->end_cache($this->cache_file);
+			}
 			
 		}else{
 			
 			//默认是详情页-非详情页另做处理
 			$this->id = $id;
 			$this->jizhi_details($this->id);
-		
+			if(!$this->frparam('ajax')){
 			$this->end_cache($this->cache_file);
+			}
 			
 		}
 		

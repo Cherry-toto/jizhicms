@@ -275,18 +275,19 @@ layui.use("laydate", function(){
                     </label>
 					
                     <div class="layui-input-inline">
-                      <div class="site-demo-upbar">
-                      <img src="'.$data[$v['field']].'"  width="400"  id="'.$v['field'].'_img" />
-					  <input name="'.$v['field'].'" type="text" class="layui-input" id="'.$v['field'].'" ';
-				if($v['ismust']==1){
-					$l.=' required="" lay-verify="required" ';
-				}
-				$l  .=	'value="'.$data[$v['field']].'" />
-						<button type="button" class="layui-btn" id="LAY_'.$v['field'].'_upload">
-						  <i class="layui-icon">&#xe67c;</i>上传图片
-						</button>
-                      </div>
-                    </div>
+						<input name="'.$v['field'].'" placeholder="上传图片" type="text" class="layui-input" id="'.$v['field'].'" ';
+					if($v['ismust']==1){
+						$l.=' required="" lay-verify="required" ';
+					}
+						$l.=' value="'.$data[$v['field']].'" />
+					</div>
+					<div class="layui-input-inline">
+						<button class="layui-btn layui-btn-primary" id="LAY_'.$v['field'].'_upload" type="button" >选择图片</button>
+					</div>
+					<div class="layui-input-inline">
+						<img id="'.$v['field'].'_img" class="img-responsive img-thumbnail" style="max-width: 200px;" src="" onerror="javascipt:this.src=\''.Tpl_style.'/style/images/nopic.jpg\'; this.title=\'图片未找到\';this.onerror=\'\'">
+						<button type="button" onclick="deleteImage_auto(this,\''.$v['field'].'\')" class="layui-btn layui-btn-sm layui-btn-radius layui-btn-danger " title="删除这张图片" >删除</button>
+					</div>
 					<div class="layui-form-mid layui-word-aux">
 					  '.$v['tips'].'
 					</div>
@@ -601,6 +602,20 @@ layui.use("laydate", function(){
 			}
 			
 		}
+		$l.='<script>
+		$(function(){
+			$(document).on("click",".delete_file",function(){
+				//删除图片信息
+				$(this).parent().remove();
+			})
+		})
+
+		function deleteImage_auto(elm,field){
+			$(elm).prev().attr("src", "/A/t/tpl/style/images/nopic.jpg");
+			$("#"+field).val("");
+		}
+		</script>';
+		
 		//echo $l;
 		JsonReturn(['code'=>0,'fields_list'=>$fields_list,'tpl'=>$l]);
 	}

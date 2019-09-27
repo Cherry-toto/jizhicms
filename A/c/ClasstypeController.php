@@ -64,6 +64,7 @@ class ClasstypeController extends CommonController
 			$w['iscover'] = $this->frparam('iscover');
 			$w['lists_html'] = $this->frparam('lists_html',1);
 			$w['details_html'] = $this->frparam('details_html',1);
+			$w['gourl'] = $this->frparam('gourl',1);
 			$w['lists_num'] = $this->frparam('lists_num');
 			if($w['lists_html']=='' && $w['details_html']==''){
 				$parent = M('classtype')->find(array('id'=>$w['pid']));
@@ -122,7 +123,7 @@ class ClasstypeController extends CommonController
 			$w['lists_html'] = $this->frparam('lists_html',1);
 			$w['details_html'] = $this->frparam('details_html',1);
 			$w['lists_num'] = $this->frparam('lists_num');
-			
+			$w['gourl'] = $this->frparam('gourl',1);
 			
 			
 			

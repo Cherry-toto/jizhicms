@@ -777,7 +777,12 @@ function classTypeData(){
 		$d = array();
 		foreach($classtypedata as $k=>$v){
 			$d[$v['id']] = $v;
-			$d[$v['id']]['url'] = get_domain().'/'.$v['htmlurl'].File_TXT;
+			if($v['gourl']!=''){
+				$d[$v['id']]['url'] = $v['gourl'];
+			}else{
+				$d[$v['id']]['url'] = get_domain().'/'.$v['htmlurl'].File_TXT;
+			}
+			
 		}
 		
 		setCache('classtype',$d,$cache_time);

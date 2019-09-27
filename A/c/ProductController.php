@@ -98,7 +98,7 @@ class ProductController extends CommonController
 			$data = get_fields_data($data,'product');
 			
 			if(M('product')->add($data)){
-				JsonReturn(array('code'=>0,'msg'=>'添加成功,继续添加~','url'=>U('addarticle',array('tid'=>$data['tid']))));
+				JsonReturn(array('code'=>0,'msg'=>'添加成功,继续添加~','url'=>U('addproduct',array('tid'=>$data['tid']))));
 				exit;
 			}
 			

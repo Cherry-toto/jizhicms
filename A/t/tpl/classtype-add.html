@@ -54,7 +54,7 @@
 				<span class="x-red">*</span>选择上级
 			</label>
 			<div class="layui-input-inline">
-				<select name="pid" id="pid" >
+				<select name="pid" id="pid"  lay-filter="pid">
 			   <option value="0">顶级栏目</option>
 			   {foreach $classtypes as $v}
 			   <option {if($pid==$v['id'])} selected="selected" {/if}  value="{$v['id']}">{fun str_repeat('--', $v['level']), $v['classname']}</option>
@@ -325,7 +325,12 @@
                 return false;
           });
 		  
-		   get_fields(0);
+		   form.on('select(pid)', function(data){
+			  
+			  get_fields(data.value);
+			  
+			  
+			});
 			
            $("#classname").blur(function(){
 				var classname = $("#classname").val();

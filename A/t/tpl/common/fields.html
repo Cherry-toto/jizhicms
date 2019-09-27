@@ -12,3 +12,7 @@ function get_fields(tid,id){
 		$("#ext_fields").html(r);
 	});
 }
+function deleteImage_auto(elm,field){
+	$(elm).prev().attr("src", "{__Tpl_style__}/style/images/nopic.jpg");
+	$('#'+field).val("");
+}

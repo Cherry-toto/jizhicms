@@ -1,7 +1,7 @@
 # 极致CMS建站系统
 ## 一款免费开源的PHP建站CMS系统，可以免授权商业使用该系统。
 
-[![极致CMS建站系统](https://img.kancloud.cn/78/9f/789f15c672f807686ab8b9edab6f35f1_1920x700.png)](http://down.jizhicms.cn/jizhicms_Beta1.4.zip)
+[![极致CMS建站系统](http://down.jizhicms.cn/header_1920x700.png)](http://down.jizhicms.cn/jizhicms_Beta1.4.zip)
 
 官网：[jizhicms.cn](http://jizhicms.cn) |&nbsp;&nbsp;&nbsp;[jizhicms.com](http://jizhicms.cn)   
 演示：[demo.jizhicms.cn](http://demo.jizhicms.cn)   后台：[http://demo.jizhicms.cn/admin.php](http://demo.jizhicms.cn/admin.php) [账户：test,密码：123456]  
@@ -42,5 +42,5 @@ QQ交流群：774764507（官方群）[【加群】](https://jq.qq.com/?_wv=1027
 ## 许可证  
 MIT    
 
-![极致CMS建站系统](https://img.kancloud.cn/2f/32/2f3270ea08ba9675a2105beebb503652_1920x273.png)
+![极致CMS建站系统](http://down.jizhicms.cn/footer_1920x273.png)
 

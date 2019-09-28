@@ -128,7 +128,7 @@ class ScreenController extends CommonController
 			if(!array_key_exists($k,$newfield)){
 				continue;
 			}
-			if($newfield[$k]['fieldtype']==7 || $newfield[$k]['fieldtype']==8){
+			if($newfield[$k]['fieldtype']==7 || $newfield[$k]['fieldtype']==12){
 				//单选字段
 				
 				//多选框判断

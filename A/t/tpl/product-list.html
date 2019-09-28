@@ -3,6 +3,7 @@
     <head>
 	<meta charset="UTF-8">
         {include="style"}
+
     </head>
     <body>
         <div class="x-nav">
@@ -48,7 +49,7 @@
 		   <span class="x-right" style="line-height:40px">共有数据：{$sum} 条</span>
 		  </xblock>
            <div style="width:100%;  overflow:scroll;overflow-y: hidden">
-        <table border="1" rules="all" style="width:100%; height:100px; text-align:center;white-space:nowrap" class="layui-table layui-form">
+        <table border="1"   rules="all" style="width:100%; height:100px; text-align:center;white-space:nowrap" class="layui-table layui-form">
                 <thead>
                     <tr>
                         <th>
@@ -107,6 +108,9 @@
                          <input type="text" class="layui-input x-sort"  name="order" value="{$v['orders']}">
                         </td>
                         <td>
+							{if($v['istop'])}<span class="layui-badge layui-bg-black">顶</span>{/if}
+							{if($v['ishot'])}<span class="layui-badge">热</span>{/if}
+							{if($v['istuijian'])}<span class="layui-badge layui-bg-green">荐</span>{/if}
                             {fun newstr($v['title'],30)}
                         </td>
 						<td>
@@ -130,7 +134,7 @@
                             {fun date('Y-m-d H:i:s',$v['addtime'])} 
                         </td>
                         <td class="td-manage">
-							<button class="layui-btn layui-btn layui-btn-xs"  onclick="x_admin_show('编辑','{fun U('Product/editproduct',array('id'=>$v['id']))}')" ><i class="layui-icon">&#xe642;</i>编辑</button>
+							<button data="{fun U('Product/editproduct',array('id'=>$v['id']))}" class="layui-btn layui-btn layui-btn-xs"  onclick="x_admin_show('编辑','{fun U('Product/editproduct',array('id'=>$v['id']))}')" ><i class="layui-icon">&#xe642;</i>编辑</button>
 							<a href="/{$v['htmlurl']}/{$v['id']}" target="_blank"><button class="layui-btn layui-btn-normal layui-btn layui-btn-xs"   ><i class="layui-icon">&#xe615;</i>预览</button></a>
 							<button class="layui-btn-danger layui-btn layui-btn-xs"  onclick="product_del(this,'{$v['id']}')" href="javascript:;" ><i class="layui-icon">&#xe640;</i>删除</button>
 							<button class="layui-btn layui-btn-warm layui-btn-xs"  onclick="product_copy(this,'{$v['id']}')" ><i class="iconfont">&#xe744;</i>复制</button>
@@ -163,10 +167,12 @@
 				{$pages}
 			  </div>
         </div>
-     
+ 
+
        <script>
 	  
-	   
+	  
+
 	    layui.use(['laydate','form','element','laypage','layer'], function(){
                 $ = layui.jquery;//jquery
               laydate = layui.laydate;//日期插件

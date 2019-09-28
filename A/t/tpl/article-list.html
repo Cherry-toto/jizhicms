@@ -48,7 +48,7 @@
 		   <span class="x-right" style="line-height:40px">共有数据：{$sum} 条</span>
 		  </xblock>
            <div style="width:100%;  overflow:scroll;overflow-y: hidden">
-        <table border="1" rules="all" style="width:100%; height:100px; text-align:center;white-space:nowrap" class="layui-table layui-form">
+        <table border="1" rules="all"  style="width:100%; height:100px; text-align:center;white-space:nowrap" class="layui-table layui-form">
                 <thead>
                     <tr>
                         <th>
@@ -60,6 +60,7 @@
                         <th width="50px">
                             排序
                         </th>
+						
                         <th>
                             标题
                         </th>
@@ -102,7 +103,10 @@
                          <input type="text" class="layui-input x-sort"  name="order" value="{$v['orders']}">
                         </td>
                         <td>
-                            {fun newstr($v['title'],30)}
+                            {if($v['istop'])}<span class="layui-badge layui-bg-black">顶</span>{/if}
+							{if($v['ishot'])}<span class="layui-badge">热</span>{/if}
+							{if($v['istuijian'])}<span class="layui-badge layui-bg-green">荐</span>{/if}
+							{fun newstr($v['title'],30)}
                         </td>
 						<td>
                             <img src="{$v['litpic']}" width="100px" />
@@ -157,9 +161,11 @@
 				{$pages}
 			  </div>
         </div>
-     
+  
+
+	 
        <script>
-	  
+	 
 	   
 	    layui.use(['laydate','form','element','laypage','layer'], function(){
                 $ = layui.jquery;//jquery

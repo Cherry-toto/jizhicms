@@ -29,6 +29,7 @@ class ArticleController extends CommonController
 		}
 		
 		$sql = ' 1=1 ';
+		
 		if($this->frparam('isshow')){
 			$isshow = $this->frparam('isshow')==1 ? 1 : 0;
 			$sql .= ' and isshow='.$isshow;
@@ -48,8 +49,9 @@ class ArticleController extends CommonController
 		if($this->frparam('title',1)!=''){
 			$sql.=" and title like '%".$this->frparam('title',1)."%' ";
 		}
-		
-		$data = $page->where($sql)->orderby('orders desc,addtime desc,id desc')->page($this->frparam('page',0,1))->go();
+		//置顶处理
+		$sql .= ' or (istop=1 and isshow=1) ';
+		$data = $page->where($sql)->orderby('istop desc,orders desc,addtime desc,id desc')->page($this->frparam('page',0,1))->go();
 		$pages = $page->pageList();
 		$this->pages = $pages;
 		$this->lists = $data;
@@ -94,6 +96,9 @@ class ArticleController extends CommonController
 			$pclass = get_info_table('classtype',array('id'=>$data['tid']));
 			$data['molds'] = $pclass['molds'];
 			$data['htmlurl'] = $pclass['htmlurl'];
+			$data['istop'] = $this->frparam('istop',0,0);
+			$data['ishot'] = $this->frparam('ishot',0,0);
+			$data['istuijian'] = $this->frparam('istuijian',0,0);
 			$data = get_fields_data($data,'article');
 			
 			if(M('Article')->add($data)){
@@ -138,6 +143,9 @@ class ArticleController extends CommonController
 			$pclass = get_info_table('classtype',array('id'=>$data['tid']));
 			$data['molds'] = $pclass['molds'];
 			$data['htmlurl'] = $pclass['htmlurl'];
+			$data['istop'] = $this->frparam('istop',0,0);
+			$data['ishot'] = $this->frparam('ishot',0,0);
+			$data['istuijian'] = $this->frparam('istuijian',0,0);
 			$data = get_fields_data($data,'article');
 			if($this->frparam('id')){
 				if(M('Article')->update(array('id'=>$this->frparam('id')),$data)){

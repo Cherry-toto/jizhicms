@@ -125,8 +125,15 @@ class HomeController extends CommonController
 			if($this->frparam('limit')){
 				$limit = $this->frparam('limit');
 			}
+			//只适合article和product
+			if($molds=='article' || $molds=='product'){
+				$sql.=" or (istop=1 and isshow=1)";
+				$data = $page->where($sql)->orderby('istop desc,orders desc,id desc')->limit($limit)->page($this->frpage)->go();
+			}else{
+				$data = $page->where($sql)->orderby('orders desc,id desc')->limit($limit)->page($this->frpage)->go();
+			}
 			
-			$data = $page->where($sql)->orderby('orders desc,id desc')->limit($limit)->page($this->frpage)->go();
+			
 			$pages = $page->pageList(3,'-');
 			
 			$this->pages = $pages;//组合分页
@@ -278,7 +285,17 @@ class HomeController extends CommonController
 			if($this->frparam('limit')){
 				$limit = $this->frparam('limit');
 			}
-			$data = $page->where($sql)->orderby('orders desc,id desc')->limit($limit)->page($this->frpage)->go();
+			
+			//只适合article和product
+			if($molds=='article' || $molds=='product'){
+				$sql.=" or (istop=1 and isshow=1) ";
+			
+				$data = $page->where($sql)->orderby('istop desc,orders desc,id desc')->limit($limit)->page($this->frpage)->go();
+			}else{
+				$data = $page->where($sql)->orderby('orders desc,id desc')->limit($limit)->page($this->frpage)->go();
+			}
+			
+			
 			$pages = $page->pageList(3,'-');
 			$this->pages = $pages;//组合分页
 			foreach($data as $k=>$v){

@@ -176,7 +176,12 @@
                 </div>
 				
 				
-				<div class="layui-form-item">
+			
+
+				</div>
+				<div class="layui-tab-item">
+				<span id="ext_fields"></span>
+					<div class="layui-form-item">
                     <label for="orders" class="layui-form-label">
                         <span class="x-red"></span>排序
                     </label>
@@ -189,6 +194,20 @@
 				  </div>
 					
                 </div>
+				
+				<div class="layui-form-item" pane>
+                    <label for="tjsx" class="layui-form-label">
+                        <span class="x-red"></span>推荐属性
+                    </label>
+                    <div class="layui-input-inline">
+                        <input type="checkbox" name="istop" value="1" title="置顶" {if($data['istop']==1)}checked{/if}>
+						<input type="checkbox" name="ishot" value="1" title="热点" {if($data['ishot']==1)}checked{/if}>
+						<input type="checkbox" name="istuijian" value="1" title="推荐" {if($data['istuijian']==1)}checked{/if}>
+                    </div>
+					 
+					
+                </div>
+				
 				<div class="layui-form-item" pane>
                     <label for="isshow" class="layui-form-label">
                         <span class="x-red"></span>是否显示
@@ -210,11 +229,6 @@
                     </div>
                    
                 </div>
-
-				</div>
-				<div class="layui-tab-item">
-				<span id="ext_fields"></span>
-				
 				</div>
 			  </div>
 			</div>

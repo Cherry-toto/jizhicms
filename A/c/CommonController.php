@@ -68,6 +68,20 @@ class CommonController extends Controller
 		  $pix = explode('.',$_FILES['file']['name']);
 		  $pix = end($pix);
 		  
+		  
+		    $fileType = $this->webconf['fileType'];
+			if(strpos($fileType,strtolower($pix))===false){
+				$data['error'] =  "Error: 文件类型不允许上传！";
+				$data['code'] = 1002;
+				JsonReturn($data);
+			}
+			$fileSize = (int)webConf('fileSize');
+			if($fileSize!=0 && $_FILES["file"]["size"]>$fileSize){
+				$data['error'] =  "Error: 文件大小超过网站内部限制！";
+				$data['code'] = 1003;
+				JsonReturn($data);
+			}
+		  
 		  $filename =  'Public/Admin/'.date('Ymd').rand(1000,9999).'.'.$pix;
 		  $filename_x =  'Public/Admin/'.date('Ymd').rand(1000,9999).'.'.$pix;
 		  

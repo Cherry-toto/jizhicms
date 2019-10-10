@@ -467,7 +467,7 @@ class View
 			$n++;
 			if(isset($'.$as.'[\'htmlurl\']) && !isset($'.$as.'[\'url\'])){
 				if($table==\'classtype\'){
-					$'.$as.'[\'url\'] = get_domain().\'/\'.$'.$as.'[\'htmlurl\'].\'.html\';
+					$'.$as.'[\'url\'] = $classtypedata[$'.$as.'[\'id\']][\'url\'];
 				}else{
 					$'.$as.'[\'url\'] = gourl($'.$as.'[\'id\'],$'.$as.'[\'htmlurl\']);
 				}

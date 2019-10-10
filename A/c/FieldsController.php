@@ -7,7 +7,7 @@
 // +----------------------------------------------------------------------
 // | Author: 留恋风 <2581047041@qq.com>
 // +----------------------------------------------------------------------
-// | Date：2019/01-2019/02
+// | Date：2019/01-2019/10
 // +----------------------------------------------------------------------
 
 
@@ -53,11 +53,22 @@ class FieldsController extends CommonController
 			if(M('Fields')->find(array('field'=>$data['field'],'molds'=>$data['molds']))){
 				JsonReturn(array('code'=>1,'msg'=>'字段标识已存在！'));
 			}
-			$sql = "select count(*) as n from information_schema.columns where table_name = '".DB_PREFIX.$data['molds']."' and TABLE_SCHEMA='".DB_PREFIX.$data['molds']."' and column_name = '".$data['field']."'";
-			$check = M()->findSql($sql);
-			if($check[0]['n']){
-				JsonReturn(array('code'=>1,'msg'=>'字段标识已存在！'));
+			// $sql = "select count(*) as n from information_schema.columns where table_name = '".DB_PREFIX.$data['molds']."' and TABLE_SCHEMA='".DB_PREFIX.$data['molds']."' and column_name = '".$data['field']."'";
+			// $check = M()->findSql($sql);
+			// if($check[0]['n']){
+				// JsonReturn(array('code'=>1,'msg'=>'字段标识已存在！'));
+			// }
+			
+			$sql = 'SHOW COLUMNS FROM '.DB_PREFIX.$data['molds'];
+			$list = M()->findSql($sql);
+			$isgo = true;
+			foreach($list as $v){
+				if($v['Field']==$data['field']){
+					$isgo = false;
+					JsonReturn(array('code'=>1,'msg'=>'字段标识已存在！'));
+				}
 			}
+			
 			
 			$data['tids'] = ($data['tids']!='')?(','.$data['tids'].','):$data['tids'];
 			$sql = "ALTER TABLE ".DB_PREFIX.$data['molds']." ADD ".$data['field']." ";

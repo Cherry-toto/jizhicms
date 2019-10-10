@@ -16,7 +16,11 @@
         </div>
         <div class="x-body">
             
-            <xblock><button class="layui-btn" onclick="beifen();"><i class="layui-icon">&#xe608;</i>备份数据库</button><span class="x-right" style="line-height:40px">共有：{fun count($lists)} 个备份</span></xblock>
+            <xblock>
+			 {if(checkAction('Index/backup'))}
+			<button class="layui-btn" onclick="beifen();"><i class="layui-icon">&#xe608;</i>备份数据库</button>
+			{/if}
+			<span class="x-right" style="line-height:40px">共有：{fun count($lists)} 个备份</span></xblock>
             <table class="layui-table">
                 <thead>
                     <tr>
@@ -40,14 +44,18 @@
                        <td>{fun get_file_byte('backup/'.$v)}</td>
                        
                         <td class="td-manage">
+						{if(checkAction('Index/huanyuan'))}
                             <a title="还原数据" onclick="huanyuan('{$v}')" href="javascript:;" 
                             class="ml-5" style="text-decoration:none">
                                 <button class="layui-btn">还原数据</button>
                             </a>
+						{/if}
+						{if(checkAction('Index/shanchu'))}
                             <a title="删除备份" onclick="shanchu('{$v}')"  href="javascript:;"  
                             style="text-decoration:none">
                                <button class="layui-btn layui-btn-danger">删除备份</button>
                             </a>
+						{/if}
                         </td>
                     </tr>
 				{/foreach}

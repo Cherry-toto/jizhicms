@@ -34,43 +34,57 @@ class MessageController extends CommonController
 	
 	//留言管理
 	function messagelist(){
-		$page = new Page('Message');
-		$sql = ' 1=1 ';
-		if($this->frparam('isshow')){
-			$isshow = $this->frparam('isshow')==1 ? 1 : 0;
-			$sql .= ' and isshow='.$isshow;
-		}
-		$this->isshow = $this->frparam('isshow');
-		
-		if($this->frparam('tid')!=0){
-			$sql = 'tid='.$this->frparam('tid');
-		}
-		if($this->frparam('aid')){
-			$sql.=" and aid = ".$this->frparam('aid')." ";
-		}
-		$data = $this->frparam();
-		$res = molds_search('message',$data);
-		$get_sql = ($res['fields_search_check']!='') ? (' and '.$res['fields_search_check']) : '';
-		$sql .= $get_sql;
-		
-		$this->fields_search = $res['fields_search'];
-		$this->fields_list = M('Fields')->findAll(array('molds'=>'message','islist'=>1),'orders desc');
-		
-		$data = $page->where($sql)->orderby('id desc')->page($this->frparam('page',0,1))->go();
-		$pages = $page->pageList();
-
-		$this->pages = $pages;
-		$this->lists = $data;
-		$this->sum = $page->sum;
-		
-		
 		$this->tid=  $this->frparam('tid');
 		$this->aid = $this->frparam('aid');
-		
-		//$classtype = M('classtype')->findAll(null,'orders desc');
-		//$classtypes = getTree($classtype);
-	
 		$this->classtypes = $this->classtypetree;
+		$this->isshow = $this->frparam('isshow');
+		$data = $this->frparam();
+		$res = molds_search('message',$data);
+		$this->fields_search = $res['fields_search'];
+		$this->fields_list = M('Fields')->findAll(array('molds'=>'message','islist'=>1),'orders desc');
+		if($this->frparam('ajax')){
+			$page = new Page('Message');
+			$sql = ' 1=1 ';
+			if($this->frparam('isshow')){
+				$isshow = $this->frparam('isshow')==1 ? 1 : 0;
+				$sql .= ' and isshow='.$isshow;
+			}
+			
+			if($this->frparam('tid')!=0){
+				$sql = 'tid='.$this->frparam('tid');
+			}
+			if($this->frparam('aid')){
+				$sql.=" and aid = ".$this->frparam('aid')." ";
+			}
+			$get_sql = ($res['fields_search_check']!='') ? (' and '.$res['fields_search_check']) : '';
+			$sql .= $get_sql;
+			$data = $page->where($sql)->orderby('id desc')->page($this->frparam('page',0,1))->go();
+			$ajaxdata = [];
+			foreach($data as $k=>$v){
+				
+				
+				$v['new_tid'] = $v['tid']!=0 ? get_info_table('classtype',array('id'=>$v['tid']),'classname') : '-';
+				$v['new_isshow'] = $v['isshow']==1 ? '<span class="layui-badge layui-bg-green">已审核</span>' : '<span class="layui-badge">未审核</span>';
+				$v['new_addtime'] = date('Y-m-d H:i:s',$v['addtime']);
+				$v['edit_url'] = U('Message/editmessage',array('id'=>$v['id']));
+				foreach($this->fields_list as $vv){
+					$v[$vv['field']] = format_fields($vv,$v[$vv['field']]);
+				}
+				$ajaxdata[]=$v;
+				
+			}
+			
+			$pages = $page->pageList();
+			$this->pages = $pages;
+			$this->lists = $data;
+			$this->sum = $page->sum;
+			JsonReturn(['code'=>0,'data'=>$ajaxdata,'count'=>$page->sum]);
+		}
+		
+		
+		
+		
+		
 		
 		
 		$this->display('message-list');

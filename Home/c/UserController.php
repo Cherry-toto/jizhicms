@@ -26,7 +26,11 @@ class UserController extends Controller
 		$this->webconf = $webconf;
 		$this->webcustom = $webcustom;
 		$this->template = $template;
-		$classtypedata = classTypeData();
+		if(isset($_SESSION['terminal'])){
+			$classtypedata = $_SESSION['terminal']=='mobile' ? classTypeDataMobile() : classTypeData();
+		}else{
+			$classtypedata = (isMobile() && $webconf['iswap']==1)?classTypeDataMobile():classTypeData();
+		}
 		
 		foreach($classtypedata as $k=>$v){
 			$classtypedata[$k]['children'] = get_children($v,$classtypedata);

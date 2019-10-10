@@ -17,7 +17,9 @@
         <div class="x-body">
         
           <xblock>
+		   {if(checkAction('Molds/addMolds'))}
 		 <button class="layui-btn" onclick="x_admin_show('新增模块','{fun U('Molds/addMolds')}')"><i class="layui-icon"></i>新增模块</button>
+		   {/if}
 		   <span class="x-right" style="line-height:40px">共有数据：{$sum} 条</span>
 		  </xblock>
             <table class="layui-table">
@@ -75,10 +77,15 @@
 					
                         <td class="td-manage">
                         
-							
+							{if(checkAction('Molds/editMolds'))}
 							 <button class="layui-btn layui-btn layui-btn-xs"  onClick="x_admin_show('编辑','{fun U('Molds/editMolds',array('id'=>$v['id']))}')" ><i class="layui-icon">&#xe642;</i>编辑</button>
+							{/if}
+							{if(checkAction('Fields/index'))}
 							 <button class="layui-btn layui-btn-warm layui-btn-xs"  onClick="x_admin_show('{$v['name']}-字段管理','{fun U('Fields/index',array('molds'=>$v['biaoshi']))}')" ><i class="layui-icon">&#xe642;</i>字段管理</button>
+							{/if}
+							{if(checkAction('Molds/deleteMolds'))}
 							 <button class="layui-btn-danger layui-btn layui-btn-xs"  onClick="molds_del(this,'{$v['id']}')" href="javascript:;" ><i class="layui-icon">&#xe640;</i>删除</button>
+							{/if}
                         </td>
 						
                     </tr>

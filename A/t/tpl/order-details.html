@@ -230,6 +230,9 @@
               </div>
           </div>
 		  
+		 <span id="ext_fields"></span>
+		  
+		  
           <div class="layui-form-item" style="text-align:center;">
              
               <button  class="layui-btn" lay-filter="close" lay-submit="">
@@ -242,6 +245,9 @@
       </form>
     </div>
     <script>
+	
+	{include="fields"}
+	
         layui.use(['form','layer'], function(){
             $ = layui.jquery;
           var form = layui.form
@@ -264,7 +270,14 @@
             
             return false;
           });
-		  
+		   get_fields({$data['tid']},{$data['id']});
+		   form.on('select(tid)', function(data){
+			 
+			  get_fields(data.value,{$data['id']});
+			  
+			  
+			});
+			
 		     //监听提交
            form.on('submit(save)', function(data){
 

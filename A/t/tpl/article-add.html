@@ -57,7 +57,7 @@
                         <span class="x-red">*</span>栏目
                     </label>
                     <div class="layui-input-inline">
-						<select name="tid" lay-filter="tid" id="tid" >
+						<select name="tid" lay-search="" lay-filter="tid" id="tid" >
 						<option value="0">选择栏目</option>
 					   {foreach $classtypes as $v}
 					   {if($v['molds']=='article')}
@@ -131,14 +131,17 @@
 					<script id="editor" name="body" type="text/plain" style="width:100%;height:400px;"></script>
                     </div>
                 </div>
-				 
+				{if($webconf['isrelative']==1)}
+				<span id="ext_fields"></span>
+				{/if}
 				
 				
 		<!--end tab1-->		
 				</div>
 				<div class="layui-tab-item">
-				
+				{if($webconf['isrelative']==0)}
 				<span id="ext_fields"></span>
+				{/if}
 				
 				
 				<div class="layui-form-item">

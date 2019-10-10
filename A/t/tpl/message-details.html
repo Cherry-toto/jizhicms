@@ -60,7 +60,7 @@
                         <span class="x-red">*</span>留言栏目
                     </label>
                     <div class="layui-input-block">
-						<select name="tid" id="tid" >
+						<select name="tid" lay-search="" id="tid" >
 						<option value="0">不指定栏目</option>
 					   {foreach $classtypes as $v}
 					   <option {if($data['tid']==$v['id'])} selected="selected" {/if}  value="{$v['id']}">{fun str_repeat('--', $v['level']), $v['classname']}</option>

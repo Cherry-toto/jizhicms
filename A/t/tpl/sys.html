@@ -19,10 +19,18 @@
             <div class="layui-tab layui-tab-brief" lay-filter="docDemoTabBrief">
               <ul class="layui-tab-title">
                 <li class="layui-this">网站设置</li>
+				{if(checkAction('Sys/high-level'))}
                 <li>高级设置</li>
+				{/if}
+				{if(checkAction('Sys/email-order'))}
                 <li>邮箱订单</li>
+				{/if}
+				{if(checkAction('Sys/payconfig'))}
                 <li>支付配置</li>
+				{/if}
+				{if(checkAction('Sys/wechatbind'))}
                 <li>公众号绑定</li> 
+				{/if}
               </ul>
 			 
               <div class="layui-tab-content" >
@@ -274,7 +282,8 @@
                     
                     <div style="height:100px;"></div>
                 </div>
-                <div class="layui-tab-item">
+                {if(checkAction('Sys/high-level'))}
+				<div class="layui-tab-item">
                    
                        <div  class="layui-form-item">
                             <label style="width:150px"  class="layui-form-label">
@@ -333,6 +342,83 @@
 							 
 							
 						</div>
+						
+						<div class="layui-form-item" pane>
+							<label for="isrelative" style="width:150px" class="layui-form-label">
+								<span class="x-red"></span>基本信息下扩展
+							</label>
+							<div  style="margin-left: 150px;" class="layui-input-inline">
+								<input type="radio" name="isrelative" value="0" title="否" {if($config['isrelative']==0)}checked{/if}>
+								<input type="radio" name="isrelative" value="1" title="是" {if($config['isrelative']==1)}checked{/if}>
+							</div>
+							<div class="layui-form-mid layui-word-aux">
+								  新增字段是否显示在【基本信息】底部，默认在【扩展信息】下
+							</div> 
+							
+						</div>
+						<div class="layui-form-item" pane>
+							<label for="islevelurl" style="width:150px" class="layui-form-label">
+								<span class="x-red"></span>开启层级URL
+							</label>
+							<div  style="margin-left: 150px;" class="layui-input-inline">
+								<input type="radio" name="islevelurl" value="0" title="否" {if($config['islevelurl']==0)}checked{/if}>
+								<input type="radio" name="islevelurl" value="1" title="是" {if($config['islevelurl']==1)}checked{/if}>
+							</div>
+							<div class="layui-form-mid layui-word-aux">
+								  默认关闭层级URL，开启后URL会按照父类层级展现
+							</div> 
+							
+						</div>
+						<div class="layui-form-item" pane>
+							<label for="iscachepage" style="width:150px" class="layui-form-label">
+								<span class="x-red"></span>缓存完整页面
+							</label>
+							<div  style="margin-left: 150px;" class="layui-input-inline">
+								<input type="radio" name="iscachepage" value="0" title="否" {if($config['iscachepage']==0)}checked{/if}>
+								<input type="radio" name="iscachepage" value="1" title="是" {if($config['iscachepage']==1)}checked{/if}>
+							</div>
+							<div class="layui-form-mid layui-word-aux">
+								  前台完整页面缓存，结合缓存时间，可以提高访问速度
+							</div> 
+							
+						</div>
+						<div class="layui-form-item" pane>
+							<label for="isautohtml" style="width:150px" class="layui-form-label">
+								<span class="x-red"></span>自动生成静态
+							</label>
+							<div  style="margin-left: 150px;" class="layui-input-inline">
+								<input type="radio" name="isautohtml" value="0" title="否" {if($config['isautohtml']==0)}checked{/if}>
+								<input type="radio" name="isautohtml" value="1" title="是" {if($config['isautohtml']==1)}checked{/if}>
+							</div>
+							<div class="layui-form-mid layui-word-aux">
+								  前台访问网站页面，将自动生成静态HTML，下次访问直接进入静态HTML页面
+							</div> 
+							
+						</div>
+						<div  class="layui-form-item">
+                            <label style="width:150px"  class="layui-form-label">
+                                <span class='x-red'>*</span>电脑静态目录
+                            </label>
+                            <div  style="margin-left: 150px;" class="layui-input-block">
+                                <input type="text" name="pc_html" value="{$config['pc_html']}" autocomplete="off" placeholder=""
+                                class="layui-input">
+                            </div>
+							<div class="layui-form-mid layui-word-aux">
+							电脑端静态HTML存放目录，默认根目录[ / ]
+							</div> 
+                        </div>
+						<div  class="layui-form-item">
+                            <label style="width:150px"  class="layui-form-label">
+                                <span class='x-red'>*</span>手机静态目录
+                            </label>
+                            <div  style="margin-left: 150px;" class="layui-input-block">
+                                <input type="text" name="mobile_html" value="{$config['mobile_html']}" autocomplete="off" placeholder=""
+                                class="layui-input">
+                            </div>
+							<div class="layui-form-mid layui-word-aux">
+							手机端静态HTML存放目录，默认[ m ]，如果不生成静态，则PC和WAP静态目录改为[ / ]							</div> 
+                        </div>
+						
 						<div class="layui-form-item" pane>
 							<label for="isopenwebsite" style="width:150px" class="layui-form-label">
 								<span class="x-red"></span>是否绑定多域名
@@ -465,11 +551,9 @@
                         </div>
                     
                 </div>
-				
-				
-				
-				
-               <div class="layui-tab-item">
+                {/if}
+				{if(checkAction('Sys/email-order'))}
+				<div class="layui-tab-item">
                     
 						{if($admin['gid']==1)}
 						<div class="layui-form-item">
@@ -557,7 +641,18 @@
                                 class="layui-input">
                             </div>
                         </div>
-						
+						<div class="layui-form-item">
+                            <label style="width:150px" class="layui-form-label">
+                                <span  class='x-red'>*</span>订单超时
+                            </label>
+                            <div  style="margin-left: 150px;" class="layui-input-block">
+                                <input type="number" name="overtime" value="{$config['overtime']}" autocomplete="off" placeholder="请输入订单超时时间"
+                                class="layui-input">
+                            </div>
+							<div class="layui-form-mid layui-word-aux">
+								  按小时计算，超过该小时订单过期，仅限于开启支付后，0代表不限制，关闭支付后不起效
+							</div> 
+                        </div>
 						
 						<div class="layui-form-item">
                             <button class="layui-btn" lay-submit="" lay-filter="*">
@@ -566,7 +661,9 @@
                         </div>
                    
                 </div>
-                <div class="layui-tab-item">
+                {/if}
+				{if(checkAction('Sys/payconfig'))}
+				<div class="layui-tab-item">
                     <div class="layui-form-item" pane>
 						<label for="paytype" style="width:150px"  class="layui-form-label">
 							<span class="x-red"></span>支付方式
@@ -782,7 +879,9 @@
 					</div>
                    
                 </div>
-			    <div class="layui-tab-item">
+			    {/if}
+				{if(checkAction('Sys/wechatbind'))}
+				<div class="layui-tab-item">
 				
 						<blockquote class="layui-elem-quote">仅仅是配置菜单栏，不需要接入服务器</blockquote>
 						<div class="layui-form-item">
@@ -839,7 +938,7 @@
 						
                     
 				</div>
-              
+				{/if}
 			 
 				
               </div>

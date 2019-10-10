@@ -21,70 +21,131 @@ class OrderController extends CommonController
 
 
 	function index(){
-    
-    
-		$sql = ' 1=1 ';
-        $this->endtime = $this->frparam('end',1);
+		
+		$this->endtime = $this->frparam('end',1);
 		$this->starttime = $this->frparam('start',1);
-	
-		if($this->frparam('start',1)){
-			$starttime = strtotime($this->frparam('start',1));
-			$sql .= " and addtime >= ".$starttime;
-		}
-		if($this->frparam('end',1)){
-			$endtime = strtotime($this->frparam('end',1).' 23:59:59');
-			$sql .=" and addtime <= ".$endtime;
-		}
-		if($this->frparam('orderno',1)){
-			$sql .= " and orderno like '%".$this->frparam('orderno',1)."%' ";
-		}
 		$this->orderno = $this->frparam('orderno',1);
-		
-		if($this->frparam('username',1)){
-			$sql .= " and username like '%".$this->frparam('username',1)."%' ";
-		}
-		$this->username = $this->frparam('username',1);
-		if($this->frparam('tel',1)){
-			$sql .= " and tel like '%".$this->frparam('tel',1)."%' ";
-		}
+		$this->username = $this->frparam('username',1);	
 		$this->tel = $this->frparam('tel',1);
+		$this->isshow = $this->frparam('isshow');
+		$this->tid = $this->frparam('tid');
 		
-		$page = new Page('Orders');
-		$pagelist = $page->where($sql)->setPage(array('limit'=>20,'page'=>$this->frparam('page',0,1)))->orderby('addtime desc,id desc')->go();
-		$pages = $page->pageList();
-		$this->lists = $pagelist;
-		$this->pages = $pages;
-        $this->sum = $page->sum;
-		//统计
-		$all = $page->sum;
-		$overpay_num = 0;
-		$notpay_num = 0;
-		$allmoney = 0.00;
-		foreach($pagelist as $v){
-			if($v['ispay']==1){
-				$overpay_num+=1;
-				$allmoney+=$v['price'];
-			}else{
-				$notpay_num+=1;
+        $this->classtypes = $this->classtypetree;
+		$this->fields_list = M('Fields')->findAll(array('molds'=>'orders','islist'=>1),'orders desc');
+		$data = $this->frparam();
+		$res = molds_search('orders',$data);
+		$get_sql = ($res['fields_search_check']!='') ? (' and '.$res['fields_search_check']) : '';
+		$this->fields_search = $res['fields_search'];
+		
+		if($this->frparam('ajax')){
+			$sql = ' 1=1 ';
+			$classtypedata = classTypeData();
+			foreach($classtypedata as $k=>$v){
+				$classtypedata[$k]['children'] = get_children($v,$classtypedata);
 			}
+			if($this->frparam('start',1)){
+				$starttime = strtotime($this->frparam('start',1));
+				$sql .= " and addtime >= ".$starttime;
+			}
+			if($this->frparam('end',1)){
+				$endtime = strtotime($this->frparam('end',1).' 23:59:59');
+				$sql .=" and addtime <= ".$endtime;
+			}
+			if($this->frparam('orderno',1)){
+				$sql .= " and orderno like '%".$this->frparam('orderno',1)."%' ";
+			}
+			
+			if($this->frparam('username',1)){
+				$sql .= " and username like '%".$this->frparam('username',1)."%' ";
+			}
+			if($this->frparam('tid')){
+				$sql .= " and tid=".$this->frparam('tid')." ";
+			}
+			if($this->frparam('isshow')){
+				$isshow = $this->frparam('isshow')==7 ? 0 : $this->frparam('isshow');
+				$sql .= " and isshow=".$isshow." ";
+			}
+			if($this->frparam('tel',1)){
+				$sql .= " and tel like '%".$this->frparam('tel',1)."%' ";
+			}
+			$sql .= $get_sql;
+			
+			$page = new Page('Orders');
+			$pagelist = $page->where($sql)->setPage(array('limit'=>20,'page'=>$this->frparam('page',0,1)))->orderby('addtime desc,id desc')->go();
+			
+			$ajaxdata = [];
+			$overpay_num = 0;
+			$notpay_num = 0;
+			$allmoney = 0.00;
+			foreach($pagelist as $k=>$v){
+				if($v['ispay']==1){
+					$overpay_num+=1;
+					$allmoney+=$v['price'];
+				}else{
+					$notpay_num+=1;
+				}
+				$v['new_tid'] = $v['tid']!=0 ? $classtypedata[$v['tid']]['classname']:'-';
+				switch($v['isshow']){
+					case 1:
+					$v['new_isshow'] = '<span class="layui-badge">待付款</span>';
+					break;
+					case 2:
+					$v['new_isshow'] = '<span class="layui-badge layui-bg-green">已付</span>';
+					break;
+					case 3:
+					$v['new_isshow'] = '<span class="layui-badge layui-bg-orange">超时</span>';
+					break;
+					case 4:
+					$v['new_isshow'] = '<span class="layui-badge">待审核待支付</span>';
+					break;
+					case 5:
+					$v['new_isshow'] = '<span class="layui-badge layui-bg-black">已发货</span>';
+					break;
+					case 6:
+					$v['new_isshow'] = '<span class="layui-badge layui-bg-gray">已废弃</span>';
+					break;
+					default:
+					$v['new_isshow'] = '<span class="layui-badge layui-bg-blue">被删除</span>';
+					break;
+					
+					
+				}
+				
+				$v['new_addtime'] = date('Y-m-d H:i:s',$v['addtime']);
+				$v['new_ispay'] = $v['ispay']==1 ? '<span class="layui-badge layui-bg-green">已付</span>' : '<span class="layui-badge">未付</span>';
+				
+				$v['edit_url'] = U('details',array('id'=>$v['id']));
+				$v['new_paytime'] = $v['paytime']==0?'-':date('Y-m-d H:i:s',$v['paytime']);
+				foreach($this->fields_list as $vv){
+					$v[$vv['field']] = format_fields($vv,$v[$vv['field']]);
+				}
+				$ajaxdata[]=$v;
+				
+			}
+			
+			$pages = $page->pageList();
+			$this->lists = $pagelist;
+			$this->pages = $pages;
+			$this->sum = $page->sum;
+			//统计
+			$all = $page->sum;
+			
+			$this->all = $all;
+			$this->overpay_num = $overpay_num;
+			$this->notpay_num = $notpay_num;
+			$this->allmoney = $allmoney;
+			JsonReturn(['code'=>0,'data'=>$ajaxdata,'count'=>$page->sum,'overpay_num'=>$this->overpay_num,'notpay_num'=>$this->notpay_num,'allmoney'=>$this->allmoney,'all'=>$this->all]);
 		}
 		
-		$this->all = $all;
-		$this->overpay_num = $overpay_num;
-		$this->notpay_num = $notpay_num;
-		$this->allmoney = $allmoney;
 		
-        $classtype = M('classtype')->findAll(null,null,'id,classname,pid');
-		$classtypes = array();
-		foreach($classtype as $v){
-			$classtypes[$v['id']] = $v;
-		}
-        $this->classtypes = $classtypes;
+		
+        
     	$this->display('order-list');
     
     }
 	
 	function details(){
+		$this->fields_biaoshi = 'orders';
 		$classtypedata = classTypeData();
 		foreach($classtypedata as $k=>$v){
 			$classtypedata[$k]['children'] = get_children($v,$classtypedata);
@@ -155,6 +216,16 @@ class OrderController extends CommonController
 		}
 		
 		
+	}
+	function deleteorder(){
+		$id = $this->frparam('id');
+		if($id){
+			if(M('orders')->delete('id='.$id)){
+				JsonReturn(array('code'=>0,'msg'=>'删除成功！'));
+			}else{
+				JsonReturn(array('code'=>1,'msg'=>'删除失败！'));
+			}
+		}
 	}
 	
 

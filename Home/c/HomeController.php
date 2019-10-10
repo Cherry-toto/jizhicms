@@ -38,7 +38,7 @@ class HomeController extends CommonController
 		$position = strpos($request_url,'?');
 		$url = ($position!==FALSE) ? substr($request_url,0,$position) : $request_url;
 		$url = substr($url,1,strlen($url)-1);
-	
+		
 	
 		if($url=='' || $url=='/' || $url=='index.php' || $url=='index'.File_TXT){
 			$this->index();exit;
@@ -53,40 +53,107 @@ class HomeController extends CommonController
 		//  news/123.html  news-123.html  news-list-123.html
 		$url = str_ireplace(File_TXT,'',$url);
 		
-		if(strpos($url,'/')!==false){
-			$urls = explode('/',$url);
-			//内容详情页
-			$html = $urls[0];
-			$id = (int)$urls[1];
-			$res = M('classtype')->find(array('htmlurl'=>$html));
-		}else{
-			
-			
-			//栏目页
-			$this->frpage = $this->frparam('page',0,1);
-			if(strpos($url,'-')!==false){
-				//检测是否为分页
-				$res = M('classtype')->find(array('htmlurl'=>$url));
-				if(!$res){
-					//存在分页,取最后一个字符串
-					$html_x = explode('-',$url);
-					$this->frpage = array_pop($html_x);
-					if(!$this->frpage){
-						$this->error('链接错误！');exit;
+		if(!$this->webconf['islevelurl']){
+			//没有开启URL层级
+			if(strpos($url,'/')!==false){
+				$urls = explode('/',$url);
+				//内容详情页
+				$html = $urls[0];
+				$id = (int)$urls[1];
+				$res = M('classtype')->find(array('htmlurl'=>$html));
+			}else{
+				
+				
+				//栏目页
+				$this->frpage = $this->frparam('page',0,1);
+				if(strpos($url,'-')!==false){
+					//检测是否为分页
+					$res = M('classtype')->find(array('htmlurl'=>$url));
+					if(!$res){
+						//存在分页,取最后一个字符串
+						$html_x = explode('-',$url);
+						$this->frpage = array_pop($html_x);
+						if(!$this->frpage){
+							$this->error('链接错误！');exit;
+						}
+						$html = implode('-',$html_x);//再次拼接
+						$res = M('classtype')->find(array('htmlurl'=>$html));
+						
+					}else{
+						//不是分页
+						
 					}
-					$html = implode('-',$html_x);//再次拼接
-					$res = M('classtype')->find(array('htmlurl'=>$html));
 					
 				}else{
-					//不是分页
+					$html = $url;
+					$res = M('classtype')->find(array('htmlurl'=>$html));
 					
 				}
+			}
+		
+		}else{
+			//开启URL层级
+			//判断是否为栏目
+			$html=$url;
+			$res = M('classtype')->find(array('htmlurl'=>$html));
+			if(!$res){
 				
-			}else{
-				$res = M('classtype')->find(array('htmlurl'=>$url));
+				if(strpos($url,'/')!==false){
+					$urls = explode('/',$url);
+					$urls_end = array_pop($urls);
+					if(strpos($urls_end,'-')!==false){
+						//分页
+						//存在分页,取最后一个字符串
+						$html_x = explode('-',$urls_end);
+						$this->frpage = array_pop($html_x);
+						if(!$this->frpage){
+							$this->error('链接错误！');exit;
+						}
+						$urls[] = implode('-',$html_x);//再次拼接
+						$html = implode('/',$urls);
+						$res = M('classtype')->find(array('htmlurl'=>$html));
+						
+					}else{
+						//可能是数字？
+						$html = implode('/',$urls);
+						$id = (int)$urls_end;
+						if($id<0){
+							$this->error('链接错误！');exit;
+						}
+						$res = M('classtype')->find(array('htmlurl'=>$html));
+					}
+					
+					
+					
+					
+					
+				}else{
+					//栏目页
+					$this->frpage = $this->frparam('page',0,1);
+					if(strpos($url,'-')!==false){
+						//检测是否为分页
+						//存在分页,取最后一个字符串
+						$html_x = explode('-',$url);
+						$this->frpage = array_pop($html_x);
+						if(!$this->frpage){
+							$this->error('链接错误！');exit;
+						}
+						$html = implode('-',$html_x);//再次拼接
+						$res = M('classtype')->find(array('htmlurl'=>$html));
+						
+					}else{
+						$html = $url;
+						$res = M('classtype')->find(array('htmlurl'=>$html));
+						
+					}
+				}
 				
 			}
+			
+			
 		}
+		
+		
 		
 		
 		if($res){
@@ -217,6 +284,20 @@ class HomeController extends CommonController
 
 			
 		}else{
+			
+			//进入自定义页面
+			/**
+				规定自定义页面的文件名跟访问的URL名相同，存放在page文件夹下面
+			
+			**/
+			//html
+			$filepath = APP_PATH.APP_HOME.'/'.HOME_VIEW.'/'.$this->template.'/page/'.$html.'.html';
+			if(file_exists($filepath)){
+				$this->display($this->template.'/page/'.$html);
+				exit;
+			}
+			
+			
 			//错误页面->404
 			$this->error('输入url错误！');
 			exit;
@@ -645,24 +726,26 @@ class HomeController extends CommonController
 	
 	//开启检查缓存
 	function start_cache($cache_file){
-		$cache_file = $cache_file.'_'.$this->template;
-		
-		if(file_exists($cache_file)){
-			
-			//获取当前时间戳
-			$now_time = time();
-			//获取缓存文件时间戳
-			$last_time = filemtime($cache_file);
-			//如果缓存文件生成超过指定的时间直接删除文件
-			if((($now_time - $last_time)/60)>webConf('cache_time')){
-				unlink($cache_file);
-			}else{
-				//有缓存文件直接调用
-				echo  file_get_contents($cache_file);
-				exit;
+		$cache_file = $cache_file.'_'.$this->template.'.php';
+		if($this->webconf['iscachepage']==1){
+			if(file_exists($cache_file)){
+				
+				//获取当前时间戳
+				$now_time = time();
+				//获取缓存文件时间戳
+				$last_time = filemtime($cache_file);
+				//如果缓存文件生成超过指定的时间直接删除文件
+				if((($now_time - $last_time)/60)>webConf('cache_time')){
+					unlink($cache_file);
+				}else{
+					//有缓存文件直接调用
+					$content =  file_get_contents($cache_file);
+					echo substr($content,14);
+					exit;
+				}
+				
+				
 			}
-			
-			
 		}
 	
 		//开启缓存
@@ -670,14 +753,47 @@ class HomeController extends CommonController
 	}
 	//结束缓存
 	function end_cache($cache_file){
-		$cache_file = $cache_file.'_'.$this->template;
+		$cache_file = $cache_file.'_'.$this->template.'.php';
 		
 		//获取缓存
 		$content = ob_get_contents();
-		//写入到缓存内容到指定的文件夹
-		$fp = fopen($cache_file,'w');
-		fwrite($fp,$content);
-		fclose($fp);
+		
+		if($this->webconf['isautohtml']==1){
+			$filepath = substr($_SERVER["REQUEST_URI"],1,strlen($_SERVER["REQUEST_URI"])-1);
+			$file = APP_PATH.$filepath;
+			if(strpos($filepath,'/')!==false){
+				$filepath = explode('/',$filepath);
+				array_pop($filepath);
+				$create_dir = APP_PATH;
+				foreach($filepath as $vv){
+					$create_dir.=$vv;
+					if(!is_dir($create_dir)){
+						$r = mkdir($create_dir,0777,true);
+						if(!$r){
+							echo '系统创建 [ '.str_replace('/','\\',$create_dir).' ] 目录失败!';exit;
+						}
+						
+					}
+					$create_dir.='/';
+					
+				}
+				
+				
+			}
+			
+			
+			
+			file_put_contents($file,$content);
+			
+			
+		}
+		if($this->webconf['iscachepage']==1){
+			//写入到缓存内容到指定的文件夹
+			$content ='<?php die();?>'.$content;
+			$fp = fopen($cache_file,'w');
+			fwrite($fp,$content);
+			fclose($fp);
+		}
 		ob_flush();  
 		flush();
 		ob_end_clean(); 

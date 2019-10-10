@@ -620,5 +620,8 @@ layui.use("laydate", function(){
 		JsonReturn(['code'=>0,'fields_list'=>$fields_list,'tpl'=>$l]);
 	}
 	
+	function jizhi(){
+		$this->display($this->template.'/404');
+	}
 
 }

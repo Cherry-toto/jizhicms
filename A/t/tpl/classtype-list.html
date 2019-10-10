@@ -21,9 +21,12 @@
      
      
       <xblock>
-        <!--button class="layui-btn layui-btn-danger" onclick="delAll()"><i class="layui-icon"></i>批量删除</button-->
+        {if(checkAction('Classtype/addclass'))}	
 		<button class="layui-btn"  onclick="x_admin_show('新增{$molds['name']}','{fun U('Classtype/addclass')}')" ><i class="layui-icon"></i>新增</button>
+		{/if}
+		{if(checkAction('Classtype/addmany'))}	
 		<button class="layui-btn"  onclick="x_admin_show('批量新增{$molds['name']}','{fun U('Classtype/addmany')}')" ><i class="layui-icon"></i>批量新增</button>
+		{/if}
         <span class="x-right" style="line-height:40px"></span>
       </xblock>
        <div style="width:100%;  overflow:scroll;overflow-y: hidden">
@@ -43,7 +46,13 @@
 		{foreach $classtypes as $v}
           <tr cate-id="{$v['id']}" fid="{$v['pid']}" >
             <td>{$v['id']}</td>
-			<td><input type="text" class="layui-input x-sort"  name="order" value="{$v['orders']}"></td>
+			<td>
+			{if(checkAction('Classtype/editClassOrders'))}	
+	<input type="text" class="layui-input x-sort"  name="order" value="{$v['orders']}">
+			{else}
+			{$v['orders']}
+			{/if}
+			</td>
             
             <td>
 			  {fun str_repeat('&nbsp;&nbsp;&nbsp;',$v['level'])}
@@ -56,19 +65,34 @@
             </td>
 			<td>{$moldslist[$v['molds']]['name']}</td>
 			<td class="td-status" >
-			<input type="checkbox" value="{$v['id']}" name="switch" lay-filter="status"   lay-text="显示|隐藏"  lay-skin="switch" {if($v['isshow']==1)}checked{/if}>
+			{if(checkAction('Classtype/change_status'))}	
+				<input type="checkbox" value="{$v['id']}" name="switch" lay-filter="status"   lay-text="显示|隐藏"  lay-skin="switch" {if($v['isshow']==1)}checked{/if}>
+			{else}
+				{if($v['isshow']==1)}
+				<span class="layui-badge layui-bg-green">正常</span>
+				{else}
+				<span class="layui-badge">隐藏</span>
+				{/if}
+			{/if}
              </td>
 			
             <td class="td-manage">
+			{if(checkAction('Classtype/addclass'))}	
 			 <button class="layui-btn layui-btn-warm layui-btn-xs"  onclick="x_admin_show('添加子{$molds['name']}','{fun U('Classtype/addclass',array('pid'=>$v['id'],'biaoshi'=>$v['molds']))}')" ><i class="layui-icon">&#xe642;</i>添加子{$molds['name']}</button>
+			{/if}
 			  {if(checkAction('Fields/index'))}
 			  <button class="layui-btn layui-btn-normal layui-btn-xs"  onclick="x_admin_show('字段管理','{fun U('Fields/index',array('molds'=>$v['molds']))}')" ><i class="layui-icon">&#xe642;</i>字段管理</button>
                {/if}
 			</td>
             <td class="td-manage">
+			{if(checkAction('Classtype/editclass'))}
               <button class="layui-btn layui-btn layui-btn-xs"  onclick="x_admin_show('编辑','{fun U('Classtype/editclass',array('id'=>$v['id']))}')" ><i class="layui-icon">&#xe642;</i>编辑</button>
+			{/if}
+			
 			 <a href="/{$v['htmlurl']}{__File_TXT__}" target="_blank"><button class="layui-btn layui-btn-normal layui-btn layui-btn-xs"   ><i class="layui-icon">&#xe615;</i>预览</button></a>
+			{if(checkAction('Classtype/deleteclass'))}
               <button class="layui-btn-danger layui-btn layui-btn-xs"  onclick="member_del(this,'{$v['id']}')" href="javascript:;" ><i class="layui-icon">&#xe640;</i>删除</button>
+			{/if}
             </td>
           </tr>
 		 {/foreach}

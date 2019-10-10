@@ -21,8 +21,9 @@
         
       </div>
       <xblock>
-       
+       {if(checkAction('Member/groupadd'))}
         <button class="layui-btn" onclick="x_admin_show('添加分组','{fun U('Member/groupadd')}')"><i class="layui-icon"></i>添加分组</button>
+	   {/if}
          {if($webconf['isopenhomepower']==0)}<button class="layui-btn">温馨提示：前台权限已关闭，设置权限不会生效。</button>{else}<button class="layui-btn layui-btn-danger">温馨提示：前台权限已开启，权限设置将直接影响前台访问，请谨慎操作！</button>{/if}
       </xblock>
       <table class="layui-table layui-form">
@@ -53,13 +54,25 @@
             </td>
 			 <td>{$v['description']}</td>
 			 <td class="td-status">
-             <input type="checkbox" value="{$v['id']}" name="switch" lay-filter="status"   lay-text="开|停"  lay-skin="switch" {if($v['isagree']==1)}checked{/if}>
+			 {if(checkAction('Member/change_group_status'))}
+             <input type="checkbox" value="{$v['id']}" name="switch" lay-filter="status"   lay-text="正常|封禁"  lay-skin="switch" {if($v['isagree']==1)}checked{/if}>
+			 {else}
+				{if($v['isagree']==1)}
+				<span class="layui-badge layui-bg-green">正常</span>
+				{else}
+				<span class="layui-badge">封禁</span>
+				{/if}
+			 {/if}
 			 </td>
 			
            
             <td class="td-manage">
+			 {if(checkAction('Member/groupedit'))}
               <button class="layui-btn layui-btn layui-btn-xs"  onclick="x_admin_show('编辑','{fun U('Member/groupedit',array('id'=>$v['id']))}')" ><i class="layui-icon">&#xe642;</i>编辑</button>
+			 {/if}
+			 {if(checkAction('Member/group_del'))}
               <button class="layui-btn-danger layui-btn layui-btn-xs"  onclick="member_del(this,'{$v['id']}')" href="javascript:;" ><i class="layui-icon">&#xe640;</i>删除</button>
+			 {/if}
             </td>
           </tr>
 		 {/foreach}

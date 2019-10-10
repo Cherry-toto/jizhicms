@@ -49,7 +49,7 @@
                         <span class="x-red">*</span>所属分类
                     </label>
                     <div class="layui-input-inline">
-						<select name="tid" lay-filter="tid" id="tid" >
+						<select name="tid" lay-filter="tid" lay-search="" id="tid" >
 						<option value="0">选择栏目</option>
 					   {foreach $collect_type as $v}
 					   <option {if($tid==$v['id'])}selected{/if}  value="{$v['id']}">{$v['name']}</option>
@@ -148,11 +148,18 @@
                    
                 </div>
 				
+				{if($webconf['isrelative']==1)}
+				<span id="ext_fields"></span>
+				{/if}
+				
+				
 		<!--end tab1-->		
 				</div>
 				<div class="layui-tab-item">
 				
+				{if($webconf['isrelative']==0)}
 				<span id="ext_fields"></span>
+				{/if}
 				
 				
 				</div>

@@ -17,9 +17,9 @@
         <div class="x-body">
           
           <xblock>
-		  
+		  {if(checkAction('Rulers/addrulers'))}
 		  <button class="layui-btn" onclick="x_admin_show('添加权限','{fun U('Rulers/addrulers')}')"><i class="layui-icon"></i>添加权限</button>
-		   
+		  {/if}
 		  </xblock>
             <table class="layui-table">
                 <thead>
@@ -64,11 +64,17 @@
 			{if($v['sys']==1)}<span class="layui-badge layui-bg-gray">系统</span>{else}<span class="layui-badge layui-bg-orange">插件</span>{/if}
              </td>
             <td class="td-manage">
+			{if(checkAction('Rulers/editrulers'))}
               <button class="layui-btn layui-btn layui-btn-xs"  onclick="x_admin_show('编辑','{fun U('Rulers/editrulers',array('id'=>$v['id']))}')" ><i class="layui-icon">&#xe642;</i>编辑</button>
-			  {if($v['pid']==0)}
-			<button class="layui-btn layui-btn-warm layui-btn-xs"  onclick="x_admin_show('添加子功能','{fun U('Rulers/addrulers',array('pid'=>$v['id']))}')" ><i class="layui-icon">&#xe642;</i>添加子功能</button>
 			{/if}
+			{if(checkAction('Rulers/addrulers'))}
+				{if($v['pid']==0)}
+				<button class="layui-btn layui-btn-warm layui-btn-xs"  onclick="x_admin_show('添加子功能','{fun U('Rulers/addrulers',array('pid'=>$v['id']))}')" ><i class="layui-icon">&#xe642;</i>添加子功能</button>
+				{/if}
+			{/if}
+			{if(checkAction('Rulers/deleterulers'))}
               <button class="layui-btn-danger layui-btn layui-btn-xs"  onclick="ruler_del(this,'{$v['id']}')" href="javascript:;" ><i class="layui-icon">&#xe640;</i>删除</button>
+			{/if}
             </td>
           </tr>
 		 {/foreach}
@@ -102,7 +108,7 @@
             function ruler_del(obj,id){
                 layer.confirm('确认要删除吗？',function(index){
 				
-					$.get("{__APP_URL__}/Rulers/deleterulers/id/"+id,{},function(r){
+					$.POST("{fun U('Rulers/deleterulers')}",{id:id},function(r){
 							var r = JSON.parse(r);
 							if(r.code==0){
 							 //发异步删除数据

@@ -132,9 +132,16 @@
                   autocomplete="off" class="layui-input">
               </div>
           </div>
+		  
+			{if($webconf['isrelative']==1)}
+			<span id="ext_fields"></span>
+			{/if}
+	  
 				</div>
 				<div class="layui-tab-item">
+				{if($webconf['isrelative']==0)}
 				<span id="ext_fields"></span>
+				{/if}
 				</div>
 			  </div>
 		</div>

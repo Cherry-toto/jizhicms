@@ -1,8 +1,8 @@
 <?php die();?>/*
 MySQL Database Backup Tools
 Server:127.0.0.1:3306
-Database:1.4
-Data:2019-09-15
+Database:3demo
+Data:2019-10-10 00:23:37
 */
 SET FOREIGN_KEY_CHECKS=0;
 -- ----------------------------
@@ -26,6 +26,9 @@ CREATE TABLE `jz_article` (
   `hits` int(11) NOT NULL DEFAULT '0',
   `isshow` tinyint(1) NOT NULL DEFAULT '1',
   `comment_num` int(11) NOT NULL DEFAULT '0' COMMENT '评论数',
+  `istop` tinyint(1) NOT NULL DEFAULT '0' COMMENT '是否置顶',
+  `ishot` tinyint(1) NOT NULL DEFAULT '0' COMMENT '是否头条',
+  `istuijian` tinyint(1) NOT NULL DEFAULT '0' COMMENT '是否推荐',
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 -- ----------------------------
@@ -54,6 +57,7 @@ CREATE TABLE `jz_classtype` (
   `details_html` varchar(50) DEFAULT NULL COMMENT '详情页HTML',
   `lists_num` int(4) DEFAULT '0',
   `comment_num` int(11) NOT NULL DEFAULT '0',
+  `gourl` varchar(255) DEFAULT NULL COMMENT '栏目外链',
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 -- ----------------------------
@@ -144,18 +148,18 @@ CREATE TABLE `jz_fields` (
   `format` varchar(50) DEFAULT NULL COMMENT '显示格式化',
   `vdata` varchar(50) DEFAULT NULL COMMENT '字段默认值',
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=38 DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM AUTO_INCREMENT=9 DEFAULT CHARSET=utf8;
 -- ----------------------------
 -- Records of jz_fields
 -- ----------------------------
-INSERT INTO `jz_fields` (`id`,`field`,`molds`,`fieldname`,`tips`,`fieldtype`,`tids`,`fieldlong`,`body`,`orders`,`ismust`,`isshow`,`issearch`,`islist`,`format`,`vdata`) VALUES ('22','url','links','链接','','1',',1,2,6,7,8,9,3,4,5,10,','255','','0','1','1','0','1','','');
-INSERT INTO `jz_fields` (`id`,`field`,`molds`,`fieldname`,`tips`,`fieldtype`,`tids`,`fieldlong`,`body`,`orders`,`ismust`,`isshow`,`issearch`,`islist`,`format`,`vdata`) VALUES ('21','title','links','链接名称','','1',',1,2,6,7,8,9,3,4,5,10,','255','','0','1','1','1','1','','');
-INSERT INTO `jz_fields` (`id`,`field`,`molds`,`fieldname`,`tips`,`fieldtype`,`tids`,`fieldlong`,`body`,`orders`,`ismust`,`isshow`,`issearch`,`islist`,`format`,`vdata`) VALUES ('30','email','message','联系邮箱','','1',',1,6,7,8,9,2,10,11,12,13,3,4,5,','255','','0','0','1','1','1','','');
-INSERT INTO `jz_fields` (`id`,`field`,`molds`,`fieldname`,`tips`,`fieldtype`,`tids`,`fieldlong`,`body`,`orders`,`ismust`,`isshow`,`issearch`,`islist`,`format`,`vdata`) VALUES ('32','keywords','tags','关键词','尽量简短，但不能重复','1',',1,6,15,16,7,8,9,2,10,18,11,19,12,20,13,3,4,5,14,17,','50','','0','0','1','1','1','','');
-INSERT INTO `jz_fields` (`id`,`field`,`molds`,`fieldname`,`tips`,`fieldtype`,`tids`,`fieldlong`,`body`,`orders`,`ismust`,`isshow`,`issearch`,`islist`,`format`,`vdata`) VALUES ('33','newname','tags','替换词','尽量简短，但不能重复，20字以内，可不填。','1',',1,6,15,16,7,8,9,2,10,18,11,19,12,20,13,3,4,5,14,17,','50','','0','0','1','1','1','','');
-INSERT INTO `jz_fields` (`id`,`field`,`molds`,`fieldname`,`tips`,`fieldtype`,`tids`,`fieldlong`,`body`,`orders`,`ismust`,`isshow`,`issearch`,`islist`,`format`,`vdata`) VALUES ('34','url','tags','内链','填写详细链接，带http','1',',1,6,15,16,7,8,9,2,10,18,11,19,12,20,13,3,4,5,14,17,','255','','0','0','1','1','1','','');
-INSERT INTO `jz_fields` (`id`,`field`,`molds`,`fieldname`,`tips`,`fieldtype`,`tids`,`fieldlong`,`body`,`orders`,`ismust`,`isshow`,`issearch`,`islist`,`format`,`vdata`) VALUES ('35','num','tags','替换次数','一篇文章内替换的次数，默认-1，全部替换','4',',1,6,15,16,7,8,9,2,10,18,11,19,12,20,13,3,4,5,14,17,','4','','0','0','1','0','1','','-1');
-INSERT INTO `jz_fields` (`id`,`field`,`molds`,`fieldname`,`tips`,`fieldtype`,`tids`,`fieldlong`,`body`,`orders`,`ismust`,`isshow`,`issearch`,`islist`,`format`,`vdata`) VALUES ('37','target','tags','打开方式','','7',',1,6,15,16,7,8,9,2,10,18,11,19,12,20,13,3,4,5,14,17,','50','新窗口=_blank,本窗口=_self','0','0','1','0','1','','_blank');
+INSERT INTO `jz_fields` (`id`,`field`,`molds`,`fieldname`,`tips`,`fieldtype`,`tids`,`fieldlong`,`body`,`orders`,`ismust`,`isshow`,`issearch`,`islist`,`format`,`vdata`) VALUES ('1','url','links','链接','','1',',1,2,6,7,8,9,3,4,5,10,','255','','0','1','1','0','1','','');
+INSERT INTO `jz_fields` (`id`,`field`,`molds`,`fieldname`,`tips`,`fieldtype`,`tids`,`fieldlong`,`body`,`orders`,`ismust`,`isshow`,`issearch`,`islist`,`format`,`vdata`) VALUES ('2','title','links','链接名称','','1',',1,2,6,7,8,9,3,4,5,10,','255','','0','1','1','1','1','','');
+INSERT INTO `jz_fields` (`id`,`field`,`molds`,`fieldname`,`tips`,`fieldtype`,`tids`,`fieldlong`,`body`,`orders`,`ismust`,`isshow`,`issearch`,`islist`,`format`,`vdata`) VALUES ('3','email','message','联系邮箱','','1',',1,6,7,8,9,2,10,11,12,13,3,4,5,','255','','0','0','1','1','1','','');
+INSERT INTO `jz_fields` (`id`,`field`,`molds`,`fieldname`,`tips`,`fieldtype`,`tids`,`fieldlong`,`body`,`orders`,`ismust`,`isshow`,`issearch`,`islist`,`format`,`vdata`) VALUES ('4','keywords','tags','关键词','尽量简短，但不能重复','1',',1,6,15,16,7,8,9,2,10,18,11,19,12,20,13,3,4,5,14,17,','50','','0','0','1','1','1','','');
+INSERT INTO `jz_fields` (`id`,`field`,`molds`,`fieldname`,`tips`,`fieldtype`,`tids`,`fieldlong`,`body`,`orders`,`ismust`,`isshow`,`issearch`,`islist`,`format`,`vdata`) VALUES ('5','newname','tags','替换词','尽量简短，但不能重复，20字以内，可不填。','1',',1,6,15,16,7,8,9,2,10,18,11,19,12,20,13,3,4,5,14,17,','50','','0','0','1','1','1','','');
+INSERT INTO `jz_fields` (`id`,`field`,`molds`,`fieldname`,`tips`,`fieldtype`,`tids`,`fieldlong`,`body`,`orders`,`ismust`,`isshow`,`issearch`,`islist`,`format`,`vdata`) VALUES ('6','url','tags','内链','填写详细链接，带http','1',',1,6,15,16,7,8,9,2,10,18,11,19,12,20,13,3,4,5,14,17,','255','','0','0','1','1','1','','');
+INSERT INTO `jz_fields` (`id`,`field`,`molds`,`fieldname`,`tips`,`fieldtype`,`tids`,`fieldlong`,`body`,`orders`,`ismust`,`isshow`,`issearch`,`islist`,`format`,`vdata`) VALUES ('7','num','tags','替换次数','一篇文章内替换的次数，默认-1，全部替换','4',',1,6,15,16,7,8,9,2,10,18,11,19,12,20,13,3,4,5,14,17,','4','','0','0','1','0','1','','-1');
+INSERT INTO `jz_fields` (`id`,`field`,`molds`,`fieldname`,`tips`,`fieldtype`,`tids`,`fieldlong`,`body`,`orders`,`ismust`,`isshow`,`issearch`,`islist`,`format`,`vdata`) VALUES ('8','target','tags','打开方式','','7',',1,6,15,16,7,8,9,2,10,18,11,19,12,20,13,3,4,5,14,17,','50','新窗口=_blank,本窗口=_self','0','0','1','0','1','','_blank');
 
 -- ----------------------------
 -- Table structure for jz_hook
@@ -195,12 +199,14 @@ CREATE TABLE `jz_layout` (
   `sys` tinyint(1) NOT NULL DEFAULT '0',
   `isdefault` tinyint(1) NOT NULL DEFAULT '0' COMMENT '1系统默认布局',
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM AUTO_INCREMENT=5 DEFAULT CHARSET=utf8;
 -- ----------------------------
 -- Records of jz_layout
 -- ----------------------------
 INSERT INTO `jz_layout` (`id`,`name`,`top_layout`,`left_layout`,`gid`,`ext`,`sys`,`isdefault`) VALUES ('1','CMS系统默认','[]','[{"name":"栏目管理","icon":"&amp;#xe699;","nav":["42"]},{"name":"内容管理","icon":"&amp;#xe6fb;","nav":["9"]},{"name":"商品管理","icon":"&amp;#xe6cb;","nav":["105"]},{"name":"订单管理","icon":"&amp;#xe722;","nav":["129"]},{"name":"轮播图管理","icon":"&amp;#xe6a8;","nav":["83"]},{"name":"友情链接","icon":"&amp;#xe6f7;","nav":["95"]},{"name":"TAG标签","icon":"&amp;#xe6a0;","nav":["147"]},{"name":"会员管理","icon":"&amp;#xe6b8;","nav":["2","118","123"]},{"name":"留言管理","icon":"&amp;#xe69f;","nav":["22"]},{"name":"评论管理","icon":"&amp;#xe69b;","nav":["16"]},{"name":"公众号相关","icon":"&amp;#xe60e;","nav":["141","142"]},{"name":"管理员管理","icon":"&amp;#xe726;","nav":["54","49","66"]},{"name":"系统扩展","icon":"&amp;#xe6ce;","nav":["35","61","66","70","76","83","143"]},{"name":"系统设置","icon":"&amp;#xe6ae;","nav":["40","114","115","116","153","154"]}]','0','系统配置，不可删除！','1','1');
-INSERT INTO `jz_layout` (`id`,`name`,`top_layout`,`left_layout`,`gid`,`ext`,`sys`,`isdefault`) VALUES ('2','客户界面','[]','[{"name":"内容管理","icon":"&amp;#xe6fb;","nav":["9"]},{"name":"栏目管理","icon":"&amp;#xe699;","nav":["42"]},{"name":"商品管理","icon":"&amp;#xe6cb;","nav":["105"]},{"name":"订单管理","icon":"&amp;#xe722;","nav":["129"]},{"name":"会员管理","icon":"&amp;#xe6b8;","nav":["2"]},{"name":"网站留言","icon":"&amp;#xe69f;","nav":["22"]},{"name":"友情链接","icon":"&amp;#xe6f7;","nav":["95"]},{"name":"轮播图","icon":"&amp;#xe6a8;","nav":["83"]},{"name":"公众号","icon":"&amp;#xe60e;","nav":["141","142"]},{"name":"系统设置","icon":"&amp;#xe6ae;","nav":["40","35","114","116"]}]','2','网站管理员-客户端-按需配置','0','0');
+INSERT INTO `jz_layout` (`id`,`name`,`top_layout`,`left_layout`,`gid`,`ext`,`sys`,`isdefault`) VALUES ('2','CMS客户界面','[]','[{"name":"内容管理","icon":"&amp;#xe6fb;","nav":["9"]},{"name":"栏目管理","icon":"&amp;#xe699;","nav":["42"]},{"name":"商品管理","icon":"&amp;#xe6cb;","nav":["105"]},{"name":"订单管理","icon":"&amp;#xe722;","nav":["129"]},{"name":"会员管理","icon":"&amp;#xe6b8;","nav":["2"]},{"name":"网站留言","icon":"&amp;#xe69f;","nav":["22"]},{"name":"友情链接","icon":"&amp;#xe6f7;","nav":["95"]},{"name":"轮播图","icon":"&amp;#xe6a8;","nav":["83"]},{"name":"公众号","icon":"&amp;#xe60e;","nav":["141","142"]},{"name":"系统设置","icon":"&amp;#xe6ae;","nav":["40","35","114","116"]}]','2','网站管理员-客户端-按需配置','0','0');
+INSERT INTO `jz_layout` (`id`,`name`,`top_layout`,`left_layout`,`gid`,`ext`,`sys`,`isdefault`) VALUES ('3','Blog界面','[]','[{"name":"栏目管理","icon":"&amp;#xe699;","nav":["42"]},{"name":"文章管理","icon":"&amp;#xe6fb;","nav":["9"]},{"name":"会员管理","icon":"&amp;#xe6b8;","nav":["2","118","123"]},{"name":"轮播图","icon":"&amp;#xe6a8;","nav":["83","89"]},{"name":"评论管理","icon":"&amp;#xe69b;","nav":["16"]},{"name":"留言管理","icon":"&amp;#xe69f;","nav":["22"]},{"name":"友情链接","icon":"&amp;#xe6f7;","nav":["95"]},{"name":"系统扩展","icon":"&amp;#xe6ce;","nav":["35","70","76","116"]},{"name":"系统设置","icon":"&amp;#xe6ae;","nav":["40","115","153","154","114"]}]','3','Blog用户界面，可以自定义修改，比较简洁一些','0','0');
+INSERT INTO `jz_layout` (`id`,`name`,`top_layout`,`left_layout`,`gid`,`ext`,`sys`,`isdefault`) VALUES ('4','基础建站客户端','[]','[{"name":"栏目管理","icon":"&amp;#xe699;","nav":["42"]},{"name":"文章管理","icon":"&amp;#xe6fb;","nav":["9"]},{"name":"商品管理","icon":"&amp;#xe6cb;","nav":["105"]},{"name":"轮播图","icon":"&amp;#xe6a8;","nav":["83","89"]},{"name":"友情链接","icon":"&amp;#xe6f7;","nav":["95"]},{"name":"网站留言","icon":"&amp;#xe69f;","nav":["22"]},{"name":"系统设置","icon":"&amp;#xe6ae;","nav":["40","35","114"]}]','0','基础建站-没有会员-没有评论-系统设置里面高级配置需要建站人员自己隐藏！','0','0');
 
 -- ----------------------------
 -- Table structure for jz_level
@@ -218,12 +224,12 @@ CREATE TABLE `jz_level` (
   `status` tinyint(1) NOT NULL DEFAULT '1',
   PRIMARY KEY (`id`),
   UNIQUE KEY `logintime` (`logintime`)
-) ENGINE=MyISAM AUTO_INCREMENT=14 DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
 -- ----------------------------
 -- Records of jz_level
 -- ----------------------------
-INSERT INTO `jz_level` (`id`,`name`,`pass`,`tel`,`gid`,`email`,`regtime`,`logintime`,`status`) VALUES ('1','admin','b97281b63a2a5887d6153ddfbaa32e1f','13600136000','1','123456@qq.com','1568258340','1568258340','1');
-INSERT INTO `jz_level` (`id`,`name`,`pass`,`tel`,`gid`,`email`,`regtime`,`logintime`,`status`) VALUES ('13','xadmin','d4c53f13549606cb52e62aa755533a63','','2','','1566292722','1566293778','1');
+INSERT INTO `jz_level` (`id`,`name`,`pass`,`tel`,`gid`,`email`,`regtime`,`logintime`,`status`) VALUES ('1','admin','0acdd3e4a8a2a1f8aa3ac518313dab9d','13600136000','1','123456@qq.com','1570625697','1570636590','1');
+INSERT INTO `jz_level` (`id`,`name`,`pass`,`tel`,`gid`,`email`,`regtime`,`logintime`,`status`) VALUES ('2','xadmin','d4c53f13549606cb52e62aa755533a63','','2','','1566292722','1570636445','1');
 
 -- ----------------------------
 -- Table structure for jz_level_group
@@ -237,12 +243,14 @@ CREATE TABLE `jz_level_group` (
   `isagree` tinyint(1) NOT NULL DEFAULT '1' COMMENT '1允许登录0不允许',
   `description` varchar(500) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8;
 -- ----------------------------
 -- Records of jz_level_group
 -- ----------------------------
 INSERT INTO `jz_level_group` (`id`,`name`,`isadmin`,`paction`,`isagree`,`description`) VALUES ('1','超级管理员','1',',Fields,','1','');
-INSERT INTO `jz_level_group` (`id`,`name`,`isadmin`,`paction`,`isagree`,`description`) VALUES ('2','网站管理员','0',',Member,Article,Comment,Message,Fields/get_fields,Index,Sys,Classtype,Extmolds,Collect,Common,Product,Order,Wechat,','1','网站管理员，客户使用分组，权限仅次于超级管理员。');
+INSERT INTO `jz_level_group` (`id`,`name`,`isadmin`,`paction`,`isagree`,`description`) VALUES ('2','网站管理员','0',',Member,Article,Comment,Message,Fields/get_fields,Index,Sys/index,Sys/loginlog,Sys/pictures,Sys/uploadcert,Sys/deletePic,Sys/deletePicAll,Sys/custom_del,Sys/email-order,Sys/payconfig,Sys/wechatbind,Classtype,Extmolds,Collect,Common,Product,Order,Wechat,','1','网站管理员，客户使用分组，权限仅次于超级管理员。');
+INSERT INTO `jz_level_group` (`id`,`name`,`isadmin`,`paction`,`isagree`,`description`) VALUES ('3','Blog','0',',Member,Article,Comment,Message,Fields/get_fields,Index/index,Index/welcome,Index/beifen,Index/backup,Index/huanyuan,Index/shanchu,Index/details,Index/desktop,Index/desktop_edit,Index/unicode,Index/update_session_maxlifetime,Index/cleanCache,Index/showlabel,Index/sitemap,Index/tohtml,Index/html_classtype,Index/html_molds,Sys/index,Sys/loginlog,Sys/pictures,Sys/uploadcert,Sys/deletePic,Sys/deletePicAll,Sys/custom_del,Classtype,Molds,Plugins,Extmolds/index/molds/links,Extmolds/addmolds/molds/links,Extmolds/editmolds/molds/links,Extmolds/copymolds/molds/links,Extmolds/deletemolds/molds/links,Extmolds/deleteAll/molds/links,Extmolds/editOrders,Extmolds/changeType/molds/links,Extmolds/copyAll/molds/links,Extmolds/editOrders/molds/links,Collect,Common,Common/uploads,Product,','1','Blog角色-主要用户blog用户使用，比较简洁');
+INSERT INTO `jz_level_group` (`id`,`name`,`isadmin`,`paction`,`isagree`,`description`) VALUES ('4','基础建站','0',',Article,Message,Fields/get_fields,Index/index,Index/welcome,Index/beifen,Index/backup,Index/huanyuan,Index/shanchu,Index/details,Index/update_session_maxlifetime,Index/cleanCache,Index/sitemap,Index/tohtml,Index/html_classtype,Index/html_molds,Sys/index,Sys/uploadcert,Classtype/index,Classtype/editclass,Classtype/editClassOrders,Classtype/change_status,Classtype/get_pinyin,Extmolds/index/molds/links,Extmolds/addmolds/molds/links,Extmolds/editmolds/molds/links,Extmolds/copymolds/molds/links,Extmolds/deletemolds/molds/links,Extmolds/deleteAll/molds/links,Extmolds/changeType/molds/links,Extmolds/copyAll/molds/links,Extmolds/editOrders/molds/links,Collect,Common,Common/uploads,Product,','1','基础建站，会员评论等功能模块去除');
 
 -- ----------------------------
 -- Table structure for jz_links
@@ -252,7 +260,7 @@ CREATE TABLE `jz_links` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `title` varchar(255) DEFAULT NULL,
   `url` varchar(255) DEFAULT NULL,
-  `isshow` tinyint(1) DEFAULT 1,
+  `isshow` tinyint(1) DEFAULT '1',
   `tid` int(11) NOT NULL DEFAULT '0',
   `htmlurl` varchar(50) DEFAULT NULL,
   `orders` int(11) NOT NULL DEFAULT '0',
@@ -288,7 +296,7 @@ CREATE TABLE `jz_member` (
   `logintime` int(11) NOT NULL DEFAULT '0',
   `isshow` tinyint(1) NOT NULL DEFAULT '1',
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 -- ----------------------------
 -- Records of jz_member
 -- ----------------------------
@@ -351,23 +359,24 @@ CREATE TABLE `jz_molds` (
   `biaoshi` varchar(50) DEFAULT NULL,
   `sys` tinyint(1) NOT NULL DEFAULT '0',
   `isopen` tinyint(1) NOT NULL DEFAULT '1',
+  `isclasstype` tinyint(1) NOT NULL DEFAULT '1' COMMENT '是否显示栏目',
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=21 DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM AUTO_INCREMENT=13 DEFAULT CHARSET=utf8;
 -- ----------------------------
 -- Records of jz_molds
 -- ----------------------------
-INSERT INTO `jz_molds` (`id`,`name`,`biaoshi`,`sys`,`isopen`) VALUES ('1','内容','article','1','1');
-INSERT INTO `jz_molds` (`id`,`name`,`biaoshi`,`sys`,`isopen`) VALUES ('2','栏目','classtype','1','1');
-INSERT INTO `jz_molds` (`id`,`name`,`biaoshi`,`sys`,`isopen`) VALUES ('3','会员','member','1','1');
-INSERT INTO `jz_molds` (`id`,`name`,`biaoshi`,`sys`,`isopen`) VALUES ('5','订单','orders','1','1');
-INSERT INTO `jz_molds` (`id`,`name`,`biaoshi`,`sys`,`isopen`) VALUES ('13','评论','comment','1','1');
-INSERT INTO `jz_molds` (`id`,`name`,`biaoshi`,`sys`,`isopen`) VALUES ('14','留言','message','1','1');
-INSERT INTO `jz_molds` (`id`,`name`,`biaoshi`,`sys`,`isopen`) VALUES ('17','轮播图','collect','1','1');
-INSERT INTO `jz_molds` (`id`,`name`,`biaoshi`,`sys`,`isopen`) VALUES ('18','友情链接','links','0','1');
-INSERT INTO `jz_molds` (`id`,`name`,`biaoshi`,`sys`,`isopen`) VALUES ('6','商品','product','1','1');
-INSERT INTO `jz_molds` (`id`,`name`,`biaoshi`,`sys`,`isopen`) VALUES ('7','会员分组','member_group','1','1');
-INSERT INTO `jz_molds` (`id`,`name`,`biaoshi`,`sys`,`isopen`) VALUES ('19','管理员','level','1','1');
-INSERT INTO `jz_molds` (`id`,`name`,`biaoshi`,`sys`,`isopen`) VALUES ('20','TAG','tags','0','1');
+INSERT INTO `jz_molds` (`id`,`name`,`biaoshi`,`sys`,`isopen`,`isclasstype`) VALUES ('1','内容','article','1','1','1');
+INSERT INTO `jz_molds` (`id`,`name`,`biaoshi`,`sys`,`isopen`,`isclasstype`) VALUES ('2','栏目','classtype','1','1','1');
+INSERT INTO `jz_molds` (`id`,`name`,`biaoshi`,`sys`,`isopen`,`isclasstype`) VALUES ('3','会员','member','1','1','1');
+INSERT INTO `jz_molds` (`id`,`name`,`biaoshi`,`sys`,`isopen`,`isclasstype`) VALUES ('4','订单','orders','1','1','1');
+INSERT INTO `jz_molds` (`id`,`name`,`biaoshi`,`sys`,`isopen`,`isclasstype`) VALUES ('5','商品','product','1','1','1');
+INSERT INTO `jz_molds` (`id`,`name`,`biaoshi`,`sys`,`isopen`,`isclasstype`) VALUES ('6','会员分组','member_group','1','1','1');
+INSERT INTO `jz_molds` (`id`,`name`,`biaoshi`,`sys`,`isopen`,`isclasstype`) VALUES ('7','评论','comment','1','1','1');
+INSERT INTO `jz_molds` (`id`,`name`,`biaoshi`,`sys`,`isopen`,`isclasstype`) VALUES ('8','留言','message','1','1','1');
+INSERT INTO `jz_molds` (`id`,`name`,`biaoshi`,`sys`,`isopen`,`isclasstype`) VALUES ('9','轮播图','collect','1','1','1');
+INSERT INTO `jz_molds` (`id`,`name`,`biaoshi`,`sys`,`isopen`,`isclasstype`) VALUES ('10','友情链接','links','0','1','0');
+INSERT INTO `jz_molds` (`id`,`name`,`biaoshi`,`sys`,`isopen`,`isclasstype`) VALUES ('11','管理员','level','1','1','1');
+INSERT INTO `jz_molds` (`id`,`name`,`biaoshi`,`sys`,`isopen`,`isclasstype`) VALUES ('12','TAG','tags','0','1','1');
 
 -- ----------------------------
 -- Table structure for jz_orders
@@ -436,11 +445,10 @@ CREATE TABLE `jz_plugins` (
   `addtime` int(11) NOT NULL DEFAULT '0',
   `config` text COMMENT '配置',
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 -- ----------------------------
 -- Records of jz_plugins
 -- ----------------------------
-INSERT INTO `jz_plugins` (`id`,`name`,`filepath`,`description`,`version`,`author`,`update_time`,`module`,`isopen`,`addtime`,`config`) VALUES ('1','网站多域名绑定模板','website','它可以将模板与域名绑定在一起，实现一个域名对应一个模板的功能','1.0','留恋风2581047041@qq.com','1568044800','Home','1','1568127966','[{"website":"www.jizhicms.cn","model":"1","tpl":""},{"website":"www.jizhicms.com","model":"1","tpl":"default"}]');
 
 -- ----------------------------
 -- Table structure for jz_power
@@ -524,6 +532,9 @@ CREATE TABLE `jz_product` (
   `userid` int(11) NOT NULL DEFAULT '0' COMMENT '录入管理员',
   `orders` int(11) NOT NULL DEFAULT '0',
   `addtime` int(11) NOT NULL DEFAULT '0' COMMENT '更新时间',
+  `istop` tinyint(1) NOT NULL DEFAULT '0' COMMENT '是否置顶',
+  `ishot` tinyint(1) NOT NULL DEFAULT '0' COMMENT '是否头条',
+  `istuijian` tinyint(1) NOT NULL DEFAULT '0' COMMENT '是否推荐',
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='商品表';
 -- ----------------------------
@@ -542,7 +553,7 @@ CREATE TABLE `jz_ruler` (
   `isdesktop` tinyint(1) NOT NULL DEFAULT '0',
   `sys` tinyint(1) NOT NULL DEFAULT '0' COMMENT '1系统自带0不是系统自带',
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=157 DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM AUTO_INCREMENT=171 DEFAULT CHARSET=utf8;
 -- ----------------------------
 -- Records of jz_ruler
 -- ----------------------------
@@ -698,6 +709,20 @@ INSERT INTO `jz_ruler` (`id`,`name`,`fc`,`pid`,`isdesktop`,`sys`) VALUES ('153',
 INSERT INTO `jz_ruler` (`id`,`name`,`fc`,`pid`,`isdesktop`,`sys`) VALUES ('154','生成静态文件','Index/tohtml','32','1','1');
 INSERT INTO `jz_ruler` (`id`,`name`,`fc`,`pid`,`isdesktop`,`sys`) VALUES ('155','更新栏目HTML','Index/html_classtype','32','0','1');
 INSERT INTO `jz_ruler` (`id`,`name`,`fc`,`pid`,`isdesktop`,`sys`) VALUES ('156','更新模块HTML','Index/html_molds','32','0','1');
+INSERT INTO `jz_ruler` (`id`,`name`,`fc`,`pid`,`isdesktop`,`sys`) VALUES ('157','批量修改推荐属性','Article/changeAttribute','8','0','1');
+INSERT INTO `jz_ruler` (`id`,`name`,`fc`,`pid`,`isdesktop`,`sys`) VALUES ('158','批量修改推荐属性','Product/changeAttribute','104','0','1');
+INSERT INTO `jz_ruler` (`id`,`name`,`fc`,`pid`,`isdesktop`,`sys`) VALUES ('159','批量修改友情链接栏目','Extmolds/changeType/molds/links','77','0','0');
+INSERT INTO `jz_ruler` (`id`,`name`,`fc`,`pid`,`isdesktop`,`sys`) VALUES ('160','批量修改TAG栏目','Extmolds/changeType/molds/tags','77','0','0');
+INSERT INTO `jz_ruler` (`id`,`name`,`fc`,`pid`,`isdesktop`,`sys`) VALUES ('161','批量复制友情链接','Extmolds/copyAll/molds/links','77','0','0');
+INSERT INTO `jz_ruler` (`id`,`name`,`fc`,`pid`,`isdesktop`,`sys`) VALUES ('162','批量复制TAG','Extmolds/copyAll/molds/tags','77','0','0');
+INSERT INTO `jz_ruler` (`id`,`name`,`fc`,`pid`,`isdesktop`,`sys`) VALUES ('163','批量修改友情链接排序','Extmolds/editOrders/molds/links','77','0','0');
+INSERT INTO `jz_ruler` (`id`,`name`,`fc`,`pid`,`isdesktop`,`sys`) VALUES ('164','批量修改TAG排序','Extmolds/editOrders/molds/tags','77','0','0');
+INSERT INTO `jz_ruler` (`id`,`name`,`fc`,`pid`,`isdesktop`,`sys`) VALUES ('165','删除订单','Order/deleteorder','128','0','1');
+INSERT INTO `jz_ruler` (`id`,`name`,`fc`,`pid`,`isdesktop`,`sys`) VALUES ('166','批量删除','Admin/deleteAll','48','0','1');
+INSERT INTO `jz_ruler` (`id`,`name`,`fc`,`pid`,`isdesktop`,`sys`) VALUES ('167','高级设置','Sys/high-level','39','0','1');
+INSERT INTO `jz_ruler` (`id`,`name`,`fc`,`pid`,`isdesktop`,`sys`) VALUES ('168','邮箱订单','Sys/email-order','39','0','1');
+INSERT INTO `jz_ruler` (`id`,`name`,`fc`,`pid`,`isdesktop`,`sys`) VALUES ('169','支付配置','Sys/payconfig','39','0','1');
+INSERT INTO `jz_ruler` (`id`,`name`,`fc`,`pid`,`isdesktop`,`sys`) VALUES ('170','公众号配置','Sys/wechatbind','39','0','1');
 
 -- ----------------------------
 -- Table structure for jz_sysconfig
@@ -711,11 +736,11 @@ CREATE TABLE `jz_sysconfig` (
   `type` tinyint(1) NOT NULL DEFAULT '0' COMMENT '配置类型,0系统配置,1图片类型,2输入框,3简短文字',
   `data` text COMMENT '配置内容',
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=59 DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM AUTO_INCREMENT=67 DEFAULT CHARSET=utf8;
 -- ----------------------------
 -- Records of jz_sysconfig
 -- ----------------------------
-INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`) VALUES ('1','web_version','系统版号','','0','1.5');
+INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`) VALUES ('1','web_version','系统版号','','0','1.6');
 INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`) VALUES ('2','web_name','网站SEO名称','','0','极致CMS建站系统');
 INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`) VALUES ('3','web_keyword','网站SEO关键词','','0','极致CMS');
 INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`) VALUES ('4','web_desc','网站SEO描述','','0','极致CMS');
@@ -730,13 +755,12 @@ INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`) VALUES ('1
 INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`) VALUES ('13','pc_template','PC端模板','','0','default');
 INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`) VALUES ('14','wap_template','WAP端模板','','0','wap');
 INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`) VALUES ('15','weixin_template','微信端模板','','0','');
-INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`) VALUES ('16','iswap','是否开启WAP端','','0','1');
+INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`) VALUES ('16','iswap','是否开启WAP端','','0','0');
 INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`) VALUES ('17','isopenhomeupload','是否开启前台上传','','0','1');
 INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`) VALUES ('18','isopenhomepower','是否开启前台权限','','0','0');
 INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`) VALUES ('19','cache_time','缓存时间','','0','0');
 INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`) VALUES ('20','fileSize','限制上传文件大小','','0','0');
-INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`) VALUES ('21','fileType','允许上传文件类型
-','','0','txt|pdf|jpg|jpeg|png|zip|rar|gzip|doc|docx|xlsx');
+INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`) VALUES ('21','fileType','允许上传文件类型','','0','txt|pdf|jpg|jpeg|png|zip|rar|gzip|doc|docx|xlsx');
 INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`) VALUES ('22','ueditor_config','UEditor编辑器导航条配置','','0','&#039;undo&#039;, &#039;redo&#039;, &#039;|&#039;,
 &#039;paragraph&#039;,
 &#039;bold&#039;, &#039;italic&#039;, &#039;blockquote&#039;, &#039;insertparagraph&#039;, 
@@ -752,9 +776,9 @@ INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`) VALUES ('2
 INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`) VALUES ('25','ispngcompress','PNG是否压缩','','0','0');
 INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`) VALUES ('26','email_server','邮件服务器','','0','smtp.163.com');
 INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`) VALUES ('27','email_port','收发端口','','0','465');
-INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`) VALUES ('28','shou_email','收件人Email地址','','0','');
-INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`) VALUES ('29','send_email','发件人Email地址','','0','');
-INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`) VALUES ('30','send_pass','发件人Email秘钥','','0','');
+INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`) VALUES ('28','shou_email','收件人Email地址','','0','2581047041@qq.com');
+INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`) VALUES ('29','send_email','发件人Email地址','','0','ttuuffuu@163.com');
+INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`) VALUES ('30','send_pass','发件人Email秘钥','','0','tu123456');
 INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`) VALUES ('31','send_name','发件人昵称','','0','极致建站系统');
 INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`) VALUES ('32','tj_msg','客户订单通知','','0','尊敬的{xxx}，我们已经收到您的订单！请留意您的电子邮件以获得最新消息，谢谢您！');
 INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`) VALUES ('33','send_msg','订单出货通知','','0','尊敬的{xxx}，我们已确认了您的订单，请于3日内汇款，逾期恕不保留，不便请见谅。汇款完成后，烦请告知客服人员您的交易账号后五位，即完成下单手续，谢谢您。');
@@ -772,8 +796,7 @@ INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`) VALUES ('4
 INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`) VALUES ('45','wx_key','自主平台微信商户key','支付相关','0','');
 INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`) VALUES ('46','wx_appid','自主平台微信公众号appid','支付相关','0','');
 INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`) VALUES ('47','wx_appsecret','自主平台公众号appsecret','支付相关','0','');
-INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`) VALUES ('48','wx_client_cert','自主平台微信apiclient_cert
-','支付相关','0','');
+INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`) VALUES ('48','wx_client_cert','自主平台微信apiclient_cert','支付相关','0','');
 INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`) VALUES ('49','wx_client_key','自主平台微信apiclient_key','支付相关','0','');
 INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`) VALUES ('50','wx_login_appid','公众号appid','用户登录相关，如果跟支付的一样，那就再填写一遍','0','');
 INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`) VALUES ('51','wx_login_appsecret','公众号appsecret','用户登录相关，如果跟支付的一样，那就再填写一遍','0','');
@@ -783,7 +806,14 @@ INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`) VALUES ('5
 INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`) VALUES ('55','jz_55','测试ABC','','1','');
 INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`) VALUES ('56','admintpl','后台模板风格','默认tpl,原始风格default','0','tpl');
 INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`) VALUES ('58','isopenwebsite','是否绑定多域名','开启绑定多域名后，需要到插件中配置','0','1');
-INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`) VALUES ('59','domain','网址网址','全局网址，最后不带/斜杠','0','');
+INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`) VALUES ('59','domain','网站网址','全局网址,最后不带/（斜杠）','0','');
+INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`) VALUES ('60','isrelative','基本信息下扩展','新增字段是否显示在【基本信息】底部，默认在【扩展信息】下','0','0');
+INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`) VALUES ('61','overtime','订单超时','按小时计算，超过该小时订单过期，仅限于开启支付后，0代表不限制','0','4');
+INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`) VALUES ('62','islevelurl','开启层级URL','默认关闭层级URL，开启后URL会按照父类层级展现','0','0');
+INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`) VALUES ('63','iscachepage','缓存完整页面','前台完整页面缓存，结合缓存时间，可以提高访问速度','0','1');
+INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`) VALUES ('64','isautohtml','自动生成静态HTML','前台访问网站页面，将自动生成静态HTML，下次访问直接进入静态HTML页面','0','0');
+INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`) VALUES ('65','pc_html','PC静态文件目录','电脑端静态HTML存放目录，默认根目录[ / ]','0','/');
+INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`) VALUES ('66','mobile_html','WAP静态文件目录','手机端静态HTML存放目录，默认[ m ]，PC和WAP静态目录不能相同，否则文件会混乱','0','m');
 
 -- ----------------------------
 -- Table structure for jz_tags
@@ -799,7 +829,7 @@ CREATE TABLE `jz_tags` (
   `newname` varchar(50) DEFAULT NULL,
   `url` varchar(255) DEFAULT NULL,
   `num` int(4) DEFAULT '-1',
-  `isshow` tinyint(1) DEFAULT 1,
+  `isshow` tinyint(1) DEFAULT '1',
   `target` varchar(50) DEFAULT '_blank',
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;

@@ -49,21 +49,35 @@
             <td>{$v['filepath']}</td>
            
             <td class="td-status">
-			{if($v['isinstall'])}
-			<input type="checkbox" value="{$v['filepath']}" name="switch" lay-filter="status"   lay-text="开|停"  lay-skin="switch" {if($v['isopen']==1)}checked{/if}>
+			{if(checkAction('Plugins/change_status'))}
+				{if($v['isinstall'])}
+				<input type="checkbox" value="{$v['filepath']}" name="switch" lay-filter="status"   lay-text="开|停"  lay-skin="switch" {if($v['isopen']==1)}checked{/if}>
+				{else}
+				-
+				{/if}
 			{else}
-			-
+				-
 			{/if}
 			
 			</td>
-			<td><button type="button" onclick="x_all_show('安装说明','{fun U('Plugins/desc',array('filepath'=>$v['filepath']))}')" class="layui-btn  layui-btn-xs"><i class="iconfont">&#xe6a3;</i>安装说明</button></td>
-            <td class="td-manage">
-            {if($v['isinstall'])}
-            <button type="button" onclick="actionDo('{$v['filepath']}',0)" class="layui-btn layui-btn-danger  layui-btn-xs"><i class="layui-icon layui-icon-close-fill">卸载</i></button> 
-			<button type="button" onclick="x_all_show('配置','{fun U('Plugins/setconf',array('id'=>$v['id']))}')" class="layui-btn layui-btn-normal layui-btn-xs"><i class="layui-icon layui-icon-set">配置</i></button>			
+			<td>
+			{if(checkAction('Plugins/desc'))}
+			<button type="button" onclick="x_all_show('安装说明','{fun U('Plugins/desc',array('filepath'=>$v['filepath']))}')" class="layui-btn  layui-btn-xs"><i class="iconfont">&#xe6a3;</i>安装说明</button>
 			{else}
-			<button type="button" onclick="actionDo('{$v['filepath']}',1)" class="layui-btn  layui-btn-xs"><i class="layui-icon layui-icon-download-circle">安装</i></button>
-			
+			-
+			{/if}
+			</td>
+            <td class="td-manage">
+			{if(checkAction('Plugins/action_do'))}
+				{if($v['isinstall'])}
+				<button type="button" onclick="actionDo('{$v['filepath']}',0)" class="layui-btn layui-btn-danger  layui-btn-xs"><i class="layui-icon layui-icon-close-fill">卸载</i></button> 
+				<button type="button" onclick="x_all_show('配置','{fun U('Plugins/setconf',array('id'=>$v['id']))}')" class="layui-btn layui-btn-normal layui-btn-xs"><i class="layui-icon layui-icon-set">配置</i></button>			
+				{else}
+				<button type="button" onclick="actionDo('{$v['filepath']}',1)" class="layui-btn  layui-btn-xs"><i class="layui-icon layui-icon-download-circle">安装</i></button>
+				
+				{/if}
+			{else}
+			-
 			{/if}
 			
              
@@ -90,19 +104,40 @@
       });
 	  
 	  function actionDo(path,type){
-		  $.post("{fun U('action_do')}",{path:path,type:type},function(r){
-			//console.log(r);
-			var res = JSON.parse(r);
-			if(res.code==0){
-				layer.msg(res.msg,{icon: 1,time:1000},function(){
-					window.location.reload();
-				})
-			}else{
-				layer.alert(res.msg);
+			  $.ajax({
+				 url:"{fun U('action_do')}",
+				 dataType:"json",
+				 async:true,
+				 data:{path:path,type:type},
+				 type:"POST",
+				 beforeSend:function(){
+					//请求前的处理
+					layer.msg('正在安装中，请稍等~');
+					},
+				 success:function(res){
+					layer.closeAll();
+				//请求成功时处理
+						if(res.code==0){
+							layer.msg(res.msg,{icon: 1,time:1000},function(){
+								window.location.reload();
+							})
+						}else{
+							layer.alert(res.msg);
+							
+						}
+				},
+				 complete:function(){
+				//请求完成的处理
+				},
+				 error:function(){
+				//请求出错处理
+				}
+
+						
 				
-			}
-		  
-		  });
+			})
+			  
+		 
 	  }
 
     

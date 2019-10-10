@@ -68,32 +68,74 @@ class CommentController extends CommonController
 	
 	//评论管理
 	function commentlist(){
-		$page = new Page('Comment');
-		$sql = '1=1';
-		
-		if($this->frparam('tid')){
-			$sql .= ' and tid='.$this->frparam('tid');
-		}
-		if($this->frparam('aid')){
-			$sql.=" and aid = ".$this->frparam('aid')." ";
-		}
-		if($this->frparam('userid')!=0){
-			$sql.=" and userid = ".$this->frparam('userid')." ";
-		}
-		$data = $page->where($sql)->orderby('id desc')->page($this->frparam('page',0,1))->go();
-		$pages = $page->pageList();
-		$this->pages = $pages;
-		$this->lists = $data;
-		$this->sum = $page->sum;
-		
 		
 		$this->tid=  $this->frparam('tid');
 		$this->aid = $this->frparam('aid');
+		$this->isshow = $this->frparam('isshow');
 		$this->userid = $this->frparam('userid');
-		//$classtype = M('classtype')->findAll(null,'orders desc');
-		//$classtype = getTree($classtype);
-	
-		$this->classtypes = $this->classtypetree;;
+		$this->body = $this->frparam('body',1);
+		$this->fields_list = M('Fields')->findAll(array('molds'=>'comment','islist'=>1),'orders desc');
+		$data = $this->frparam();
+		$res = molds_search('comment',$data);
+		$get_sql = ($res['fields_search_check']!='') ? (' and '.$res['fields_search_check']) : '';
+		$this->fields_search = $res['fields_search'];
+		$this->classtypes = $this->classtypetree;
+		if($this->frparam('ajax')){
+			
+			$page = new Page('Comment');
+			$sql = '1=1';
+			if($this->frparam('tid')){
+				$sql .= ' and tid='.$this->frparam('tid');
+			}
+			if($this->frparam('aid')){
+				$sql.=" and aid = ".$this->frparam('aid')." ";
+			}
+			if($this->frparam('body',1)){
+				$sql.=" and body like  '%".$this->frparam('body',1)."%' ";
+			}
+			if($this->frparam('userid')!=0){
+				$sql.=" and userid = ".$this->frparam('userid')." ";
+			}
+			$sql .= $get_sql;
+			$data = $page->where($sql)->orderby('id desc')->page($this->frparam('page',0,1))->go();
+			
+			$ajaxdata = [];
+			$classtypedata = classTypeData();
+			
+			foreach($data as $k=>$v){
+				$v['new_username'] = $v['userid']!=0 ? get_info_table('member',array('id'=>$v['userid']),'username') : '';
+				$v['new_user'] = $v['userid']!=0 ? U('Member/memberedit',['id'=>$v['userid']]) : '';
+				$v['new_tid'] = $v['tid']!=0 ? $classtypedata[$v['tid']]['classname'] : '';
+				if($v['aid']!=0 && $v['tid']!=0){
+					$adata = M($classtypedata[$v['tid']]['molds'])->find(['id'=>$v['aid']]);
+					$v['new_aid_url'] = get_domain().'/'.$adata['htmlurl'].'/'.$v['aid'];
+				}else{
+					$v['new_aid_url'] = '';
+				}
+				$v['new_zid'] = $v['zid']!=0 ? U('Comment/editcomment',array('id'=>$v['zid'])) : '';
+				$v['new_pid'] = $v['pid']!=0 ? U('Comment/editcomment',array('id'=>$v['pid'])) : '';
+				
+				$v['new_isshow'] = $v['isshow']==1 ? '<span class="layui-badge layui-bg-green">正常</span>' : '<span class="layui-badge">被删除</span>';
+				$v['new_isread'] = $v['isread']==1 ? '<span class="layui-badge layui-bg-green">已读</span>' : '<span class="layui-badge">未读</span>';
+				$v['new_addtime'] = date('Y-m-d H:i:s',$v['addtime']);
+				$v['edit_url'] = U('Comment/editcomment',array('id'=>$v['id']));
+				
+				foreach($this->fields_list as $vv){
+					$v[$vv['field']] = format_fields($vv,$v[$vv['field']]);
+				}
+				$ajaxdata[]=$v;
+				
+			}
+			
+			$pages = $page->pageList();
+			$this->pages = $pages;
+			$this->lists = $data;
+			$this->sum = $page->sum;
+			JsonReturn(['code'=>0,'data'=>$ajaxdata,'count'=>$page->sum]);
+			
+		}
+		
+		
 		
 		
 		$this->display('comment-list');

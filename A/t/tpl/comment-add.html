@@ -58,7 +58,7 @@
                         <span class="x-red">*</span>评论栏目
                     </label>
                     <div class="layui-input-inline">
-						<select name="tid" id="tid" >
+						<select name="tid" lay-search="" id="tid" >
 						<option value="0">选择栏目</option>
 					   {foreach $classtypes as $v}
 					   <option   value="{$v['id']}">{fun str_repeat('--', $v['level']), $v['classname']}</option>
@@ -156,10 +156,17 @@
                     </div>
                    
                 </div>
+				
+				{if($webconf['isrelative']==1)}
+				<span id="ext_fields"></span>
+				{/if}
+				
 
 				</div>
 				<div class="layui-tab-item">
+				{if($webconf['isrelative']==0)}
 				<span id="ext_fields"></span>
+				{/if}
 				
 				</div>
 			  </div>

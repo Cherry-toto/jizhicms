@@ -20,40 +20,71 @@ class MemberController extends CommonController
 {
 
 	function index(){
-		
-		$page = new Page('member');
-		$sql='1=1';
-        if($this->frparam('start',1)){
-			$start = strtotime($this->frparam('start',1));
-			$sql.=" and regtime >= ".$start;
-			
-		}
-		if($this->frparam('end',1)){
-			$end = strtotime($this->frparam('end',1).' 23:59:59');
-			$sql.="  and regtime <= ".$end;
-		}
-		
-		if($this->frparam('username',1)){
-			$sql .=" and username like '%".$this->frparam('username',1)."%' ";
-		}
-		
-		$data = $this->frparam();
-		$res = molds_search('member',$data);
-		$get_sql = ($res['fields_search_check']!='') ? (' and '.$res['fields_search_check']) : '';
-		$sql .= $get_sql;
-		
-		$this->fields_search = $res['fields_search'];
-		$this->fields_list = M('Fields')->findAll(array('molds'=>'member','islist'=>1),'orders desc');
-		
-		
 		$this->username  = $this->frparam('username',1);
 		$this->starttime  = $this->frparam('start',1);
 		$this->endtime  = $this->frparam('end',1);
-		$lists = $page->where($sql)->page($this->frparam('page',0,1))->go();
-		$pages = $page->pageList();
-		$this->num = $page->sum;
-		$this->lists = $lists;
-		$this->pages = $pages;
+		$this->tel  = $this->frparam('tel',1);
+		$this->isshow  = $this->frparam('isshow');
+		$data = $this->frparam();
+		$res = molds_search('member',$data);
+		$this->fields_search = $res['fields_search'];
+		$this->fields_list = M('Fields')->findAll(array('molds'=>'member','islist'=>1),'orders desc');
+		if($this->frparam('ajax')){
+			
+			$page = new Page('member');
+			$sql='1=1';
+			if($this->frparam('start',1)){
+				$start = strtotime($this->frparam('start',1));
+				$sql.=" and regtime >= ".$start;
+				
+			}
+			if($this->frparam('end',1)){
+				$end = strtotime($this->frparam('end',1).' 23:59:59');
+				$sql.="  and regtime <= ".$end;
+			}
+			if($this->frparam('tel',1)){
+				$sql.=" and tel like '%".$this->frparam('tel',1)."%' ";
+			}
+			
+			if($this->frparam('isshow')){
+				$isshow = $this->frparam('isshow')==2 ? 0 : $this->frparam('isshow');
+				$sql.=" and isshow=".$isshow;
+			}
+			
+			if($this->frparam('username',1)){
+				$sql .=" and username like '%".$this->frparam('username',1)."%' ";
+			}
+			$get_sql = ($res['fields_search_check']!='') ? (' and '.$res['fields_search_check']) : '';
+			$sql .= $get_sql;
+		
+			$lists = $page->where($sql)->page($this->frparam('page',0,1))->go();
+			$ajaxdata = [];
+			foreach($lists as $k=>$v){
+				
+				$v['new_gid'] = get_info_table('member_group',['id'=>$v['gid']],'name');
+				$v['new_litpic'] = $v['litpic']!='' ? '<a href="'.$v['litpic'].'" target="_blank"><img src="'.$v['litpic'].'" width="100px" /></a>':'无';
+				$v['new_isshow'] = $v['isshow']==1 ? '<span class="layui-badge layui-bg-green">显示</span>' : '<span class="layui-badge">不显示</span>';
+				$v['new_regtime'] = $v['regtime']!=0 ? date('Y-m-d H:i:s',$v['regtime']) : '-';
+				$v['new_logintime'] = $v['logintime']!=0 ? date('Y-m-d H:i:s',$v['logintime']) : '-';
+				$v['edit_url'] = U('Member/memberedit',['id'=>$v['id']]);
+				
+				foreach($this->fields_list as $vv){
+					$v[$vv['field']] = format_fields($vv,$v[$vv['field']]);
+				}
+				$ajaxdata[]=$v;
+				
+			}
+			
+			$pages = $page->pageList();
+			$this->num = $page->sum;
+			$this->lists = $lists;
+			$this->pages = $pages;
+			JsonReturn(['code'=>0,'data'=>$ajaxdata,'count'=>$page->sum]);
+			
+		}
+		
+		
+		
 		$this->display('member-list');
 		
 		

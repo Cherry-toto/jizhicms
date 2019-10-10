@@ -18,7 +18,9 @@
         <div class="x-body">
         
           <xblock>
+		 {if(checkAction('Fields/addFields'))}	
 		 <button class="layui-btn" onclick="x_admin_show('{$molds['name']}-新增字段','{fun U('Fields/addFields',array('molds'=>$molds['biaoshi']))}')"><i class="layui-icon"></i>新增字段</button>
+		 {/if}
 		   <span class="x-right" style="line-height:40px">共有数据：{$sum} 条</span>
 		  </xblock>
             <table class="layui-table">
@@ -98,10 +100,12 @@
 						<td>{$v['vdata']}</td>
 					
                         <td class="td-manage">
-                        
+                        {if(checkAction('Fields/editFields'))}	
 							 <button class="layui-btn layui-btn layui-btn-xs"  onClick="x_admin_show('编辑','{fun U('Fields/editFields',array('id'=>$v['id']))}')" ><i class="layui-icon">&#xe642;</i>编辑</button>
-							 
+						{/if}	 
+						{if(checkAction('Fields/deleteFields'))}	
 							 <button class="layui-btn-danger layui-btn layui-btn-xs"  onClick="molds_del(this,'{$v['id']}')" href="javascript:;" ><i class="layui-icon">&#xe640;</i>删除</button>
+						{/if}
                         </td>
 						
                     </tr>

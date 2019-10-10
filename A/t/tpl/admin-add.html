@@ -67,8 +67,9 @@
 				</select>
               </div>
           </div>
-		  
-		  {/if}
+		 {else}
+		 <input name="gid" value="{$admin['gid']}" type="hidden" /> 
+		 {/if}
 		  
 		  <span id="ext_fields"></span>
 				
@@ -110,6 +111,7 @@
 			</div>
 		  </div>
 		   <input type="hidden" id="go" name="go" value="1">
+		   <input type="hidden" name="token" value="{$token}">
           <div class="layui-form-item" style="text-align:center;">
               
               <button  class="layui-btn" lay-filter="add" lay-submit="">

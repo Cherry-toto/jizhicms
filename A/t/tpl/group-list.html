@@ -21,8 +21,9 @@
         
       </div>
       <xblock>
-       
+       {if(checkAction('Admin/groupadd'))}
         <button class="layui-btn" onclick="x_admin_show('添加角色','{fun U('Admin/groupadd')}')"><i class="layui-icon"></i>添加角色</button>
+	   {/if}
         <span class="x-right" style="line-height:40px">共有数据：{$sum} 条</span>
       </xblock>
       <table class="layui-table layui-form">
@@ -44,11 +45,22 @@
             <td>{$v['description']}</td>
            
             <td class="td-status">
-              <input type="checkbox" value="{$v['id']}" name="switch" lay-filter="status"   lay-text="开|停"  lay-skin="switch" {if($v['isagree']==1)}checked{/if}></td>
+			{if(checkAction('Admin/change_group_status'))}
+              <input type="checkbox" value="{$v['id']}" name="switch" lay-filter="status"   lay-text="正常|封禁"  lay-skin="switch" {if($v['isagree']==1)}checked{/if}></td>
+			{else}
+				{if($v['isagree']==1)}
+				<span class="layui-badge layui-bg-green">正常</span>
+				{else}
+				<span class="layui-badge">封禁</span>
+				{/if}
+			{/if}
             <td class="td-manage">
-              
+              {if(checkAction('Admin/groupedit'))}
               <button class="layui-btn layui-btn layui-btn-xs"  onclick="x_admin_show('编辑','{fun U('Admin/groupedit',array('id'=>$v['id']))}')" ><i class="layui-icon">&#xe642;</i>编辑</button>
+			  {/if}
+			  {if(checkAction('Admin/group_del'))}
               <button class="layui-btn-danger layui-btn layui-btn-xs"  onclick="member_del(this,'{$v['id']}')" href="javascript:;" ><i class="layui-icon">&#xe640;</i>删除</button>
+			  {/if}
               </a>
             </td>
           </tr>

@@ -19,6 +19,7 @@
     <div class="x-body">
         <form class="layui-form  layui-form-pane">
 		<input name="go" value="1" type="hidden">
+		 <input type="hidden" name="token" value="{$token}">
 		<input name="id" value="{fun frencode($member['id'])}" type="hidden">
           <div class="layui-form-item">
               <label for="name" class="layui-form-label">
@@ -61,13 +62,14 @@
 			  
                 <select class="layui-input" name="gid" lay-verify="required">
 				{foreach $groups as $v}
-				<option value="{$v['id']}">{$v['name']}</option>
+				<option value="{$v['id']}" {if($member['gid']==$v['id'])}selected{/if}>{$v['name']}</option>
 				{/foreach}
 				
 				</select>
               </div>
           </div>
-		  
+		  {else}
+		  <input name="gid" value="{$member['gid']}" type="hidden" /> 
 		  {/if}
 		   <span id="ext_fields"></span>
 
@@ -126,7 +128,7 @@
           //监听提交
           form.on('submit(add)', function(data){
            
-			$.post("{fun U('adminedit')}",data.field,function(res){
+			$.post("{fun U('Index/details')}",data.field,function(res){
 				// console.log(res);
 				 var res = JSON.parse(res);
 				 

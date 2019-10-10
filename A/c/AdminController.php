@@ -24,6 +24,9 @@ class AdminController extends CommonController
 	public function group(){
 		$page = new Page('Level_group');
 		$sql = ' 1=1 ';
+		if($this->admin['gid']!=1){
+			$sql.=" and gid!=1 ";
+		}
 		$data = $page->where($sql)->orderby('id desc')->page($this->frparam('page',0,1))->go();
 		$pages = $page->pageList();
 		
@@ -40,6 +43,10 @@ class AdminController extends CommonController
 			if(M('level')->getCount(array('gid'=>$id))>0){
 				JsonReturn(array('code'=>1,'msg'=>'该角色下存在用户，请先移除用户再删除！'));
 			}
+			if($id==1){
+				JsonReturn(array('code'=>1,'msg'=>'删除失败，该分组不允许删除！'));
+			}
+			
 			if(M('level_group')->delete(array('id'=>$id))){
 				JsonReturn(array('code'=>0,'msg'=>'删除成功！'));
 			}else{
@@ -56,6 +63,10 @@ class AdminController extends CommonController
 		$this->fields_biaoshi = 'level_group';
 		if($this->frparam('go')==1){
 			$data = $this->frparam();
+			if($data['id']==1 && $this->admin['gid']!=1){
+				JsonReturn(array('code'=>1,'msg'=>'修改失败，您的权限不足！'));
+			}
+			
 			$data['paction'] = (count($this->frparam('ruler',2))>0)?','.implode(',',$this->frparam('ruler',2)).',':'';
 			if(M('level_group')->update(array('id'=>$data['id']),$data)){
 				JsonReturn(array('code'=>0,'msg'=>'修改成功！'));
@@ -123,8 +134,11 @@ class AdminController extends CommonController
 	}
 	public function change_group_status(){
 		$id = $this->frparam('id',1);
-		if(!$id || ($id==1)){
+		if(!$id){
 			JsonReturn(array('code'=>1,'msg'=>'非法操作！'));
+		}
+		if($id==1){
+			JsonReturn(array('code'=>1,'msg'=>'修改失败，该分组不允许修改！'));
 		}
 		
 		$x = M('Level_group')->find('id='.$id);
@@ -141,44 +155,72 @@ class AdminController extends CommonController
 
 	public function adminlist(){
 		
-     
-        $admin = adminInfo($_SESSION['admin']['id']);
-		$page = new Page('level');
-		$sql = ' 1=1 ';
-		
-		if($this->frparam('username',1)){
-			$sql .= " and name like '%".$this->frparam('username',1)."%' ";
-		}
-       
-		if($this->frparam('start',1)){
-			$time = strtotime($this->frparam('start',1));
-			
-			$sql .= " and regtime >= ".$time;
-			
-		}
-		if($this->frparam('end',1)){
-			$end = strtotime($this->frparam('end',1).' 23:59:59');
-			$sql .= " and regtime <= ".$end;
-		}
-		
 		$data = $this->frparam();
 		$res = molds_search('level',$data);
 		$get_sql = ($res['fields_search_check']!='') ? (' and '.$res['fields_search_check']) : '';
-		$sql .= $get_sql;
-		
 		$this->fields_search = $res['fields_search'];
 		$this->fields_list = M('Fields')->findAll(array('molds'=>'level','islist'=>1),'orders desc');
-		
-		
 		$this->username = $this->frparam('username',1);
 		$this->endtime = $this->frparam('end',1);
+		$this->status = $this->frparam('status');
 		$this->starttime = $this->frparam('start',1);
-		//echo $sql;
-		$lists = $page->where($sql)->page($this->frparam('page',0,1))->go();
-		$pages = $page->pageList();
-		$this->lists = $lists;
-		$this->page = $pages;
-		$this->sum = $page->sum;
+		if($this->frparam('ajax')){
+			 $admin = adminInfo($_SESSION['admin']['id']);
+			$page = new Page('level');
+			$sql = ' 1=1 ';
+			if($this->frparam('status')){
+				$status = $this->frparam('status')==1 ? 1 : 0;
+				$sql .= ' and status='.$status;
+			}
+			
+			if($this->frparam('username',1)){
+				$sql .= " and name like '%".$this->frparam('username',1)."%' ";
+			}
+			
+			//只有超级管理员有权限看到整个列表
+			if($this->admin['gid']!=1){
+				$sql.= " and gid!=1 ";
+			}
+			
+		   
+			if($this->frparam('start',1)){
+				$time = strtotime($this->frparam('start',1));
+				
+				$sql .= " and regtime >= ".$time;
+				
+			}
+			if($this->frparam('end',1)){
+				$end = strtotime($this->frparam('end',1).' 23:59:59');
+				$sql .= " and regtime <= ".$end;
+			}
+			
+			
+			$sql .= $get_sql;
+			
+			
+			$lists = $page->where($sql)->page($this->frparam('page',0,1))->go();
+			$pages = $page->pageList();
+			
+			$ajaxdata = [];
+			foreach($lists as $k=>$v){
+				
+				$v['new_logintime'] = $v['logintime']!=0 ? date('Y-m-d H:i:s',$v['logintime']) : '-';
+				$v['new_regtime'] = $v['regtime']!=0 ? date('Y-m-d H:i:s',$v['regtime']) : '-';
+				$v['edit_url'] = U('Admin/adminedit',array('id'=>frencode($v['id'])));
+				foreach($this->fields_list as $vv){
+					$v[$vv['field']] = format_fields($vv,$v[$vv['field']]);
+				}
+				$ajaxdata[]=$v;
+				
+			}
+			
+			$this->lists = $lists;
+			$this->page = $pages;
+			$this->sum = $page->sum;
+			JsonReturn(['code'=>0,'data'=>$ajaxdata,'count'=>$page->sum]);
+		}
+		
+       
 		$this->display('admin-list');
 	}
 	
@@ -188,11 +230,17 @@ class AdminController extends CommonController
 		if($this->frparam('go')==1){
 			$data = $this->frparam();
 			$data = get_fields_data($data,'level');
+			$data['gid'] = $this->frparam('gid',0,$this->admin['gid']);
 			//防止越权操作
-			if(isset($data['gid'])){
-				if($this->admin['gid']>$data['gid'] && $this->admin['isadmin']!=1){
-					JsonReturn(array('code'=>1,'msg'=>'非法操作！'));	
-				}
+			$change_admin = M('level')->find(['id'=>$id]);
+			if($this->admin['gid']!=1 && $change_admin['gid']==1){
+				JsonReturn(array('code'=>1,'msg'=>'您没有权限操作！'));	
+			}
+			
+			//检查token
+			$token = getCache('admin_'.$this->admin['id'].'_token');
+			if(!isset($_SESSION['token']) || !$token || $token!=$_SESSION['token']){
+				JsonReturn(array('code'=>1,'msg'=>'非法操作！'));
 			}
 			
 			$data['email'] = $this->frparam('email',1);
@@ -254,7 +302,10 @@ class AdminController extends CommonController
 			$this->isadmin = false;
 		}
         $this->groups = M('level_group')->findAll();
-		
+		$token = getRandChar(10);
+		$_SESSION['token'] = $token;
+		setCache('admin_'.$this->admin['id'].'_token',$token,60);
+		$this->token = $token;
 		$this->display('admin-edit');
 	}
 	
@@ -264,12 +315,18 @@ class AdminController extends CommonController
 		if($this->frparam('go')==1){
 			$data = $this->frparam();
 			$data = get_fields_data($data,'level');
+			$data['gid'] = $this->frparam('gid',0,$this->admin['gid']);
 			//防止越权操作
-			if(isset($data['gid'])){
-				if($this->admin['gid']>$data['gid'] && $this->admin['isadmin']!=1){
-					JsonReturn(array('code'=>1,'msg'=>'非法操作！'));	
-				}
+			if($this->admin['gid']!=1 && $data['gid']==1){
+				JsonReturn(array('code'=>1,'msg'=>'您没有权限操作！'));	
 			}
+			//检查token
+			$token = getCache('admin_'.$this->admin['id'].'_token');
+			if(!isset($_SESSION['token']) || !$token || $token!=$_SESSION['token']){
+				JsonReturn(array('code'=>1,'msg'=>'非法操作！'));
+			}
+			
+			
 			$data['email'] = $this->frparam('email',1);
 			$data['pass'] = $this->frparam('pass',1);
 			$data['repass'] = $this->frparam('repass',1);
@@ -277,7 +334,6 @@ class AdminController extends CommonController
 			$data['name'] = $this->frparam('name',1);
 			$data['tel'] = $this->frparam('tel',1);
 			$data['status'] = $this->frparam('status');
-			$data['gid'] = ($this->frparam('gid')==null)?2:($this->frparam('gid'));
 			
 			$data['regtime'] = time();
 			$data['logintime'] = time();
@@ -317,17 +373,24 @@ class AdminController extends CommonController
 		}else{
 			$this->isadmin = false;
 		}
+		
+		$token = getRandChar(10);
+		$_SESSION['token'] = $token;
+		setCache('admin_'.$this->admin['id'].'_token',$token,60);
+		$this->token = $token;
 		$this->display('admin-add');
 	
 	}
 	
 	public function change_status(){
-		$id = frdecode($this->frparam('id',1));
-		if(!$id || ($id==1)){
+		$id = $this->frparam('id',1);
+		if(!$id || $id==1){
 			JsonReturn(array('code'=>1,'msg'=>'非法操作！'));
 		}
 		
 		$x = M('level')->find('id='.$id);
+		
+		
 		if($x['status']==1){
 			$x['status']=0;
 		}else{
@@ -336,7 +399,7 @@ class AdminController extends CommonController
 		M('level')->update(array('id'=>$id),array('status'=>$x['status']));
 	}
 	public function admindelete(){
-    	$id = frdecode($this->frparam('id',1));
+    	$id = $this->frparam('id',1);
         if($id==''){
         	JsonReturn(array('code'=>1,'msg'=>'非法操作！'));
         }
@@ -355,7 +418,26 @@ class AdminController extends CommonController
     }
 
 	
-	
+	function deleteAll(){
+		$data = $this->frparam('data',1);
+		if($data!=''){
+			if($this->admin['gid']!=1){
+				$lists = M('level')->findAll('id in('.$data.')');
+				foreach($lists as $v){
+					if($v['gid']==1){
+						JsonReturn(array('code'=>1,'msg'=>'批量操作失败！'));
+					}
+				}
+			}
+			
+			if(M('level')->delete('id in('.$data.')')){
+				JsonReturn(array('code'=>0,'msg'=>'批量删除成功！'));
+				
+			}else{
+				JsonReturn(array('code'=>1,'msg'=>'批量操作失败！'));
+			}
+		}
+	}
 	
 	
 	

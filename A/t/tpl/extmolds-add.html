@@ -39,7 +39,7 @@
                         <span class="x-red">*</span>所属栏目
                     </label>
                     <div class="layui-input-inline">
-						<select name="tid" lay-filter="tid" id="tid" >
+						<select name="tid" lay-search="" lay-filter="tid" id="tid" >
 						<option value="0">不限栏目</option>
 					   {foreach $classtypes as $v}
 					   {if($v['molds']==$molds['biaoshi'])}
@@ -53,6 +53,7 @@
 				
 				
 				 <span id="ext_fields"></span>
+				
 				 <div class="layui-form-item" pane>
                     <label for="isshow" class="layui-form-label">
                         <span class="x-red"></span>是否显示

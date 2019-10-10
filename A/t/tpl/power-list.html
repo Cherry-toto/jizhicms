@@ -17,8 +17,9 @@
         <div class="x-body">
           
           <xblock>
-		  
+		  {if(checkAction('Member/addrulers'))}
 		  <button class="layui-btn" onclick="x_admin_show('添加权限','{fun U('Member/addrulers')}')"><i class="layui-icon"></i>添加权限</button>
+		  {/if}
 		  {if($webconf['isopenhomepower']==0)}<button class="layui-btn">温馨提示：前台权限已关闭，设置权限不会生效。</button>{else}<button class="layui-btn layui-btn-danger">温馨提示：前台权限已开启，权限设置将直接影响前台访问，请谨慎操作！</button>{/if}
 		  </xblock>
             <table class="layui-table">
@@ -60,11 +61,17 @@
 			<td>{$v['action']}</td>
 			
             <td class="td-manage">
+			 {if(checkAction('Member/editrulers'))}
               <button class="layui-btn layui-btn layui-btn-xs"  onclick="x_admin_show('编辑','{fun U('Member/editrulers',array('id'=>$v['id']))}')" ><i class="layui-icon">&#xe642;</i>编辑</button>
-			  {if($v['pid']==0)}
-			<button class="layui-btn layui-btn-warm layui-btn-xs"  onclick="x_admin_show('添加子功能','{fun U('Member/addrulers',array('pid'=>$v['id']))}')" ><i class="layui-icon">&#xe642;</i>添加子功能</button>
-			{/if}
+			 {/if}
+			  {if(checkAction('Member/addrulers'))}
+				{if($v['pid']==0)}
+				<button class="layui-btn layui-btn-warm layui-btn-xs"  onclick="x_admin_show('添加子功能','{fun U('Member/addrulers',array('pid'=>$v['id']))}')" ><i class="layui-icon">&#xe642;</i>添加子功能</button>
+				{/if}
+			  {/if}
+			  {if(checkAction('Member/deleterulers'))}
               <button class="layui-btn-danger layui-btn layui-btn-xs"  onclick="ruler_del(this,'{$v['id']}')" href="javascript:;" ><i class="layui-icon">&#xe640;</i>删除</button>
+			  {/if}
             </td>
           </tr>
 		 {/foreach}

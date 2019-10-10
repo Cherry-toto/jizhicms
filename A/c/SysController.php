@@ -69,6 +69,9 @@ class SysController extends CommonController
 		   
 		   $custom = M('sysconfig')->findAll('type!=0');
 		   setCache('customconfig',null);
+		   setCache('classtype',null);
+		   setCache('mobileclasstype',null);
+		   
 		   JsonReturn(['code'=>0,'msg'=>'提交成功！']);
 		   
 		}

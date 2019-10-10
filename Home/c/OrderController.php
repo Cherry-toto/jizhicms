@@ -52,6 +52,20 @@ class OrderController extends Controller
 		$orderno = $this->frparam('orderno',1);
 		$order = M('orders')->find(['orderno'=>$orderno]);
 		if($orderno && $order){
+			//检测是否超时
+			if($this->webconf['paytype']!=0 && $this->webconf['overtime']!=0 && $order['ispay']!=1){
+				$overtime = floatval($this->webconf['overtime'])*60*60;
+				$now = time();
+				if(($order['addtime']+$overtime)<$now){
+					//订单超时
+					M('orders')->update(['id'=>$order['id']],['isshow'=>3]);
+					$order['isshow'] = 3;
+					
+				}
+				
+				
+			}
+			
 			$carts = explode('||',$order['body']);
 			$new = [];
 			foreach($carts as $v){

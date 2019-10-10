@@ -181,8 +181,8 @@
                         <span class="x-red"></span>系统默认
                     </label>
                     <div class="layui-input-inline">
-                        <input type="radio" name="isdefault" value="0" title="否" >
-						<input type="radio" name="isdefault" value="1" title="是" checked>
+                        <input type="radio" name="isdefault" value="0" title="否" checked>
+						<input type="radio" name="isdefault" value="1" title="是" >
                     </div>
 					<div class="layui-form-mid layui-word-aux">
 					  系统默认指没有指定桌面配置的管理员，进入后台后默认的配置
@@ -281,7 +281,7 @@
 				   '<option  value="{$v['id']}">{$v['name']}</option>'+
 				   {/foreach}
 				   '</select></div><button  type="button" onClick="addfunc(this,1)" class="layui-btn" >新增+</button></td><td><button  type="button" class="layui-btn layui-btn layui-btn-xs"  onClick="addfunc(this,2)" ><i class="layui-icon">&#xe642;</i>新增+</button><button type="button" class="layui-btn-danger layui-btn layui-btn-xs" onClick="addfunc(this,3)"  href="javascript:;" ><i class="layui-icon">&#xe640;</i>删除</button></td><input name="left_num_count[]" type="hidden" id="tr_left_'+(nn+1)+'" value="'+(nn+1)+'"></tr>';
-					$(n).parent().parent().parent().after(html);
+					$(n).parent().parent().after(html);
 					$("#left_num").val(nn+1);
 					renderForm();
 				}else if(m==3){

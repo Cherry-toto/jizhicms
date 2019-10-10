@@ -21,41 +21,77 @@ class ProductController extends CommonController
 	
 	
 	function productlist(){
-		$page = new Page('product');
-		$sql = ' 1=1 ';
-		if($this->frparam('isshow')){
-			$isshow = $this->frparam('isshow')==1 ? 1 : 0;
-			$sql .= ' and isshow='.$isshow;
-		}
-		$this->isshow = $this->frparam('isshow');
 		
-		if($this->frparam('tid')){
-			$sql .= ' and tid='.$this->frparam('tid');
+		$classtypedata = classTypeData();
+		foreach($classtypedata as $k=>$v){
+			$classtypedata[$k]['children'] = get_children($v,$classtypedata);
 		}
-		$data = $this->frparam();
-		$res = molds_search('product',$data);
-		$get_sql = ($res['fields_search_check']!='') ? (' and '.$res['fields_search_check']) : '';
-		$sql .= $get_sql;
-		
-		$this->fields_search = $res['fields_search'];
-		$this->fields_list = M('Fields')->findAll(array('molds'=>'product','islist'=>1),'orders desc');
-		if($this->frparam('title',1)){
-			$sql.=" and title like '%".$this->frparam('title',1)."%' ";
-		}
-		//置顶处理
-		$sql .= ' or (istop=1 and isshow=1) ';
-		$data = $page->where($sql)->orderby('istop desc,orders desc,addtime desc,id desc')->page($this->frparam('page',0,1))->go();
-		$pages = $page->pageList();
-		$this->pages = $pages;
-		$this->lists = $data;
-		$this->sum = $page->sum;
-		
 		$this->molds = M('molds')->find(['biaoshi'=>'product']);
 		$this->tid=  $this->frparam('tid');
 		$this->title = $this->frparam('title',1);
-		//$classtype = M('classtype')->findAll(null,'orders desc');
-		//$classtype = getTree($classtype);
+		$this->isshow = $this->frparam('isshow');
+		$data = $this->frparam();
+		$res = molds_search('product',$data);
 		$this->classtypes = $this->classtypetree;
+		$this->fields_search = $res['fields_search'];
+		$this->fields_list = M('Fields')->findAll(array('molds'=>'product','islist'=>1),'orders desc');
+		if($this->frparam('ajax')){
+			
+			$page = new Page('product');
+			$sql = ' 1=1 ';
+			if($this->frparam('isshow')){
+				$isshow = $this->frparam('isshow')==1 ? 1 : 0;
+				$sql .= ' and isshow='.$isshow;
+			}
+			if($this->frparam('tid')){
+				$sql .= ' and tid='.$this->frparam('tid');
+			}
+			$get_sql = ($res['fields_search_check']!='') ? (' and '.$res['fields_search_check']) : '';
+			$sql .= $get_sql;
+			
+			if($this->frparam('title',1)){
+				$sql.=" and title like '%".$this->frparam('title',1)."%' ";
+			}
+			//置顶处理
+			$sql .= ' or (istop=1 and isshow=1) ';
+			
+			$data = $page->where($sql)->orderby('istop desc,orders desc,addtime desc,id desc')->page($this->frparam('page',0,1))->go();
+			
+			$ajaxdata = [];
+			foreach($data as $k=>$v){
+				if($v['ishot']==1){
+					$v['title'] = '<span class="layui-badge">热</span>'.$v['title'];
+				}
+				if($v['istuijian']==1){
+					$v['title'] = '<span class="layui-badge layui-bg-green">荐</span>'.$v['title'];
+				}
+				if($v['istop']==1){
+					$v['title'] = '<span class="layui-badge layui-bg-black">顶</span>'.$v['title'];
+				}
+				
+				$v['new_tid'] = $classtypedata[$v['tid']]['classname'];
+				$v['new_litpic'] = $v['litpic']!='' ? '<a href="'.$v['litpic'].'" target="_blank"><img src="'.$v['litpic'].'" width="100px" /></a>':'无';
+				$v['new_isshow'] = $v['isshow']==1 ? '<span class="layui-badge layui-bg-green">显示</span>' : '<span class="layui-badge">不显示</span>';
+				$v['new_addtime'] = date('Y-m-d H:i:s',$v['addtime']);
+				$v['view_url'] = get_domain().'/'.$v['htmlurl'].'/'.$v['id'];
+				$v['edit_url'] = U('Product/editproduct',array('id'=>$v['id']));
+				
+				foreach($this->fields_list as $vv){
+					$v[$vv['field']] = format_fields($vv,$v[$vv['field']]);
+				}
+				$ajaxdata[]=$v;
+				
+			}
+			$pages = $page->pageList();
+			$this->pages = $pages;
+			$this->lists = $data;
+			$this->sum = $page->sum;
+			JsonReturn(['code'=>0,'data'=>$ajaxdata,'count'=>$page->sum]);
+		}
+		
+		
+		
+		
 		$this->display('product-list');
 		
 		
@@ -252,16 +288,9 @@ class ProductController extends CommonController
 				$w['tid'] = $tid;
 				$type = M('classtype')->find(array('id'=>$tid));
 				$w['htmlurl'] = $type['htmlurl'];
-				if(!M('product')->update(array('id'=>$v['id']),$w)){
-					$r = false;break;
-				}
+				M('product')->update(array('id'=>$v['id']),$w);
 			}
-			if($r){
-				JsonReturn(array('code'=>0,'msg'=>'批量修改成功！'));
-				
-			}else{
-				JsonReturn(array('code'=>1,'msg'=>'批量修改失败！'));
-			}
+			JsonReturn(array('code'=>0,'msg'=>'批量修改成功！'));
 		}
 	}
 	//修改排序
@@ -275,7 +304,31 @@ class ProductController extends CommonController
 		JsonReturn(array('code'=>0,'info'=>'修改成功！'));
 	}
 
-	
+	//批量修改推荐属性
+	function changeAttribute(){
+		$data = $this->frparam('data',1);
+		$tj = $this->frparam('tj');
+		if($data!=''){
+			$list = M('Product')->findAll('id in('.$data.')');
+			$r = true;
+			foreach($list as $v){
+				if($tj==1){
+				   $w['istop'] = $v['istop']==1 ? 0 : 1;
+				}
+				if($tj==2){
+				   $w['ishot'] = $v['ishot']==1 ? 0 : 1;
+				}
+				if($tj==3){
+				   $w['istuijian'] = $v['istuijian']==1 ? 0 : 1;
+				}
+				
+				
+				M('Product')->update(array('id'=>$v['id']),$w);
+			}
+			JsonReturn(array('code'=>0,'msg'=>'批量修改成功！'));
+		}
+	}
+
 
 	
 	

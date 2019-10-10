@@ -51,6 +51,13 @@ class ClasstypeController extends CommonController
 			if($htmlurl==''){
 				$htmlurl = str_replace(' ','',pinyin($this->frparam('classname',1)));
 			}
+			if($this->webconf['islevelurl'] && $this->frparam('pid')!=0){
+				//层级
+				$classtypetree = classTypeData();
+				$html = $classtypetree[$this->frparam('pid')]['htmlurl'].'/'.$html;
+			}
+			
+			
 
 			$w['pid'] = $this->frparam('pid');
 			$w['orders'] = $this->frparam('orders');
@@ -108,6 +115,7 @@ class ClasstypeController extends CommonController
 			if($htmlurl==''){
 				$htmlurl = str_replace(' ','',pinyin($this->frparam('classname',1)));
 			}
+			
 			
 			$w['pid'] = $this->frparam('pid');
 			$w['orders'] = $this->frparam('orders');
@@ -229,13 +237,21 @@ class ClasstypeController extends CommonController
 			$data_6 = $this->frparam('data_6',2);
 			$data_7 = $this->frparam('data_7',2);
 			$data_8 = $this->frparam('data_8',2);
+			$classtypetree = classTypeData();
 			foreach($data_1 as $k=>$v){
 				if($v && $v!=''){
 					
 					$w['molds'] = $data_0[$k];
 					$w['classname'] = $v;
 					$w['pid'] = $data_2[$k];
-					$w['htmlurl'] = $data_3[$k];
+					if($this->webconf['islevelurl'] && $w['pid']!=0){
+						//层级
+						$html = $classtypetree[$w['pid']]['htmlurl'].'/'.$data_3[$k];
+					}else{
+						$html = $data_3[$k];
+					}
+							
+					$w['htmlurl'] = $html;
 					$w['lists_num'] = $data_4[$k];
 					$w['lists_html'] = $data_5[$k];
 					$w['details_html'] = $data_6[$k];

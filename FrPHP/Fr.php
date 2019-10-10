@@ -104,9 +104,9 @@ class FrPHP
 			session_set_save_handler($session,true);
 			if (!isset($_COOKIE['PHPSESSID'])) {
 				session_set_cookie_params($this->config['redis']['EXPIRE']);
-				session_start();
+				if(!session_id()){ session_start();}
 			} else {
-				session_start();
+				if(!session_id()){ session_start();}
 				setcookie('PHPSESSID', $_COOKIE['PHPSESSID'], time() + $this->config['redis']['EXPIRE'],'/');
 			}
 		}else{
@@ -118,9 +118,9 @@ class FrPHP
 			session_set_save_handler($session,true);
 			if (!isset($_COOKIE['PHPSESSID'])) {
 				session_set_cookie_params(SessionTime);
-				session_start();
+				if(!session_id()){ session_start();}
 			} else {
-				session_start();
+				if(!session_id()){ session_start();}
 				setcookie('PHPSESSID', $_COOKIE['PHPSESSID'], time() + SessionTime,'/');
 			}
 			
@@ -169,8 +169,35 @@ class FrPHP
 			$open_url_route = [];
 			
 		}
-		define('REQUEST_URI',$url);
+		//读取系统配置
+		$webconfig = getCache('webconfig');
+		if(!$webconfig){
+			$wcf = M('sysconfig')->findAll(array('type'=>0));
+			$webconfig = array();
+			foreach($wcf as $k=>$v){
+				if($v['field']=='web_js' || $v['field']=='ueditor_config'){
+					$v['data'] = html_decode($v['data']);
+				}
+				$webconfig[$v['field']] = $v['data'];
+			}
+			setCache('webconfig',$webconfig);
+		}
+		if(isset($_SESSION['terminal'])){
+			$terminal_path = ($_SESSION['terminal']=='mobile' && $webconfig['iswap']==1) ? $webconfig['mobile_html'] : $webconfig['pc_html'];
+			$terminal_path = $terminal_path==''  ? '/' : $terminal_path;
+			$url = str_replace('/'.$terminal_path.'/','/',$url);
+			
+		}else{
+			if(isMobile() && $webconfig['iswap']==1){
+				$webconfig['mobile_html'] = $webconfig['mobile_html']=='' ? '/' : $webconfig['mobile_html'];
+				$url = str_replace('/'.$webconfig['mobile_html'].'/','/',$url);
+			}else{
+				$url = str_replace('/'.$webconfig['pc_html'].'/','/',$url);
+			}
 		
+		}
+		
+		define('REQUEST_URI',$url);
         $controllerName = DefaultController;
         $actionName = DefaultAction;
         $param = array();

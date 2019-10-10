@@ -15,208 +15,273 @@
             <a class="layui-btn layui-btn-small" style="line-height:1.6em;margin-top:3px;float:right"  href="javascript:location.replace(location.href);" title="刷新"><i class="iconfont" style="line-height:30px">&#xe6aa;</i></a>
         </div>
         <div class="x-body">
-          <div class="layui-row">
-			<form class="layui-form layui-col-md12 x-so" method="get" id="myform">
-			
-			<div class="layui-input-inline">
-			  <select name="tid" lay-filter="tid" class="layui-inline autosubmit">
-			  <option value="">请选择栏目</option>
-			   {foreach $classtypes as $v}
-			   <option {if($tid==$v['id'])} selected="selected" {/if}value="{$v['id']}">{fun str_repeat('--', $v['level']), $v['classname']}</option>
-			   {/foreach}
-			
-			  </select>
-			</div>
-			
-			  <input type="number" name="aid" value="{$aid}" placeholder="请输入文章ID" autocomplete="off" class="layui-input">
-			  <input type="number" name="userid" value="{$userid}" placeholder="请输入用户ID" autocomplete="off" class="layui-input">
-			  <button class="layui-btn"  lay-submit="" lay-filter="sreach"><i class="layui-icon">&#xe615;</i></button>
-			</form>
-		  </div>
-          <xblock>
-		  <button class="layui-btn layui-btn-danger" onclick="delAll()"><i class="layui-icon"></i>批量删除</button>
-		  <button class="layui-btn" onclick="x_admin_show('添加评论','{fun U('Comment/addcomment')}')"><i class="layui-icon"></i>添加评论</button>
-		   <span class="x-right" style="line-height:40px">共有数据：{$sum} 条</span>
-		  </xblock>
-            <div style="width:100%;  overflow:scroll;overflow-y: hidden">
-        <table border="1" rules="all" style="width:100%; height:100px; text-align:center;white-space:nowrap" class="layui-table layui-form">
-                <thead>
-                    <tr>
-                        <th>
-						  <div class="layui-unselect header layui-form-checkbox" lay-skin="primary"><i class="layui-icon">&#xe605;</i></div>
-						</th>
-                        <th>
-                            ID
-                        </th>
-                       
-                        <th>
-                            评论用户[ID]
-                        </th>
-						
-						<th>
-                            所属栏目
-                        </th>
-						<th>
-                            所属文章
-                        </th>
-						<th>
-                            主回复帖子ID
-                        </th>
-						<th>
-                            回复帖子ID
-                        </th>
-						<th>
-                            评论内容
-                        </th>
-						<th>
-                            喜欢/点赞
-                        </th>
-						<th>
-                            是否已读
-                        </th>
-						<th>
-                            用户是否删除
-                        </th>
-						<th>
-                            评论时间
-                        </th>
-                        <th>
-                            操作
-                        </th>
-                    </tr>
-                </thead>
-                <tbody id="x-link">
-				  {foreach $lists as $v}
-                    <tr>
-                     <td>
-					  <div class="layui-unselect layui-form-checkbox" lay-skin="primary" data-id='{$v['id']}'><i class="layui-icon">&#xe605;</i></div>
-					</td>
-                        <td>
-                            {$v['id']}
-                        </td>
-                        <td>
-                    {fun get_info_table('member',array('id'=>$v['userid']),'username')}[{$v['userid']}]
-                        </td>
-						<td>
-                            {if($v['tid']!=0)}{fun get_info_table('classtype',array('id'=>$v['tid']),'classname')}{else}-{/if}
-                        </td>
-						<td>
-                            {if($v['aid']!=0)}
-							 <a onclick="x_admin_show('查看相关文章','{fun U('Article/editarticle',array('id'=>$v['aid']))}')">{$v['aid']}</a>
-							{else}
-							-
-							{/if}
-                        </td>
-						<td>
-						{if($v['zid']!=0)}
-                            <a onclick="x_admin_show('查看主回复帖子','{fun U('Comment/editcomment',array('id'=>$v['zid']))}')">{$v['zid']}</a>
-						{else}
-						-
-						{/if}
-                        </td>
-						<td>
-						{if($v['pid']!=0)}
-                            <a onclick="x_admin_show('查看回复帖子','{fun U('Comment/editcomment',array('id'=>$v['pid']))}')">{$v['pid']}</a>
-						{else}
-						-
-						{/if}
-                        </td>
-                        <td>
-                            {fun newstr($v['body'],10)}
-                        </td>
-						<td>
-                            {$v['likes']}
-                        </td>
-						 <td>
-						{if($v['isread']==1)}<span class="layui-badge layui-bg-gray">已读</span>{else}<span class="layui-badge layui-bg-orange">未读</span>{/if}
-						</td>
-						<td>
-						{if($v['isshow']==1)}<span class="layui-badge layui-bg-green">未删除</span>{else}<span class="layui-badge layui-bg-gray">已删除</span>{/if}
-						</td>
-						
-						
-						<td>
-                            {fun date('Y-m-d H:i:s',$v['addtime'])} 
-                        </td>
-                        <td class="td-manage">
-						
-							<button class="layui-btn layui-btn layui-btn-xs"  onclick="x_admin_show('查看评论','{fun U('Comment/editcomment',array('id'=>$v['id']))}')" ><i class="layui-icon">&#xe642;</i>查看评论</button>
-							<button class="layui-btn-danger layui-btn layui-btn-xs"  onclick="admin_del(this,'{$v['id']}')" href="javascript:;" ><i class="layui-icon">&#xe640;</i>删除</button>
-						
-						
-							 
-							
-                        </td>
-						
-                    </tr>
-					{/foreach}
-                </tbody>
-            </table>
-			</div>
-            <div class="page">
-				{$pages}
-			  </div>
-        </div>
-     
-       <script>
-	  
-	   
-	    layui.use(['laydate','form','element','laypage','layer'], function(){
-                $ = layui.jquery;//jquery
-              laydate = layui.laydate;//日期插件
-              lement = layui.element;//面包导航
-            //  laypage = layui.laypage;//分页
-              layer = layui.layer;//弹出层
-			  form = layui.form;
-             
-              form.on('select(tid)', function(data){
+         <div class="layui-collapse">
+		    <div class="layui-colla-item">
+			<h2 class="layui-colla-title">搜索</h2>
+				<div class="layui-colla-content layui-show">
+				<div class="layui-row">
+					<form class="layui-form layui-col-md12 x-so" method="get" id="myform">
+					<div class="layui-input-inline">
+					  <select name="isshow" lay-filter="isshow" class="layui-inline autosubmit">
+					  <option value="">状态</option>
+					   
+					   <option {if($isshow==1)} selected="selected" {/if}value="1">正常</option>
+					   <option {if($isshow==2)} selected="selected" {/if}value="2">被删除</option>
+					   
 					
-					$("#myform").submit();
+					  </select>
+					</div>
+					<div class="layui-input-inline">
+					  <select name="tid" lay-filter="tid" lay-search class="layui-inline autosubmit">
+					  <option value="">请选择栏目</option>
+					   {foreach $classtypes as $v}
+					   {if($v['molds']=='article')}
+					   <option {if($tid==$v['id'])} selected="selected" {/if}value="{$v['id']}">{fun str_repeat('--', $v['level']), $v['classname']}</option>
+					   {/if}
+					   {/foreach}
+					
+					  </select>
+					</div>
+					  <input type="text" name="body" value="{$body}" placeholder="请输入评论内容" autocomplete="off" class="layui-input">
+					  {$fields_search}
+					  <button class="layui-btn"  lay-submit="" lay-filter="search"><i class="layui-icon">&#xe615;</i></button>
+					</form>
+				</div>
+				</div>
+		    </div>
+         </div> 
+		  
+		<table class="layui-hide" lay-data="{id: 'jizhi_table'}" id="jizhi_table" lay-filter="jizhi_table"></table>
+		<input id="select_data" type="hidden" value="" />
+		<script type="text/html" id="rightbar">
+		{if(checkAction('Comment/editcomment'))}
+			<button class="layui-btn layui-btn-xs" lay-event="edit"><i class="layui-icon">&#xe642;</i>查看</button>
+		
+		{/if}
+		{if(checkAction('Comment/deletecomment'))}
+			<button class="layui-btn layui-btn-xs layui-btn-danger" lay-event="delete"><i class="layui-icon">&#xe640;</i>删除</button>
+		{/if}	
+		</script>
+		<script type="text/html" id="toolbar">
+		 <div class="layui-btn-container" style="font-size:15px;">
+		 {if(checkAction('Comment/deleteAll'))}
+			   <button class="layui-btn layui-btn-danger" onclick="delAll()"><i class="layui-icon">&#xe640;</i>批量删除</button>
+		 {/if}	   
+		 {if(checkAction('Comment/addcomment'))}	   
+			   <button class="layui-btn" onclick="x_admin_show('添加评论','{fun U('Comment/addcomment')}')"><i class="layui-icon">&#xe608;</i>添加评论</button>
+		 {/if}	  
+			
+		 </div>
+		</script>
+		<script type="text/html" id="aid">
+		{{#  if(d.new_aid_url == ''){ }}
+		-
+		{{#  } else  { }}
+		<a onclick="x_all_show('查看相关内容','{{d.new_aid_url}}')"><button class="layui-btn layui-btn-xs" >查看</button></a>
+		{{#  } }}
+		</script>
+		<script type="text/html" id="user">
+		{{#  if(d.new_user == ''){ }}
+		-
+		{{#  } else  { }}
+		{if(checkAction('Member/memberedit'))}	
+		<a onclick="x_all_show('查看用户','{{d.new_user}}')"><button class="layui-btn layui-btn-xs" >{{d.new_username}}</button></a>
+		{else}
+		{{d.new_username}}
+		{/if}
+		{{#  } }}
+		</script>
+		<script type="text/html" id="zid">
+		{{#  if(d.new_zid == ''){ }}
+		-
+		{{#  } else  { }}
+		{if(checkAction('Comment/editcomment'))}	
+		<a onclick="x_all_show('查看主回复评论','{{d.new_zid}}')"><button class="layui-btn layui-btn-xs" >查看</button></a>
+		{else}
+		{{d.zid}}
+		{/if}
+		{{#  } }}
+		</script>
+		<script type="text/html" id="pid">
+		{{#  if(d.new_pid == ''){ }}
+		-
+		{{#  } else  { }}
+		{if(checkAction('Comment/editcomment'))}
+		<a onclick="x_all_show('查看回复评论','{{d.new_pid}}');"><button class="layui-btn layui-btn-xs" >查看</button></a>
+		{else}
+		{{d.pid}}
+		{/if}
+		{{#  } }}
+		</script>
+		<script>
+	 
+	   
+	    layui.use(['laydate','form','element','laypage','layer','table'], function(){
+                $ = layui.jquery;//jquery
+              var laydate = layui.laydate;//日期插件
+              var lement = layui.element;//面包导航
+              var layer = layui.layer;//弹出层
+			  var form = layui.form;
+			  var table = layui.table;
+			  
+			  table.render({
+				elem: '#jizhi_table'
+				,height: 650
+				,url: window.location.href+'?ajax=1' //数据接口
+				,page: true //开启分页
+				,size:'lg'
+				,count:100
+				,toolbar:"#toolbar"
+				,data:{}
+				,page: { //支持传入 laypage 组件的所有参数（某些参数除外，如：jump/elem） - 详见文档
+				  layout: ['limit', 'count', 'prev', 'page', 'next', 'skip'] //自定义分页布局
+				  //,curr: 5 //设定初始在第 5 页
+				  ,groups: 5 //只显示 1 个连续页码
+				  ,first: true //显示首页
+				  ,last: true //显示尾页
+				  ,count:500
+				  ,limit:10
+				  
+				}
+				,cols: [[ //表头
+				  {field: 'id', title: 'ID', width:50, sort: true, fixed:'left'}
+				  ,{type:'checkbox'}
+				  ,{field: 'new_username', title: '用户名',width: 150,templet:'#user', sort: true}
+				  ,{field: 'new_tid', title: '所属栏目',width:150, sort: true}
+				  ,{field: 'new_aid', title: '所属文章',width:100,templet:'#aid' }
+				  ,{field: 'new_zid', title: '主回复帖子',width:100,templet:'#zid'}
+				  ,{field: 'new_pid', title: '回复帖子',width:100,templet:'#pid'}
+				  ,{field: 'body', title: '评论内容',width:300} 
+				  {foreach $fields_list as $v},{field: '{$v['field']}',width:150, title: '{$v['fieldname']}'}{/foreach}
+				  ,{field: 'likes', title: '喜欢点赞', width: 100,sort: true}
+				  ,{field: 'new_isread', title: '是否已读', width: 100}
+				  ,{field: 'new_isshow', title: '是否显示', width: 100}
+				  ,{field: 'new_addtime', title: '评论时间',width:160}
+				 
+				  ,{field: '', title: '操作',width:160, toolbar: '#rightbar', fixed:'right'}
 				
-			 });
-             
+				  
+				 
+				]]
+			  });
+			  
+			    table.on('tool(jizhi_table)', function(obj){
+					var data = obj.data; //获得当前行数据
+					var layEvent = obj.event; //获得 lay-event 对应的值（也可以是表头的 event 参数对应的值）
+					var tr = obj.tr; //获得当前行 tr 的DOM对象
+					 
+					switch(layEvent){
+					  case 'edit':
+						//console.log(data);
+						 x_admin_show('编辑',data.edit_url);
+					  break;
+					  case 'view':
+						    
+					  break;
+					  case 'delete':
+							layer.confirm('确认要删除吗？',function(index){
+				
+								$.post("{fun U('Comment/deletecomment')}",{id:data.id},function(r){
+										var r = JSON.parse(r);
+										if(r.code==0){
+										 //发异步删除数据
+											$(tr).remove();
+											layer.msg(r.msg,{icon: 1,time:1000},function(){
+												table.reload('jizhi_table', {
+												  url: window.location.href+'?ajax=1'
+												  ,where: {} //设定异步数据接口的额外参数
+												 
+												});
+											
+											});
+											
+											
+											
+										}else{
+											
+											layer.msg(r.msg,{icon: 5,time:1000});
+										}
+								})
+								
+							
+							   
+							});
+					  break;
+					  case 'copy':
+					  
+							
+					  
+						 
+					  break;
+					  
+					 
+					}
+				});
+			  
+			    table.on('checkbox(jizhi_table)', function(obj){
+				 // console.log(obj.checked); //当前是否选中状态
+				 // console.log(obj.data); //选中行的相关数据
+				 // console.log(obj.type); //如果触发的是全选，则为：all，如果触发的是单选，则为：one
+				 /*
+					console.log(checkStatus.data) //获取选中行的数据
+					console.log(checkStatus.data.length) //获取选中行数量，可作为是否有选中行的条件
+					console.log(checkStatus.isAll ) //表格是否全选
+				 */
+				   var checkStatus = table.checkStatus('jizhi_table'); //idTest 即为基础参数 id 对应的值
+				   var len = checkStatus.data.length;
+				   var arr=[];
+				   if(len>0){
+					for(var i=0;i<len;i++){
+						arr.push(checkStatus.data[i].id);
+					}
+				   }
+				   $("#select_data").val(arr);
+				   
+					
+				});
+				
+				
+				
+				form.on('submit(search)', function(data){
+					//data.field
+					table.reload('jizhi_table', {
+					  url: window.location.href+'?ajax=1'
+					  ,where: data.field //设定异步数据接口的额外参数
+					 
+					});
+				   
+					return false;
+				});
+					
+			    
+				
+			 
               
             });
-		 /*删除*/
-            function admin_del(obj,id){
-                layer.confirm('确认要删除吗？',function(index){
-				
-					$.get("{__APP_URL__}/Comment/deletecomment/id/"+id,{},function(r){
-							var r = JSON.parse(r);
-							if(r.code==0){
-							 //发异步删除数据
-								$(obj).parents("tr").remove();
-								
-								layer.msg(r.msg,{icon: 1,time:1000});
-								window.location.reload();
-								
-							}else{
-								
-								layer.msg(r.msg,{icon: 5,time:1000});
-							}
-					})
-					
-				
-                   
-                });
-            }
 			
 			
-			 function delAll (argument) {
-
-				var data = tableCheck.getData();
+			
+		 
+			
+			
+			
+			 function delAll () {
+				
+				var data = $("#select_data").val();
 				if(data==''){
 					alert('请选择对象！');return false;
 				}
 				layer.confirm('确认要删除吗？'+data,function(index){
 					
-					$.get("{__APP_URL__}/Comment/deleteAll/data/"+data,{},function(r){
+					$.post("{fun U('Comment/deleteAll')}",{data:data},function(r){
 					
 							var r = JSON.parse(r);
 							if(r.code==0){
-							  layer.msg('删除成功', {icon: 1});
-							  $(".layui-form-checked").not('.header').parents('tr').remove();
-								
+							  
+							  layer.msg('批量删除成功', {icon: 1,time:1000},function(){
+								window.location.reload();
+							  });
+							  
 							}else{
 								
 								layer.msg(r.msg,{icon: 5,time:1000});
@@ -227,6 +292,9 @@
 					
 				});
 			  }
+			
+			  
+			
 			
        </script>
     </body>

@@ -16,6 +16,7 @@
 		{/if}
 		{if($left_num>0)}
         <ul class="layui-nav left fast-add" lay-filter="">
+		 {if(is_array($top_layout))}
 		 {foreach $top_layout as $v}
           <li class="layui-nav-item">
             <a href="javascript:;"><i class="iconfont">{fun htmlspecialchars_decode($v['icon'])}</i><cite>{$v['name']}</cite></a>
@@ -30,6 +31,7 @@
             </dl>
           </li>
 		 {/foreach} 
+		 {/if}
 		  
         </ul>
 		{/if}
@@ -53,6 +55,7 @@
     <div class="left-nav">
       <div id="side-nav">
         <ul id="nav">
+		{if(is_array($left_layout))}
 		{foreach $left_layout as $v}
             <li>
                 <a href="javascript:;">
@@ -77,7 +80,7 @@
             </li>
 			
 		{/foreach}	
-				
+		{/if}		
           
            
         </ul>

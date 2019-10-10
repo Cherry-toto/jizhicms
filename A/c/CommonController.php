@@ -29,7 +29,7 @@ class CommonController extends Controller
            
         }else{
 			$action = APP_CONTROLLER.'/'.APP_ACTION;
-			if(strpos($_SESSION['admin']['paction'],','.$action.',')==false){
+			if(strpos($_SESSION['admin']['paction'],','.$action.',')===false){
 			   $ac = M('Ruler')->find(array('fc'=>$action));
 			   if($this->frparam('ajax')){
 				   
@@ -52,7 +52,6 @@ class CommonController extends Controller
 	  $customconf = get_custom();
 	  $this->customconf = $customconf;
 	  $this->classtypetree =  get_classtype_tree();
-    
     
     }
 	

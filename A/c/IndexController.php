@@ -40,29 +40,20 @@ class IndexController extends CommonController
 	public function details(){
 		$this->fields_biaoshi = 'level';
 		$id = frdecode($this->frparam('id',1));
-		$this->member = M('level')->find('id='.$id);
-		if($_SESSION['admin']['isadmin']==1){
-			
-			$this->isadmin = true;
-		}else{
-			$this->isadmin = false;
-		}
-       
-        $this->groups = M('level_group')->findAll();
-		
-		$this->display('admin');
-	}
-	public function adminedit(){
-		
-		$this->fields_biaoshi = 'level';
 		if($this->frparam('go')==1){
 			$data = $this->frparam();
 			$data = get_fields_data($data,'level');
+			
+			$data['gid'] = $this->frparam('gid',0,$this->admin['gid']);
 			//防止越权操作
-			if(isset($data['gid'])){
-				if($this->admin['gid']>$data['gid'] && $this->admin['isadmin']!=1){
-					JsonReturn(array('code'=>1,'msg'=>'非法操作！'));
-				}
+			if($this->admin['gid']!=1 && $data['gid']==1){
+				JsonReturn(array('code'=>1,'msg'=>'您没有权限操作！'));	
+			}
+			
+			//检查token
+			$token = getCache('admin_'.$this->admin['id'].'_token');
+			if(!isset($_SESSION['token']) || !$token || $token!=$_SESSION['token']){
+				JsonReturn(array('code'=>1,'msg'=>'非法操作！'));
 			}
 			$data['email'] = $this->frparam('email',1);
 			$data['pass'] = $this->frparam('pass',1);
@@ -113,8 +104,25 @@ class IndexController extends CommonController
 				JsonReturn(array('code'=>1,'msg'=>'修改失败！'));
 			}
 			
+			
 		}
+		
+		$this->member = M('level')->find('id='.$id);
+		if($_SESSION['admin']['isadmin']==1){
+			
+			$this->isadmin = true;
+		}else{
+			$this->isadmin = false;
+		}
+       
+        $this->groups = M('level_group')->findAll();
+		$token = getRandChar(10);
+		$_SESSION['token'] = $token;
+		setCache('admin_'.$this->admin['id'].'_token',$token,60);
+		$this->token = $token;
+		$this->display('admin');
 	}
+
 	public function welcome(){
 		//var_dump($_SERVER);
 		
@@ -378,6 +386,8 @@ class IndexController extends CommonController
 	//清空缓存
 	function cleanCache(){
 		if($_POST){
+			
+			$_SESSION['terminal'] = null;
 			$cache =$this->frparam('cache_data',2);
 			foreach($cache as $v){
 				switch($v){
@@ -437,9 +447,15 @@ class IndexController extends CommonController
 						}
 					}
 					break;
+					case 'pc_html':
+					
+					
+					break;
+					
 					
 				}
 			}
+			
 			
 			
 			JsonReturn(['code'=>0,'msg'=>'success']);
@@ -526,7 +542,7 @@ class IndexController extends CommonController
 			$isshow = $this->frparam('isshow',2);
 			$freq = $this->frparam('freq',2);
 			$priority = $this->frparam('priority',2);
-			$www = get_domain();
+			$www = ($this->webconf['domain']=='') ? get_domain() : $this->webconf['domain'];
 			$l = '<?xml version="1.0" encoding="UTF-8"?>
 <urlset
       xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
@@ -540,7 +556,10 @@ class IndexController extends CommonController
   <changefreq>yearly</changefreq>
   <priority>1.00</priority>
 </url>';
-			
+			$pc_html = (trim($this->webconf['pc_html'])=='' || $this->webconf['pc_html']=='/') ? '/' : '/'.$this->webconf['pc_html'].'/';
+			$pc_html = trim($pc_html);
+			$mobile_html = (trim($this->webconf['mobile_html'])=='' || $this->webconf['mobile_html']=='/') ? '/' : '/'.$this->webconf['mobile_html'].'/';;
+			$mobile_html = trim($mobile_html);
 			foreach($model as $k=>$v){
 				if($isshow[$k]==1){
 					$list = M($v)->findAll(['isshow'=>1]);
@@ -551,21 +570,37 @@ class IndexController extends CommonController
 				if($v=='classtype' && $list){
 					foreach($list as $s){
 						$l.='<url>
-							  <loc>'.$www.'/'.$s['htmlurl'].File_TXT.'</loc>
+							  <loc>'.$www.$pc_html.$s['htmlurl'].File_TXT.'</loc>
 							  <lastmod>'.date('Y-m-d').'T08:00:00+00:00</lastmod>
 							  <changefreq>'.$freq[$k].'</changefreq>
 							  <priority>'.$priority[$k].'</priority>
 							</url>';
+						if($this->webconf['iswap']==1){
+							$l.='<url>
+							  <loc>'.$www.$mobile_html.$s['htmlurl'].File_TXT.'</loc>
+							  <lastmod>'.date('Y-m-d').'T08:00:00+00:00</lastmod>
+							  <changefreq>'.$freq[$k].'</changefreq>
+							  <priority>'.$priority[$k].'</priority>
+							</url>';
+						}	
 					}
 				}else if(($v=='article' || $v=='product') && $list){
 					foreach($list as $s){
 					//文章-商品
-					$l.='<url>
-						  <loc>'.$www.'/'.$s['htmlurl'].'/'.$s['id'].File_TXT.'</loc>
+						$l.='<url>
+						  <loc>'.$www.$pc_html.$s['htmlurl'].'/'.$s['id'].File_TXT.'</loc>
 						  <lastmod>'.date('Y-m-d',$s['addtime']).'T08:00:00+00:00</lastmod>
 						  <changefreq>'.$freq[$k].'</changefreq>
 						  <priority>'.$priority[$k].'</priority>
 						</url>';
+						if($this->webconf['iswap']==1){
+							$l.='<url>
+							  <loc>'.$www.$mobile_html.$s['htmlurl'].'/'.$s['id'].File_TXT.'</loc>
+							  <lastmod>'.date('Y-m-d',$s['addtime']).'T08:00:00+00:00</lastmod>
+							  <changefreq>'.$freq[$k].'</changefreq>
+							  <priority>'.$priority[$k].'</priority>
+							</url>';
+						}	
 					
 					}
 				}
@@ -590,30 +625,107 @@ class IndexController extends CommonController
 	
 	//生成静态文件
 	function tohtml(){
+		
 		if($_POST){
+			$_SESSION['terminal'] = $this->frparam('terminal',1,'pc');
+			$terminal_path = $_SESSION['terminal']=='pc' ? $this->webconf['pc_html'] : $this->webconf['mobile_html'];
+			$terminal_path = ($terminal_path=='' || $terminal_path=='/') ? '' : $terminal_path.'/';
+			$opts = array(
+			  'http'=>array(
+				'method'=>"GET",
+				'header'=>"Cookie: PHPSESSID=".$_COOKIE['PHPSESSID']."\r\n"
+			  )
+			);
+
+			$context = stream_context_create($opts);
+			
 			$type = $this->frparam('type');
+			setCache('html_cache',null);
 			
-			
+			if(isset($_SESSION['terminal'])){
+				$classtypedata = $_SESSION['terminal']=='mobile' ? classTypeDataMobile() : classTypeData();
+			}else{
+				$classtypedata = (isMobile() && $webconf['iswap']==1)?classTypeDataMobile():classTypeData();
+			}
+		
+			foreach($classtypedata as $k=>$v){
+				$classtypedata[$k]['children'] = get_children($v,$classtypedata);
+			}
 			if($type==1){
 				
 				$model = $this->frparam('model',1);
 				$isshow = $this->frparam('isshow');
+				$tid = $this->frparam('tid');
 				$www = get_domain();
-				$sql = $isshow==2?null:'isshow=1';
+				$sql = ' 1=1 ';
+				if($isshow!=2){
+					$sql.=' and isshow=1 ';
+				}
 				
 				//单独更新
 				$modelname = get_info_table('molds',['biaoshi'=>$model],'name');
 				switch($model){
 					case 'classtype':
+						if($tid){
+							$sql.=' and id in('.implode(",",$classtypedata[$tid]["children"]["ids"]).') ';
+						}
+						echo '正在进行栏目静态HTML生成，请稍后……<br/>';
 						$this->html_classtype($sql);
-						JsonReturn(['code'=>0,'msg'=>'栏目静态HTML更新成功！']);
-					
+						file_put_contents(APP_PATH.$terminal_path.'index.html',file_get_contents($www,false,$context));
+						echo '成功生成主页HTML [ index.html ] <br/>';
+						//判断有没有更新完毕
+						if(getCache('html_cache')){
+							echo '更新内容比较多，刷新继续更新~';
+							echo '<script>window.location.reload();</script>';exit;
+						}
+						echo '静态HTML已全部更新完毕！';
+						$_SESSION['terminal'] = null;
+						//清空数据缓存
+						if(is_dir(APP_PATH.'cache/data')){
+							if($handle = opendir(APP_PATH.'cache/data')){
+				
+							  while (false !== ($file = readdir($handle))){
+								 if($file!='.' && $file!='..' ){
+									
+									unlink(APP_PATH.'cache/data/'.$file);
+								 }
+							  }
+							  closedir($handle);
+							}
+						}
+						exit;
 					break;
 					//文章商品模块是同样的
 					default:
-					$this->html_molds($model,$sql);
-					JsonReturn(['code'=>0,'msg'=>$modelname.'模块静态HTML更新成功！']);
-					
+						if($tid){
+							$sql.=' and tid in('.implode(",",$classtypedata[$tid]["children"]["ids"]).') ' ;
+						}
+						echo '正在进行模块静态HTML生成，请稍后……<br/>';
+						$this->html_molds($model,$sql);
+						
+						file_put_contents(APP_PATH.$terminal_path.'index.html',file_get_contents($www,false,$context));
+						echo '成功生成主页HTML [ index.html ] <br/>';
+						//判断有没有更新完毕
+						if(getCache('html_cache')){
+							echo '更新内容比较多，刷新继续更新~';
+							echo '<script>window.location.reload();</script>';exit;
+						}
+						echo '静态HTML已全部更新完毕！';
+						$_SESSION['terminal'] = null;
+						//清空数据缓存
+						if(is_dir(APP_PATH.'cache/data')){
+							if($handle = opendir(APP_PATH.'cache/data')){
+				
+							  while (false !== ($file = readdir($handle))){
+								 if($file!='.' && $file!='..' ){
+									
+									unlink(APP_PATH.'cache/data/'.$file);
+								 }
+							  }
+							  closedir($handle);
+							}
+						}
+						exit;
 					break;
 					
 					
@@ -625,23 +737,56 @@ class IndexController extends CommonController
 				//以防内容过多，更新不过来
 				$model = $this->frparam('model',2);
 				$isshow = $this->frparam('isshow',2);
+				$tid = $this->frparam('tid',2);
 				$www = get_domain();
 				set_time_limit(0);
 				if($model && $isshow){
 					foreach($model as $k=>$v){
-						$sql = $isshow[$k]==2?null:'isshow=1';
+						
+						$sql = ' 1=1 ';
+						if($isshow[$k]!=2){
+							$sql.=' and isshow=1 ';
+						}
+								
 						if($v=='classtype'){
+							if($tid[$k]){
+								$sql.=' and id in('.implode(",",$classtypedata[$tid[$k]]["children"]["ids"]).') ';
+							}
+							echo '正在进行栏目静态HTML生成，请稍后……<br/>';
 							$this->html_classtype($sql);
 						}else{
+							if($tid[$k]){
+								$sql.=' and tid in('.implode(",",$classtypedata[$tid[$k]]["children"]["ids"]).') ';
+							}
+							echo '正在进行模块静态HTML生成，请稍后……<br/>';
 							$this->html_molds($v,$sql);
 							
 						}
 						
 						
 					}
-					
-					JsonReturn(['code'=>0,'msg'=>'批量HTML更新成功！']);
-					
+					file_put_contents(APP_PATH.$terminal_path.'index.html',file_get_contents($www,false,$context));
+					echo '成功生成主页HTML [ index.html ] <br/>';
+					//判断有没有更新完毕
+					if(getCache('html_cache')){
+						echo '更新内容比较多，刷新继续更新~';
+						echo '<script>window.location.reload();</script>';exit;
+					}
+					$_SESSION['terminal'] = null;
+						//清空数据缓存
+						if(is_dir(APP_PATH.'cache/data')){
+							if($handle = opendir(APP_PATH.'cache/data')){
+				
+							  while (false !== ($file = readdir($handle))){
+								 if($file!='.' && $file!='..' ){
+									
+									unlink(APP_PATH.'cache/data/'.$file);
+								 }
+							  }
+							  closedir($handle);
+							}
+						}
+					echo '批量生成HTML完成！';exit;
 					
 					
 				}
@@ -653,6 +798,7 @@ class IndexController extends CommonController
 			
 			
 		}
+		
 		
 		//是否有静态HTML更新
 		$html_cache = getCache('html_cache');
@@ -677,6 +823,7 @@ class IndexController extends CommonController
 						$v[$k]['curren_num'] = $v['curren_num']+100;
 						$newcache[]=$v;
 					}
+					echo '正在进行栏目静态HTML生成，请稍后……<br/>';
 					$this->html_classtype($v['sql'],$limit);
 					
 					
@@ -694,6 +841,7 @@ class IndexController extends CommonController
 							$v[$k]['curren_num'] = $v['curren_num']+100;
 							$newcache[]=$v;
 						}
+						echo '正在进行模块静态HTML生成，请稍后……<br/>';
 						$this->html_molds($v['model'],$v['sql'],$limit);
 					
 					break;
@@ -726,6 +874,16 @@ class IndexController extends CommonController
 	
 	
 	function html_classtype($sql,$limit=null){
+		$terminal_path = $_SESSION['terminal']=='pc' ? $this->webconf['pc_html'] : $this->webconf['mobile_html'];
+		$terminal_path = ($terminal_path=='' || $terminal_path=='/') ? '' : $terminal_path.'/';
+		$opts = array(
+		  'http'=>array(
+			'method'=>"GET",
+			'header'=>"Cookie: PHPSESSID=".$_COOKIE['PHPSESSID']."\r\n"
+		  )
+		);
+
+		$context = stream_context_create($opts);
 		$www = get_domain();
 		//计算栏目个数
 		if($limit==null){
@@ -758,7 +916,11 @@ class IndexController extends CommonController
 		}
 		
 		$lists = M('classtype')->findAll($sql,' id asc ',null,$limit);
-		$classtypedata = classTypeData();
+		if(isset($_SESSION['terminal'])){
+			$classtypedata = $_SESSION['terminal']=='mobile' ? classTypeDataMobile() : classTypeData();
+		}else{
+			$classtypedata = (isMobile() && $webconf['iswap']==1)?classTypeDataMobile():classTypeData();
+		}
 		foreach($classtypedata as $k=>$v){
 			$classtypedata[$k]['children'] = get_children($v,$classtypedata);
 		}
@@ -770,32 +932,66 @@ class IndexController extends CommonController
 			
 			foreach($lists as $v){
 				$filename = $v['htmlurl'].File_TXT;
-				$url = '/'.$filename;
+				//创建文件夹
+				if(!is_dir(APP_PATH.$terminal_path)){
+					$r = mkdir(APP_PATH.$terminal_path,0777,true);
+					if(!$r){
+						//JsonReturn(['code'=>1,'msg'=>'根目录创建目录失败！']);
+						echo '系统创建 [ '.str_replace('/','\\',APP_PATH.$terminal_path).' ] 目录失败!';exit;
+					}
+					echo '创建目录 [ '.str_replace('/','\\',APP_PATH.$terminal_path).' ] 成功！<br/>';
+				}
+				if(strpos($filename,'/')!==false){
+					$filepath = explode('/',$filename);
+					array_pop($filepath);
+					$dir = APP_PATH.$terminal_path.implode('/',$filepath);
+					$create_dir = APP_PATH.$terminal_path;
+					foreach($filepath as $vv){
+						$create_dir.=$vv;
+						if(!is_dir($create_dir)){
+							$r = mkdir($create_dir,0777,true);
+							if(!$r){
+								//JsonReturn(['code'=>1,'msg'=>'根目录创建目录失败！']);
+								echo '系统创建['.str_replace('/','\\',$create_dir).']目录失败!';exit;
+							}
+							echo '创建目录['.str_replace('/','\\',$create_dir).']成功！<br/>';
+						}
+						$create_dir.='/';
+						
+					}
+				}
+				
+				
+				
+				$url = APP_PATH.$terminal_path.$filename;
 				$cache_url = APP_PATH.'cache/data/'.md5(frencode($url));
 				if(file_exists($cache_url)){
 					//栏目在根目录里
-					file_put_contents($filename,file_get_contents($cache_url));
+					file_put_contents($url,file_get_contents($cache_url,false,$context));
 				}else{
-					file_put_contents($filename,file_get_contents($www.$url));
+					file_put_contents($url,file_get_contents($www.'/'.$terminal_path.$filename,false,$context));
 				}
+				echo '成功生成静态HTML [ '.str_replace('/','\\',$url).' ]<br/>';
 				//检查分页
 				$sql = 'tid in('.implode(",",$classtypedata[$v['id']]["children"]["ids"]).') ';
 				$count = M($v['molds'])->getCount($sql);
 				$pagenum = ceil($count/$v['lists_num']);
 				if($pagenum>1){
+					echo '正在生成分页静态HTML……<br/>';
 					for($i=1;$i<=$pagenum;$i++){
 						$filename = $v['htmlurl'].'-'.$i.File_TXT;
-						$url = '/'.$filename;
+						$url = APP_PATH.$terminal_path.$filename;
 						$cache_url = APP_PATH.'cache/data/'.md5(frencode($url));
 						if(file_exists($cache_url)){
 							//栏目在根目录里
-							file_put_contents($filename,file_get_contents($cache_url));
+							file_put_contents($url,file_get_contents($cache_url,false,$context));
 						}else{
-							file_put_contents($filename,file_get_contents($www.$url));
+							file_put_contents($url,file_get_contents($www.'/'.$terminal_path.$filename,false,$context));
 						}
 					}
+					echo '成功生成静态HTML [ '.str_replace('/','\\',$url).' ]<br/>';
 				}
-				
+					
 				
 			}
 		}
@@ -803,7 +999,17 @@ class IndexController extends CommonController
 	}
 	
 	function html_molds($model,$sql=null,$limit=null){
+		$terminal_path = $_SESSION['terminal']=='pc' ? $this->webconf['pc_html'] : $this->webconf['mobile_html'];
+		$terminal_path = ($terminal_path=='' || $terminal_path=='/') ? '' : $terminal_path.'/';
 		$modelname = get_info_table('molds',['biaoshi'=>$model],'name');
+		$opts = array(
+		  'http'=>array(
+			'method'=>"GET",
+			'header'=>"Cookie: PHPSESSID=".$_COOKIE['PHPSESSID']."\r\n"
+		  )
+		);
+
+		$context = stream_context_create($opts);
 		if($limit==null){
 			$count =  M($model)->getCount($sql);
 			if($count>100){
@@ -833,7 +1039,7 @@ class IndexController extends CommonController
 		
 		$lists = M($model)->findAll($sql,' id asc ',null,$limit);
 		$www = get_domain();
-		if($lists){
+		if($lists && is_array($lists)){
 			//更新静态注意事项：
 			//1 创建目录文件夹--权限问题
 			//2 栏目在根目录中
@@ -843,30 +1049,67 @@ class IndexController extends CommonController
 				
 				//检测htmlurl是否为空
 				if(trim($v['htmlurl'])==''){
-					JsonReturn(['code'=>1,'msg'=>$modelname.'模块未绑定栏目，无法生存HTML！']);
+					//JsonReturn(['code'=>1,'msg'=>$modelname.'模块未绑定栏目，无法生存HTML！']);
+					echo $modelname.'模块未绑定栏目，无法生存HTML！';exit;
 				}
 				
 				
 				//需要检测文件夹是否存在
-				if(!is_dir(APP_PATH.$v['htmlurl'])){
-					$r = mkdir(APP_PATH.$v['htmlurl'],0777,true);
+				//创建文件夹
+				if(!is_dir(APP_PATH.$terminal_path)){
+					$r = mkdir(APP_PATH.$terminal_path,0777,true);
 					if(!$r){
-						JsonReturn(['code'=>1,'msg'=>'根目录创建目录失败！']);
+						//JsonReturn(['code'=>1,'msg'=>'根目录创建目录失败！']);
+						echo '系统创建 [ '.str_replace('/','\\',APP_PATH.$terminal_path).' ] 目录失败!';exit;
+					}
+					echo '创建目录 [ '.str_replace('/','\\',APP_PATH.$terminal_path).' ] 成功！<br/>';
+				}
+				
+				if(strpos($v['htmlurl'],'/')!==false){
+					$filepath = explode('/',$v['htmlurl']);
+					//array_pop($filepath);
+					$dir = APP_PATH.$terminal_path.implode('/',$filepath);
+					$create_dir = APP_PATH.$terminal_path;
+					foreach($filepath as $vv){
+						$create_dir.=$vv;
+						if(!is_dir($create_dir)){
+							
+							$r = mkdir($create_dir,0777,true);
+							if(!$r){
+								//JsonReturn(['code'=>1,'msg'=>'根目录创建目录失败！']);
+								echo '系统创建 [ '.str_replace('/','\\',$create_dir).' ] 目录失败!';exit;
+							}
+							echo '创建目录 [ '.str_replace('/','\\',$create_dir).' ] 成功！<br/>';
+						}
+						$create_dir.='/';
+						
+					}
+				}else{
+					if(!is_dir(APP_PATH.$terminal_path.$v['htmlurl'])){
+						$r = mkdir(APP_PATH.$terminal_path.$v['htmlurl'],0777,true);
+						if(!$r){
+							//JsonReturn(['code'=>1,'msg'=>'根目录创建目录失败！']);
+							echo '系统创建 [ '.str_replace('/','\\',APP_PATH.$terminal_path.$v['htmlurl']).' ] 目录失败！';exit;
+						}
 					}
 				}
 				
-				$url = '/'.$v['htmlurl'].'/'.$v['id'].File_TXT;
-				$filename = APP_PATH.$v['htmlurl'].'/'.$v['id'].File_TXT;
+				
+				
+				$url = APP_PATH.$terminal_path.$v['htmlurl'].'/'.$v['id'].File_TXT;
+				$filename = APP_PATH.$terminal_path.$v['htmlurl'].'/'.$v['id'].File_TXT;
 				$cache_url = APP_PATH.'cache/data/'.md5(frencode($url));
 				if(file_exists($cache_url)){
-					//栏目在根目录里
-					file_put_contents($filename,file_get_contents($cache_url));
+				
+					file_put_contents($filename,file_get_contents($cache_url,false,$context));
 				}else{
-					file_put_contents($filename,file_get_contents($www.$url));
+					file_put_contents($filename,file_get_contents($www.'/'.$v['htmlurl'].'/'.$v['id'].File_TXT,false,$context));
 				}
+				echo '成功生成静态HTML [ '.str_replace('/','\\',$filename).' ] <br/>';
 				
 			}
 		}
+		
 	}
 	
 	

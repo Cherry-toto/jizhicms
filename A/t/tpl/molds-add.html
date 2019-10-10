@@ -43,7 +43,20 @@
 					  <span class="x-red">*</span>必须是英文字母，且不能是已存在的标识，标识即是数据库里的表名
 				    </div>
                 </div>
-				
+				 <div class="layui-form-item" pane>
+                    <label for="isclasstype" class="layui-form-label">
+                        <span class="x-red"></span>是否栏目
+                    </label>
+                    <div class="layui-input-inline">
+                        <input type="radio" name="isclasstype" value="0" title="不显示">
+						<input type="radio" name="isclasstype" value="1" title="显示" checked>
+                    </div>
+					<div class="layui-form-mid layui-word-aux">
+					  <span class="x-red">*</span>
+					  列表展示、录入内容、修改内容三个页面是否展示栏目这个选项
+				    </div>
+					
+                 </div>
 				<div class="layui-form-item" pane>
                     <label for="isopen" class="layui-form-label">
                         <span class="x-red"></span>是否开启

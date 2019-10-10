@@ -72,6 +72,7 @@ function get_custom($str=null){
 function get_template(){
 	$webconf = webConf();
 	$isgo = true;
+	
 	if($webconf['isopenwebsite']){
 	
 		//检测是否安装插件
@@ -102,21 +103,26 @@ function get_template(){
 					}
 				}
 			}
-			
-			//当前端口检测
-			if($webconf['iswap']==1 && isMobile()){
-				$template = $wap;
-				//wap
-				if(isWeixin()){
-					//wechat
-					$template = $wechat;
-				}
-				
-				
+			if(isset($_SESSION['terminal'])){
+				$template = ($_SESSION['terminal']=='mobile' && $webconf['iswap']==1) ? (isWeixin() ? $wechat : $wap) : $pc;
 			}else{
-				//pc
-				$template = $pc;
+				
+				//当前端口检测
+				if($webconf['iswap']==1 && isMobile()){
+					$template = $wap;
+					//wap
+					if(isWeixin()){
+						//wechat
+						$template = $wechat;
+					}
+					
+					
+				}else{
+					//pc
+					$template = $pc;
+				}
 			}
+			
 			
 			if($template==''){
 				//全局
@@ -130,17 +136,23 @@ function get_template(){
 		
 	}
 	if($isgo){
-		
-		if($webconf['iswap']==1 && isMobile()){
-			if(isWeixin()){
-				$template = ($webconf['weixin_template']!='')?$webconf['weixin_template']:$webconf['wap_template'];
+		if(isset($_SESSION['terminal'])){
+			$wechat = ($webconf['weixin_template']!='')?$webconf['weixin_template']:$webconf['wap_template'];
+			$template = ($_SESSION['terminal']=='mobile' && $webconf['iswap']==1) ? (isWeixin() ? $wechat : $webconf['wap_template']) : $webconf['pc_template'];
+		}else{
+			if($webconf['iswap']==1 && isMobile()){
+				if(isWeixin()){
+					$template = ($webconf['weixin_template']!='')?$webconf['weixin_template']:$webconf['wap_template'];
+				}else{
+					$template = $webconf['wap_template'];
+				}
+				
 			}else{
-				$template = $webconf['wap_template'];
+				$template = $webconf['pc_template'];
 			}
 			
-		}else{
-			$template = $webconf['pc_template'];
 		}
+		
 	}
 	
 	
@@ -300,6 +312,98 @@ function show_tree($array){
 	foreach($array as $value){
 	   echo str_repeat('--', $value['level']), $value['classname'].'<br />';
 	}
+}
+//$classtype 查询数据库中classtype表的所有内容
+function set_class_haschild($classtype = null){
+	
+	$newarray = [];//组建新栏目数组
+	foreach($classtype as $k=>$v){
+		
+		$v['haschild'] = false;//默认所有都没有下级
+		$newarray[$v['id']] = $v;
+		
+		
+	}
+	foreach($newarray as $k=>$v){
+		if($v['pid']!=0){
+			//找到有上级的栏目，那么上级栏目就有下级了。。。。
+			$newarray[$v['pid']]['haschild'] = true;
+		}
+
+	}
+	return $newarray;
+	
+}
+
+//获取格式化栏目类
+function get_classtype_tree(){
+	
+	$classtypetree = getCache('classtypetree');
+	if(!$classtypetree){
+		
+		$classtype = M('classtype')->findAll(null,'orders desc');
+		$classtype = set_class_haschild($classtype);
+		$classtypetree = getTree($classtype);
+		setCache('classtypetree',$classtypetree);	
+	}
+	
+	return $classtypetree;
+	
+}
+//前台栏目输出
+function classTypeData(){
+	$res = getCache('classtype');
+	$cache_time = (int)webConf('cache_time');
+	if(!$res || !$cache_time){
+		$classtypedata = get_classtype_tree();
+		$d = array();
+		
+		$htmlpath = webConf('pc_html');
+		$htmlpath = ($htmlpath=='' || $htmlpath=='/') ? '' : '/'.$htmlpath; 
+		foreach($classtypedata as $k=>$v){
+			$d[$v['id']] = $v;
+			if($v['gourl']!=''){
+				$d[$v['id']]['url'] = $v['gourl'];
+			}else{
+				$d[$v['id']]['url'] = get_domain().$htmlpath.'/'.$v['htmlurl'].File_TXT;
+			}
+			
+		}
+		
+		setCache('classtype',$d,$cache_time);
+		return $d;
+	}
+	return $res;
+	
+	
+}
+
+//手机端栏目缓存
+function classTypeDataMobile(){
+	$res = getCache('mobileclasstype');
+	$cache_time = (int)webConf('cache_time');
+	if(!$res || !$cache_time){
+		$classtypedata = get_classtype_tree();
+		$d = array();
+		
+		$htmlpath = webConf('mobile_html');
+		$htmlpath = ($htmlpath=='' || $htmlpath=='/') ? '' : '/'.$htmlpath; 
+		foreach($classtypedata as $k=>$v){
+			$d[$v['id']] = $v;
+			if($v['gourl']!=''){
+				$d[$v['id']]['url'] = $v['gourl'];
+			}else{
+				$d[$v['id']]['url'] = get_domain().$htmlpath.'/'.$v['htmlurl'].File_TXT;
+			}
+			
+		}
+		
+		setCache('mobileclasstype',$d,$cache_time);
+		return $d;
+	}
+	return $res;
+	
+	
 }
 
  //检测栏目是否该栏目下级
@@ -666,7 +770,41 @@ layui.use("laydate", function(){
 					}
 					return implode(',',$rr);
 			 }else if($fields['fieldtype']==5){
-				 return '<img src="'.$data.'" width="100px" />';
+				 $vdata = $data!='' ? '<a href="'.$data.'" target="_blank"><img src="'.$data.'" width="100px"  /></a>' : '';
+				 return $vdata;
+			 }else if($fields['fieldtype']==6){
+				 //图集
+				 if($data!=''){
+					 $vdata = explode('||',$data);
+					 $res = '';
+					 foreach($data as $s){
+						 if($s!=''){
+							 $res.='<a href="'.$s.'" target="_blank"><img src="'.$s.'" width="50px" /></a>';
+						 }
+					 }
+					 return $res;
+				 }else{
+					 return '';
+				 }
+			 }else if($fields['fieldtype']==9){	
+				 $vdata = $data!='' ? '<a href="'.$data.'" target="_blank">[查看]</a>' : '';
+				 return $vdata;
+			 }else if($fields['fieldtype']==10){
+				 if($data!=''){
+					 $vdata = explode('||',$data);
+					 $res = '';
+					 foreach($data as $s){
+						 if($s!=''){
+							 $res.='<a href="'.$s.'" target="_blank">[查看]</a>';
+						 }
+					 }
+					 return $res;
+				 }else{
+					 return '';
+				 }
+			 }else if($fields['fieldtype']==11){
+				 $vdata = $data==0?'':date('Y-m-d H:i:s',$data);
+				 return $vdata;
 			 }else if($fields['fieldtype']==13){
 				    $body = explode(',',$fields['body']);
 					$biaoshi = M('molds')->getField(['id'=>$body[0]],'biaoshi');
@@ -759,61 +897,47 @@ function isMobile(){
 }
 //检测微信端
 function isWeixin(){  
-    if ( strpos($_SERVER['HTTP_USER_AGENT'], 'MicroMessenger') !== false ) {  
+    if ( isset($_SERVER['HTTP_USER_AGENT']) &&  strpos($_SERVER['HTTP_USER_AGENT'], 'MicroMessenger') !== false ) {  
             return true;  
     }    
     return false;  
 } 
 
 
-//前台栏目输出
-function classTypeData(){
-	$res = getCache('classtype');
-	$cache_time = (int)webConf('cache_time');
-	if(!$res || !$cache_time){
-		//$classtypedata = M('classtype')->findAll(null,'orders desc');
-		//$classtypedata = getTree($classtypedata);	
-		$classtypedata = get_classtype_tree();
-		$d = array();
-		foreach($classtypedata as $k=>$v){
-			$d[$v['id']] = $v;
-			if($v['gourl']!=''){
-				$d[$v['id']]['url'] = $v['gourl'];
-			}else{
-				$d[$v['id']]['url'] = get_domain().'/'.$v['htmlurl'].File_TXT;
-			}
-			
-		}
-		
-		setCache('classtype',$d,$cache_time);
-		return $d;
-	}
-	return $res;
-	
-	
-}
 
 //内容url
 function gourl($id,$htmlurl=null,$molds='article'){
 		if(!$id){Error_msg('缺少ID！');}
+		if(isset($_SESSION['terminal'])){
+			$htmlpath = $_SESSION['terminal']=='mobile' ? webConf('mobile_html') : webConf('pc_html');
+		}else{
+			$htmlpath = isMobile()?webConf('mobile_html'):webConf('pc_html');
+		}
+		$htmlpath = ($htmlpath=='' || $htmlpath=='/') ? '' : '/'.$htmlpath; 
 		if($htmlurl!=null){
-			return get_domain().'/'.$htmlurl.'/'.$id.File_TXT;
+			return get_domain().$htmlpath.'/'.$htmlurl.'/'.$id.File_TXT;
 		}
 		
 		$tid = M($molds)->getField(array('id'=>$id),'tid');
 		$htmlurl = M('classtype')->getField(array('id'=>$tid),'htmlurl');
-		return get_domain().'/'.$htmlurl.'/'.$id.File_TXT;
+		return get_domain().$htmlpath.'/'.$htmlurl.'/'.$id.File_TXT;
 }
 
 //输出任何模块的内容URL
 function all_url($id,$molds='article',$htmlurl=null){
 	if(!$id){Error_msg('缺少ID！');}
+		if(isset($_SESSION['terminal'])){
+			$htmlpath = $_SESSION['terminal']=='mobile' ? webConf('mobile_html') : webConf('pc_html');
+		}else{
+			$htmlpath = isMobile()?webConf('mobile_html'):webConf('pc_html');
+		}
+		$htmlpath = ($htmlpath=='' || $htmlpath=='/') ? '' : '/'.$htmlpath; 
 		if($htmlurl!=null){
-			return get_domain().'/'.$htmlurl.'/'.$id.File_TXT;
+			return get_domain().$htmlpath.'/'.$htmlurl.'/'.$id.File_TXT;
 		}
 		$tid = M($molds)->getField(array('id'=>$id),'tid');
 		$htmlurl = M('classtype')->getField(array('id'=>$tid),'htmlurl');
-		return get_domain().'/'.$htmlurl.'/'.$id.File_TXT;
+		return get_domain().$htmlpath.'/'.$htmlurl.'/'.$id.File_TXT;
 }
 
 //递增
@@ -1119,44 +1243,6 @@ function has_no_read_comment(){
     return $count;
 }
 
-
-//$classtype 查询数据库中classtype表的所有内容
-function set_class_haschild($classtype = null){
-	
-	$newarray = [];//组建新栏目数组
-	foreach($classtype as $k=>$v){
-		
-		$v['haschild'] = false;//默认所有都没有下级
-		$newarray[$v['id']] = $v;
-		
-		
-	}
-	foreach($newarray as $k=>$v){
-		if($v['pid']!=0){
-			//找到有上级的栏目，那么上级栏目就有下级了。。。。
-			$newarray[$v['pid']]['haschild'] = true;
-		}
-
-	}
-	return $newarray;
-	
-}
-
-//获取格式化栏目类
-function get_classtype_tree(){
-	
-	$classtypetree = getCache('classtypetree');
-	if(!$classtypetree){
-		
-		$classtype = M('classtype')->findAll(null,'orders desc');
-		$classtype = set_class_haschild($classtype);
-		$classtypetree = getTree($classtype);
-		setCache('classtypetree',$classtypetree);	
-	}
-	
-	return $classtypetree;
-	
-}
 
 //数据库html反转义
 function html_decode($data=null){

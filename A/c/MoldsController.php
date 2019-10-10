@@ -99,8 +99,15 @@ class MoldsController extends CommonController
 					$ruler['name'] = '批量删除'.$data['name'];
 					$ruler['fc'] = 'Extmolds/deleteAll/molds/'.$data['biaoshi'];
 					M('Ruler')->add($ruler);
-					
-					
+					$ruler['name'] = '批量修改'.$data['name'].'栏目';
+					$ruler['fc'] = 'Extmolds/changeType/molds/'.$data['biaoshi'];
+					M('Ruler')->add($ruler);
+					$ruler['name'] = '批量复制'.$data['name'];
+					$ruler['fc'] = 'Extmolds/copyAll/molds/'.$data['biaoshi'];
+					M('Ruler')->add($ruler);
+					$ruler['name'] = '批量修改'.$data['name'].'排序';
+					$ruler['fc'] = 'Extmolds/editOrders/molds/'.$data['biaoshi'];
+					M('Ruler')->add($ruler);
 					JsonReturn(array('code'=>0,'msg'=>'新增模块成功，快去设置表字段吧！','url'=>U('Fields/index',['molds'=>$data['biaoshi']])));
 				
 				// }else{
@@ -196,9 +203,9 @@ class MoldsController extends CommonController
 					JsonReturn(array('code'=>1,'msg'=>'字段表记录未清除，请手动清除！'));
 				}
 				
-				//删除权限管理--只允许删除扩展的模块,系统的不允许删除
+				//删除权限管理
 				$ruler['fc'] = 'Extmolds/index/molds/'.$molds['biaoshi'];
-				$ruler['pid'] = 77;
+				//$ruler['pid'] = 77;
 				M('Ruler')->delete($ruler);
 				$ruler['fc'] = 'Extmolds/addmolds/molds/'.$molds['biaoshi'];
 				M('Ruler')->delete($ruler);
@@ -209,6 +216,12 @@ class MoldsController extends CommonController
 				$ruler['fc'] = 'Extmolds/deletemolds/molds/'.$molds['biaoshi'];
 				M('Ruler')->delete($ruler);
 				$ruler['fc'] = 'Extmolds/deleteAll/molds/'.$molds['biaoshi'];
+				M('Ruler')->delete($ruler);
+				$ruler['fc'] = 'Extmolds/editOrders/molds/'.$molds['biaoshi'];
+				M('Ruler')->delete($ruler);
+				$ruler['fc'] = 'Extmolds/changeType/molds/'.$molds['biaoshi'];
+				M('Ruler')->delete($ruler);
+				$ruler['fc'] = 'Extmolds/copyAll/molds/'.$molds['biaoshi'];
 				M('Ruler')->delete($ruler);
 				
 				JsonReturn(array('code'=>0,'msg'=>'删除成功！'));

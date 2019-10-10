@@ -47,7 +47,7 @@
 				{/foreach}
 			</select></td>
 			<td><input type="text" class="layui-input classname"  name="data_1[]" value=""></td>
-			<td><select name="data_2[]" >
+			<td><select name="data_2[]" lay-search="" >
 				<option value="0">顶级</option>
 				{foreach $classtypes as $v}
 				 <option value="{$v['id']}">{fun str_repeat('--', $v['level']), $v['classname']}</option>
@@ -71,7 +71,7 @@
 				{/foreach}
 			</select></td>
 			<td><input type="text" class="layui-input classname"  name="data_1[]" value=""></td>
-			<td><select name="data_2[]" >
+			<td><select name="data_2[]" lay-search="" >
 				<option value="0">顶级</option>
 				{foreach $classtypes as $v}
 				 <option value="{$v['id']}">{fun str_repeat('--', $v['level']), $v['classname']}</option>
@@ -95,7 +95,7 @@
 				{/foreach}
 			</select></td>
 			<td><input type="text" class="layui-input classname"  name="data_1[]" value=""></td>
-			<td><select name="data_2[]" >
+			<td><select name="data_2[]" lay-search="" >
 				<option value="0">顶级</option>
 				{foreach $classtypes as $v}
 				 <option value="{$v['id']}">{fun str_repeat('--', $v['level']), $v['classname']}</option>
@@ -119,7 +119,7 @@
 				{/foreach}
 			</select></td>
 			<td><input type="text" class="layui-input classname"  name="data_1[]" value=""></td>
-			<td><select name="data_2[]" >
+			<td><select name="data_2[]" lay-search="" >
 				<option value="0">顶级</option>
 				{foreach $classtypes as $v}
 				 <option value="{$v['id']}">{fun str_repeat('--', $v['level']), $v['classname']}</option>
@@ -143,7 +143,7 @@
 				{/foreach}
 			</select></td>
 			<td><input type="text" class="layui-input classname"  name="data_1[]" value=""></td>
-			<td><select name="data_2[]" >
+			<td><select name="data_2[]" lay-search="" >
 				<option value="0">顶级</option>
 				{foreach $classtypes as $v}
 				 <option value="{$v['id']}">{fun str_repeat('--', $v['level']), $v['classname']}</option>
@@ -167,7 +167,7 @@
 				{/foreach}
 			</select></td>
 			<td><input type="text" class="layui-input classname"  name="data_1[]" value=""></td>
-			<td><select name="data_2[]" >
+			<td><select name="data_2[]" lay-search="" >
 				<option value="0">顶级</option>
 				{foreach $classtypes as $v}
 				 <option value="{$v['id']}">{fun str_repeat('--', $v['level']), $v['classname']}</option>
@@ -177,7 +177,7 @@
 			<td><input type="number" class="layui-input "  name="data_4[]" value="10"></td>
 			<td><input type="text" class="layui-input "  name="data_5[]" value="list_html"></td>
 			<td><input type="text" class="layui-input "   name="data_6[]" value="details_html"></td>
-			<td><select name="data_7[]" >
+			<td><select name="data_7[]" lay-search="" >
 				<option value="1">显示</option>
 				<option value="0">不显示</option>
 			</select></td>
@@ -271,7 +271,7 @@
 				{foreach $moldslist as $v}
 				 '<option value="{$v['biaoshi']}">{$v['name']}</option>'+
 				{/foreach}
-			'</select></td><td><input type="text" class="layui-input classname"  name="data_1[]" value=""></td><td><select name="data_2[]" ><option value="0">顶级</option>'+
+			'</select></td><td><input type="text" class="layui-input classname"  name="data_1[]" value=""></td><td><select name="data_2[]" lay-search="" ><option value="0">顶级</option>'+
 				{foreach $classtypes as $v}
 				 '<option value="{$v['id']}">{fun str_repeat('--', $v['level']), $v['classname']}</option>'+
 				{/foreach}

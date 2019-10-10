@@ -15,212 +15,359 @@
             <a class="layui-btn layui-btn-small" style="line-height:1.6em;margin-top:3px;float:right"  href="javascript:location.replace(location.href);" title="刷新"><i class="iconfont" style="line-height:30px">&#xe6aa;</i></a>
         </div>
         <div class="x-body">
-		
-          <div class="layui-row">
-			<form class="layui-form layui-col-md12 x-so" method="get" id="myform">
-			
-			<div class="layui-input-inline">
-			  <select name="isshow" lay-filter="isshow" class="layui-inline autosubmit">
-			  <option value="">是否显示</option>
-			   
-			   <option {if($isshow==1)} selected="selected" {/if}value="1">显示</option>
-			   <option {if($isshow==2)} selected="selected" {/if}value="2">隐藏</option>
-			   
-			
-			  </select>
-			</div>
-			
-			<div class="layui-input-inline">
-			  <select name="tid" lay-filter="tid" class="layui-inline autosubmit">
-			  <option value="">请选择栏目</option>
-			   {foreach $classtypes as $v}
-			   <option {if($tid==$v['id'])} selected="selected" {/if}value="{$v['id']}">{$v['classname']}</option>
-			   {/foreach}
-			
-			  </select>
-			</div>
-			{$fields_search}
-			  <button class="layui-btn"  lay-submit="" lay-filter="sreach"><i class="layui-icon">&#xe615;</i></button>
-			</form>
-		  </div>
-		
-          <xblock>
-		  <button class="layui-btn layui-btn-danger" onclick="delAll()"><i class="layui-icon"></i>批量删除</button>
-		  <button class="layui-btn" onclick="x_admin_show('新增{$molds['name']}','{fun U('Extmolds/addmolds',array('molds'=>$molds['biaoshi']))}')"><i class="layui-icon"></i>新增{$molds['name']}</button>
-		   <span class="x-right" style="line-height:40px">共有数据：{$sum} 条</span>
-		  </xblock>
-             <div style="width:100%;  overflow:scroll;overflow-y: hidden">
-        <table border="1" rules="all" style="width:100%; height:100px; text-align:center;white-space:nowrap" class="layui-table layui-form">
-                <thead>
-                    <tr>
-                        <th>
-						  <div class="layui-unselect header layui-form-checkbox" lay-skin="primary"><i class="layui-icon">&#xe605;</i></div>
-						</th>
-                        <th>
-                            ID
-                        </th>
-						<th width="50px">
-                            排序
-                        </th>
-						<th>
-                            所属栏目
-                        </th>
-						{foreach $fields_list as $v}
-						<th>
-                            {$v['fieldname']}
-                        </th>
-						{/foreach}
-                        <th>
-                            是否显示
-                        </th>
-						
-                        <th>
-                            操作
-                        </th>
-                    </tr>
-                </thead>
-                <tbody id="x-link">
-				  {foreach $lists as $v}
-                    <tr>
-                     <td>
-					  <div class="layui-unselect layui-form-checkbox" lay-skin="primary" data-id='{$v['id']}'><i class="layui-icon">&#xe605;</i></div>
-					</td>
-                        <td>
-                            {$v['id']}
-                        </td>
-						<td cate-id="{$v['id']}">
-                         <input type="text" class="layui-input x-sort"  name="order" value="{$v['orders']}">
-                        </td>
-						<td>
-                            {if($v['tid']!=0)}
-							{fun get_info_table('classtype',$v['tid'],'classname')}
-							{else}
-							不限
-							{/if}
-                        </td>
-						{foreach $fields_list as $vv}
-                        <td>
-                            {fun format_fields($vv,$v[$vv['field']])}
-                        </td>
-						{/foreach}
-						<td>{if($v['isshow']==1)}<span class="layui-badge layui-bg-green">显示</span>{else}<span class="layui-badge">不显示</span>{/if}</td>
-                        <td class="td-manage">
-							<button class="layui-btn layui-btn layui-btn-xs"  onclick="x_admin_show('编辑','{fun U('Extmolds/editmolds',array('id'=>$v['id'],'molds'=>$molds['biaoshi']))}')" ><i class="layui-icon">&#xe642;</i>编辑</button>
-							{if($v['htmlurl']!='')}
-							<a href="/{$v['htmlurl']}/{$v['id']}" target="_blank"><button class="layui-btn layui-btn-normal layui-btn layui-btn-xs"   ><i class="layui-icon">&#xe615;</i>预览</button></a>
-							{/if}
-							<button class="layui-btn-danger layui-btn layui-btn-xs"  onclick="admin_del(this,'{$v['id']}')" href="javascript:;" ><i class="layui-icon">&#xe640;</i>删除</button>
-							<button class="layui-btn layui-btn-warm layui-btn-xs"  onclick="admin_copy(this,'{$v['id']}')" ><i class="iconfont">&#xe744;</i>复制</button>
-
-							
-                        </td>
-						
-                    </tr>
-					{/foreach}
-                </tbody>
-            </table>
-			</div>
-            <div class="page">
-				{$pages}
-			  </div>
-        </div>
-     
-       <script>
-	  
-	   
-	    layui.use(['laydate','form','element','laypage','layer'], function(){
-                $ = layui.jquery;//jquery
-              laydate = layui.laydate;//日期插件
-              lement = layui.element;//面包导航
-            //  laypage = layui.laypage;//分页
-              layer = layui.layer;//弹出层
-			  form = layui.form;
-              //以上模块根据需要引入
-               form.on('select(isshow)', function(data){
+         <div class="layui-collapse">
+		    <div class="layui-colla-item">
+			<h2 class="layui-colla-title">搜索</h2>
+				<div class="layui-colla-content layui-show">
+				<div class="layui-row">
+					<form class="layui-form layui-col-md12 x-so" method="get" id="myform">
+					<div class="layui-input-inline">
+					  <select name="isshow" lay-filter="isshow" class="layui-inline autosubmit">
+					  <option value="">是否显示</option>
+					   
+					   <option {if($isshow==1)} selected="selected" {/if}value="1">显示</option>
+					   <option {if($isshow==2)} selected="selected" {/if}value="2">隐藏</option>
+					   
 					
-					$("#myform").submit();
-				
-			 });
-			 
-              
-            });
+					  </select>
+					</div>
+					{if($molds['isclasstype'])}
+					<div class="layui-input-inline">
+					  <select name="tid" lay-filter="tid" lay-search class="layui-inline autosubmit">
+					  <option value="">请选择栏目</option>
+					   {foreach $classtypes as $v}
+					   {if($v['molds']==$molds['biaoshi'])}
+					   <option {if($tid==$v['id'])} selected="selected" {/if}value="{$v['id']}">{fun str_repeat('--', $v['level']), $v['classname']}</option>
+					   {/if}
+					   {/foreach}
+					
+					  </select>
+					</div>
+					{/if}
+					  {$fields_search}
+					  <button class="layui-btn"  lay-submit="" lay-filter="search"><i class="layui-icon">&#xe615;</i></button>
+					</form>
+				</div>
+				</div>
+		    </div>
+         </div> 
+		  
+		<table class="layui-hide" lay-data="{id: 'jizhi_table'}" id="jizhi_table" lay-filter="jizhi_table"></table>
+		<input id="select_data" type="hidden" value="" />
+		<script type="text/html" id="rightbar">
+		{if(checkAction('Extmolds/editmolds/molds/'.$molds['biaoshi']))}
+			<button class="layui-btn layui-btn-xs" lay-event="edit"><i class="layui-icon">&#xe642;</i>编辑</button>
+		{/if}
+		
+			<button class="layui-btn layui-btn-xs layui-btn-normal" lay-event="view"><i class="layui-icon">&#xe615;</i>预览</button>
+		{if(checkAction('Extmolds/deletemolds/molds/'.$molds['biaoshi']))}
+			<button class="layui-btn layui-btn-xs layui-btn-danger" lay-event="delete"><i class="layui-icon">&#xe640;</i>删除</button>
+		{/if}
+		{if(checkAction('Extmolds/copymolds/molds/'.$molds['biaoshi']))}
+			<button class="layui-btn layui-btn-xs layui-btn-warm" lay-event="copy"><i class="layui-icon">&#xe655;</i>复制</button>
+		{/if}	
+		</script>
+		<script type="text/html" id="toolbar">
+		 <div class="layui-btn-container" style="font-size:15px;">
+		 {if(checkAction('Extmolds/deleteAll/molds/'.$molds['biaoshi']))}
+			   <button class="layui-btn layui-btn-danger" onclick="delAll()"><i class="layui-icon">&#xe640;</i>批量删除</button>
+		 {/if}
+		 {if(checkAction('Extmolds/copyAll/molds/'.$molds['biaoshi']))}
+			   <button class="layui-btn layui-btn-warm" onclick="copyAll()"><i class="layui-icon">&#xe655;</i>批量复制</button>
+		 {/if}
+		 {if(checkAction('Extmolds/changeType/molds/'.$molds['biaoshi']))}
+			   {if($molds['isclasstype'])}
+			   <div class="layui-input-inline" style="margin-right: 10px;margin-bottom: 10px;">
+			   <select class="layui-btn" id="change_tid"  lay-search="" lay-filter="change_tid" >
+			   <option value="0">批量修改栏目</option>
+			   {foreach $classtypes as $v}
+			   {if($v['molds']==$molds['biaoshi'])}
+			   <option   value="{$v['id']}">{fun str_repeat('--', $v['level']), $v['classname']}</option>
+			   {/if}
+			   {/foreach}
+			   </select>
+			   </div>
+			   {/if}
+		 {/if}
+		 {if(checkAction('Extmolds/addmolds/molds/'.$molds['biaoshi']))}
+			   <button class="layui-btn" onclick="x_admin_show('新增{$molds['name']}','{fun U('Extmolds/addmolds',array('molds'=>$molds['biaoshi']))}')"><i class="layui-icon">&#xe608;</i>新增</button>
+		 {/if}	  
 			
-			$(document).ready(function(){
-				$(".x-sort").change(function(){
-					//alert($(this).val());
-					var id = $(this).parent().attr('cate-id');
-					var order = $(this).val();
+		 </div>
+		</script>
+
+	 
+		<script>
+	 
+	   
+	    layui.use(['laydate','form','element','laypage','layer','table'], function(){
+                $ = layui.jquery;//jquery
+              var laydate = layui.laydate;//日期插件
+              var lement = layui.element;//面包导航
+              var layer = layui.layer;//弹出层
+			  var form = layui.form;
+			  var table = layui.table;
+			  
+			  table.render({
+				elem: '#jizhi_table'
+				,height: 650
+				,url: window.location.href+'?ajax=1' //数据接口
+				,page: true //开启分页
+				,size:'lg'
+				,count:100
+				,toolbar:"#toolbar"
+				,data:{}
+				,page: { //支持传入 laypage 组件的所有参数（某些参数除外，如：jump/elem） - 详见文档
+				  layout: ['limit', 'count', 'prev', 'page', 'next', 'skip'] //自定义分页布局
+				  //,curr: 5 //设定初始在第 5 页
+				  ,groups: 5 //只显示 1 个连续页码
+				  ,first: true //显示首页
+				  ,last: true //显示尾页
+				  ,count:500
+				  ,limit:10
+				  
+				}
+				,cols: [[ //表头
+				  {field: 'id', title: 'ID', width:50, sort: true,fixed:'left'}
+				  ,{type:'checkbox'}
+				  ,{field: 'orders', title: '排序',width: 100, edit:'text',sort: true}
+				  {if($molds['isclasstype'])}
+				  ,{field: 'new_tid', title: '栏目',width:150, sort: true}
+				  {/if}
+				  {foreach $fields_list as $k=>$v},{field: '{$v['field']}',width:150, title: '{$v['fieldname']}'}{/foreach}
+				  ,{field: 'new_isshow', title: '是否显示', width: 100}
+				  {if(checkAction('Extmolds/copymolds/molds/'.$molds['biaoshi']) || checkAction('Extmolds/deletemolds/molds/'.$molds['biaoshi']) || checkAction('Extmolds/editmolds/molds/'.$molds['biaoshi']))}
+					  {if($k>2)}
+					   ,{field: '', title: '操作', toolbar: '#rightbar',width:260}
+					  {else}
+					   ,{field: '', title: '操作', toolbar: '#rightbar', fixed:'right'}
+					  {/if}
+				  {/if}
+				 
+				 
+				]]
+			  });
+			  
+			    table.on('tool(jizhi_table)', function(obj){
+					var data = obj.data; //获得当前行数据
+					var layEvent = obj.event; //获得 lay-event 对应的值（也可以是表头的 event 参数对应的值）
+					var tr = obj.tr; //获得当前行 tr 的DOM对象
+					 
+					switch(layEvent){
+					  case 'edit':
+						//console.log(data);
+						 x_admin_show('编辑',data.edit_url);
+					  break;
+					  case 'view':
+						    var a = $('<a href="'+data.view_url+'" target="_blank">预览</a>').get(0);
+							var e = document.createEvent('MouseEvents');
+							e.initEvent( 'click', true, true );
+							a.dispatchEvent(e);
+					  break;
+					  case 'delete':
+							layer.confirm('确认要删除吗？',function(index){
 				
-					$.post("{fun U('Extmolds/editOrders')}",{id:id,orders:order,biaoshi:'{$molds['biaoshi']}'},function(r){
+								$.post("{fun U('Extmolds/deletemolds')}",{molds:"{$molds['biaoshi']}",id:data.id},function(r){
+										var r = JSON.parse(r);
+										if(r.code==0){
+										 //发异步删除数据
+											$(tr).remove();
+											layer.msg(r.msg,{icon: 1,time:1000},function(){
+												table.reload('jizhi_table', {
+												  url: window.location.href+'?ajax=1'
+												  ,where: {} //设定异步数据接口的额外参数
+												 
+												});
+											
+											});
+											
+											
+											
+										}else{
+											
+											layer.msg(r.msg,{icon: 5,time:1000});
+										}
+								})
+								
+							
+							   
+							});
+					  break;
+					  case 'copy':
+					  
+							$.post("{fun U('Extmolds/copymolds')}",{molds:"{$molds['biaoshi']}",id:data.id},function(r){
+								var r = JSON.parse(r);
+								if(r.code==0){
+									layer.msg(r.msg,{icon: 1,time:1000},function(){
+										table.reload('jizhi_table', {
+										  url: window.location.href+'?ajax=1'
+										  ,where: {} //设定异步数据接口的额外参数
+										 
+										});
+									});
+									
+									
+								}else{
+									layer.msg(r.msg,{icon: 5,time:1000});
+								}
+							})
+					  
+						 
+					  break;
+					  
+					 
+					}
+				});
+			  
+			  table.on('checkbox(jizhi_table)', function(obj){
+				 // console.log(obj.checked); //当前是否选中状态
+				 // console.log(obj.data); //选中行的相关数据
+				 // console.log(obj.type); //如果触发的是全选，则为：all，如果触发的是单选，则为：one
+				 /*
+					console.log(checkStatus.data) //获取选中行的数据
+					console.log(checkStatus.data.length) //获取选中行数量，可作为是否有选中行的条件
+					console.log(checkStatus.isAll ) //表格是否全选
+				 */
+				   var checkStatus = table.checkStatus('jizhi_table'); //idTest 即为基础参数 id 对应的值
+				   var len = checkStatus.data.length;
+				   var arr=[];
+				   if(len>0){
+					for(var i=0;i<len;i++){
+						arr.push(checkStatus.data[i].id);
+					}
+				   }
+				   $("#select_data").val(arr);
+				   
+					
+				});
+				
+				table.on('edit(jizhi_table)', function(obj){ //注：edit是固定事件名，test是table原始容器的属性 lay-filter="对应的值"
+				/*
+				  console.log(obj.value); //得到修改后的值
+				  console.log(obj.field); //当前编辑的字段名
+				  console.log(obj.data); //所在行的所有相关数据  
+				*/
+				  var id = obj.data.id;
+				  var order = obj.value;
+				
+					$.post("{fun U('Extmolds/editOrders')}",{id:id,orders:order,molds:'{$molds['biaoshi']}'},function(r){
 						var r = JSON.parse(r);
 						if(r.code==0){
-							window.location.replace(location.href);
+							$("#select_data").val('');
+							table.reload('jizhi_table', {
+							  url: window.location.href+'?ajax=1'
+							  ,where: {} //设定异步数据接口的额外参数
+							 
+							});
 						}else{
-							
 							layer.msg(r.info,{icon: 5,time:1000});
 						}
 						
 					});
+				  
+				  
+				});
 				
-				})
-			});
-			  
-			
-			
-		 /*删除*/
-            function admin_del(obj,id){
-                layer.confirm('确认要删除吗？',function(index){
-				
-					$.get("{__APP_URL__}/Extmolds/deletemolds/id/"+id+"/molds/{$molds['biaoshi']}",{},function(r){
-							var r = JSON.parse(r);
-							if(r.code==0){
-							 //发异步删除数据
-								$(obj).parents("tr").remove();
-								
-								layer.msg(r.msg,{icon: 1,time:1000});
-								window.location.reload();
-								
-							}else{
-								
-								layer.msg(r.msg,{icon: 5,time:1000});
-							}
-					})
+				form.on('submit(search)', function(data){
+					//data.field
+					table.reload('jizhi_table', {
+					  url: window.location.href+'?ajax=1'
+					  ,where: data.field //设定异步数据接口的额外参数
+					 
+					});
+				   
+					return false;
+				  });
+					
+			    form.on('select(change_tid)', function(data){
+					
+					
+					var datas =  $("#select_data").val();
+					var tid = parseInt(data.value);
+					if(tid==0){
+						alert('请选择修改栏目！');return false;
+					}
+					if(datas==''){
+						alert('请选择对象！');return false;
+					}
+					layer.confirm('确认要批量修改['+datas+']内容为['+tid+']分类吗？',function(index){
+						
+						$.post("{fun U('Extmolds/changeType')}",{molds:"{$molds['biaoshi']}",data:datas,tid:tid},function(r){
+						
+								var r = JSON.parse(r);
+								if(r.code==0){
+									$("#select_data").val('');
+									layer.msg('批量修改成功', {icon: 1,time:1000},function(){
+										table.reload('jizhi_table', {
+										  url: window.location.href+'?ajax=1'
+										  ,where: {} //设定异步数据接口的额外参数
+										 
+										});
+									});
+									
+								}else{
+									
+									layer.msg(r.msg,{icon: 5,time:1000});
+								}
+						})
+						
+						
+						
+					});
 					
 				
-                   
-                });
-            }
+			    });
 			
-			 function admin_copy(obj,id){
-                $.get("{__APP_URL__}/Extmolds/copymolds/id/"+id+"/molds/{$molds['biaoshi']}",{},function(r){
-							var r = JSON.parse(r);
-							if(r.code==0){
-								
-								layer.msg(r.msg,{icon: 1,time:1000});
-								window.location.reload();
-								
-							}else{
-								
-								layer.msg(r.msg,{icon: 5,time:1000});
-							}
-					})
-            }
+			 
+              
+            });
 			
-			 function delAll (argument) {
-
-				var data = tableCheck.getData();
+			
+			
+		 
+			
+			
+			
+			 function delAll () {
+				
+				var data = $("#select_data").val();
 				if(data==''){
 					alert('请选择对象！');return false;
 				}
 				layer.confirm('确认要删除吗？'+data,function(index){
 					
-					$.get("{__APP_URL__}/Extmolds/deleteAll/data/"+data+"/molds/{$molds['biaoshi']}",{},function(r){
+					$.post("{fun U('Extmolds/deleteAll')}",{molds:"{$molds['biaoshi']}",data:data},function(r){
+							var r = JSON.parse(r);
+							if(r.code==0){
+							  layer.msg('批量删除成功', {icon: 1,time:1000},function(){
+								window.location.reload();
+							  });
+							}else{
+								layer.msg(r.msg,{icon: 5,time:1000});
+							}
+					})
+					
+					
+					
+				});
+			  }
+			 function copyAll(){
+
+				var data = $("#select_data").val();
+				if(data==''){
+					alert('请选择对象！');return false;
+				}
+				layer.confirm('确认要复制吗？['+data+']',function(index){
+					
+					$.post("{fun U('Extmolds/copyAll')}",{molds:"{$molds['biaoshi']}",data:data},function(r){
 					
 							var r = JSON.parse(r);
 							if(r.code==0){
-							  layer.msg('删除成功', {icon: 1});
-							  $(".layui-form-checked").not('.header').parents('tr').remove();
-								
+							  
+							  layer.msg('批量复制成功', {icon: 1,time:1000},function(){
+								window.location.reload();
+							  });
+							 
 							}else{
 								
 								layer.msg(r.msg,{icon: 5,time:1000});
@@ -231,6 +378,9 @@
 					
 				});
 			  }
+			  
+			  
+			
 			
        </script>
     </body>

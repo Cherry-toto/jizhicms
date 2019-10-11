@@ -298,7 +298,7 @@ CREATE TABLE `jz_level_group` (
   `isagree` tinyint(1) NOT NULL DEFAULT '1' COMMENT '1允许登录0不允许',
   `description` varchar(500) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM AUTO_INCREMENT=5 DEFAULT CHARSET=utf8;
 -- ----------------------------
 -- Records of jz_level_group
 -- ----------------------------

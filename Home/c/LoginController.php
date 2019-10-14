@@ -46,6 +46,12 @@ class LoginController extends Controller
     }
 	
 	public function index(){
+		//检测是否已经设置过return_url,防止多次登录覆盖
+		if(!isset($_SESSION['return_url'])){
+			$referer = (!isset($_SERVER['HTTP_REFERER']) || $_SERVER['HTTP_REFERER']=='') ? U('user/index') : $_SERVER['HTTP_REFERER'];
+			$_SESSION['return_url'] = $referer;
+		
+		}
 		
 		if($_POST){
 			$data['username'] = str_replace("'",'',$this->frparam('tel',1));//进行二次过滤校验
@@ -114,12 +120,6 @@ class LoginController extends Controller
 				Error('账户密码错误！');
 			}
 			
-		}
-		//检测是否已经设置过return_url,防止多次登录覆盖
-		if(!isset($_SESSION['return_url'])){
-			$referer = (!isset($_SERVER['HTTP_REFERER']) || $_SERVER['HTTP_REFERER']=='') ? U('user/index') : $_SERVER['HTTP_REFERER'];
-			$_SESSION['return_url'] = $referer;
-		
 		}
 		
 		$token = getRandChar(32);//系统内置32位随机数,混淆前台规则猜测(MD5)

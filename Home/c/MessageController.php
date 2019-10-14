@@ -84,7 +84,7 @@ class MessageController extends CommonController
 			if($_SESSION['message_num']>10 && ($_SESSION['message_time']+10*60)<time()){
 				//$this->error('您操作过于频繁，请10分钟后再尝试！');
 				if($this->frparam('ajax')){
-					JsonReturn(['code'=>1,'msg'=>'您操作过于频繁，请10分钟后再尝试！']);
+					JsonReturn(['code'=>0,'msg'=>'您操作过于频繁，请10分钟后再尝试！']);
 				}
 				Error('您操作过于频繁，请10分钟后再尝试！');
 			}

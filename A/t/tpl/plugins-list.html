@@ -112,7 +112,12 @@
 				 type:"POST",
 				 beforeSend:function(){
 					//请求前的处理
-					layer.msg('正在安装中，请稍等~');
+					if(parseInt(type)==1){
+						layer.msg('正在安装中，请稍等~');
+					}else{
+						layer.msg('正在卸载中，请稍等~');
+					}
+					
 					},
 				 success:function(res){
 					layer.closeAll();

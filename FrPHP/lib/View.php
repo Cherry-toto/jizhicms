@@ -438,35 +438,37 @@ class View
 		
 		$w .= $notin_sql;
 		$w.= $lk;
-		$txt="<?php
-		\$table =$db;
-		\$w='".$w."';
-		\$order=$order;
-		\$fields=$fields;
-		\$limit=$limit;";
 		$as = trim($as,"'");
+		$txt="<?php
+		\$".$as."_table =$db;
+		\$".$as."_w='".$w."';
+		\$".$as."_order=$order;
+		\$".$as."_fields=$fields;
+		\$".$as."_limit=$limit;";
+		
 		if($ispage){
 			$txt .="
-			\$page = new FrPHP\Extend\Page(\$table);
-			\$page->typeurl = 'tpl';
-			$".$as."_data = \$page->where(\$w)->fields(\$fields)->orderby(\$order)->limit(\$limit)->page(\$frpage)->go();
-			$".$as."_pages = \$page->pageList(3,'?page=');
-			$".$as."_sum = \$page->sum;
-			$".$as."_listpage = \$page->listpage;
-			$".$as."_prevpage = \$page->prevpage;
-			$".$as."_nextpage = \$page->nextpage;
-			$".$as."_allpage = \$page->allpage;";
+			\$".$as."_page = new FrPHP\Extend\Page(\$".$as."_table);
+			\$".$as."_page->typeurl = 'tpl';
+			\$".$as."_data = \$".$as."_page->where(\$".$as."_w)->fields(\$".$as."_fields)->orderby(\$".$as."_order)->limit(\$".$as."_limit)->page(\$frpage)->go();
+			\$".$as."_pages = \$".$as."_page->pageList(3,'?page=');
+			\$".$as."_sum = \$".$as."_page->sum;
+			\$".$as."_listpage = \$".$as."_page->listpage;
+			\$".$as."_prevpage = \$".$as."_page->prevpage;
+			\$".$as."_nextpage = \$".$as."_page->nextpage;
+			\$".$as."_allpage = \$".$as."_page->allpage;";
 			
 		}else{
 			
 			$txt .= "
-			$".$as."_data = M(\$table)->findAll(\$w,\$order,\$fields,\$limit);";
+			$".$as."_data = M(\$".$as."_table)->findAll(\$".$as."_w,\$".$as."_order,\$".$as."_fields,\$".$as."_limit);";
 			
 		}
-		$txt.='$n=0;foreach($'.$as.'_data as $'.$as.'_key=> $'.$as.'){
-			$n++;
+		$txt.='$'.$as.'_n=0;foreach($'.$as.'_data as $'.$as.'_key=> $'.$as.'){
+			$'.$as.'_n++;
 			if(isset($'.$as.'[\'htmlurl\']) && !isset($'.$as.'[\'url\'])){
-				if($table==\'classtype\'){
+				
+				if($'.$as.'_table==\'classtype\'){
 					$'.$as.'[\'url\'] = $classtypedata[$'.$as.'[\'id\']][\'url\'];
 				}else{
 					$'.$as.'[\'url\'] = gourl($'.$as.'[\'id\'],$'.$as.'[\'htmlurl\']);

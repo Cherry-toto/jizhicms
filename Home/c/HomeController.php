@@ -291,12 +291,14 @@ class HomeController extends CommonController
 			
 			**/
 			//html
+			$url = ($position!==FALSE) ? substr($request_url,0,$position) : $request_url;
+			$url = substr($url,1,strlen($url)-1);
+			$html = str_ireplace(File_TXT,'',$url);
 			$filepath = APP_PATH.APP_HOME.'/'.HOME_VIEW.'/'.$this->template.'/page/'.$html.'.html';
 			if(file_exists($filepath)){
 				$this->display($this->template.'/page/'.$html);
 				exit;
 			}
-			
 			
 			//错误页面->404
 			$this->error('输入url错误！');

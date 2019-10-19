@@ -1,4 +1,21 @@
-﻿极致CMS Beta1.6
+﻿极致CMS Beta1.6.1
+更新时间：2019-10-19
+更新内容如下：
+1、去除多余InnoDB,有时候会导致数据库导入出错
+2、修复留言json返回状态码code错误
+3、修复ajax登录可能出现Notice:Undefined index:return_url错误
+4、修改插件列表提示语
+5、修改网站多域名绑定模板插件中模板显示不全问题，更改为手动填写
+6、修复loop循环classtype表嵌套其他表循环时URL出错
+7、增强TAG标签功能。
+	* 文章模块和商品模块发布时可以填写tags标签
+	* 前台具有标签聚合功能，标签聚合页tags.html，标签详情页tags-details.html，存放路径跟模板中主页index.html同级
+	* 标签控制器Home/TagsController.php
+	* 标签列表跟栏目列表页一样，数据数组是$lists，默认每页数据是100条，可以在控制器中手动修改，建议tags.html中{fun dump($pages)}了解分页结构，也可以在扩展类FrPHP/Extend/ArrayPage.php中修改你想要的分页结构
+8、修复自定义页面有时候无法正确读取的问题
+9、美化自定义图集字段模板界面
+
+极致CMS Beta1.6
 更新时间：2019-10-10
 更新内容如下：
 1、修改后台列表为数据表格

@@ -21,6 +21,14 @@ class CommentController extends CommonController
 
 	function index(){
 		
+		//检查模块是否开启
+		if(!M('molds')->find(['isopen'=>1,'biaoshi'=>'comment'])){
+			if($this->frparam('ajax')){
+				JsonReturn(array('code'=>1,'msg'=>'评论模块未开启！'));
+			}
+			Error('评论模块未开启！');
+		}
+		
 		if($this->frparam('go',0,false,"POST")){
 			if($this->islogin){
 				
@@ -86,7 +94,7 @@ class CommentController extends CommonController
 				}
 				
 			}else{
-				$referer = ($_SERVER['HTTP_REFERER']=='') ? U('user/index') : $_SERVER['HTTP_REFERER'];
+				$referer = (!isset($_SERVER['HTTP_REFERER']) || $_SERVER['HTTP_REFERER']=='') ? U('user/index') : $_SERVER['HTTP_REFERER'];
 				$_SESSION['return_url'] = $referer;
 				if($this->frparam('ajax')){
 					JsonReturn(array('code'=>1,'msg'=>'您未登录，请重新登录~','url'=>U('login/index')));

@@ -4,6 +4,8 @@
     <head>
        <meta charset="UTF-8">
         {include="style"}
+		<link rel="stylesheet" type="text/css" href="{__Tpl_style__}/style/tags/jquery.tagsinput.css" />
+		<script type="text/javascript" charset="utf-8" src="{__Tpl_style__}/style/tags/jquery.tagsinput.js"></script>
 		<!--新增编辑器-->
 		<script type="text/javascript" charset="utf-8" src="{__Tpl_style__}/uedit/ueditor.config.js"></script>
 		<script type="text/javascript" charset="utf-8" src="{__Tpl_style__}/uedit/editor_api.js?v=333"> </script>
@@ -210,7 +212,15 @@
 					 
 					
                 </div>
-				
+				<div class="layui-form-item layui-form-text">
+                    <label for="tags" class="layui-form-label">
+                        <span class="x-red"></span>TAG标签 [ 按Enter回车自动添加 ]
+                    </label>
+                    <div class="layui-input-block">
+                       
+						 <input id="tags" type="text" name="tags" class="tags" value=""  autocomplete="off" class="layui-input"  />
+                    </div>
+                </div>
 				<div class="layui-form-item" pane>
                     <label for="isshow" class="layui-form-label">
                         <span class="x-red"></span>是否显示
@@ -260,7 +270,12 @@
         <script>
 		{include="fields"}
 		
-	
+			$(function() {
+			  $('#tags').tagsInput({
+					width:'auto',
+					defaultText:'添加一个标签',
+			  });
+			})
 			
 			function deleteImage(elm){
 				$(elm).prev().attr("src", "{__Tpl_style__}/style/images/nopic.jpg");

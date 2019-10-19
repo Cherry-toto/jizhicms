@@ -515,28 +515,31 @@ layui.use("laydate", function(){
 				</script>';
 				break;
 				case 6:
-				$l .= '<div class="layui-form-item">
-                    <label for="'.$v['field'].'" class="layui-form-label">
-						<span class="x-red">*</span>'.$v['fieldname'].'  
-                    </label>
-                    <div class="layui-input-inline">
-                      <div class="site-demo-upbar">
-                     <span class="preview_'.$v['field'].'" >';
-				if($data[$v['field']]!=''){
-					foreach(explode('||',$data[$v['field']]) as $vv){
-						$l.='<span class="upload-icon-img" ><div class="upload-pre-item"><img src="'.$vv.'" class="img" max-width="200px" ><input name="'.$v['field'].'_urls[]" type="text" class="layui-input"  value="'.$vv.'" /><i  class="layui-icon delete_file" >&#xe640;</i></div></span>';
-					}
-				}	 
-				$l .= '</span>
-						<button type="button" class="layui-btn" id="LAY_'.$v['field'].'_upload">
-						  <i class="layui-icon">&#xe67c;</i>上传图片
-						</button>
-                      </div>
-                    </div>
-					<div class="layui-form-mid layui-word-aux">
-					  '.$v['tips'].'
-					</div>
-                </div>
+				//------
+				$l .= '<fieldset class="layui-elem-field">
+				  <legend>'.$v['fieldname'].'</legend>
+				  <div class="layui-field-box">
+					  <div class="layui-input-block">
+						  <div class="site-demo-upbar">
+							<button type="button" class="layui-btn" id="LAY_'.$v['field'].'_upload">
+							  <i class="layui-icon">&#xe67c;</i>上传图片
+							</button>
+							 '.$v['tips'].'
+						  </div>
+						   
+					  </div>
+					 
+					  <div class="layui-input-block">
+					  <span class="preview_'.$v['field'].'" >';
+					if($data[$v['field']]!=''){
+						foreach(explode('||',$data[$v['field']]) as $vv){
+							$l.='<div class="upload-icon-img layui-input-inline" ><div class="upload-pre-item"><img src="'.$vv.'" class="img" width="200px" height="200px" ><input name="'.$v['field'].'_urls[]" type="text" class="layui-input"  value="'.$vv.'" /><i  class="layui-icon delete_file" >&#xe640;</i></div></div>';
+						}
+					}	 
+					$l .= '</span>
+					  </div>
+				  </div>
+				</fieldset>
 				<script>
 				
 				layui.use("upload", function(){
@@ -556,7 +559,7 @@ layui.use("laydate", function(){
 							layer.closeAll("loading"); //关闭loading
 							if(res.code==0){
 							
-							$(".preview_'.$v['field'].'").append(\'<span class="upload-icon-img" ><div class="upload-pre-item"><img src="/\' + res.url + \'" class="img" max-width="200px" ><input name="'.$v['field'].'_urls[]" type="text" class="layui-input"  value="/\' + res.url + \'" /><i  class="layui-icon delete_file" >&#xe640;</i></div></span>\');
+							$(".preview_'.$v['field'].'").append(\'<div class="upload-icon-img layui-input-inline" ><div class="upload-pre-item"><img src="/\' + res.url + \'" class="img" width="200px" height="200px" ><input name="'.$v['field'].'_urls[]" type="text" class="layui-input"  value="/\' + res.url + \'" /><i  class="layui-icon delete_file" >&#xe640;</i></div></div>\');
 								
 								
 							}else{

@@ -1,8 +1,8 @@
 <?php die();?>/*
 MySQL Database Backup Tools
 Server:127.0.0.1:3306
-Database:3demo
-Data:2019-10-10 00:23:37
+Database:jizhicms
+Data:2019-10-19
 */
 SET FOREIGN_KEY_CHECKS=0;
 -- ----------------------------
@@ -29,6 +29,7 @@ CREATE TABLE `jz_article` (
   `istop` tinyint(1) NOT NULL DEFAULT '0' COMMENT '是否置顶',
   `ishot` tinyint(1) NOT NULL DEFAULT '0' COMMENT '是否头条',
   `istuijian` tinyint(1) NOT NULL DEFAULT '0' COMMENT '是否推荐',
+  `tags` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 -- ----------------------------
@@ -160,6 +161,7 @@ INSERT INTO `jz_fields` (`id`,`field`,`molds`,`fieldname`,`tips`,`fieldtype`,`ti
 INSERT INTO `jz_fields` (`id`,`field`,`molds`,`fieldname`,`tips`,`fieldtype`,`tids`,`fieldlong`,`body`,`orders`,`ismust`,`isshow`,`issearch`,`islist`,`format`,`vdata`) VALUES ('6','url','tags','内链','填写详细链接，带http','1',',1,6,15,16,7,8,9,2,10,18,11,19,12,20,13,3,4,5,14,17,','255','','0','0','1','1','1','','');
 INSERT INTO `jz_fields` (`id`,`field`,`molds`,`fieldname`,`tips`,`fieldtype`,`tids`,`fieldlong`,`body`,`orders`,`ismust`,`isshow`,`issearch`,`islist`,`format`,`vdata`) VALUES ('7','num','tags','替换次数','一篇文章内替换的次数，默认-1，全部替换','4',',1,6,15,16,7,8,9,2,10,18,11,19,12,20,13,3,4,5,14,17,','4','','0','0','1','0','1','','-1');
 INSERT INTO `jz_fields` (`id`,`field`,`molds`,`fieldname`,`tips`,`fieldtype`,`tids`,`fieldlong`,`body`,`orders`,`ismust`,`isshow`,`issearch`,`islist`,`format`,`vdata`) VALUES ('8','target','tags','打开方式','','7',',1,6,15,16,7,8,9,2,10,18,11,19,12,20,13,3,4,5,14,17,','50','新窗口=_blank,本窗口=_self','0','0','1','0','1','','_blank');
+INSERT INTO `jz_fields` (`id`,`field`,`molds`,`fieldname`,`tips`,`fieldtype`,`tids`,`fieldlong`,`body`,`orders`,`ismust`,`isshow`,`issearch`,`islist`,`format`,`vdata`) VALUES ('9','number','tags','标签数','无需填写，程序自动处理','4',',1,6,15,16,7,8,9,2,10,18,11,19,12,20,13,3,4,5,14,17,','11','','0','0','1','0','1','','0');
 
 -- ----------------------------
 -- Table structure for jz_hook
@@ -535,6 +537,7 @@ CREATE TABLE `jz_product` (
   `istop` tinyint(1) NOT NULL DEFAULT '0' COMMENT '是否置顶',
   `ishot` tinyint(1) NOT NULL DEFAULT '0' COMMENT '是否头条',
   `istuijian` tinyint(1) NOT NULL DEFAULT '0' COMMENT '是否推荐',
+  `tags` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='商品表';
 -- ----------------------------
@@ -831,6 +834,7 @@ CREATE TABLE `jz_tags` (
   `num` int(4) DEFAULT '-1',
   `isshow` tinyint(1) DEFAULT '1',
   `target` varchar(50) DEFAULT '_blank',
+  `number` int(11) DEFAULT '0',
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 -- ----------------------------

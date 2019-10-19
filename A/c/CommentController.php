@@ -105,13 +105,23 @@ class CommentController extends CommonController
 			foreach($data as $k=>$v){
 				$v['new_username'] = $v['userid']!=0 ? get_info_table('member',array('id'=>$v['userid']),'username') : '';
 				$v['new_user'] = $v['userid']!=0 ? U('Member/memberedit',['id'=>$v['userid']]) : '';
-				$v['new_tid'] = $v['tid']!=0 ? $classtypedata[$v['tid']]['classname'] : '';
-				if($v['aid']!=0 && $v['tid']!=0){
+				if($v['tid']!=0 && isset($classtypedata[$v['tid']])){
+					$v['new_tid'] = $classtypedata[$v['tid']]['classname'];
+				}else{
+					$v['new_tid'] =  '';
+				}
+				if($v['aid']!=0 && $v['tid']!=0 && isset($classtypedata[$v['tid']])){
 					$adata = M($classtypedata[$v['tid']]['molds'])->find(['id'=>$v['aid']]);
-					$v['new_aid_url'] = get_domain().'/'.$adata['htmlurl'].'/'.$v['aid'];
+					if($adata){
+						$v['new_aid_url'] = get_domain().'/'.$adata['htmlurl'].'/'.$v['aid'];
+					}else{
+						$v['new_aid_url'] = '';
+					}
+					
 				}else{
 					$v['new_aid_url'] = '';
 				}
+				
 				$v['new_zid'] = $v['zid']!=0 ? U('Comment/editcomment',array('id'=>$v['zid'])) : '';
 				$v['new_pid'] = $v['pid']!=0 ? U('Comment/editcomment',array('id'=>$v['pid'])) : '';
 				

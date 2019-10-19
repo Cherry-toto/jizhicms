@@ -56,8 +56,21 @@ class ArticleController extends CommonController
 			if($this->frparam('title',1)!=''){
 				$sql.=" and title like '%".$this->frparam('title',1)."%' ";
 			}
-			//置顶处理
-			$sql .= ' or (istop=1 and isshow=1) ';
+			if($this->frparam('shuxing')){
+				if($this->frparam('shuxing')==1){
+					$sql.=" and istop=1 ";
+				}
+				if($this->frparam('shuxing')==2){
+					$sql.=" and ishot=1 ";
+				}
+				if($this->frparam('shuxing')==3){
+					$sql.=" and istuijian=1 ";
+				}
+				
+			}else{
+				//置顶处理
+				$sql .= ' or (istop=1 and isshow=1) ';
+			}
 			$data = $page->where($sql)->orderby('istop desc,orders desc,addtime desc,id desc')->limit($this->frparam('limit',0,10))->page($this->frparam('page',0,1))->go();
 			$ajaxdata = [];
 			foreach($data as $k=>$v){
@@ -70,8 +83,12 @@ class ArticleController extends CommonController
 				if($v['istop']==1){
 					$v['title'] = '<span class="layui-badge layui-bg-black">顶</span>'.$v['title'];
 				}
+				if(isset($classtypedata[$v['tid']])){
+					$v['new_tid'] = $classtypedata[$v['tid']]['classname'];
+				}else{
+					$v['new_tid'] = '[未分类]';
+				}
 				
-				$v['new_tid'] = $classtypedata[$v['tid']]['classname'];
 				$v['new_litpic'] = $v['litpic']!='' ? '<a href="'.$v['litpic'].'" target="_blank"><img src="'.$v['litpic'].'" width="100px" /></a>':'无';
 				$v['new_isshow'] = $v['isshow']==1 ? '<span class="layui-badge layui-bg-green">显示</span>' : '<span class="layui-badge">不显示</span>';
 				$v['new_addtime'] = date('Y-m-d H:i:s',$v['addtime']);
@@ -130,8 +147,32 @@ class ArticleController extends CommonController
 			$data['ishot'] = $this->frparam('ishot',0,0);
 			$data['istuijian'] = $this->frparam('istuijian',0,0);
 			$data = get_fields_data($data,'article');
-			
+			if($data['tags']!=''){
+				$data['tags'] = ','.$data['tags'].',';
+			}
 			if(M('Article')->add($data)){
+				//tags处理
+				if($data['tags']!=''){
+					$tags = explode(',',$data['tags']);
+					foreach($tags as $v){
+						if($v!=''){
+							$r = M('tags')->find(['keywords'=>$v]);
+							if(!$r){
+								$w['keywords'] = $v;
+								$w['newname'] = '';
+								$w['url'] = '';
+								$w['num'] = -1;
+								$w['isshow'] = 1;
+								$w['number'] = 1;
+								$w['target'] = '_blank';
+								M('tags')->add($w);
+							}else{
+								M('tags')->goInc(['keywords'=>$v],'number',1);
+							}
+						}
+					}
+				}
+				
 				JsonReturn(array('code'=>0,'msg'=>'添加成功,继续添加~','url'=>U('addarticle',array('tid'=>$data['tid']))));
 				exit;
 			}
@@ -177,8 +218,37 @@ class ArticleController extends CommonController
 			$data['ishot'] = $this->frparam('ishot',0,0);
 			$data['istuijian'] = $this->frparam('istuijian',0,0);
 			$data = get_fields_data($data,'article');
+			if($data['tags']!=''){
+				$data['tags'] = ','.$data['tags'].',';
+			}
 			if($this->frparam('id')){
 				if(M('Article')->update(array('id'=>$this->frparam('id')),$data)){
+					//tags处理
+					if($data['tags']!=''){
+						$tags = explode(',',$data['tags']);
+						foreach($tags as $v){
+							if($v!=''){
+								$r = M('tags')->find(['keywords'=>$v]);
+								if(!$r){
+									$w['keywords'] = $v;
+									$w['newname'] = '';
+									$w['url'] = '';
+									$w['num'] = -1;
+									$w['isshow'] = 1;
+									$w['number'] = 1;
+									$w['target'] = '_blank';
+									M('tags')->add($w);
+								}else{
+									//M('tags')->goInc(['keywords'=>$v],'number',1);
+									$num1 = M('article')->getCount(" tags like '%,".$v.",%' ");
+									$num2 = M('product')->getCount(" tags like '%,".$v.",%' ");
+									M('tags')->update(['keywords'=>$v],'number',$num1+$num2);
+								}
+							}
+						}
+					}
+					
+					
 					JsonReturn(array('code'=>0,'msg'=>'修改成功！','url'=>U('index')));
 				}else{
 					JsonReturn(array('code'=>1,'msg'=>'修改失败！'));

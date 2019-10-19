@@ -222,12 +222,16 @@ class ArticleController extends CommonController
 				$data['tags'] = ','.$data['tags'].',';
 			}
 			if($this->frparam('id')){
+				$old_tags = M('Article')->getField(['id'=>$this->frparam('id')],'tags');
 				if(M('Article')->update(array('id'=>$this->frparam('id')),$data)){
-					//tags处理
-					if($data['tags']!=''){
-						$tags = explode(',',$data['tags']);
-						foreach($tags as $v){
-							if($v!=''){
+					if($old_tags!=$data['tags']){
+						
+						$a = $old_tags.$data['tags'];
+						$new = [];
+						$a = explode(',',$a);
+						foreach($a as $v){
+							if($v!='' && !in_array($v,$new)){
+								
 								$r = M('tags')->find(['keywords'=>$v]);
 								if(!$r){
 									$w['keywords'] = $v;
@@ -239,15 +243,20 @@ class ArticleController extends CommonController
 									$w['target'] = '_blank';
 									M('tags')->add($w);
 								}else{
-									//M('tags')->goInc(['keywords'=>$v],'number',1);
+									
 									$num1 = M('article')->getCount(" tags like '%,".$v.",%' ");
 									$num2 = M('product')->getCount(" tags like '%,".$v.",%' ");
-									M('tags')->update(['keywords'=>$v],'number',$num1+$num2);
+									M('tags')->update(['keywords'=>$v],['number'=>$num1+$num2]);
 								}
+								
+								$new[]=$v;
 							}
 						}
+						
+						
+						
+						
 					}
-					
 					
 					JsonReturn(array('code'=>0,'msg'=>'修改成功！','url'=>U('index')));
 				}else{

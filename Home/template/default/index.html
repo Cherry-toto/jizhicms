@@ -147,7 +147,7 @@
                             data-slide="next"><span class="carousel-control-next-icon"></span><span class="sr-only">Next</span></a></div>
                     <ol class="carousel-indicators">
                         <!--loop自带$n计数-->
-					{if($n)}
+					{if($v_n)}
                         {for $i=0;$i<=$v_key;$i++}
                         <li data-target="#carousel-1" data-slide-to="{$i}" class="{if($i==0)}active{/if}"></li>
 						{/for}

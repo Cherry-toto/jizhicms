@@ -844,7 +844,7 @@ CREATE TABLE `jz_sysconfig` (
 -- ----------------------------
 -- Records of jz_sysconfig
 -- ----------------------------
-INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`) VALUES ('1','web_version','系统版号','','0','1.6');
+INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`) VALUES ('1','web_version','系统版号','','0','1.6.1');
 INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`) VALUES ('2','web_name','网站SEO名称','','0','极致CMS建站系统');
 INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`) VALUES ('3','web_keyword','网站SEO关键词','','0','极致CMS');
 INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`) VALUES ('4','web_desc','网站SEO描述','','0','极致CMS');

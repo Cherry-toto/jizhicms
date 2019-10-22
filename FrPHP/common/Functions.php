@@ -292,8 +292,23 @@ function GetIP(){
   return $ip;
 }
 //获取域名
+//获取域名
 function get_domain(){
-    $protocol = (isset($_SERVER['HTTPS']) && (strtolower($_SERVER['HTTPS']) != 'off')) ? 'https://' : 'http://';
+	if ( ! empty($_SERVER['HTTPS']) && strtolower($_SERVER['HTTPS']) !== 'off')
+	{
+		$protocol = "https://";
+	}
+	elseif (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https')
+	{
+		$protocol = "https://";
+	}
+	elseif ( ! empty($_SERVER['HTTP_FRONT_END_HTTPS']) && strtolower($_SERVER['HTTP_FRONT_END_HTTPS']) !== 'off')
+	{
+		$protocol = "https://";
+	}else{
+		$protocol = "http://";
+	}
+	
     if(isset($_SERVER['HTTP_X_FORWARDED_HOST'])) {
         $host = $_SERVER['HTTP_X_FORWARDED_HOST'];
     }elseif (isset($_SERVER['HTTP_HOST'])) {

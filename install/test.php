@@ -26,9 +26,9 @@ CREATE TABLE `jz_article` (
   `hits` int(11) NOT NULL DEFAULT '0',
   `isshow` tinyint(1) NOT NULL DEFAULT '1',
   `comment_num` int(11) NOT NULL DEFAULT '0' COMMENT '评论数',
-  `istop` tinyint(1) NOT NULL DEFAULT '0' COMMENT '是否置顶',
-  `ishot` tinyint(1) NOT NULL DEFAULT '0' COMMENT '是否头条',
-  `istuijian` tinyint(1) NOT NULL DEFAULT '0' COMMENT '是否推荐',
+  `istop` varchar(2) NOT NULL DEFAULT '0' COMMENT '是否置顶',
+  `ishot` varchar(2) NOT NULL DEFAULT '0' COMMENT '是否头条',
+  `istuijian` varchar(2) NOT NULL DEFAULT '0' COMMENT '是否推荐',
   `tags` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM AUTO_INCREMENT=29 DEFAULT CHARSET=utf8;
@@ -612,9 +612,9 @@ CREATE TABLE `jz_product` (
   `display` varchar(10) DEFAULT NULL,
   `camera` varchar(20) DEFAULT NULL,
   `ram` varchar(20) DEFAULT NULL,
-  `istop` tinyint(1) NOT NULL DEFAULT '0' COMMENT '是否置顶',
-  `ishot` tinyint(1) NOT NULL DEFAULT '0' COMMENT '是否头条',
-  `istuijian` tinyint(1) NOT NULL DEFAULT '0' COMMENT '是否推荐',
+  `istop` varchar(2) NOT NULL DEFAULT '0' COMMENT '是否置顶',
+  `ishot` varchar(2) NOT NULL DEFAULT '0' COMMENT '是否头条',
+  `istuijian` varchar(2) NOT NULL DEFAULT '0' COMMENT '是否推荐',
   `tags` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM AUTO_INCREMENT=24 DEFAULT CHARSET=utf8 COMMENT='商品表';

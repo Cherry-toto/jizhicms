@@ -54,7 +54,7 @@ class ClasstypeController extends CommonController
 			if($this->webconf['islevelurl'] && $this->frparam('pid')!=0){
 				//层级
 				$classtypetree = classTypeData();
-				$html = $classtypetree[$this->frparam('pid')]['htmlurl'].'/'.$html;
+				$htmlurl = $classtypetree[$this->frparam('pid')]['htmlurl'].'/'.$htmlurl;
 			}
 			
 			

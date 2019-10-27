@@ -31,14 +31,21 @@ class PluginsController extends Controller {
 		}
  
 	    if($_SESSION['admin']['isadmin']!=1){
-		    if(strpos($_SESSION['admin']['paction'],','.APP_CONTROLLER.',')!==false){
-		   
-		    }else{
-			     $action = APP_CONTROLLER.'/'.APP_ACTION;
-			if(strpos($_SESSION['admin']['paction'],','.$action.',')==false){
-				$ac = M('Ruler')->find(array('fc'=>$action));
-			   Error('您没有【'.$ac['name'].'】的权限！',U('Index/index'));
+			if(strpos($_SESSION['admin']['paction'],','.APP_CONTROLLER.',')!==false){
+			   
+			}else{
+				$action = APP_CONTROLLER.'/'.APP_ACTION;
+				if(strpos($_SESSION['admin']['paction'],','.$action.',')===false){
+				   $ac = M('Ruler')->find(array('fc'=>$action));
+				   if($this->frparam('ajax')){
+					   
+					   JsonReturn(['code'=>1,'msg'=>'您没有【'.$ac['name'].'】的权限！','url'=>U('Index/index')]);
+				   }
+				   Error('您没有【'.$ac['name'].'】的权限！',U('Index/index'));
+				}
 			}
+		   
+		  
 		}
 	   
 	  

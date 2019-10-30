@@ -782,7 +782,9 @@ class HomeController extends CommonController
 				
 				
 			}
-			
+			if(strpos($file,'.html')===false){
+				$file.='index.html';
+			}
 			
 			
 			file_put_contents($file,$content);

@@ -353,7 +353,7 @@ class AdminController extends CommonController
 				JsonReturn(array('code'=>1,'msg'=>'昵称已被使用！'));
 			}
 			if($data['email']!=''){
-				if(M('level')->find("email='".$data['email']."' and id!=".$data['id'])){
+				if(M('level')->find("email='".$data['email']."' ")){
 					JsonReturn(array('code'=>1,'msg'=>'邮箱已被使用！'));
 				}
 			}

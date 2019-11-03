@@ -33,6 +33,8 @@ class DBholder{
 			exit('<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />数据库无法链接，如果您是第一次使用，请先执行<a href="/install/">安装程序</a><br /><br /><a href="http://jizhicms.com" target="_blank">极致CMS建站程序 jizhicms.com</a>');
 		}
 		
+
+		ini_set("memory_limit","800M");
 		$this->pdo->exec("SET NAMES UTF8");
 	}
 	

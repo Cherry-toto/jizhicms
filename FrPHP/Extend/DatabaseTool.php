@@ -17,6 +17,7 @@ class DatabaseTool
   'target' => ''
  );
  private $tables = array();
+ private $limit = 300;//每个备份文件存储的sql条数
  private $error;
  private $begin; //开始时间
  /**
@@ -26,6 +27,7 @@ class DatabaseTool
  public function __construct($config = array())
  {
   //date_default_timezone_set('Asia/Shanghai');
+  ini_set("memory_limit","800M");
   $this->begin = microtime(true);
   $config = is_array($config) ? $config : array();
   $this->config = array_merge($this->config, $config);
@@ -139,7 +141,7 @@ class DatabaseTool
   //字段
   $columns = '';
   //需要返回的SQL
-  $query = '';
+  $query = [];
   foreach ($list as $value)
   {
    $columns .= "`{$value[0]}`,";
@@ -154,7 +156,7 @@ class DatabaseTool
     $dataSql .= "'{$v}',";
    }
    $dataSql = substr($dataSql, 0, -1);
-   $query .= "INSERT INTO `{$table}` ({$columns}) VALUES ({$dataSql});\r\n";
+   $query[]= "INSERT INTO `{$table}` ({$columns}) VALUES ({$dataSql});\r\n";
   }
   return $query;
  }
@@ -166,33 +168,78 @@ class DatabaseTool
   */
  private function writeToFile($tables = array(), $ddl = array(), $data = array())
  {
-  $str = "/*\r\nMySQL Database Backup Tools\r\n";
-  $str .= "Server:{$this->config['host']}:{$this->config['port']}\r\n";
-  $str .= "Database:{$this->config['database']}\r\n";
-  $str .= "Data:" . date('Y-m-d H:i:s', time()) . "\r\n*/\r\n";
-  $str .= "SET FOREIGN_KEY_CHECKS=0;\r\n";
+  $public_str = "/*\r\nMySQL Database Backup Tools\r\n";
+  $public_str .= "Server:{$this->config['host']}:{$this->config['port']}\r\n";
+  $public_str .= "Database:{$this->config['database']}\r\n";
+  $public_str .= "Data:" . date('Y-m-d H:i:s', time()) . "\r\n*/\r\n";
   $i = 0;
   echo '备份数据库-'.$this->config['database'].'<br />';
+  $countsql = 0;//记录sql数
+  $filenum = 0;//文件序号
+  $backfile = $this->config['target']==''? $this->config['database'].'_'.date('Y_m_d_H_i_s').'_'.rand(100000,999999): $this->config['target'].date('YmdHis');//文件名
+  $str = $public_str."SET FOREIGN_KEY_CHECKS=0;\r\n";
   foreach ($tables as $table)
   {
-   echo '备份表：'.$table.'…… ';
+   echo '备份表：'.$table.'<br>';
    $str .= "-- ----------------------------\r\n";
    $str .= "-- Table structure for {$table}\r\n";
    $str .= "-- ----------------------------\r\n";
    $str .= "DROP TABLE IF EXISTS `{$table}`;\r\n";
    $str .= $ddl[$i] . "\r\n";
-   $str .= "-- ----------------------------\r\n";
-   $str .= "-- Records of {$table}\r\n";
-   $str .= "-- ----------------------------\r\n";
-   $str .= $data[$i] . "\r\n";
+  
    $i++;
-   echo '备份成功！<br/>';
+   //echo '备份成功！<br/>'; 
+   
+  }
+  $i = 0;
+  foreach($tables as $table){
+	echo '备份表数据：'.$table.' <br>';
+	$str .= "-- ----------------------------\r\n";
+	$str .= "-- Records of {$table}\r\n";
+	$str .= "-- ----------------------------\r\n";
+	//$str .= $data[$i] . "\r\n";
+	foreach ($data[$i] as $v){
+		$str .= $v;
+		$countsql++;
+		if($countsql%($this->limit)==0){
+			$str = '<?php die();?>'.$str;
+			if($filenum==0){
+				$isok = file_put_contents('backup/'.$backfile.'.php', $str);
+				if(!$isok){
+					exit('[ backup/'.$backfile.'.php ] 写入文件失败！');
+				}
+				$filenum++;
+			}else{
+				$isok = file_put_contents('backup/'.$backfile.'_v'.$filenum.'.php', $str);
+				if(!$isok){
+					exit('[ backup/'.$backfile.'_v'.$filenum.'.php ] 写入文件失败！');
+				}
+				$filenum++;
+			}
+			$str = $public_str;
+		}	
+	}
+	$i++;
+	
+	
+  }
+  if($str!='' && $str != $public_str){
+	    $str = '<?php die();?>'.$str;
+		if($filenum==0){
+			$isok = file_put_contents('backup/'.$backfile.'.php', $str);
+			if(!$isok){
+				exit('[ backup/'.$backfile.'.php ] 写入文件失败！');
+			}
+		}else{
+			$isok = file_put_contents('backup/'.$backfile.'_v'.$filenum.'.php', $str);
+			if(!$isok){
+				exit('[ backup/'.$backfile.'_v'.$filenum.'.php ] 写入文件失败！');
+			}
+		}
   }
   
-  $str = '<?php die();?>'.$str;
-  
-  $backfile = $this->config['target']==''? $this->config['database'].'_'.date('Y_m_d_H_i_s').'_'.rand(100000,999999).'.php': $this->config['target'].date('YmdHis').'.php';
-  echo file_put_contents('backup/'.$backfile, $str) ? '备份成功!花费时间' . (microtime(true) - $this->begin) . 'ms' : '备份失败!';
+  echo '备份成功！<br/>  备份成功!花费时间' . (microtime(true) - $this->begin) . 'ms';
+
   Redirect(U('Index/beifen'),'备份完成~',1);
  }
  /**
@@ -206,30 +253,55 @@ class DatabaseTool
  
  //数据库还原
  
- public function restore($path = '')
- {
-  if (!file_exists($path))
-  {
-   $this->error('SQL文件不存在!');
-   return false;
-  }
-  else
-  {
-   $sql = $this->parseSQL($path);
-   try
-   {
-    $n = $this->handler->exec($sql);
-	if(!$n){
-		$msg = $this->handler->errorInfo();
-		if($msg[2]) Exit('数据库错误：' . $msg[2] . end($sql));
+ public function restore($path = ''){
+  if (!file_exists($path)){
+	$this->error('SQL文件不存在!');
+	return false;
+  }else{
+	$filename_arr = explode('.php',$path);
+	$filename_arr2 = explode('/',$filename_arr[0]);
+	$filename = end($filename_arr2);
+	//读取备份数据库
+	$dir = APP_PATH.'backup';
+	$fileArray=array();
+	if (false != ($handle = opendir ( $dir ))) {
+		$i=0;
+		while ( false !== ($file = readdir ( $handle )) ) {
+			//去掉"“.”、“..”以及带“.xxx”后缀的文件
+			if ($file != "." && $file != ".."&& strpos($file,".php")) {
+				if(strpos($file,$filename)!==false){
+					$fileArray[$i]=APP_PATH.'backup/'.$file;
+				}
+				if($i==100){
+					break;
+				}
+				$i++;
+			}
+		}
+		//关闭句柄
+		closedir ( $handle );
 	}
-    echo '还原成功!花费时间', (microtime(true) - $this->begin) . 'ms';
+	
+   foreach($fileArray as $path){
+	   $sql = $this->parseSQL($path);
+	   try{
+		    $n = $this->handler->exec($sql);
+			if(!$n){
+				$msg = $this->handler->errorInfo();
+				if($msg[2]) Exit('数据库错误：' . $msg[2] . end($sql));
+			}
+	   
+		
+	   }catch (PDOException $e){
+			$this->error = $e->getMessage();
+			return false;
+	   }
+	   
    }
-   catch (PDOException $e)
-   {
-    $this->error = $e->getMessage();
-    return false;
-   }
+ 
+   echo '还原成功!花费时间', (microtime(true) - $this->begin) . 'ms';
+    Redirect(U('Index/beifen'),'还原成功~',1);
+   
   }
  }
  /**
@@ -255,10 +327,12 @@ class DatabaseTool
     return true;
    }
   });
-  $sql = implode('', $sql);
-  //删除/**/注释
-  $sql = preg_replace('/\/\*.*\*\//', '', $sql);
-  return $sql;
+    $sql = implode('', $sql);
+	//删除/**/注释
+	$sql = preg_replace('/\/\*.*\*\//', '', $sql);
+	return $sql;
+  
+  
  }
 }
 

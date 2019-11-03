@@ -23,7 +23,13 @@ class CommonController extends Controller
 		$template = get_template();
 		$this->webconf = $webconf;
 		$this->template = $template;
-		$classtypedata = classTypeData();
+		if(isset($_SESSION['terminal'])){
+			$classtypedata = $_SESSION['terminal']=='mobile' ? classTypeDataMobile() : classTypeData();
+		}else{
+			$classtypedata = (isMobile() && $webconf['iswap']==1)?classTypeDataMobile():classTypeData();
+		}
+		
+		
 		$this->classtypetree = $classtypedata;
 		foreach($classtypedata as $k=>$v){
 			$classtypedata[$k]['children'] = get_children($v,$classtypedata);

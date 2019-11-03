@@ -626,21 +626,19 @@ class IndexController extends CommonController
 	//生成静态文件
 	function tohtml(){
 		
+		$maxlimit = 500;
+		$sleep = 2;//最小填0，立即跳转。
+
 		if($_POST){
 			$_SESSION['terminal'] = $this->frparam('terminal',1,'pc');
 			$terminal_path = $_SESSION['terminal']=='pc' ? $this->webconf['pc_html'] : $this->webconf['mobile_html'];
 			$terminal_path = ($terminal_path=='' || $terminal_path=='/') ? '' : $terminal_path.'/';
-			$opts = array(
-			  'http'=>array(
-				'method'=>"GET",
-				'header'=>"Cookie: PHPSESSID=".$_COOKIE['PHPSESSID']."\r\n"
-			  )
-			);
-
-			$context = stream_context_create($opts);
 			
 			$type = $this->frparam('type');
-			setCache('html_cache',null);
+			setCache('tohtmlurl',null);
+			if($this->frparam('clearhtml')){
+				setCache('clearhtml',1);
+			}
 			
 			if(isset($_SESSION['terminal'])){
 				$classtypedata = $_SESSION['terminal']=='mobile' ? classTypeDataMobile() : classTypeData();
@@ -651,8 +649,9 @@ class IndexController extends CommonController
 			foreach($classtypedata as $k=>$v){
 				$classtypedata[$k]['children'] = get_children($v,$classtypedata);
 			}
+			//echo '提交成功！';
 			if($type==1){
-				
+				//有选择的更新HTML
 				$model = $this->frparam('model',1);
 				$isshow = $this->frparam('isshow');
 				$tid = $this->frparam('tid');
@@ -664,35 +663,20 @@ class IndexController extends CommonController
 				
 				//单独更新
 				$modelname = get_info_table('molds',['biaoshi'=>$model],'name');
+				$urls = [];
 				switch($model){
 					case 'classtype':
 						if($tid){
 							$sql.=' and id in('.implode(",",$classtypedata[$tid]["children"]["ids"]).') ';
 						}
-						echo '正在进行栏目静态HTML生成，请稍后……<br/>';
-						$this->html_classtype($sql);
-						file_put_contents(APP_PATH.$terminal_path.'index.html',file_get_contents($www,false,$context));
-						echo '成功生成主页HTML [ index.html ] <br/>';
-						//判断有没有更新完毕
-						if(getCache('html_cache')){
-							echo '更新内容比较多，刷新继续更新~';
-							echo '<script>window.location.reload();</script>';exit;
-						}
-						echo '静态HTML已全部更新完毕！';
-						$_SESSION['terminal'] = null;
-						//清空数据缓存
-						if(is_dir(APP_PATH.'cache/data')){
-							if($handle = opendir(APP_PATH.'cache/data')){
-				
-							  while (false !== ($file = readdir($handle))){
-								 if($file!='.' && $file!='..' ){
-									
-									unlink(APP_PATH.'cache/data/'.$file);
-								 }
-							  }
-							  closedir($handle);
-							}
-						}
+						
+						$urls = $this->html_classtype($sql);//获取所有的更新静态链接
+						$urls[]= ['url'=>$www,'html'=>APP_PATH.$terminal_path.'index.html'];
+						
+						setCache('tohtmlurl',$urls,86400);
+						//$_SESSION['terminal'] = null;
+						
+						JsonReturn(['code'=>0,'msg'=>'success']);
 						exit;
 					break;
 					//文章商品模块是同样的
@@ -700,31 +684,12 @@ class IndexController extends CommonController
 						if($tid){
 							$sql.=' and tid in('.implode(",",$classtypedata[$tid]["children"]["ids"]).') ' ;
 						}
-						echo '正在进行模块静态HTML生成，请稍后……<br/>';
-						$this->html_molds($model,$sql);
 						
-						file_put_contents(APP_PATH.$terminal_path.'index.html',file_get_contents($www,false,$context));
-						echo '成功生成主页HTML [ index.html ] <br/>';
-						//判断有没有更新完毕
-						if(getCache('html_cache')){
-							echo '更新内容比较多，刷新继续更新~';
-							echo '<script>window.location.reload();</script>';exit;
-						}
-						echo '静态HTML已全部更新完毕！';
-						$_SESSION['terminal'] = null;
-						//清空数据缓存
-						if(is_dir(APP_PATH.'cache/data')){
-							if($handle = opendir(APP_PATH.'cache/data')){
-				
-							  while (false !== ($file = readdir($handle))){
-								 if($file!='.' && $file!='..' ){
-									
-									unlink(APP_PATH.'cache/data/'.$file);
-								 }
-							  }
-							  closedir($handle);
-							}
-						}
+						$urls = $this->html_molds($model,$sql);
+						$urls[]= ['url'=>$www,'html'=>APP_PATH.$terminal_path.'index.html'];
+						setCache('tohtmlurl',$urls,86400);
+						//$_SESSION['terminal'] = null;
+						JsonReturn(['code'=>0,'msg'=>'success']);
 						exit;
 					break;
 					
@@ -741,6 +706,7 @@ class IndexController extends CommonController
 				$www = get_domain();
 				set_time_limit(0);
 				if($model && $isshow){
+					$urls = [];
 					foreach($model as $k=>$v){
 						
 						$sql = ' 1=1 ';
@@ -752,41 +718,26 @@ class IndexController extends CommonController
 							if($tid[$k]){
 								$sql.=' and id in('.implode(",",$classtypedata[$tid[$k]]["children"]["ids"]).') ';
 							}
-							echo '正在进行栏目静态HTML生成，请稍后……<br/>';
-							$this->html_classtype($sql);
+							
+							$urls1 = $this->html_classtype($sql);
+							$urls = count($urls1)>0 ? array_merge($urls,$urls1) : $urls;
 						}else{
 							if($tid[$k]){
 								$sql.=' and tid in('.implode(",",$classtypedata[$tid[$k]]["children"]["ids"]).') ';
 							}
-							echo '正在进行模块静态HTML生成，请稍后……<br/>';
-							$this->html_molds($v,$sql);
+							
+							$urls2 = $this->html_molds($v,$sql);
+							$urls = count($urls2)>0 ? array_merge($urls,$urls2) : $urls;
 							
 						}
 						
 						
 					}
-					file_put_contents(APP_PATH.$terminal_path.'index.html',file_get_contents($www,false,$context));
-					echo '成功生成主页HTML [ index.html ] <br/>';
-					//判断有没有更新完毕
-					if(getCache('html_cache')){
-						echo '更新内容比较多，刷新继续更新~';
-						echo '<script>window.location.reload();</script>';exit;
-					}
-					$_SESSION['terminal'] = null;
-						//清空数据缓存
-						if(is_dir(APP_PATH.'cache/data')){
-							if($handle = opendir(APP_PATH.'cache/data')){
-				
-							  while (false !== ($file = readdir($handle))){
-								 if($file!='.' && $file!='..' ){
-									
-									unlink(APP_PATH.'cache/data/'.$file);
-								 }
-							  }
-							  closedir($handle);
-							}
-						}
-					echo '批量生成HTML完成！';exit;
+					$urls[]= ['url'=>$www,'html'=>APP_PATH.$terminal_path.'index.html'];
+					setCache('tohtmlurl',$urls,86400);
+					//$_SESSION['terminal'] = null;
+					JsonReturn(['code'=>0,'msg'=>'success','urls'=>$urls]);
+					exit;
 					
 					
 				}
@@ -798,74 +749,104 @@ class IndexController extends CommonController
 			
 			
 		}
-		
-		
-		//是否有静态HTML更新
-		$html_cache = getCache('html_cache');
-		if($html_cache){
-			/*
-				type  更新类型
-				sql   更新的sql查询
-				model   更新模型
-				curren_num  当前更新数
-				all_num  总数
 
-			*/
-			$newcache = [];
-			foreach($html_cache as $k=>$v){
-				switch($v['type']){
-					//栏目数超过100个
-					case 'classtype':
-					$limit = $v['curren_num'].',100';
-					if(($v['curren_num']+100) >=$v['all_num']){
-						
-					}else{
-						$v[$k]['curren_num'] = $v['curren_num']+100;
-						$newcache[]=$v;
-					}
-					echo '正在进行栏目静态HTML生成，请稍后……<br/>';
-					$this->html_classtype($v['sql'],$limit);
-					
-					
-					break;
-					//分页超过100页
-					case 'classtype_page':
-					//暂时取消
-					break;
-					//模块内容超过100个
-					case 'molds':
-						$limit = $v['curren_num'].',100';
-						if(($v['curren_num']+100) >=$v['all_num']){
-							
+
+		$tohtmlurl = getCache('tohtmlurl');
+
+		if($tohtmlurl){
+
+			$clearhtml = getCache('clearhtml');
+
+			$opts = array(
+			  'http'=>array(
+				'method'=>"GET",
+				'header'=>"Cookie: PHPSESSID=".$_COOKIE['PHPSESSID']."\r\n"
+			  )
+			);
+
+			$context = stream_context_create($opts);
+			$max = count($tohtmlurl);
+			$start_time = getCache('start_time');
+			if(!$start_time){
+				$start_time = time();
+				setCache('start_time',$start_time,86400);
+				setCache('allpage',$max);
+			}
+
+			$count = 0;
+			foreach ($tohtmlurl as $key => $value) {
+				if($key<$maxlimit){
+					if($clearhtml){
+
+						//清理HTML
+						if(file_exists($value['html'])){
+							$r = unlink($value['html']);
+							if(!$r){
+								echo $value['html'].'清除失败！<br/>';
+							}else{
+								echo $value['html'].'清除成功！<br/>';
+							}
 						}else{
-							$v[$k]['curren_num'] = $v['curren_num']+100;
-							$newcache[]=$v;
+							echo $value['html'].'清除成功！<br/>';
 						}
-						echo '正在进行模块静态HTML生成，请稍后……<br/>';
-						$this->html_molds($v['model'],$v['sql'],$limit);
+							
+
+
+					}else{
+						$r = file_put_contents($value['html'],file_get_contents($value['url'],false,$context));
+						if(!$r){
+							echo $value['html'].'生成失败！<br/>';
+						}else{
+							echo $value['html'].'生成成功！<br/>';
+						}
+					}
+
 					
-					break;
+					$count++;
+				}else{
+					$tohtmlurl = array_slice($tohtmlurl,$maxlimit);
+					setCache('tohtmlurl',$tohtmlurl,86400);
+					if($clearhtml){
+						echo '已清理一部分页面，请不要关闭当前页面，还需要继续清理HTML~';
+					}else{
+						echo '已生成一部分页面，请不要关闭当前页面，还需要继续生成HTML~';
+					}
 					
-					
-					
+					echo '<meta http-equiv="Content-Type" content="text/html; charset=utf-8" /><meta http-equiv="refresh" content="'.$sleep.';URL='.U('tohtml').'">';
+					exit;
 				}
 				
 			}
-			
-			if(empty($newcache)){
-				setCache('html_cache',null);
-			}else{
-				setCache('html_cache',$newcache);
-				echo '<meta http-equiv="Content-Type" content="text/html; charset=utf-8" /><meta http-equiv="refresh" content="3;URL='.U('tohtml').'">';
-				echo '系统正在进行下一步生成静态HTML，请稍后~';
+			if($count>=$max){
+				setCache('tohtmlurl',false);
+				if($clearhtml){
+					echo '静态HTML页面已全部清理完毕！<br/>';
+					$end_time = time();
+					$start_time = getCache('start_time');
+					$allpage = getCache('allpage');
+					echo '总共清理页面数：'.$allpage.' 每次清理页面数：'.$maxlimit.',停顿时间：'.$sleep.'秒,开始时间：'.date('Y-m-d H:i:s',$start_time).' ,结束时间：'.date('Y-m-d H:i:s',$end_time).', 总共花费时间：'.($end_time-$start_time).'秒';
+					setCache('clearhtml',false);
+				}else{
+					echo '页面已全部生成完毕！<br/>';
+					$end_time = time();
+					$start_time = getCache('start_time');
+					$allpage = getCache('allpage');
+					echo '总共生成页面数：'.$allpage.' 每次生成页面数：'.$maxlimit.',停顿时间：'.$sleep.'秒,开始时间：'.date('Y-m-d H:i:s',$start_time).' ,结束时间：'.date('Y-m-d H:i:s',$end_time).', 总共花费时间：'.($end_time-$start_time).'秒';
+				}
+				
+				setCache('start_time',false);
+				setCache('allpage',false);
+				$_SESSION['terminal'] = null;
+				//echo '<meta http-equiv="Content-Type" content="text/html; charset=utf-8" /><meta http-equiv="refresh" content="2;URL='.U('tohtml').'">';
 				exit;
+			}else{
+
 			}
 			
-			
-		
-			
-			
+
 		}
+		
+		
 		
 		
 		
@@ -876,44 +857,9 @@ class IndexController extends CommonController
 	function html_classtype($sql,$limit=null){
 		$terminal_path = $_SESSION['terminal']=='pc' ? $this->webconf['pc_html'] : $this->webconf['mobile_html'];
 		$terminal_path = ($terminal_path=='' || $terminal_path=='/') ? '' : $terminal_path.'/';
-		$opts = array(
-		  'http'=>array(
-			'method'=>"GET",
-			'header'=>"Cookie: PHPSESSID=".$_COOKIE['PHPSESSID']."\r\n"
-		  )
-		);
-
-		$context = stream_context_create($opts);
+		
 		$www = get_domain();
-		//计算栏目个数
-		if($limit==null){
-			$count = M('classtype')->getCount($sql);
-			if($count>100){
-				$limit = '1,100';
-				$cache_html = getCache('html_cache');
-				if($cache_html){
-					$cache_html[]=[
-						'type' => 'classtype',
-						'sql' => $sql,
-						'model' => 'classtype',
-						'curren_num' => 100,
-						'all_num' => $count,
-					];
-				}else{
-					$cache_html = [];
-					$cache_html[]=[
-						'type' => 'classtype',
-						'sql' => $sql,
-						'model' => 'classtype',
-						'curren_num' => 100,
-						'all_num' => $count,
-					];
-				}
-				setCache('html_cache',$cache_html);
-				
-			}
-			
-		}
+		
 		
 		$lists = M('classtype')->findAll($sql,' id asc ',null,$limit);
 		if(isset($_SESSION['terminal'])){
@@ -924,6 +870,7 @@ class IndexController extends CommonController
 		foreach($classtypedata as $k=>$v){
 			$classtypedata[$k]['children'] = get_children($v,$classtypedata);
 		}
+		$urls = [];
 		if($lists){
 			//更新静态注意事项：
 			//1 创建目录文件夹--权限问题
@@ -937,9 +884,9 @@ class IndexController extends CommonController
 					$r = mkdir(APP_PATH.$terminal_path,0777,true);
 					if(!$r){
 						//JsonReturn(['code'=>1,'msg'=>'根目录创建目录失败！']);
-						echo '系统创建 [ '.str_replace('/','\\',APP_PATH.$terminal_path).' ] 目录失败!';exit;
+						//echo '系统创建 [ '.str_replace('/','\\',APP_PATH.$terminal_path).' ] 目录失败!';exit;
+						JsonReturn(['code'=>1,'msg'=>'系统创建 [ '.str_replace('/','\\',APP_PATH.$terminal_path).' ] 目录失败!']);
 					}
-					echo '创建目录 [ '.str_replace('/','\\',APP_PATH.$terminal_path).' ] 成功！<br/>';
 				}
 				if(strpos($filename,'/')!==false){
 					$filepath = explode('/',$filename);
@@ -952,9 +899,9 @@ class IndexController extends CommonController
 							$r = mkdir($create_dir,0777,true);
 							if(!$r){
 								//JsonReturn(['code'=>1,'msg'=>'根目录创建目录失败！']);
-								echo '系统创建['.str_replace('/','\\',$create_dir).']目录失败!';exit;
+								//echo '系统创建['.str_replace('/','\\',$create_dir).']目录失败!';exit;
+								JsonReturn(['code'=>1,'msg'=>'系统创建['.str_replace('/','\\',$create_dir).']目录失败!']);
 							}
-							echo '创建目录['.str_replace('/','\\',$create_dir).']成功！<br/>';
 						}
 						$create_dir.='/';
 						
@@ -964,37 +911,27 @@ class IndexController extends CommonController
 				
 				
 				$url = APP_PATH.$terminal_path.$filename;
-				$cache_url = APP_PATH.'cache/data/'.md5(frencode($url));
-				if(file_exists($cache_url)){
-					//栏目在根目录里
-					file_put_contents($url,file_get_contents($cache_url,false,$context));
-				}else{
-					file_put_contents($url,file_get_contents($www.'/'.$terminal_path.$filename,false,$context));
-				}
-				echo '成功生成静态HTML [ '.str_replace('/','\\',$url).' ]<br/>';
+
+				$urls[] = ['url'=>$www.'/'.$terminal_path.$filename,'html'=>$url];
+
+
 				//检查分页
 				$sql = 'tid in('.implode(",",$classtypedata[$v['id']]["children"]["ids"]).') ';
 				$count = M($v['molds'])->getCount($sql);
 				$pagenum = ceil($count/$v['lists_num']);
 				if($pagenum>1){
-					echo '正在生成分页静态HTML……<br/>';
 					for($i=1;$i<=$pagenum;$i++){
 						$filename = $v['htmlurl'].'-'.$i.File_TXT;
 						$url = APP_PATH.$terminal_path.$filename;
-						$cache_url = APP_PATH.'cache/data/'.md5(frencode($url));
-						if(file_exists($cache_url)){
-							//栏目在根目录里
-							file_put_contents($url,file_get_contents($cache_url,false,$context));
-						}else{
-							file_put_contents($url,file_get_contents($www.'/'.$terminal_path.$filename,false,$context));
-						}
+						$urls[] = ['url'=>$www.'/'.$terminal_path.$filename,'html'=>$url];
 					}
-					echo '成功生成静态HTML [ '.str_replace('/','\\',$url).' ]<br/>';
+					
 				}
 					
 				
 			}
 		}
+		return $urls;
 		
 	}
 	
@@ -1002,43 +939,11 @@ class IndexController extends CommonController
 		$terminal_path = $_SESSION['terminal']=='pc' ? $this->webconf['pc_html'] : $this->webconf['mobile_html'];
 		$terminal_path = ($terminal_path=='' || $terminal_path=='/') ? '' : $terminal_path.'/';
 		$modelname = get_info_table('molds',['biaoshi'=>$model],'name');
-		$opts = array(
-		  'http'=>array(
-			'method'=>"GET",
-			'header'=>"Cookie: PHPSESSID=".$_COOKIE['PHPSESSID']."\r\n"
-		  )
-		);
-
-		$context = stream_context_create($opts);
-		if($limit==null){
-			$count =  M($model)->getCount($sql);
-			if($count>100){
-				$limit = '1,100';
-				$cache_html = getCache('html_cache');
-				if($cache_html){
-					$cache_html[]=[
-						'type' => 'molds',
-						'sql' => $sql,
-						'model' => $model,
-						'curren_num' => 100,
-						'all_num' => $count,
-					];
-				}else{
-					$cache_html = [];
-					$cache_html[]=[
-						'type' => 'molds',
-						'sql' => $sql,
-						'model' => $model,
-						'curren_num' => 100,
-						'all_num' => $count,
-					];
-				}
-				setCache('html_cache',$cache_html);
-			}
-		}
+		
 		
 		$lists = M($model)->findAll($sql,' id asc ',null,$limit);
 		$www = get_domain();
+		$urls=[];//存储更新url链接
 		if($lists && is_array($lists)){
 			//更新静态注意事项：
 			//1 创建目录文件夹--权限问题
@@ -1050,7 +955,8 @@ class IndexController extends CommonController
 				//检测htmlurl是否为空
 				if(trim($v['htmlurl'])==''){
 					//JsonReturn(['code'=>1,'msg'=>$modelname.'模块未绑定栏目，无法生存HTML！']);
-					echo $modelname.'模块未绑定栏目，无法生存HTML！';exit;
+					//echo $modelname.'模块未绑定栏目，无法生存HTML！';exit;
+					JsonReturn(['code'=>1,'msg'=>$modelname.'模块未绑定栏目，无法生存HTML！']);
 				}
 				
 				
@@ -1060,9 +966,10 @@ class IndexController extends CommonController
 					$r = mkdir(APP_PATH.$terminal_path,0777,true);
 					if(!$r){
 						//JsonReturn(['code'=>1,'msg'=>'根目录创建目录失败！']);
-						echo '系统创建 [ '.str_replace('/','\\',APP_PATH.$terminal_path).' ] 目录失败!';exit;
+						//echo '系统创建 [ '.str_replace('/','\\',APP_PATH.$terminal_path).' ] 目录失败!';exit;
+						JsonReturn(['code'=>1,'msg'=>'系统创建 [ '.str_replace('/','\\',APP_PATH.$terminal_path).' ] 目录失败!']);
 					}
-					echo '创建目录 [ '.str_replace('/','\\',APP_PATH.$terminal_path).' ] 成功！<br/>';
+					
 				}
 				
 				if(strpos($v['htmlurl'],'/')!==false){
@@ -1077,9 +984,10 @@ class IndexController extends CommonController
 							$r = mkdir($create_dir,0777,true);
 							if(!$r){
 								//JsonReturn(['code'=>1,'msg'=>'根目录创建目录失败！']);
-								echo '系统创建 [ '.str_replace('/','\\',$create_dir).' ] 目录失败!';exit;
+								//echo '系统创建 [ '.str_replace('/','\\',$create_dir).' ] 目录失败!';exit;
+								JsonReturn(['code'=>1,'msg'=>'系统创建 [ '.str_replace('/','\\',$create_dir).' ] 目录失败!']);
 							}
-							echo '创建目录 [ '.str_replace('/','\\',$create_dir).' ] 成功！<br/>';
+							
 						}
 						$create_dir.='/';
 						
@@ -1089,7 +997,8 @@ class IndexController extends CommonController
 						$r = mkdir(APP_PATH.$terminal_path.$v['htmlurl'],0777,true);
 						if(!$r){
 							//JsonReturn(['code'=>1,'msg'=>'根目录创建目录失败！']);
-							echo '系统创建 [ '.str_replace('/','\\',APP_PATH.$terminal_path.$v['htmlurl']).' ] 目录失败！';exit;
+							//echo '系统创建 [ '.str_replace('/','\\',APP_PATH.$terminal_path.$v['htmlurl']).' ] 目录失败！';exit;
+							JsonReturn(['code'=>1,'msg'=>'系统创建 [ '.str_replace('/','\\',APP_PATH.$terminal_path.$v['htmlurl']).' ] 目录失败！']);
 						}
 					}
 				}
@@ -1098,17 +1007,14 @@ class IndexController extends CommonController
 				
 				$url = APP_PATH.$terminal_path.$v['htmlurl'].'/'.$v['id'].File_TXT;
 				$filename = APP_PATH.$terminal_path.$v['htmlurl'].'/'.$v['id'].File_TXT;
-				$cache_url = APP_PATH.'cache/data/'.md5(frencode($url));
-				if(file_exists($cache_url)){
+
+				$urls[] = ['url'=>$www.'/'.$v['htmlurl'].'/'.$v['id'].File_TXT,'html'=>$filename];
+
 				
-					file_put_contents($filename,file_get_contents($cache_url,false,$context));
-				}else{
-					file_put_contents($filename,file_get_contents($www.'/'.$v['htmlurl'].'/'.$v['id'].File_TXT,false,$context));
-				}
-				echo '成功生成静态HTML [ '.str_replace('/','\\',$filename).' ] <br/>';
 				
 			}
 		}
+		return $urls;
 		
 	}
 	

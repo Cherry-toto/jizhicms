@@ -11,7 +11,9 @@
 	       margin-left: 20px;
 		line-height: 24px;
 	   }
-	   
+	   .layui-btn-gray {
+		    background-color: #eee;
+		}
 	   </style>
     </head>
     <body>
@@ -48,6 +50,10 @@
 						</td>
 					<td><button onclick="tohtml(this)" data="classtype" class="layui-btn" type="button">生成电脑静态</button>
 					<button onclick="tohtmlmobile(this)" data="classtype" class="layui-btn  layui-btn-warm" type="button">生成手机静态</button>
+
+					<button onclick="clearhtml(this)" data="classtype" class="layui-btn layui-btn-gray" type="button">清理电脑静态HTML</button>
+					<button onclick="clearhtmlmobile(this)" data="classtype" class="layui-btn  layui-btn-gray" type="button">清理手机静态HTML</button>
+
 					</td>
 					
 					</tr>
@@ -70,6 +76,8 @@
 						</td>
 					<td><button onclick="tohtml(this)" data="article" class="layui-btn" type="button">生成电脑静态</button>
 					<button onclick="tohtmlmobile(this)" data="article" class="layui-btn  layui-btn-warm" type="button">生成手机静态</button>
+					<button onclick="clearhtml(this)" data="article" class="layui-btn layui-btn-gray" type="button">清理电脑静态HTML</button>
+					<button onclick="clearhtmlmobile(this)" data="article" class="layui-btn  layui-btn-gray" type="button">清理手机静态HTML</button>
 					</td>
 					
 					</tr>
@@ -91,6 +99,8 @@
 						</td>
 					<td><button onclick="tohtml(this)" data="product" class="layui-btn" type="button">生成电脑静态</button>
 					<button onclick="tohtmlmobile(this)" data="product" class="layui-btn  layui-btn-warm" type="button">生成手机静态</button>
+					<button onclick="clearhtml(this)" data="product" class="layui-btn layui-btn-gray" type="button">清理电脑静态HTML</button>
+					<button onclick="clearhtmlmobile(this)" data="product" class="layui-btn  layui-btn-gray" type="button">清理手机静态HTML</button>
 					</td>
 					
 					</tr>
@@ -114,6 +124,8 @@
 						</td>
 					<td><button onclick="tohtml(this)" data="{$v['biaoshi']}" class="layui-btn" type="button">生成电脑静态</button>
 					<button onclick="tohtmlmobile(this)" data="{$v['biaoshi']}" class="layui-btn  layui-btn-warm" type="button">生成手机静态</button>
+					<button onclick="clearhtml(this)" data="{$v['biaoshi']}" class="layui-btn layui-btn-gray" type="button">清理电脑静态HTML</button>
+					<button onclick="clearhtmlmobile(this)" data="{$v['biaoshi']}" class="layui-btn  layui-btn-gray" type="button">清理手机静态HTML</button>
 					</td>
 					</tr>
 					{/if}
@@ -131,6 +143,8 @@
 					  <div class="layui-form-item" style="text-align:center;">
 						 <button class="layui-btn" lay-submit lay-filter="formDemo">批量生成电脑静态</button>
 						  <button class="layui-btn  layui-btn-warm" lay-submit lay-filter="formDemomobile">批量生成手机静态</button>
+						  <button class="layui-btn layui-btn-gray" lay-submit lay-filter="clearformDemo">批量清理电脑静态</button>
+						  <button class="layui-btn  layui-btn-gray" lay-submit lay-filter="clearformDemomobile">批量清理手机静态</button>
 					  </div>
 					</form>
                 </div>
@@ -151,27 +165,23 @@
 				//console.log(data.field);return false;
 					$.ajax({
 						 url:"{fun U('Index/tohtml')}?terminal=pc",
-						// dataType:"json",
+						 dataType:"json",
 						 async:true,
 						 data:data.field,
 						 type:"POST",
 						 beforeSend:function(){
-							//请求前的处理
 							
-							layer.open({
-							  type: 1,
-							  title:'提示',
-							  skin: 'layui-layer-rim', //加上边框
-							  area: ['520px', '340px'], //宽高
-							  content: '正在更新HTML，请稍后……<br/>',
-							  id:'msg'
-							});
+							layer.msg('正在处理~');
 							
-							//layui-icon-loading
 						},
 						 success:function(r){
-							
-							$("#msg").append(r);
+							if(r.code==1){
+								layer.aler(r.msg);
+							}else{
+								layer.msg('正在准备生成静态，请不要关闭页面~',function(){
+									window.location.reload();
+								});
+							}
 							
 						},
 						 complete:function(){
@@ -184,39 +194,29 @@
 								
 						
 					})
-				
-				
-				
-				
-               
                 return false;
               });
 			  
 			   form.on('submit(formDemomobile)', function(data){
-				//console.log(data.field);return false;
 					$.ajax({
 						 url:"{fun U('Index/tohtml')}?terminal=mobile",
-						// dataType:"json",
+						 dataType:"json",
 						 async:true,
 						 data:data.field,
 						 type:"POST",
 						 beforeSend:function(){
 							//请求前的处理
-							
-							layer.open({
-							  type: 1,
-							  title:'提示',
-							  skin: 'layui-layer-rim', //加上边框
-							  area: ['520px', '340px'], //宽高
-							  content: '正在更新HTML，请稍后……<br/>',
-							  id:'msg'
-							});
-							
-							//layui-icon-loading
+							layer.msg('正在处理~');
 						},
 						 success:function(r){
-							
-							$("#msg").append(r);
+							//console.log(r);
+							if(r.code==1){
+								layer.aler(r.msg);
+							}else{
+								layer.msg('正在准备生成静态，请不要关闭页面~',function(){
+									window.location.reload();
+								});
+							}
 							
 						},
 						 complete:function(){
@@ -236,6 +236,85 @@
                
                 return false;
               });
+
+			  form.on('submit(clearformDemo)', function(data){
+				//console.log(data.field);return false;
+					$.ajax({
+						 url:"{fun U('Index/tohtml')}?terminal=pc&clearhtml=1",
+						 dataType:"json",
+						 async:true,
+						 data:data.field,
+						 type:"POST",
+						 beforeSend:function(){
+							
+							layer.msg('正在处理~');
+							
+						},
+						 success:function(r){
+							if(r.code==1){
+								layer.aler(r.msg);
+							}else{
+								layer.msg('正在准备清理电脑端静态HTML，请不要关闭页面~',function(){
+									window.location.reload();
+								});
+							}
+							
+						},
+						 complete:function(){
+						//请求完成的处理
+						},
+						 error:function(){
+						//请求出错处理
+						}
+
+								
+						
+					})
+                return false;
+              });
+
+               form.on('submit(clearformDemomobile)', function(data){
+					$.ajax({
+						 url:"{fun U('Index/tohtml')}?terminal=mobile&clearhtml=1",
+						 dataType:"json",
+						 async:true,
+						 data:data.field,
+						 type:"POST",
+						 beforeSend:function(){
+							//请求前的处理
+							layer.msg('正在处理~');
+						},
+						 success:function(r){
+							//console.log(r);
+							if(r.code==1){
+								layer.aler(r.msg);
+							}else{
+								layer.msg('正在准备清理手机端静态HTML，请不要关闭页面~',function(){
+									window.location.reload();
+								});
+							}
+							
+						},
+						 complete:function(){
+						//请求完成的处理
+						},
+						 error:function(){
+						//请求出错处理
+						}
+
+								
+						
+					})
+				
+				
+				
+				
+               
+                return false;
+              });
+
+
+
 		})
 		
 		function tohtml(t){
@@ -245,24 +324,23 @@
 		
 			$.ajax({
 				 url:"{fun U('Index/tohtml')}",
-				// dataType:"json",
+				 dataType:"json",
 				 async:true,
 				 data:{type:1,model:model,isshow:isshow,tid:tid,terminal:'pc'},
 				 type:"POST",
 				 beforeSend:function(){
-					layer.open({
-					  type: 1,
-					  title:'提示',
-					  skin: 'layui-layer-rim', //加上边框
-					  area: ['520px', '340px'], //宽高
-					  content: '正在更新HTML，请稍后……<br/>',
-					  id:'msg'
-					});
+					layer.msg('正在处理~');
 							
 				},
 				 success:function(r){
-				
-					$("#msg").append(r);
+					//console.log(r);
+					if(r.code==1){
+						layer.aler(r.msg);
+					}else{
+						layer.msg('正在准备生成静态，请不要关闭页面~',function(){
+							window.location.reload();
+						});
+					}
 				},
 				 complete:function(){
 				//请求完成的处理
@@ -291,19 +369,18 @@
 				 data:{type:1,model:model,isshow:isshow,tid:tid,terminal:'mobile'},
 				 type:"POST",
 				 beforeSend:function(){
-					layer.open({
-					  type: 1,
-					  title:'提示',
-					  skin: 'layui-layer-rim', //加上边框
-					  area: ['520px', '340px'], //宽高
-					  content: '正在更新HTML，请稍后……<br/>',
-					  id:'msg'
-					});
+					layer.msg('正在处理~');
 							
 				},
 				 success:function(r){
 				
-					$("#msg").append(r);
+					if(r.code==1){
+						layer.aler(r.msg);
+					}else{
+						layer.msg('正在准备生成静态，请不要关闭页面~',function(){
+							window.location.reload();
+						});
+					}
 				},
 				 complete:function(){
 				//请求完成的处理
@@ -319,7 +396,85 @@
 		
 			
 		}
+		function clearhtml(t){
+			var isshow = $(t).parent().prev().children('.isshow').val();
+			var model = $(t).attr('data');
+			var tid = $(t).parent().prev().prev().children('.tid').val();
 		
+			$.ajax({
+				 url:"{fun U('Index/tohtml')}",
+				 dataType:"json",
+				 async:true,
+				 data:{type:1,model:model,isshow:isshow,tid:tid,terminal:'pc',clearhtml:1},
+				 type:"POST",
+				 beforeSend:function(){
+					layer.msg('正在处理~');
+							
+				},
+				 success:function(r){
+					//console.log(r);
+					if(r.code==1){
+						layer.aler(r.msg);
+					}else{
+						layer.msg('正在准备清理电脑端静态HTML，请不要关闭页面~',function(){
+							window.location.reload();
+						});
+					}
+				},
+				 complete:function(){
+				//请求完成的处理
+				},
+				 error:function(){
+				
+				}
+
+						
+				
+			})
+			
+		
+			
+		}
+
+		function clearhtmlmobile(t){
+			var isshow = $(t).parent().prev().children('.isshow').val();
+			var model = $(t).attr('data');
+			var tid = $(t).parent().prev().prev().children('.tid').val();
+		
+			$.ajax({
+				 url:"{fun U('Index/tohtml')}",
+				// dataType:"json",
+				 async:true,
+				 data:{type:1,model:model,isshow:isshow,tid:tid,terminal:'mobile',clearhtml:1},
+				 type:"POST",
+				 beforeSend:function(){
+					layer.msg('正在处理~');
+							
+				},
+				 success:function(r){
+				
+					if(r.code==1){
+						layer.aler(r.msg);
+					}else{
+						layer.msg('正在准备清理手机端静态HTML，请不要关闭页面~',function(){
+							window.location.reload();
+						});
+					}
+				},
+				 complete:function(){
+				//请求完成的处理
+				},
+				 error:function(){
+				
+				}
+
+						
+				
+			})
+			
+		
+			
+		}
 		
 
         </script>

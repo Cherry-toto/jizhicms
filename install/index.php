@@ -235,6 +235,7 @@ switch($act){
 		$sql = str_replace('jz_',$config['db']['prefix'],$sql);
 		$count=100;
 		$sql = substr($sql,14);
+		$db->query("set names utf8");
 		$db->exec($sql);
 		echo json_encode(array('count'=>$count,"start"=>0,"to"=>$count));
 		exit;
@@ -252,7 +253,8 @@ switch($act){
 		$sql = substr($sql,14);
 		$sql = str_replace('jz_',$config['db']['prefix'],$sql);
 		$count=100;
-		$db = new PDO("mysql:host=".$config['db']['host'].";port=".$config['db']['port'].";dbname=".$config['db']['dbname'],$config['db']['username'], $config['db']['password']);		
+		$db = new PDO("mysql:host=".$config['db']['host'].";port=".$config['db']['port'].";dbname=".$config['db']['dbname'],$config['db']['username'], $config['db']['password']);	
+		$db->query("set names utf8");	
 		$r = $db->exec($sql);
 		echo json_encode(array('count'=>$count,"start"=>0,"to"=>$count,));
 		exit;
@@ -263,7 +265,7 @@ switch($act){
 		$_opts_values = array(PDO::ATTR_PERSISTENT=>true,PDO::ATTR_ERRMODE=>2,PDO::MYSQL_ATTR_INIT_COMMAND=>'SET NAMES utf8');
 		$db = new PDO("mysql:host=".$_POST['host'].";port=".$_POST['port'].";dbname=".$_POST['name'],$_POST['user'], $_POST['password'],$_opts_values); 
 		if($db){
-			$db->exec("SET NAMES UTF8");
+			$db->query("set names utf8");
 			exit(json_encode(['code'=>0,'msg'=>'success']));
 		}
 	}catch(PDOException $e){

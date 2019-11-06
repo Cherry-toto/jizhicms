@@ -139,6 +139,37 @@ function get_domain(){
     return $protocol.$host;
 }
 
+ /**
+  * 解析SQL文件为SQL语句数组
+  * @param string $path
+  * @return array|mixed|string
+  */
+ function parseSQL($path = '')
+ {
+  $sql = file_get_contents($path);
+  //替换掉15个字符串
+  $sql = substr($sql,14);
+  $sql = explode("\r\n", $sql);
+  //先消除--注释
+  $sql = array_filter($sql, function ($data)
+  {
+   if (empty($data) || preg_match('/^--.*/', $data))
+   {
+    return false;
+   }
+   else
+   {
+    return true;
+   }
+  });
+    $sql = implode('', $sql);
+	//删除/**/注释
+	$sql = preg_replace('/\/\*.*\*\//', '', $sql);
+	return $sql;
+  
+  
+ }
+
 //检查安装进度
 $act = isset($_GET['act'])?$_GET['act']:'';
 switch($act){
@@ -154,7 +185,7 @@ switch($act){
 			$i=0;
 			while ( false !== ($file = readdir ( $handle )) ) {
 				//去掉"“.”、“..”以及带“.xxx”后缀的文件
-				if ($file != "." && $file != ".."&&strpos($file,".")) {
+				if ($file != "." && $file != ".."&& (strpos($file,".php")!==false) && (strpos($file,'_v')===false)) {
 					$fileArray[$i]=$file;
 					if($i==100){
 						break;
@@ -235,6 +266,7 @@ switch($act){
 		$sql = str_replace('jz_',$config['db']['prefix'],$sql);
 		$count=100;
 		$sql = substr($sql,14);
+		$sql.="UPDATE `jz_level` SET `name`='".$_POST['admin_name']."',`pass`='".md5(md5($_POST['admin_pass']).'YF')."' , `regtime` = '".time()."' , `logintime` = ".time()."   WHERE id=1";
 		$db->query("set names utf8");
 		$db->exec($sql);
 		echo json_encode(array('count'=>$count,"start"=>0,"to"=>$count));
@@ -246,18 +278,64 @@ switch($act){
 		$config = include('../Conf/config.php');
 		if($_GET['db']==''){
 			$sql = file_get_contents('db.php');
-			$sql.="UPDATE `jz_level` SET `name`='".$_POST['admin_name']."',`pass`='".md5(md5($_POST['admin_pass']).'YF')."' , `regtime` = '".time()."' , `logintime` = ".time()."  ; WHERE id=1";
+			$sql.="UPDATE `jz_level` SET `name`='".$_POST['admin_name']."',`pass`='".md5(md5($_POST['admin_pass']).'YF')."' , `regtime` = '".time()."' , `logintime` = ".time()."   WHERE id=1";
+			$sql = substr($sql,14);
+			$sql = str_replace('jz_',$config['db']['prefix'],$sql);
+			$count=100;
+			$db = new PDO("mysql:host=".$config['db']['host'].";port=".$config['db']['port'].";dbname=".$config['db']['dbname'],$config['db']['username'], $config['db']['password']);	
+			$db->query("set names utf8");	
+			$r = $db->exec($sql);
+			echo json_encode(array('count'=>$count,"start"=>0,"to"=>$count,));
+			exit;
 		}else{
-			$sql = file_get_contents('../backup/'.$_GET['db']);
+			$db = new PDO("mysql:host=".$config['db']['host'].";port=".$config['db']['port'].";dbname=".$config['db']['dbname'],$config['db']['username'], $config['db']['password']);	
+			$db->query("set names utf8");
+			//$sql = file_get_contents('../backup/'.$_GET['db']);
+			$path = $_GET['db'];
+			$filename_arr = explode('.php',$path);
+			$filename = $filename_arr[0];
+			
+			//读取备份数据库
+			$dir = '../backup';
+			$fileArray=array();
+			if (false != ($handle = opendir ( $dir ))) {
+				$i=0;
+				while ( false !== ($file = readdir ( $handle )) ) {
+					//去掉"“.”、“..”以及带“.xxx”后缀的文件
+					if ($file != "." && $file != ".."&& strpos($file,".php")) {
+						if(strpos($file,$filename)!==false){
+							$fileArray[$i]='../backup/'.$file;
+						}
+						
+						$i++;
+					}
+				}
+				//关闭句柄
+				closedir ( $handle );
+			}
+			
+		    foreach($fileArray as $path){
+			   $sql = parseSQL($path);
+			   try{
+				    $n = $db->exec($sql);
+					if(!$n){
+						$msg = $db->errorInfo();
+						if($msg[2]) die('数据库错误：' . $msg[2] . end($sql));
+					}
+			   
+				
+			   }catch (PDOException $e){
+					die($e->getMessage());
+					
+			   }
+			   
+		    }
+
+		    echo json_encode(array('count'=>100,"start"=>0,"to"=>100,));
+			exit;
+ 
 		}
-		$sql = substr($sql,14);
-		$sql = str_replace('jz_',$config['db']['prefix'],$sql);
-		$count=100;
-		$db = new PDO("mysql:host=".$config['db']['host'].";port=".$config['db']['port'].";dbname=".$config['db']['dbname'],$config['db']['username'], $config['db']['password']);	
-		$db->query("set names utf8");	
-		$r = $db->exec($sql);
-		echo json_encode(array('count'=>$count,"start"=>0,"to"=>$count,));
-		exit;
+		
 	
 	break;
 	case 'testdb':

@@ -51,7 +51,7 @@
 	  function getinstalling(start,to){
 		var index = layer.load();
 		$('#main_content').html("正在安装中，请耐心等待！大概需要10-30秒");		
-		$.post("?act=install_testdb",{"start":start,"to":to},  function(data){
+		$.post("?act=install_testdb",{"start":start,"to":to,"admin_name":"<?php echo $_GET['admin_name'];?>","admin_pass":"<?php echo $_GET['admin_pass'];?>"},  function(data){
 		  var count=data.count;
 		  var start =data.to;
 		  var num =Math.round(start/count*100);

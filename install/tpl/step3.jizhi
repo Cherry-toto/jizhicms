@@ -78,7 +78,7 @@
 						<?php if($db==''){?>
 							<div class="row">
 								<div class="col-6">
-									<input class="btn btn-primary rounded btn-block py-2" type="button"  class="button" onclick="location.href='?act=step4'"  value="导入演示数据" />
+									<input class="btn btn-primary rounded btn-block py-2" type="button"  class="button" onclick="location.href='?act=step4&admin_name=<?php echo $admin_name;?>&admin_pass=<?php echo $admin_pass;?>'"  value="导入演示数据" />
 								
 								</div>
 								<div class="col-6">

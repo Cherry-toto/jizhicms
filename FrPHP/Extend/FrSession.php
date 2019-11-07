@@ -30,7 +30,14 @@ class FrSession implements SessionHandlerInterface
 
         
     }
-
+    function checkmkdirs($dir, $mode = 0755)
+    {
+        if (!is_dir($dir)) {
+            $this->checkmkdirs(dirname($dir), $mode);
+            return @mkdir($dir, $mode);
+        }
+        return true;
+    }
 
     /**
      * 当session_start()函数被调用的时候该函数被触发
@@ -65,7 +72,7 @@ class FrSession implements SessionHandlerInterface
     public function read($session_id)
     {	
         if(!is_dir($this->save_path)){
-			__mkdirs($this->save_path);
+			$this->checkmkdirs($this->save_path);
 		}
         $sfile = $this->save_path.'/'.$this->prefix.$session_id.'.php';
         $res = $this->sesstime($sfile);
@@ -86,8 +93,11 @@ class FrSession implements SessionHandlerInterface
     public function write($session_id, $session_data)
     {
         if(!is_dir($this->save_path)){
-			__mkdirs($this->save_path);
+			$this->checkmkdirs($this->save_path);
 		}
+        if( !is_readable($this->save_path) ){
+            return false;
+        }
         $sfile = $this->save_path.'/'.$this->prefix.$session_id.'.php';
 		$life_time = ( -1 == $this->life_time ) ? '300000000' : $this->life_time;
 		

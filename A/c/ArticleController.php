@@ -67,9 +67,6 @@ class ArticleController extends CommonController
 					$sql.=" and istuijian=1 ";
 				}
 				
-			}else{
-				//置顶处理
-				$sql .= ' or (istop=1 and isshow=1) ';
 			}
 			$data = $page->where($sql)->orderby('istop desc,orders desc,addtime desc,id desc')->limit($this->frparam('limit',0,10))->page($this->frparam('page',0,1))->go();
 			$ajaxdata = [];

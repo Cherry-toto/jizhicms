@@ -90,6 +90,8 @@ class ClasstypeController extends CommonController
 			if($a){
 				
 				setCache('classtypetree',null);
+				setCache('classtype',null);
+				setCache('mobileclasstype',null);
 				JsonReturn(array('status'=>1,'info'=>'添加栏目成功，继续添加~','url'=>U('addclass',array('pid'=>$w['pid'],'biaoshi'=>$w['molds']))));
 			}else{
 				JsonReturn(array('status'=>0,'info'=>'新增失败！'));
@@ -155,6 +157,8 @@ class ClasstypeController extends CommonController
 					M($data['molds'])->update(array('tid'=>$data['id']),array('htmlurl'=>$data['htmlurl']));
 				}
 				setCache('classtypetree',null);
+				setCache('classtype',null);
+				setCache('mobileclasstype',null);
 				JsonReturn(array('status'=>1));
 			}else{
 				JsonReturn(array('status'=>0,'info'=>'修改失败！'));
@@ -179,6 +183,8 @@ class ClasstypeController extends CommonController
 			JsonReturn(array('code'=>1,'info'=>'修改失败！'));
 		}
 		setCache('classtypetree',null);
+		setCache('classtype',null);
+		setCache('mobileclasstype',null);
 		JsonReturn(array('code'=>0,'info'=>'修改成功！'));
 		
 	}
@@ -193,6 +199,8 @@ class ClasstypeController extends CommonController
 			$a = M('classtype')->delete(array('id'=>$id));
 			if($a){
 				setCache('classtypetree',null);
+				setCache('classtype',null);
+				setCache('mobileclasstype',null);
 				JsonReturn(array('status'=>1));
 			}else{
 				JsonReturn(array('status'=>0,'info'=>'删除失败！'));
@@ -214,6 +222,8 @@ class ClasstypeController extends CommonController
 		}
 		M('Classtype')->update(array('id'=>$id),array('isshow'=>$x['isshow']));
 		setCache('classtypetree',null);
+		setCache('classtype',null);
+		setCache('mobileclasstype',null);
 	}
 	
 	function get_pinyin(){
@@ -264,6 +274,8 @@ class ClasstypeController extends CommonController
 				
 			}
 			setCache('classtypetree',null);
+			setCache('classtype',null);
+			setCache('mobileclasstype',null);
 			JsonReturn(['code'=>0,'msg'=>'success']);
 		}
 		$this->molds = M('molds')->find(['biaoshi'=>'classtype']);

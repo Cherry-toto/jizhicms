@@ -31,6 +31,10 @@ class TagsController extends CommonController
 				}
 			}
 			$this->tagname = $keywords;
+			$this->tags = M('tags')->find(['keywords'=>$keywords,'isshow'=>1]);
+			if(!$this->tags){
+				Error('标签未找到或已删除！');
+			}
 			$lists_1 = M('article')->findAll(" tags like '%,".$keywords.",%' and isshow=1");
 			$lists_2 = M('product')->findAll(" tags like '%,".$keywords.",%' and isshow=1");
 			
@@ -64,7 +68,35 @@ class TagsController extends CommonController
 			$this->display($this->template.'/tags-details');
 		}else{
 			
-			$this->lists = M('tags')->findAll(['isshow'=>1]);
+			//$this->lists = M('tags')->findAll(['isshow'=>1]);
+			$sql = 'isshow=1';
+			$page = new Page('tags');
+			
+			//手动设置分页条数
+			$limit = 10;
+			if($this->frparam('limit')){
+				$limit = $this->frparam('limit');
+			}
+			//只适合article和product
+			$data = $page->where($sql)->orderby('orders desc,id desc')->limit($limit)->page($this->frpage)->go();
+			
+			
+			$pages = $page->pageList(3,'-');
+			
+			$this->pages = $pages;//组合分页
+			
+			foreach($data as $k=>$v){
+				$data[$k]['url'] = U('tags/index',['id'=>$v['id']]);
+				
+			}
+			
+			$this->lists = $data;//列表数据
+			$this->sum = $page->sum;//总数据
+			$this->listpage = $page->listpage;//分页数组-自定义分页可用
+			$this->prevpage = $page->prevpage;//上一页
+			$this->nextpage = $page->nextpage;//下一页
+			$this->allpage = $page->allpage;//总页数
+			
 			$this->display($this->template.'/tags');
 		}
 		

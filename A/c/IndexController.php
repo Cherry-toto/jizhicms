@@ -240,6 +240,7 @@ class IndexController extends CommonController
 			$left_nav_func = array();
 			$top_nav_func = array();
 			
+			
 			foreach($left_num_count as $v){
 				$lf = 'left_nav_func_'.$v;
 				$left_nav_func[] = $this->frparam($lf,2);
@@ -249,15 +250,16 @@ class IndexController extends CommonController
 				$top_nav_func[] = $this->frparam($lf,2);
 			}
 			
+			
 			$left_layout = array();
 			foreach($left_nav as $k=>$v){
-				if(($v!='' && $left_nav_icon[$k]=='') || ($v=='' && $left_nav_icon[$k]!='') && ($v!='' && $left_nav_icon[$k]!='')){
+				if($v!=''){
 					$left_layout[] = array('name'=>$v,'icon'=>$left_nav_icon[$k],'nav'=>$left_nav_func[$k]);
 				}
 			}
 			$top_layout = array();
 			foreach($top_nav as $k=>$v){
-				if(($v!='' && $top_nav_icon[$k]=='') || ($v=='' && $top_nav_icon[$k]!='') && ($v!='' && $top_nav_icon[$k]!='')){
+				if($v!=''){
 					$top_layout[] = array('name'=>$v,'icon'=>$top_nav_icon[$k],'nav'=>$top_nav_func[$k]);
 				}
 			}
@@ -265,7 +267,6 @@ class IndexController extends CommonController
 			$data['top_layout'] = json_encode($top_layout,JSON_UNESCAPED_UNICODE);
 			$data['gid'] = $this->frparam('gid');
 			$data['isdefault'] = $this->frparam('isdefault');
-			
 			$data['ext'] = $this->frparam('ext',1);
 			$n = M('Layout')->add($data);
 			if($n){

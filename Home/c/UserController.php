@@ -107,6 +107,8 @@ class UserController extends Controller
 		}else{
 			$this->collect_num = 0;
 		}
+		//发布文章统计
+		$this->article_num = M('article')->getCount(['member_id'=>$this->member['id']]);
 		
 		$this->display($this->template.'/user/index');
        
@@ -547,6 +549,169 @@ class UserController extends Controller
 		$_SESSION['cart'] = $cart;
 		JsonReturn(['code'=>0,'msg'=>'success','url'=>$cart]);
 	}
+
+	//文章列表
+	function posts(){
+		$molds = $this->frparam('molds',1,'article');
+		$page = new Page($molds);
+		$sql = 'member_id='.$this->member['id'].'  ';
+		$data = $page->where($sql)->orderby('addtime desc')->page($this->frparam('page',0,1))->go();
+		$pages = $page->pageList();
+		
+		foreach($data as $k=>$v){
+			$data[$k]['time'] = date('Y/m/d',$v['addtime']);
+			$data[$k]['edit'] =  U('User/release',['id'=>$v['id']]);
+			$data[$k]['del'] =  U('User/del',['id'=>$v['id']]);
+			$data[$k]['url'] = gourl($v['id'],$v['htmlurl']);
+			
+		}
+		$this->pages = $pages;
+		$this->lists = $data;
+		$this->sum = $page->sum;
+		if($this->frparam('ajax')){
+
+			JsonReturn(['code'=>0,'data'=>$data]);
+		}
+		
+		
+		$this->display($this->template.'/user/article');
+       
+    }
+    //文章发布和修改
+    function release(){
+    	error_reporting(E_ALL^E_NOTICE);
+
+    	if($_POST){
+
+    		$data = $this->frparam();
+			
+			$data['body'] = $this->frparam('body',4);
+			
+			$w['tid'] = $this->frparam('tid');
+			if(!$w['tid']){
+				Error('请选择栏目！');
+			}
+			$pclass = get_info_table('classtype',array('id'=>$w['tid']));
+			$w['molds'] = $pclass['molds'];
+			$w['htmlurl'] = $pclass['htmlurl'];
+			$w['title'] = $this->frparam('title',1);
+			$w['seo_title'] = $w['title'];
+			$w['litpic'] = $this->frparam('litpic',1);
+			$w['body'] = $data['body'];
+			$w['description'] = newstr(strip_tags($data['body']),200);
+			$w['member_id'] = $this->member['id'];
+			$w['isshow'] = 0;
+			$w['addtime'] = time();
+			if($w['body']==''){
+				Error('内容不能为空！');
+			}
+			if($this->frparam('id')){
+				$a = M($w['molds'])->update(['id'=>$this->frparam('id')],$w);
+				if(!$a){ Error('修改失败，请重试！');}
+				Success('修改成功！',U('posts'));
+			}else{
+				$a = M($w['molds'])->add($w);
+				if(!$a){ Error('发布失败，请重试！');}
+				Success('发布成功！',U('posts'));
+			}
+
+    	}
+    	$this->molds = $this->frparam('molds',1,'article');
+    	if($this->frparam('id')){
+    		$this->data = M('article')->find(['id'=>$this->frparam('id'),'member_id'=>$this->member['id']]);
+    	}else{
+    		$this->data = array();
+    	}
+
+    	$this->classtypetree =  get_classtype_tree();
+    	$this->display($this->template.'/user/article-add');
+
+    }
+	
+	//删除文章
+	function del(){
+		$molds = $this->frparam('molds',1,'article');
+		$id = $this->frparam('id');
+		if(!$id){ Error('链接错误！');}
+		$res = M($molds)->find(['id'=>$id,'member_id'=>$this->member['id']]);
+		if(!$res){ Error('未找到您要的文章！');}
+		$r = M($molds)->delete(['id'=>$id]);
+		if($r){
+			Success('删除成功！',U('posts'));
+		}else{
+			Error('删除失败！');
+		}
+		
+	}
+
+	function uploads(){
+		$file = $this->frparam('filename',1);
+		if ($_FILES[$file]["error"] > 0){
+		  $data['error'] =  "Error: " . $_FILES[$file]["error"];
+		  $data['code'] = 1000;
+		}else{
+		  // echo "Upload: " . $_FILES["file"]["name"] . "<br />";
+		  // echo "Type: " . $_FILES["file"]["type"] . "<br />";
+		  // echo "Size: " . ($_FILES["file"]["size"] / 1024) . " Kb<br />";
+		  // echo "Stored in: " . $_FILES["file"]["tmp_name"];
+		  $pix = explode('.',$_FILES[$file]['name']);
+		  $pix = end($pix);
+		  //检测是否允许前台上传文件
+		  if(!$this->webconf['isopenhomeupload']){
+			  $data['error'] =  "Error: 已关闭前台上传文件功能";
+			  $data['code'] = 1004;
+			  JsonReturn($data);
+		  }
+		 
+			$fileType = webConf('fileType');
+			if(strpos($fileType,strtolower($pix))===false){
+				$data['error'] =  "Error: 文件类型不允许上传！";
+				$data['code'] = 1002;
+				JsonReturn($data);
+			}
+			$fileSize = (int)webConf('fileSize');
+			if($fileSize!=0 && $_FILES[$file]["size"]>$fileSize){
+				$data['error'] =  "Error: 文件大小超过网站内部限制！";
+				$data['code'] = 1003;
+				JsonReturn($data);
+			}
+		  
+		    $filename =  'Public/Home/'.date('Ymd').rand(1000,9999).'.'.$pix;
+		  
+			if(move_uploaded_file($_FILES[$file]['tmp_name'],$filename)){
+				$data['url'] = $filename;
+				$data['code'] = 0;
+				if(isset($_SESSION['member'])){
+					$userid = $_SESSION['member']['id'];
+				}else{
+					$userid = 0;
+				}
+				M('pictures')->add(['litpic'=>'/'.$filename,'addtime'=>time(),'userid'=>$userid,'size'=>$_FILES[$file]["size"]]);
+				
+			}else{
+				$data['error'] =  "Error: 请检查目录[Public/Home]写入权限";
+				$data['code'] = 1001;
+				  
+			} 
+
+			  
+		  
+		  }
+		  
+		  
+		  JsonReturn($data,true);
+		  exit;
+		  
+		
+		
+	}
+
+
+	function jizhi(){
+		$this->display($this->template.'/404');
+	}
+	
+
 	
 
 

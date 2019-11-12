@@ -1,13 +1,31 @@
 <div class="row">
 				<div class="col-4 text-center">
-					<a href="{fun U('index')}">
+					<a href="{$webconf['domain']}/">
 						<i class="fa fa-home ulink"></i>
 					</a>
-					<p class="mx-auto">个人中心</p>
+					<p class="mx-auto">网站首页</p>
+				</div>
+				<div class="col-4 text-center">
+					<a href="{fun U('User/index')}">
+						<i class="fa fa-user ulink"></i>
+					</a>
+					<p class="mx-auto">用户中心</p>
+				</div>
+				<div class="col-4 text-center">
+					<a href="{fun U('User/userinfo')}">
+						<i class="fa fa-address-card ulink"></i>
+					</a>
+					<p class="mx-auto">个人信息</p>
+				</div>
+				<div class="col-4 text-center">
+					<a href="{fun U('User/posts')}">
+						<i class="fa fa-file-text ulink"></i>
+					</a>
+					<p class="mx-auto">发布管理</p>
 				</div>
 				<div class="col-4 text-center">
 					<a href="{fun U('User/order')}">
-						<i class="fa fa-file-text ulink"></i>
+						<i class="fa fa-shopping-cart ulink"></i>
 					</a>
 					<p class="mx-auto">订单列表</p>
 				</div>

@@ -282,13 +282,15 @@ switch($act){
 			$sql = substr($sql,14);
 			$sql = str_replace('jz_',$config['db']['prefix'],$sql);
 			$count=100;
-			$db = new PDO("mysql:host=".$config['db']['host'].";port=".$config['db']['port'].";dbname=".$config['db']['dbname'],$config['db']['username'], $config['db']['password']);	
+			$db = new PDO("mysql:host=".$config['db']['host'].";port=".$config['db']['port'].";dbname=".$config['db']['dbname'],$config['db']['username'], $config['db']['password']);
+			
 			$db->query("set names utf8");	
 			$r = $db->exec($sql);
-			echo json_encode(array('count'=>$count,"start"=>0,"to"=>$count,));
+			echo json_encode(array('count'=>$count,"start"=>0,"to"=>$count,'code'=>0));
 			exit;
 		}else{
-			$db = new PDO("mysql:host=".$config['db']['host'].";port=".$config['db']['port'].";dbname=".$config['db']['dbname'],$config['db']['username'], $config['db']['password']);	
+			$db = new PDO("mysql:host=".$config['db']['host'].";port=".$config['db']['port'].";dbname=".$config['db']['dbname'],$config['db']['username'], $config['db']['password']);
+			
 			$db->query("set names utf8");
 			//$sql = file_get_contents('../backup/'.$_GET['db']);
 			$path = $_GET['db'];
@@ -320,18 +322,20 @@ switch($act){
 				    $n = $db->exec($sql);
 					if(!$n){
 						$msg = $db->errorInfo();
-						if($msg[2]) die('数据库错误：' . $msg[2] . end($sql));
+						if($msg[2]){
+							echo json_encode(array('code'=>1,'msg'=>'数据库错误：' . $msg[2] . end($sql)));exit;
+						} 
 					}
 			   
 				
 			   }catch (PDOException $e){
-					die($e->getMessage());
-					
+			   		echo json_encode(array('code'=>1,'msg'=>$e->getMessage()));
+			   		exit;
 			   }
 			   
 		    }
 
-		    echo json_encode(array('count'=>100,"start"=>0,"to"=>100,));
+		    echo json_encode(array('count'=>100,"start"=>0,"to"=>100,'code'=>0));
 			exit;
  
 		}
@@ -340,14 +344,21 @@ switch($act){
 	break;
 	case 'testdb':
 	try{
-		$_opts_values = array(PDO::ATTR_PERSISTENT=>true,PDO::ATTR_ERRMODE=>2,PDO::MYSQL_ATTR_INIT_COMMAND=>'SET NAMES utf8');
-		$db = new PDO("mysql:host=".$_POST['host'].";port=".$_POST['port'].";dbname=".$_POST['name'],$_POST['user'], $_POST['password'],$_opts_values); 
-		if($db){
+		//$_opts_values = array(PDO::ATTR_PERSISTENT=>true,PDO::ATTR_ERRMODE=>2,PDO::MYSQL_ATTR_INIT_COMMAND=>'SET NAMES utf8');
+		//$db = new PDO("mysql:host=".$_POST['host'].";port=".$_POST['port'].";dbname=".$_POST['name'],$_POST['user'], $_POST['password'],$_opts_values); 
+		$db = new PDO("mysql:host=".$_POST['host'].";port=".$_POST['port'],$_POST['user'], $_POST['password']);
+		$newtable = "CREATE DATABASE IF NOT EXISTS `" . $_POST['name'] . "` DEFAULT CHARACTER SET utf8;";
+		if($db->exec($newtable)){
 			$db->query("set names utf8");
-			exit(json_encode(['code'=>0,'msg'=>'success']));
+			echo json_encode(['code'=>0,'msg'=>'success']);
+			exit;
+		}else{
+			echo json_encode(['code'=>1,'msg'=>'您没有创建数据库权限，请手动填写数据库！']);
+			exit;	
 		}
 	}catch(PDOException $e){
-		exit(json_encode(['code'=>1,'msg'=>'数据库连接失败，请检查数据库配置！']));
+		echo json_encode(['code'=>1,'msg'=>'数据库连接失败，请检查数据库配置！']);
+		exit;
 	}
 	
 	break;

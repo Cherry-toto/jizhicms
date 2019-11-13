@@ -776,6 +776,7 @@ layui.use("laydate", function(){
 						$body = explode(',',$v['body']);
 				$biaoshi = M('molds')->getField(['id'=>$body[0]],'biaoshi');
 				$datalist = M($biaoshi)->findAll();
+				$l.='<option value="0">请选择关联项</option>';
 				foreach($datalist as $vv){
 					$l.='<option value="'.$vv['id'].'" ';
 					if($data[$v['field']]==$vv['id']){

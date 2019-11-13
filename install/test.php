@@ -30,6 +30,7 @@ CREATE TABLE `jz_article` (
   `ishot` varchar(2) NOT NULL DEFAULT '0' COMMENT '是否头条',
   `istuijian` varchar(2) NOT NULL DEFAULT '0' COMMENT '是否推荐',
   `tags` varchar(255) DEFAULT NULL,
+  `member_id` int(11) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM AUTO_INCREMENT=29 DEFAULT CHARSET=utf8;
 -- ----------------------------
@@ -217,6 +218,8 @@ INSERT INTO `jz_fields` (`id`,`field`,`molds`,`fieldname`,`tips`,`fieldtype`,`ti
 INSERT INTO `jz_fields` (`id`,`field`,`molds`,`fieldname`,`tips`,`fieldtype`,`tids`,`fieldlong`,`body`,`orders`,`ismust`,`isshow`,`issearch`,`islist`,`format`,`vdata`) VALUES ('13','num','tags','替换次数','一篇文章内替换的次数，默认-1，全部替换','4',',1,6,15,16,7,8,9,2,10,18,11,19,12,20,13,3,4,5,14,17,','4','','0','0','1','0','1','','-1');
 INSERT INTO `jz_fields` (`id`,`field`,`molds`,`fieldname`,`tips`,`fieldtype`,`tids`,`fieldlong`,`body`,`orders`,`ismust`,`isshow`,`issearch`,`islist`,`format`,`vdata`) VALUES ('14','target','tags','打开方式','','7',',1,6,15,16,7,8,9,2,10,18,11,19,12,20,13,3,4,5,14,17,','50','新窗口=_blank,本窗口=_self','0','0','1','0','1','','_blank');
 INSERT INTO `jz_fields` (`id`,`field`,`molds`,`fieldname`,`tips`,`fieldtype`,`tids`,`fieldlong`,`body`,`orders`,`ismust`,`isshow`,`issearch`,`islist`,`format`,`vdata`) VALUES ('15','number','tags','标签数','不需要填写，程序自动处理','4',',1,6,7,8,9,2,10,11,12,13,3,4,5,14,','11','','0','0','1','0','1','','0');
+INSERT INTO `jz_fields` (`id`,`field`,`molds`,`fieldname`,`tips`,`fieldtype`,`tids`,`fieldlong`,`body`,`orders`,`ismust`,`isshow`,`issearch`,`islist`,`format`,`vdata`) VALUES ('16','member_id','article','发布用户','前台会员，无需填写','13',',1,6,7,8,9,2,10,11,12,13,3,4,5,14,','11','3,username','0','0','1','1','0','','0');
+INSERT INTO `jz_fields` (`id`,`field`,`molds`,`fieldname`,`tips`,`fieldtype`,`tids`,`fieldlong`,`body`,`orders`,`ismust`,`isshow`,`issearch`,`islist`,`format`,`vdata`) VALUES ('17','member_id','product','发布用户','前台会员，无需填写','13',',1,6,7,8,9,2,10,11,12,13,3,4,5,14,','11','3,username','0','0','1','1','0','','0');
 
 -- ----------------------------
 -- Table structure for jz_hook
@@ -616,6 +619,7 @@ CREATE TABLE `jz_product` (
   `ishot` varchar(2) NOT NULL DEFAULT '0' COMMENT '是否头条',
   `istuijian` varchar(2) NOT NULL DEFAULT '0' COMMENT '是否推荐',
   `tags` varchar(255) DEFAULT NULL,
+  `member_id` int(11) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM AUTO_INCREMENT=24 DEFAULT CHARSET=utf8 COMMENT='商品表';
 -- ----------------------------
@@ -844,7 +848,7 @@ CREATE TABLE `jz_sysconfig` (
 -- ----------------------------
 -- Records of jz_sysconfig
 -- ----------------------------
-INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`) VALUES ('1','web_version','系统版号','','0','1.6.1');
+INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`) VALUES ('1','web_version','系统版号','','0','1.6.2');
 INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`) VALUES ('2','web_name','网站SEO名称','','0','极致CMS建站系统');
 INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`) VALUES ('3','web_keyword','网站SEO关键词','','0','极致CMS');
 INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`) VALUES ('4','web_desc','网站SEO描述','','0','极致CMS');

@@ -809,6 +809,9 @@ layui.use("laydate", function(){
 				    $body = explode(',',$fields['body']);
 					$biaoshi = M('molds')->getField(['id'=>$body[0]],'biaoshi');
 					$res = M($biaoshi)->getField(['id'=>$data],$body[1]);
+					if(!$res){
+						return '[ 空 ]';
+					}
 					return $res;
 					
 					

@@ -25,7 +25,7 @@ class AdminController extends CommonController
 		$page = new Page('Level_group');
 		$sql = ' 1=1 ';
 		if($this->admin['gid']!=1){
-			$sql.=" and gid!=1 ";
+			$sql.=" and id!=1 ";
 		}
 		$data = $page->where($sql)->orderby('id desc')->page($this->frparam('page',0,1))->go();
 		$pages = $page->pageList();

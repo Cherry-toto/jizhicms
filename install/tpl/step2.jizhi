@@ -89,7 +89,7 @@
 										<td>数据库名称:</td>
 										<td>
 											<input type="text" class="text" id="name" name="name" value="jizhicms<?php echo mt_rand(1000,9999);?>" placeholder="jizhicms" />
-											<label class="normal nameinfo">提前创建好</label>
+											<label class="normal nameinfo">本地自动创建，服务器空间需要超级管理员账户，否则需要手动填写</label>
 										</td>
 									  </tr>
 									   <tr>

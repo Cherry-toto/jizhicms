@@ -198,10 +198,13 @@ class MoldsController extends CommonController
 					// JsonReturn(array('code'=>1,'msg'=>'数据库表删除失败！请检查数据库用户权限！'));
 				// }
 				//清空字段管理中的字段
-				$re = M('Fields')->delete(array('molds'=>$molds['biaoshi']));
-				if(!$re){
-					JsonReturn(array('code'=>1,'msg'=>'字段表记录未清除，请手动清除！'));
+				if(M('Fields')->find(array('molds'=>$molds['biaoshi']))){
+					$re = M('Fields')->delete(array('molds'=>$molds['biaoshi']));
+					if(!$re){
+						JsonReturn(array('code'=>1,'msg'=>'字段表记录未清除，请手动清除！'));
+					}
 				}
+				
 				
 				//删除权限管理
 				$ruler['fc'] = 'Extmolds/index/molds/'.$molds['biaoshi'];

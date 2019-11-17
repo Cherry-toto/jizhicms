@@ -108,7 +108,7 @@
             function ruler_del(obj,id){
                 layer.confirm('确认要删除吗？',function(index){
 				
-					$.POST("{fun U('Rulers/deleterulers')}",{id:id},function(r){
+					$.post("{fun U('Rulers/deleterulers')}",{id:id},function(r){
 							var r = JSON.parse(r);
 							if(r.code==0){
 							 //发异步删除数据

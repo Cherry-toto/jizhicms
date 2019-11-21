@@ -105,8 +105,11 @@ class MoldsController extends CommonController
 					$ruler['name'] = '批量复制'.$data['name'];
 					$ruler['fc'] = 'Extmolds/copyAll/molds/'.$data['biaoshi'];
 					M('Ruler')->add($ruler);
-					$ruler['name'] = '批量修改'.$data['name'].'排序';
+					$ruler['name'] = '批量修改'.$data['name'].'列表';
 					$ruler['fc'] = 'Extmolds/editOrders/molds/'.$data['biaoshi'];
+					M('Ruler')->add($ruler);
+					$ruler['name'] = '批量审核'.$data['name'];
+					$ruler['fc'] = 'Extmolds/checkAll/molds/'.$data['biaoshi'];
 					M('Ruler')->add($ruler);
 					JsonReturn(array('code'=>0,'msg'=>'新增模块成功，快去设置表字段吧！','url'=>U('Fields/index',['molds'=>$data['biaoshi']])));
 				
@@ -198,10 +201,13 @@ class MoldsController extends CommonController
 					// JsonReturn(array('code'=>1,'msg'=>'数据库表删除失败！请检查数据库用户权限！'));
 				// }
 				//清空字段管理中的字段
-				$re = M('Fields')->delete(array('molds'=>$molds['biaoshi']));
-				if(!$re){
-					JsonReturn(array('code'=>1,'msg'=>'字段表记录未清除，请手动清除！'));
+				if(M('Fields')->find(array('molds'=>$molds['biaoshi']))){
+					$re = M('Fields')->delete(array('molds'=>$molds['biaoshi']));
+					if(!$re){
+						JsonReturn(array('code'=>1,'msg'=>'字段表记录未清除，请手动清除！'));
+					}
 				}
+				
 				
 				//删除权限管理
 				$ruler['fc'] = 'Extmolds/index/molds/'.$molds['biaoshi'];
@@ -222,6 +228,8 @@ class MoldsController extends CommonController
 				$ruler['fc'] = 'Extmolds/changeType/molds/'.$molds['biaoshi'];
 				M('Ruler')->delete($ruler);
 				$ruler['fc'] = 'Extmolds/copyAll/molds/'.$molds['biaoshi'];
+				M('Ruler')->delete($ruler);
+				$ruler['fc'] = 'Extmolds/checkAll/molds/'.$molds['biaoshi'];
 				M('Ruler')->delete($ruler);
 				
 				JsonReturn(array('code'=>0,'msg'=>'删除成功！'));

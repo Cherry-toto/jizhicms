@@ -125,8 +125,8 @@ class CommentController extends CommonController
 				$v['new_zid'] = $v['zid']!=0 ? U('Comment/editcomment',array('id'=>$v['zid'])) : '';
 				$v['new_pid'] = $v['pid']!=0 ? U('Comment/editcomment',array('id'=>$v['pid'])) : '';
 				
-				$v['new_isshow'] = $v['isshow']==1 ? '<span class="layui-badge layui-bg-green">正常</span>' : '<span class="layui-badge">被删除</span>';
-				$v['new_isread'] = $v['isread']==1 ? '<span class="layui-badge layui-bg-green">已读</span>' : '<span class="layui-badge">未读</span>';
+				$v['new_isshow'] = $v['isshow']==1 ? '已审' : '未审';
+				$v['new_isread'] = $v['isread']==1 ? '已读' : '未读';
 				$v['new_addtime'] = date('Y-m-d H:i:s',$v['addtime']);
 				$v['edit_url'] = U('Comment/editcomment',array('id'=>$v['id']));
 				
@@ -200,6 +200,18 @@ class CommentController extends CommonController
 		}
 	}
 	
+	
+	//批量审核
+	function checkAll(){
+		$data = $this->frparam('data',1);
+		if($data!=''){
+			$isshow = $this->frparam('isshow')==1 ? 1 : 0;
+			M('comment')->update('id in('.$data.')',['isshow'=>$isshow]);
+			JsonReturn(array('code'=>0,'msg'=>'批量审核成功！'));
+		}else{
+			JsonReturn(array('code'=>1,'msg'=>'批量审核失败！'));
+		}
+	}
 	
 	
 	

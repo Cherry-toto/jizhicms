@@ -23,6 +23,7 @@
                     <p>介绍支付流程，支付选择，支付确认等操作</p>
                 </div>
                 <form action="{fun U('pay')}" id="myform" method="POST">
+				<input name="go" value="1" type="hidden" />
 				<input name="orderno" value="{$order['orderno']}" type="hidden" />
                     <div class="products">
                         <h3 class="title">订单确认</h3>

@@ -65,9 +65,26 @@
 			   <button class="layui-btn layui-btn-danger" onclick="delAll()"><i class="layui-icon">&#xe640;</i>批量删除</button>
 		 {/if}   
 			
+		 {if(checkAction('Message/checkAll'))}	
+		  <div class="layui-input-inline" style="margin-right: 10px;margin-bottom: 10px;width:150px;">
+			   <select class="layui-btn" id="change_isshow"  lay-filter="change_isshow" >
+			   <option value="0">批量审核</option>
+			   <option   value="1">审核</option>
+			   <option   value="2">未审核</option>
+			  
+			   </select>
+			   </div>
+		  {/if}
+
 		 </div>
 		</script>
-
+		<script type="text/html" id="isshow">
+			{{#  if(d.isshow ==1){ }}
+			<span class="layui-badge layui-bg-green">已审核</span>
+		    {{#  } else{ }}
+		    <span class="layui-badge">未审核</span>
+		    {{#  } }}
+		</script>
 	 
 		<script>
 	 
@@ -83,6 +100,7 @@
 			  table.render({
 				elem: '#jizhi_table'
 				,height: 650
+				,cellMinWidth: 80
 				,url: window.location.href+'?ajax=1' //数据接口
 				,page: true //开启分页
 				,size:'lg'
@@ -102,12 +120,12 @@
 				,cols: [[ //表头
 				  {field: 'id', title: 'ID', width:50, sort: true, fixed:'left'}
 				  ,{type:'checkbox'}
-				  ,{field: 'new_isshow', title: '是否审核', width: 100}
+				  ,{field: 'new_isshow', title: '是否审核', width: 100,templet: '#isshow'}
 				  ,{field: 'orders', title: '排序',width: 100, sort: true}
 				  ,{field: 'new_tid', title: '栏目',width:100, sort: true}
 				  ,{field: 'aid', title: '内容ID',width:100}
-				  ,{field: 'title', title: '标题',width:250,  sort: true}
-				  {foreach $fields_list as $k=>$v},{field: '{$v['field']}',width:150, title: '{$v['fieldname']}'}{/foreach}
+				  ,{field: 'title', title: '标题',  sort: true}
+				  {foreach $fields_list as $k=>$v},{field: '{$v['field']}', title: '{$v['fieldname']}'}{/foreach}
 				  ,{field: 'body', title: '内容', width: 350}
 				 
 				  ,{field: 'new_addtime', title: '时间',width:160}
@@ -191,6 +209,49 @@
 					
 				});
 				
+				form.on('select(change_isshow)', function(data){
+					
+					
+					var datas =  $("#select_data").val();
+					var isshow = parseInt(data.value);
+					if(isshow==0){
+						alert('请选择审核选项！');return false;
+					}
+					if(datas==''){
+						alert('请选择审核对象！');return false;
+					}
+					if(isshow==1){
+						var tip = '已审核';
+					}else if(isshow==2){
+						var tip = '未审核';
+					}
+					layer.confirm('确认要批量处理['+datas+']的为['+tip+']吗？',function(index){
+						
+						$.post("{fun U('Message/checkAll')}",{data:datas,isshow:isshow},function(r){
+								
+								var r = JSON.parse(r);
+								if(r.code==0){
+									$("#select_data").val('');
+									layer.msg('批量处理成功', {icon: 1,time:1000},function(){
+										table.reload('jizhi_table', {
+										  url: window.location.href+'?ajax=1'
+										  ,where: {} //设定异步数据接口的额外参数
+										 
+										});
+									});
+									
+								}else{
+									
+									layer.msg(r.msg,{icon: 5,time:1000});
+								}
+						})
+						
+						
+						
+					});
+					
+				
+			    });
 				
 				
 				form.on('submit(search)', function(data){

@@ -77,6 +77,7 @@
 		</script>
 		<script type="text/html" id="toolbar">
 		 <div class="layui-btn-container" style="font-size:15px;">
+		
 		 {if(checkAction('Article/deleteAll'))}	
 			   <button class="layui-btn layui-btn-danger" onclick="delAll()"><i class="layui-icon">&#xe640;</i>批量删除</button>
 	     {/if}
@@ -105,14 +106,47 @@
 			   </select>
 			   </div>
 		 {/if}
+		 {if(checkAction('Article/checkAll'))}	
+		  <div class="layui-input-inline" style="margin-right: 10px;margin-bottom: 10px;width:150px;">
+			   <select class="layui-btn" id="change_isshow"  lay-filter="change_isshow" >
+			   <option value="0">批量审核</option>
+			   <option   value="1">显示</option>
+			   <option   value="2">不显示</option>
+			  
+			   </select>
+			   </div>
+		 {/if}
 		 {if(checkAction('Article/addarticle'))}	
 			   <button class="layui-btn" onclick="x_admin_show('新增{$molds['name']}','{fun U('Article/addarticle')}')"><i class="layui-icon">&#xe608;</i>新增</button>
 		 {/if}  
 			
 		 </div>
 		</script>
-
-	 
+		<script type="text/html" id="tuijian">
+			{{#  if(d.istop ==1){ }}
+			<span class="layui-badge layui-bg-black">顶</span>
+			{{#  } else if(d.ishot==1){ }}
+		        <span class="layui-badge">热</span>
+		    {{#  } else if(d.istuijian==1){ }}
+		        <span class="layui-badge layui-bg-green">荐</span>
+		    {{#  } else{ }}
+		    	{{d.tuijian}}
+		    {{#  } }}
+		</script>
+		<script type="text/html" id="isshow">
+			{{#  if(d.isshow ==1){ }}
+			<span class="layui-badge layui-bg-green">显示</span>
+		    {{#  } else{ }}
+		    <span class="layui-badge">不显示</span>
+		    {{#  } }}
+		</script>
+	 	<script type="text/html" id="litpic">
+			{{#  if(d.litpic ==''){ }}
+			无
+		    {{#  } else{ }}
+		    <a href="{{d.litpic}}" target="_blank"><img src="{{d.litpic}}" width="100px" /></a>
+		    {{#  } }}
+		</script>
 		<script>
 	 
 	   
@@ -127,6 +161,7 @@
 			  table.render({
 				elem: '#jizhi_table'
 				,height: 650
+				,cellMinWidth: 80
 				,url: window.location.href+'?ajax=1' //数据接口
 				,page: true //开启分页
 				,size:'lg'
@@ -146,15 +181,16 @@
 				,cols: [[ //表头
 				  {field: 'id', title: 'ID', width:50, sort: true, fixed:'left'}
 				  ,{type:'checkbox'}
-				  ,{field: 'orders', title: '排序',width: 100, edit:'text',sort: true}
-				  ,{field: 'new_tid', title: '栏目',width:150, sort: true}
-				  ,{field: 'title', title: '标题',width:200,  sort: true}
-				  ,{field: 'new_litpic', title: '缩略图',width:150} 
-				  {foreach $fields_list as $v},{field: '{$v['field']}',width:150, title: '{$v['fieldname']}'}{/foreach}
-				  ,{field: 'new_isshow', title: '是否显示', width: 100}
-				  ,{field: 'new_addtime', title: '时间',width:160}
+				  ,{field: 'orders', title: '排序', width: 100, edit:'text',sort: true}
+				  ,{field: 'new_tid', title: '栏目', sort: true}
+				  ,{field: 'tuijian', title: '推荐',width:80, templet: '#tuijian'}
+				  ,{field: 'title', title: '标题', edit:'text', sort: true}
+				  ,{field: 'new_litpic', title: '缩略图',templet: '#litpic'} 
+				  {foreach $fields_list as $v},{field: '{$v['field']}', title: '{$v['fieldname']}'}{/foreach}
+				  ,{field: 'new_isshow', title: '显示',width:100, templet: '#isshow'}
+				  ,{field: 'new_addtime', title: '时间'}
 				  {if(checkAction('Article/editarticle') || checkAction('Article/deletearticle') || checkAction('Article/copyarticle'))}
-				  ,{field: '', title: '操作',width:260, toolbar: '#rightbar', fixed:'right'}
+				  ,{field: '', title: '操作',width:280, toolbar: '#rightbar', fixed:'right'}
 				  {/if}
 				 
 				]]
@@ -167,7 +203,6 @@
 					 
 					switch(layEvent){
 					  case 'edit':
-						//console.log(data);
 						 x_admin_show('编辑',data.edit_url);
 					  break;
 					  case 'view':
@@ -260,9 +295,9 @@
 				  console.log(obj.data); //所在行的所有相关数据  
 				*/
 				  var id = obj.data.id;
-				  var order = obj.value;
-				
-					$.post("{fun U('Article/editArticleOrders')}",{id:id,orders:order},function(r){
+				  var value = obj.value;
+				  var field = obj.field;
+				  $.post("{fun U('Article/editArticleOrders')}",{'id':id,'value':value,'field':field},function(r){
 						var r = JSON.parse(r);
 						if(r.code==0){
 							$("#select_data").val('');
@@ -279,6 +314,7 @@
 				  
 				  
 				});
+
 				
 				form.on('submit(search)', function(data){
 					//data.field
@@ -355,6 +391,50 @@
 								if(r.code==0){
 									$("#select_data").val('');
 									layer.msg('批量修改成功', {icon: 1,time:1000},function(){
+										table.reload('jizhi_table', {
+										  url: window.location.href+'?ajax=1'
+										  ,where: {} //设定异步数据接口的额外参数
+										 
+										});
+									});
+									
+								}else{
+									
+									layer.msg(r.msg,{icon: 5,time:1000});
+								}
+						})
+						
+						
+						
+					});
+					
+				
+			    });
+
+			    form.on('select(change_isshow)', function(data){
+					
+					
+					var datas =  $("#select_data").val();
+					var isshow = parseInt(data.value);
+					if(isshow==0){
+						alert('请选择审核选项！');return false;
+					}
+					if(datas==''){
+						alert('请选择审核对象！');return false;
+					}
+					if(isshow==1){
+						var tip = '显示';
+					}else if(isshow==2){
+						var tip = '不显示';
+					}
+					layer.confirm('确认要批量处理['+datas+']的为['+tip+']吗？',function(index){
+						
+						$.post("{fun U('Article/checkAll')}",{data:datas,isshow:isshow},function(r){
+								
+								var r = JSON.parse(r);
+								if(r.code==0){
+									$("#select_data").val('');
+									layer.msg('批量审核成功', {icon: 1,time:1000},function(){
 										table.reload('jizhi_table', {
 										  url: window.location.href+'?ajax=1'
 										  ,where: {} //设定异步数据接口的额外参数

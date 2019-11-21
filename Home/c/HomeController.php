@@ -491,7 +491,8 @@ class HomeController extends CommonController
 		//body
 		if(array_key_exists('body',$details)){
 			$con = $details['body'];
-			$tags = M('tags')->findAll(['isshow'=>1]);
+			$sql = " isshow=1 and (url!='' or newname!='') "; 
+			$tags = M('tags')->findAll($sql);
 			if($tags){
 				foreach($tags as $v){
 					// $name = 'CMS';
@@ -503,7 +504,12 @@ class HomeController extends CommonController
 					$target = $v['target'];
 					$name = $v['keywords'];
 					$newname = $v['newname']!='' ? $v['newname'] : $name;
-					$astr = "<a href='".$url."' target='".$target."' title='".$newname."'><strong>".$newname."</strong></a>";
+					if($url!=''){
+						$astr = "<a href='".$url."' target='".$target."' title='".$newname."'><strong>".$newname."</strong></a>";
+					}else{
+						$astr = $newname;
+					}
+					
 					$con = preg_replace( '|(<img\b[^>]*?)('.$name.')([^>]*?\=)([^>]*?)('.$name.')([^>]*?>)|U', '$1%&&&&&%$3$4%&&&&&%$6', $con);
 					$con = preg_replace( '|(<img\b[^>]*?)('.$name.')([^>]*?>)|U', '$1%&&&&&%$3', $con);
 					$con = preg_replace( '|(<a\b[^>]*?)('.$name.')([^>]*?>)(<[^<]*?)('.$name.')([^>]*?>)|U', '$1%&&&&&%$3$4%&&&&&%$6', $con);

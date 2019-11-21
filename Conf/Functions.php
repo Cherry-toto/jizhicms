@@ -510,8 +510,8 @@ function classTypeDataMobile(){
 	 
  }
  //获取指定表中所有内容
- function get_all_info_table($table,$where=null,$order=null,$limit=null){
-	 $data = M($table)->findAll($where,$order,$limit);
+ function get_all_info_table($table,$where=null,$order=null,$limit=null,$field=null){
+	 $data = M($table)->findAll($where,$order,$field,$limit);
 	 return $data;
  }
  
@@ -619,7 +619,7 @@ function classTypeDataMobile(){
 			 case 7:
 			 case 12:
 			 $fields_search .= '<div class="layui-input-inline">
-			  <select name="'.$v['field'].'" class="layui-inline">
+			  <select name="'.$v['field'].'" lay-search="" class="layui-inline">
 			  <option value="">请选择'.$v['fieldname'].'</option>';
 			 foreach(explode(',',$v['body']) as $vv){
 			   $s = explode('=',$vv);
@@ -643,7 +643,7 @@ function classTypeDataMobile(){
 			 break;
 			 case 8:
 			 $fields_search .= '<div class="layui-input-inline">
-			  <select name="'.$v['field'].'" class="layui-inline">
+			  <select name="'.$v['field'].'" lay-search="" class="layui-inline">
 			  <option value="">请选择'.$v['fieldname'].'</option>';
 			 foreach(explode(',',$v['body']) as $vv){
 			   $s = explode('=',$vv);
@@ -684,7 +684,7 @@ layui.use("laydate", function(){
 			  $moldsdata = M('molds')->find(['id'=>$body[0]],'');
 			  $datalist = M($moldsdata['biaoshi'])->findAll();
 			 $fields_search .= '<div class="layui-input-inline">
-			  <select name="'.$v['field'].'" class="layui-inline">
+			  <select name="'.$v['field'].'" lay-search="" class="layui-inline">
 			  <option value="">请选择关联'.$moldsdata['name'].'</option>';
 			 foreach($datalist as $vv){
 			   $fields_search .= '<option ';
@@ -914,7 +914,7 @@ function gourl($id,$htmlurl=null,$molds='article'){
 		if(isset($_SESSION['terminal'])){
 			$htmlpath = $_SESSION['terminal']=='mobile' ? webConf('mobile_html') : webConf('pc_html');
 		}else{
-			$htmlpath = isMobile()?webConf('mobile_html'):webConf('pc_html');
+			$htmlpath = (isMobile() && webConf('iswap')==1)?webConf('mobile_html'):webConf('pc_html');
 		}
 		$htmlpath = ($htmlpath=='' || $htmlpath=='/') ? '' : '/'.$htmlpath; 
 		if($htmlurl!=null){
@@ -932,7 +932,7 @@ function all_url($id,$molds='article',$htmlurl=null){
 		if(isset($_SESSION['terminal'])){
 			$htmlpath = $_SESSION['terminal']=='mobile' ? webConf('mobile_html') : webConf('pc_html');
 		}else{
-			$htmlpath = isMobile()?webConf('mobile_html'):webConf('pc_html');
+			$htmlpath = isMobile() && webConf('isopen')?webConf('mobile_html'):webConf('pc_html');
 		}
 		$htmlpath = ($htmlpath=='' || $htmlpath=='/') ? '' : '/'.$htmlpath; 
 		if($htmlurl!=null){
@@ -1303,6 +1303,12 @@ function formatTime($sTime, $formt = 'Y-m-d') {
     }
 }
 
+//过滤HTML代码函数
+function htmldecode($data){
+	$data = strip_tags($data);
+	$data = str_replace('&nbsp;','',$data);
+	return $data;
+}
 
 
 //引入扩展方法文件

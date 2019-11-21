@@ -67,6 +67,16 @@ class SysController extends CommonController
 			   
 		   }
 		   
+		   if($this->frparam('isdebug')){
+		   		$config = include(APP_PATH.'Conf/config.php');
+		   		$config['APP_DEBUG'] = true;
+		   		$ress = file_put_contents(APP_PATH.'Conf/config.php', '<?php return ' . var_export($config, true) . '; ?>');
+		   }else{
+		   		$config = include(APP_PATH.'Conf/config.php');
+		   		$config['APP_DEBUG'] = false;
+		   		$ress = file_put_contents(APP_PATH.'Conf/config.php', '<?php return ' . var_export($config, true) . '; ?>');
+		   }
+
 		   $custom = M('sysconfig')->findAll('type!=0');
 		   setCache('customconfig',null);
 		   setCache('classtype',null);

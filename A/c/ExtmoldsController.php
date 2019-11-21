@@ -93,7 +93,7 @@ class ExtmoldsController extends Controller
 					$v['new_tid'] = '[未分类]';
 				}
 				
-				$v['new_isshow'] = $v['isshow']==1 ? '<span class="layui-badge layui-bg-green">显示</span>' : '<span class="layui-badge">不显示</span>';
+				$v['new_isshow'] = $v['isshow']==1 ? '显示' : '不显示';
 				$v['view_url'] = $v['htmlurl']!='' ? get_domain().'/'.$v['htmlurl'].'/'.$v['id'] : '';
 				$v['edit_url'] = U('Extmolds/editmolds',array('id'=>$v['id'],'molds'=>$molds));
 				
@@ -246,13 +246,16 @@ class ExtmoldsController extends Controller
 	
 		//修改排序
 	function editOrders(){
-		$w['orders'] = $this->frparam('orders');
+
+		$field = $this->frparam('field',1);
+		$w[$field] = $this->frparam('value',1);
 		$molds = $this->frparam('molds',1);
 		$r = M($molds)->update(array('id'=>$this->frparam('id')),$w);
 		if(!$r){
 			JsonReturn(array('code'=>1,'info'=>'修改失败！'));
 		}
 		JsonReturn(array('code'=>0,'info'=>'修改成功！'));
+
 	}
 	//批量修改栏目
 	function changeType(){
@@ -284,6 +287,19 @@ class ExtmoldsController extends Controller
 			}
 			JsonReturn(array('code'=>0,'msg'=>'批量复制成功！'));
 				
+		}
+	}
+
+	//批量审核
+	function checkAll(){
+		$data = $this->frparam('data',1);
+		$molds = $this->frparam('molds',1);
+		if($data!=''){
+			$isshow = $this->frparam('isshow')==1 ? 1 : 0;
+			M($molds)->update('id in('.$data.')',['isshow'=>$isshow]);
+			JsonReturn(array('code'=>0,'msg'=>'批量审核成功！'));
+		}else{
+			JsonReturn(array('code'=>1,'msg'=>'批量审核失败！'));
 		}
 	}
 }

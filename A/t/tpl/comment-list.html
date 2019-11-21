@@ -66,10 +66,20 @@
 		 <div class="layui-btn-container" style="font-size:15px;">
 		 {if(checkAction('Comment/deleteAll'))}
 			   <button class="layui-btn layui-btn-danger" onclick="delAll()"><i class="layui-icon">&#xe640;</i>批量删除</button>
-		 {/if}	   
+		 {/if}	 
+		  {if(checkAction('Comment/checkAll'))}	
+		  <div class="layui-input-inline" style="margin-right: 10px;margin-bottom: 10px;width:150px;">
+			   <select class="layui-btn" id="change_isshow"  lay-filter="change_isshow" >
+			   <option value="0">批量审核</option>
+			   <option   value="1">审核</option>
+			   <option   value="2">未审核</option>
+			   </select>
+			   </div>
+		  {/if}
+  
 		 {if(checkAction('Comment/addcomment'))}	   
 			   <button class="layui-btn" onclick="x_admin_show('添加评论','{fun U('Comment/addcomment')}')"><i class="layui-icon">&#xe608;</i>添加评论</button>
-		 {/if}	  
+		 {/if}
 			
 		 </div>
 		</script>
@@ -113,6 +123,20 @@
 		{/if}
 		{{#  } }}
 		</script>
+		<script type="text/html" id="isshow">
+			{{#  if(d.isshow ==1){ }}
+			<span class="layui-badge layui-bg-green">已审</span>
+		    {{#  } else{ }}
+		    <span class="layui-badge">未审</span>
+		    {{#  } }}
+		</script>
+		<script type="text/html" id="isread">
+			{{#  if(d.isread ==1){ }}
+			<span class="layui-badge layui-bg-green">已读</span>
+		    {{#  } else{ }}
+		    <span class="layui-badge">未读</span>
+		    {{#  } }}
+		</script>
 		<script>
 	 
 	   
@@ -127,6 +151,7 @@
 			  table.render({
 				elem: '#jizhi_table'
 				,height: 650
+				,cellMinWidth: 80
 				,url: window.location.href+'?ajax=1' //数据接口
 				,page: true //开启分页
 				,size:'lg'
@@ -147,15 +172,15 @@
 				  {field: 'id', title: 'ID', width:50, sort: true, fixed:'left'}
 				  ,{type:'checkbox'}
 				  ,{field: 'new_username', title: '用户名',width: 150,templet:'#user', sort: true}
-				  ,{field: 'new_tid', title: '所属栏目',width:150, sort: true}
+				  ,{field: 'new_tid', title: '所属栏目', sort: true}
 				  ,{field: 'new_aid', title: '所属文章',width:100,templet:'#aid' }
 				  ,{field: 'new_zid', title: '主回复帖子',width:100,templet:'#zid'}
 				  ,{field: 'new_pid', title: '回复帖子',width:100,templet:'#pid'}
-				  ,{field: 'body', title: '评论内容',width:300} 
+				  ,{field: 'body', title: '评论内容'} 
 				  {foreach $fields_list as $v},{field: '{$v['field']}',width:150, title: '{$v['fieldname']}'}{/foreach}
 				  ,{field: 'likes', title: '喜欢点赞', width: 100,sort: true}
-				  ,{field: 'new_isread', title: '是否已读', width: 100}
-				  ,{field: 'new_isshow', title: '是否显示', width: 100}
+				  ,{field: 'new_isread', title: '已读', width: 100,templet:'#isread'}
+				  ,{field: 'new_isshow', title: '显示', width: 100,templet: '#isshow'}
 				  ,{field: 'new_addtime', title: '评论时间',width:160}
 				 
 				  ,{field: '', title: '操作',width:160, toolbar: '#rightbar', fixed:'right'}
@@ -240,7 +265,47 @@
 					
 				});
 				
+				form.on('select(change_isshow)', function(data){
+					var datas =  $("#select_data").val();
+					var isshow = parseInt(data.value);
+					if(isshow==0){
+						alert('请选择审核选项！');return false;
+					}
+					if(datas==''){
+						alert('请选择审核对象！');return false;
+					}
+					if(isshow==1){
+						var tip = '已审核';
+					}else if(isshow==2){
+						var tip = '未审核';
+					}
+					layer.confirm('确认要批量处理['+datas+']的为['+tip+']吗？',function(index){
+						
+						$.post("{fun U('Comment/checkAll')}",{data:datas,isshow:isshow},function(r){
+								
+								var r = JSON.parse(r);
+								if(r.code==0){
+									$("#select_data").val('');
+									layer.msg('批量处理成功', {icon: 1,time:1000},function(){
+										table.reload('jizhi_table', {
+										  url: window.location.href+'?ajax=1'
+										  ,where: {} //设定异步数据接口的额外参数
+										 
+										});
+									});
+									
+								}else{
+									
+									layer.msg(r.msg,{icon: 5,time:1000});
+								}
+						})
+						
+						
+						
+					});
+					
 				
+			    });
 				
 				form.on('submit(search)', function(data){
 					//data.field

@@ -510,8 +510,8 @@ function classTypeDataMobile(){
 	 
  }
  //获取指定表中所有内容
- function get_all_info_table($table,$where=null,$order=null,$limit=null){
-	 $data = M($table)->findAll($where,$order,$limit);
+ function get_all_info_table($table,$where=null,$order=null,$limit=null,$field=null){
+	 $data = M($table)->findAll($where,$order,$field,$limit);
 	 return $data;
  }
  
@@ -914,7 +914,7 @@ function gourl($id,$htmlurl=null,$molds='article'){
 		if(isset($_SESSION['terminal'])){
 			$htmlpath = $_SESSION['terminal']=='mobile' ? webConf('mobile_html') : webConf('pc_html');
 		}else{
-			$htmlpath = isMobile()?webConf('mobile_html'):webConf('pc_html');
+			$htmlpath = (isMobile() && webConf('iswap')==1)?webConf('mobile_html'):webConf('pc_html');
 		}
 		$htmlpath = ($htmlpath=='' || $htmlpath=='/') ? '' : '/'.$htmlpath; 
 		if($htmlurl!=null){
@@ -932,7 +932,7 @@ function all_url($id,$molds='article',$htmlurl=null){
 		if(isset($_SESSION['terminal'])){
 			$htmlpath = $_SESSION['terminal']=='mobile' ? webConf('mobile_html') : webConf('pc_html');
 		}else{
-			$htmlpath = isMobile()?webConf('mobile_html'):webConf('pc_html');
+			$htmlpath = isMobile() && webConf('isopen')?webConf('mobile_html'):webConf('pc_html');
 		}
 		$htmlpath = ($htmlpath=='' || $htmlpath=='/') ? '' : '/'.$htmlpath; 
 		if($htmlurl!=null){

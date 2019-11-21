@@ -138,6 +138,14 @@
                                 class="layui-input">
                             </div>
                         </div>
+                        <div class="layui-form-item layui-form-text">
+                            <label class="layui-form-label">
+                                <span class='x-red'>*</span>敏感词过滤 <span class="x-red">将铭感词放到这里，用 , 分隔，用 {xxx} 替代通配内容</span>
+                            </label>
+                            <div class="layui-input-block">
+                                <textarea placeholder="将铭感词放到这里，用 , 分隔，用 {xxx} 替代通配内容"  name="mingan" class="layui-textarea">{$config['mingan']}</textarea>
+                            </div>
+                        </div>
 					
 						{if($custom)}
 						{foreach $custom as $k=>$v}

@@ -146,6 +146,48 @@ class ArticleController extends CommonController
 			if($data['tags']!=''){
 				$data['tags'] = ','.$data['tags'].',';
 			}
+			//违禁词检测
+			if(isset($this->webconf['mingan']) && $this->webconf['mingan']!=''){
+				$mingan = explode(',',$this->webconf['mingan']);
+				foreach($mingan as $s){
+					if(strpos($s,'{xxx}')!==false){
+						$pattern = '/'.str_replace('{xxx}','(.*)',$s).'/';
+						if(preg_match($pattern, $data['title'])){
+							JsonReturn(array('code'=>1,'msg'=>'添加失败，标题存在敏感词 [ '.$s.' ]'));
+						}
+						if(preg_match($pattern, $data['keywords'])){
+							JsonReturn(array('code'=>1,'msg'=>'添加失败，关键词存在敏感词 [ '.$s.' ]'));
+						}
+						if(preg_match($pattern, $data['seo_title'])){
+							JsonReturn(array('code'=>1,'msg'=>'添加失败，SEO标题存在敏感词 [ '.$s.' ]'));
+						}
+						if(preg_match($pattern, $data['description'])){
+							JsonReturn(array('code'=>1,'msg'=>'添加失败，简介存在敏感词 [ '.$s.' ]'));
+						}
+						if(preg_match($pattern, $data['body'])){
+							JsonReturn(array('code'=>1,'msg'=>'添加失败，内容存在敏感词 [ '.$s.' ]'));
+						}
+
+					}else{
+						if(strpos($data['title'],$s)!==false){
+							JsonReturn(array('code'=>1,'msg'=>'添加失败，标题存在敏感词 [ '.$s.' ]'));
+						}
+						if(strpos($data['keywords'],$s)!==false){
+							JsonReturn(array('code'=>1,'msg'=>'添加失败，关键词存在敏感词 [ '.$s.' ]'));
+						}
+						if(strpos($data['seo_title'],$s)!==false){
+							JsonReturn(array('code'=>1,'msg'=>'添加失败，SEO标题存在敏感词 [ '.$s.' ]'));
+						}
+						if(strpos($data['description'],$s)!==false){
+							JsonReturn(array('code'=>1,'msg'=>'添加失败，简介存在敏感词 [ '.$s.' ]'));
+						}
+						if(strpos($data['body'],$s)!==false){
+							JsonReturn(array('code'=>1,'msg'=>'添加失败，内容存在敏感词 [ '.$s.' ]'));
+						}
+					}
+				}
+			}
+
 			if(M('Article')->add($data)){
 				//tags处理
 				if($data['tags']!=''){
@@ -217,6 +259,49 @@ class ArticleController extends CommonController
 			if($data['tags']!=''){
 				$data['tags'] = ','.$data['tags'].',';
 			}
+
+			//违禁词检测
+			if(isset($this->webconf['mingan']) && $this->webconf['mingan']!=''){
+				$mingan = explode(',',$this->webconf['mingan']);
+				foreach($mingan as $s){
+					if(strpos($s,'{xxx}')!==false){
+						$pattern = '/'.str_replace('{xxx}','(.*)',$s).'/';
+						if(preg_match($pattern, $data['title'])){
+							JsonReturn(array('code'=>1,'msg'=>'添加失败，标题存在敏感词 [ '.$s.' ]'));
+						}
+						if(preg_match($pattern, $data['keywords'])){
+							JsonReturn(array('code'=>1,'msg'=>'添加失败，关键词存在敏感词 [ '.$s.' ]'));
+						}
+						if(preg_match($pattern, $data['seo_title'])){
+							JsonReturn(array('code'=>1,'msg'=>'添加失败，SEO标题存在敏感词 [ '.$s.' ]'));
+						}
+						if(preg_match($pattern, $data['description'])){
+							JsonReturn(array('code'=>1,'msg'=>'添加失败，简介存在敏感词 [ '.$s.' ]'));
+						}
+						if(preg_match($pattern, $data['body'])){
+							JsonReturn(array('code'=>1,'msg'=>'添加失败，内容存在敏感词 [ '.$s.' ]'));
+						}
+
+					}else{
+						if(strpos($data['title'],$s)!==false){
+							JsonReturn(array('code'=>1,'msg'=>'添加失败，标题存在敏感词 [ '.$s.' ]'));
+						}
+						if(strpos($data['keywords'],$s)!==false){
+							JsonReturn(array('code'=>1,'msg'=>'添加失败，关键词存在敏感词 [ '.$s.' ]'));
+						}
+						if(strpos($data['seo_title'],$s)!==false){
+							JsonReturn(array('code'=>1,'msg'=>'添加失败，SEO标题存在敏感词 [ '.$s.' ]'));
+						}
+						if(strpos($data['description'],$s)!==false){
+							JsonReturn(array('code'=>1,'msg'=>'添加失败，简介存在敏感词 [ '.$s.' ]'));
+						}
+						if(strpos($data['body'],$s)!==false){
+							JsonReturn(array('code'=>1,'msg'=>'添加失败，内容存在敏感词 [ '.$s.' ]'));
+						}
+					}
+				}
+			}
+
 			if($this->frparam('id')){
 				$old_tags = M('Article')->getField(['id'=>$this->frparam('id')],'tags');
 				if(M('Article')->update(array('id'=>$this->frparam('id')),$data)){

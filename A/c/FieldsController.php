@@ -708,30 +708,30 @@ layui.use("laydate", function(){
 				</script>';
 				break;
 				case 10:
-				$l .= '<div class="layui-form-item">
-                    <label for="'.$v['field'].'" class="layui-form-label">
-						<span class="x-red">*</span>'.$v['fieldname'].'  
-                    </label>
-					
-                    <div class="layui-input-inline">
-                      <div class="site-demo-upbar">
-                     <span class="preview_'.$v['field'].'" >';
-				if($data[$v['field']]!=''){
-					foreach(explode('||',$data[$v['field']]) as $vv){
-						$l.='<span class="upload-icon-img" ><div class="upload-pre-item"><i class="layui-icon layui-icon-file"></i><input type="text" value="'.$vv.'" name="'.$v['field'].'_urls[]" class="layui-input" /><i   class="layui-icon delete_file">&#xe640;</i></div></span>';
-					}
-				}	
-				$l	.= '</span>
-					  
-						<button type="button" class="layui-btn" id="LAY_'.$v['field'].'_upload">
-						  <i class="layui-icon">&#xe67c;</i>上传附件
-						</button>
-                      </div>
-                    </div>
-					<div class="layui-form-mid layui-word-aux">
-					  '.$v['tips'].'
-					</div>
-                </div>
+				$l .= '<fieldset class="layui-elem-field">
+				  <legend>'.$v['fieldname'].'</legend>
+				  <div class="layui-field-box">
+					  <div class="layui-input-block">
+						  <div class="site-demo-upbar">
+							<button type="button" class="layui-btn" id="LAY_'.$v['field'].'_upload">
+							  <i class="layui-icon">&#xe67c;</i>上传附件
+							</button>
+							 '.$v['tips'].'
+						  </div>
+						   
+					  </div>
+					 
+					  <div class="layui-input-block">
+					  <span class="preview_'.$v['field'].'" >';
+					if($data[$v['field']]!=''){
+						foreach(explode('||',$data[$v['field']]) as $vv){
+							$l.='<div class="upload-icon-img layui-input-inline" ><div class="upload-pre-item"><input name="'.$v['field'].'_urls[]" type="text" class="layui-input"  value="'.$vv.'" /><i  class="layui-icon delete_file" >&#xe640;</i></div></div>';
+						}
+					}	 
+					$l .= '</span>
+					  </div>
+				  </div>
+				</fieldset>
 				<script>
 				
 				layui.use("upload", function(){
@@ -741,17 +741,18 @@ layui.use("laydate", function(){
 					  var uploadInst = upload_'.$v['field'].'.render({
 						elem: "#LAY_'.$v['field'].'_upload" //绑定元素
 						,url: "'.U('Common/uploads').'" //上传接口
+						,accept:"images"
 						,multiple: true
-						,accept:"file"
-						,exts: "'.$this->webconf['fileType'].'"
+						,acceptMime:"image/*"
 						,before: function(obj){ 		
 							layer.load(); //上传loading
 						  }
 						,done: function(res){
 							layer.closeAll("loading"); //关闭loading
 							if(res.code==0){
-							var fileurl = $("#'.$v['field'].'").val();
-							$(".preview_'.$v['field'].'").append(\'<span class="upload-icon-img" ><div class="upload-pre-item"><i class="layui-icon layui-icon-file"></i><input type="text" value="/\'+res.url+\'" name="'.$v['field'].'_urls[]" class="layui-input delete_file" /><i   class="layui-icon">&#xe640;</i></div></span>\');
+							
+							$(".preview_'.$v['field'].'").append(\'<div class="upload-icon-img layui-input-inline" ><div class="upload-pre-item"><input name="'.$v['field'].'_urls[]" type="text" class="layui-input"  value="/\' + res.url + \'" /><i  class="layui-icon delete_file" >&#xe640;</i></div></div>\');
+								
 								
 							}else{
 								 layer.alert(res.error, {icon: 5});

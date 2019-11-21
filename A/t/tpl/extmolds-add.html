@@ -109,28 +109,36 @@
 					//console.log(r);return false;
 					var r = JSON.parse(r);
 					if(r.code==0){
-						 layer.msg(r.msg, {icon: 6,time: 2000},function () {
-							// 获得frame索引
-							
-							{if($webconf['admintpl']=='tpl')}
-							window.location.href="{fun U('Extmolds/index',['molds'=>$molds['biaoshi']])}";
-							{else}
-							parent.location.reload();
-							{/if}
+						layer.confirm(r.msg, {
+						  btn: ['返回','确定'] //按钮
+						}, function(){
+						   
+						   {if($webconf['admintpl']=='tpl')}
+						   window.location.href="{fun U('Extmolds/index',['molds'=>$molds['biaoshi']])}";
+						  {else}
+						   parent.location.reload();
+						   parent.layer.close(index);
+						   
+						  {/if}
+						   
+						}, function(){
+						   window.location.href=r.url;
 						});
-						 parent.layer.close(index);
+					
+						
 					}else{
 						layer.alert(r.msg, {icon: 5});
 					}
+
+
 				});
 				
                
                 return false;
               });
-			get_fields(0);
-            
+			
+            get_fields({$tid});
 			form.on('select(tid)', function(data){
-			  
 			  get_fields(data.value);
 			  
 			  

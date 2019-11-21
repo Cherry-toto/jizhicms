@@ -236,6 +236,9 @@
 					width:'auto',
 					defaultText:'添加一个标签',
 			  });
+
+			  get_fields({$tid});
+
 			})
 			function deleteImage(elm){
 				$(elm).prev().attr("src", "{__Tpl_style__}/style/images/nopic.jpg");
@@ -271,7 +274,7 @@
               form.on('submit(save)', function(data){
 
 				$.post("{fun U('addarticle')}",data.field,function(r){
-				
+					//console.log(r);return false;
 					var r = JSON.parse(r);
 					if(r.code==0){
 						layer.confirm(r.msg, {

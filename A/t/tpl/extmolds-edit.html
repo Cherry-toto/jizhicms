@@ -121,10 +121,10 @@
                
                 return false;
               });
-            get_fields(0,{$data['id']});
+            get_fields({$tid},{$data['id']});
 			form.on('select(tid)', function(data){
 			 
-			  get_fields(0,{$data['id']});
+			  get_fields(data.value,{$data['id']});
 			  
 			  
 			});

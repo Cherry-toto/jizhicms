@@ -661,7 +661,7 @@ CREATE TABLE `jz_ruler` (
   `isdesktop` tinyint(1) NOT NULL DEFAULT '0',
   `sys` tinyint(1) NOT NULL DEFAULT '0' COMMENT '1系统自带0不是系统自带',
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=171 DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM AUTO_INCREMENT=177 DEFAULT CHARSET=utf8;
 -- ----------------------------
 -- Records of jz_ruler
 -- ----------------------------
@@ -831,6 +831,12 @@ INSERT INTO `jz_ruler` (`id`,`name`,`fc`,`pid`,`isdesktop`,`sys`) VALUES ('167',
 INSERT INTO `jz_ruler` (`id`,`name`,`fc`,`pid`,`isdesktop`,`sys`) VALUES ('168','邮箱订单','Sys/email-order','39','0','1');
 INSERT INTO `jz_ruler` (`id`,`name`,`fc`,`pid`,`isdesktop`,`sys`) VALUES ('169','支付配置','Sys/payconfig','39','0','1');
 INSERT INTO `jz_ruler` (`id`,`name`,`fc`,`pid`,`isdesktop`,`sys`) VALUES ('170','公众号配置','Sys/wechatbind','39','0','1');
+INSERT INTO `jz_ruler` (`id`,`name`,`fc`,`pid`,`isdesktop`,`sys`) VALUES ('171','批量审核','Article/checkAll','8','0','1');
+INSERT INTO `jz_ruler` (`id`,`name`,`fc`,`pid`,`isdesktop`,`sys`) VALUES ('172','批量审核','Product/checkAll','104','0','1');
+INSERT INTO `jz_ruler` (`id`,`name`,`fc`,`pid`,`isdesktop`,`sys`) VALUES ('173','批量审核','Message/checkAll','21','0','1');
+INSERT INTO `jz_ruler` (`id`,`name`,`fc`,`pid`,`isdesktop`,`sys`) VALUES ('174','批量审核','Comment/checkAll','15','0','1');
+INSERT INTO `jz_ruler` (`id`,`name`,`fc`,`pid`,`isdesktop`,`sys`) VALUES ('175','批量审核友情链接','Extmolds/checkAll/molds/links','77','0','0');
+INSERT INTO `jz_ruler` (`id`,`name`,`fc`,`pid`,`isdesktop`,`sys`) VALUES ('176','批量审核TAG','Extmolds/checkAll/molds/tags','77','0','0');
 
 -- ----------------------------
 -- Table structure for jz_sysconfig
@@ -844,11 +850,11 @@ CREATE TABLE `jz_sysconfig` (
   `type` tinyint(1) NOT NULL DEFAULT '0' COMMENT '配置类型,0系统配置,1图片类型,2输入框,3简短文字',
   `data` text COMMENT '配置内容',
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=67 DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM AUTO_INCREMENT=69 DEFAULT CHARSET=utf8;
 -- ----------------------------
 -- Records of jz_sysconfig
 -- ----------------------------
-INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`) VALUES ('1','web_version','系统版号','','0','1.6.2');
+INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`) VALUES ('1','web_version','系统版号','','0','1.6.3');
 INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`) VALUES ('2','web_name','网站SEO名称','','0','极致CMS建站系统');
 INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`) VALUES ('3','web_keyword','网站SEO关键词','','0','极致CMS');
 INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`) VALUES ('4','web_desc','网站SEO描述','','0','极致CMS');
@@ -922,6 +928,8 @@ INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`) VALUES ('6
 INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`) VALUES ('64','isautohtml','自动生成静态HTML','前台访问网站页面，将自动生成静态HTML，下次访问直接进入静态HTML页面','0','0');
 INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`) VALUES ('65','pc_html','PC静态文件目录','电脑端静态HTML存放目录，默认根目录[ / ]','0','/');
 INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`) VALUES ('66','mobile_html','WAP静态文件目录','手机端静态HTML存放目录，默认[ m ]，PC和WAP静态目录不能相同，否则文件会混乱','0','/');
+INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`) VALUES ('67','autocheckmessage','是否留言自动审核','开启后，留言自动审核（显示）','0','0');
+INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`) VALUES ('68','autocheckcomment','是否评论自动审核','开启后评论自动审核（显示）','0','0');
 
 -- ----------------------------
 -- Table structure for jz_tags

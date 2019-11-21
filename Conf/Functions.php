@@ -619,7 +619,7 @@ function classTypeDataMobile(){
 			 case 7:
 			 case 12:
 			 $fields_search .= '<div class="layui-input-inline">
-			  <select name="'.$v['field'].'" class="layui-inline">
+			  <select name="'.$v['field'].'" lay-search="" class="layui-inline">
 			  <option value="">请选择'.$v['fieldname'].'</option>';
 			 foreach(explode(',',$v['body']) as $vv){
 			   $s = explode('=',$vv);
@@ -643,7 +643,7 @@ function classTypeDataMobile(){
 			 break;
 			 case 8:
 			 $fields_search .= '<div class="layui-input-inline">
-			  <select name="'.$v['field'].'" class="layui-inline">
+			  <select name="'.$v['field'].'" lay-search="" class="layui-inline">
 			  <option value="">请选择'.$v['fieldname'].'</option>';
 			 foreach(explode(',',$v['body']) as $vv){
 			   $s = explode('=',$vv);
@@ -684,7 +684,7 @@ layui.use("laydate", function(){
 			  $moldsdata = M('molds')->find(['id'=>$body[0]],'');
 			  $datalist = M($moldsdata['biaoshi'])->findAll();
 			 $fields_search .= '<div class="layui-input-inline">
-			  <select name="'.$v['field'].'" class="layui-inline">
+			  <select name="'.$v['field'].'" lay-search="" class="layui-inline">
 			  <option value="">请选择关联'.$moldsdata['name'].'</option>';
 			 foreach($datalist as $vv){
 			   $fields_search .= '<option ';
@@ -1303,6 +1303,12 @@ function formatTime($sTime, $formt = 'Y-m-d') {
     }
 }
 
+//过滤HTML代码函数
+function htmldecode($data){
+	$data = strip_tags($data);
+	$data = str_replace('&nbsp;','',$data);
+	return $data;
+}
 
 
 //引入扩展方法文件

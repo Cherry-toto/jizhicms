@@ -580,7 +580,7 @@ layui.use("laydate", function(){
                         <span class="x-red">*</span>'.$v['fieldname'].'  
                     </label>
                     <div class="layui-input-inline">
-						<select name="'.$v['field'].'" id="'.$v['field'].'" >';
+						<select name="'.$v['field'].'" lay-search="" id="'.$v['field'].'" ><option value="">请选择</option>';
 				foreach(explode(',',$v['body']) as $vv){
 					$s=explode('=',$vv);
 					$l.='<option value="'.$s[1].'" ';
@@ -772,7 +772,7 @@ layui.use("laydate", function(){
                         <span class="x-red">*</span>'.$v['fieldname'].'  
                     </label>
                     <div class="layui-input-inline">
-						<select name="'.$v['field'].'" id="'.$v['field'].'" >';
+						<select name="'.$v['field'].'" lay-search="" id="'.$v['field'].'" >';
 						$body = explode(',',$v['body']);
 				$biaoshi = M('molds')->getField(['id'=>$body[0]],'biaoshi');
 				$datalist = M($biaoshi)->findAll();

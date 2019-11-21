@@ -70,13 +70,13 @@ class ProductController extends CommonController
 			$ajaxdata = [];
 			foreach($data as $k=>$v){
 				if($v['ishot']==1){
-					$v['title'] = '<span class="layui-badge">热</span>'.$v['title'];
-				}
-				if($v['istuijian']==1){
-					$v['title'] = '<span class="layui-badge layui-bg-green">荐</span>'.$v['title'];
-				}
-				if($v['istop']==1){
-					$v['title'] = '<span class="layui-badge layui-bg-black">顶</span>'.$v['title'];
+					$v['tuijian'] = '热';
+				}else if($v['istuijian']==1){
+					$v['tuijian'] = '荐';
+				}else if($v['istop']==1){
+					$v['tuijian'] = '顶';
+				}else{
+					$v['tuijian'] = '无';
 				}
 				if(isset($classtypedata[$v['tid']])){
 					$v['new_tid'] = $classtypedata[$v['tid']]['classname'];
@@ -84,9 +84,8 @@ class ProductController extends CommonController
 					$v['new_tid'] = '[未分类]';
 				}
 				
-				$v['new_litpic'] = $v['litpic']!='' ? '<a href="'.$v['litpic'].'" target="_blank"><img src="'.$v['litpic'].'" width="100px" /></a>':'无';
-				$v['new_isshow'] = $v['isshow']==1 ? '<span class="layui-badge layui-bg-green">显示</span>' : '<span class="layui-badge">不显示</span>';
-				$v['new_addtime'] = date('Y-m-d H:i:s',$v['addtime']);
+				$v['new_litpic'] = $v['litpic']=='' ? '' : get_domain().$v['litpic'];
+				$v['new_addtime'] = "\t".date('Y-m-d H:i:s',$v['addtime'])."\t";
 				$v['view_url'] = get_domain().'/'.$v['htmlurl'].'/'.$v['id'];
 				$v['edit_url'] = U('Product/editproduct',array('id'=>$v['id']));
 				
@@ -373,8 +372,8 @@ class ProductController extends CommonController
 	}
 	//修改排序
 	function editProductOrders(){
-		$w['orders'] = $this->frparam('orders');
-		
+		$field = $this->frparam('field',1);
+		$w[$field] = $this->frparam('value',1);
 		$r = M('product')->update(array('id'=>$this->frparam('id')),$w);
 		if(!$r){
 			JsonReturn(array('code'=>1,'info'=>'修改失败！'));
@@ -404,6 +403,18 @@ class ProductController extends CommonController
 				M('Product')->update(array('id'=>$v['id']),$w);
 			}
 			JsonReturn(array('code'=>0,'msg'=>'批量修改成功！'));
+		}
+	}
+
+	//批量审核
+	function checkAll(){
+		$data = $this->frparam('data',1);
+		if($data!=''){
+			$isshow = $this->frparam('isshow')==1 ? 1 : 0;
+			M('product')->update('id in('.$data.')',['isshow'=>$isshow]);
+			JsonReturn(array('code'=>0,'msg'=>'批量审核成功！'));
+		}else{
+			JsonReturn(array('code'=>1,'msg'=>'批量审核失败！'));
 		}
 	}
 

@@ -64,8 +64,8 @@ class MessageController extends CommonController
 				
 				
 				$v['new_tid'] = $v['tid']!=0 ? get_info_table('classtype',array('id'=>$v['tid']),'classname') : '-';
-				$v['new_isshow'] = $v['isshow']==1 ? '<span class="layui-badge layui-bg-green">已审核</span>' : '<span class="layui-badge">未审核</span>';
-				$v['new_addtime'] = date('Y-m-d H:i:s',$v['addtime']);
+				$v['new_isshow'] = $v['isshow']==1 ? '已审核' : '未审核';
+				$v['new_addtime'] = "\t".date('Y-m-d H:i:s',$v['addtime'])."\t";
 				$v['edit_url'] = U('Message/editmessage',array('id'=>$v['id']));
 				foreach($this->fields_list as $vv){
 					$v[$vv['field']] = format_fields($vv,$v[$vv['field']]);
@@ -137,6 +137,17 @@ class MessageController extends CommonController
 		}
 	}
 	
+	//批量审核
+	function checkAll(){
+		$data = $this->frparam('data',1);
+		if($data!=''){
+			$isshow = $this->frparam('isshow')==1 ? 1 : 0;
+			M('message')->update('id in('.$data.')',['isshow'=>$isshow]);
+			JsonReturn(array('code'=>0,'msg'=>'批量审核成功！'));
+		}else{
+			JsonReturn(array('code'=>1,'msg'=>'批量审核失败！'));
+		}
+	}
 	
 	
 	

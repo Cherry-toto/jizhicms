@@ -89,13 +89,28 @@
 			   </div>
 			   {/if}
 		 {/if}
+		 {if(checkAction('Extmolds/checkAll/molds/'.$molds['biaoshi']))}
+		  <div class="layui-input-inline" style="margin-right: 10px;margin-bottom: 10px;width:150px;">
+			   <select class="layui-btn" id="change_isshow"  lay-filter="change_isshow" >
+			   <option value="0">批量审核</option>
+			   <option   value="1">审核</option>
+			   <option   value="2">未审核</option>
+			   </select>
+		  </div>
+		 {/if}
 		 {if(checkAction('Extmolds/addmolds/molds/'.$molds['biaoshi']))}
 			   <button class="layui-btn" onclick="x_admin_show('新增{$molds['name']}','{fun U('Extmolds/addmolds',array('molds'=>$molds['biaoshi']))}')"><i class="layui-icon">&#xe608;</i>新增</button>
 		 {/if}	  
 			
 		 </div>
 		</script>
-
+		<script type="text/html" id="isshow">
+			{{#  if(d.isshow ==1){ }}
+			<span class="layui-badge layui-bg-green">显示</span>
+		    {{#  } else{ }}
+		    <span class="layui-badge">不显示</span>
+		    {{#  } }}
+		</script>
 	 
 		<script>
 	 
@@ -134,10 +149,12 @@
 				  {if($molds['isclasstype'])}
 				  ,{field: 'new_tid', title: '栏目',width:150, sort: true}
 				  {/if}
-				  {foreach $fields_list as $k=>$v},{field: '{$v['field']}',width:150, title: '{$v['fieldname']}'}{/foreach}
-				  ,{field: 'new_isshow', title: '是否显示', width: 100}
+				  {foreach $fields_list as $k=>$v}
+				  ,{field: '{$v['field']}',width:150, title: '{$v['fieldname']}'{if($v['fieldtype']==1 || $v['fieldtype']==2)},edit:'text'{/if}}
+				  {/foreach}
+				  ,{field: 'new_isshow', title: '是否显示', width: 100,templet:'#isshow'}
 				  {if(checkAction('Extmolds/copymolds/molds/'.$molds['biaoshi']) || checkAction('Extmolds/deletemolds/molds/'.$molds['biaoshi']) || checkAction('Extmolds/editmolds/molds/'.$molds['biaoshi']))}
-					  {if($k>2)}
+					  {if(isset($k) && $k>2)}
 					   ,{field: '', title: '操作', toolbar: '#rightbar',width:260}
 					  {else}
 					   ,{field: '', title: '操作', toolbar: '#rightbar', fixed:'right'}
@@ -248,9 +265,10 @@
 				  console.log(obj.data); //所在行的所有相关数据  
 				*/
 				  var id = obj.data.id;
-				  var order = obj.value;
+				  var value = obj.value;
+				  var field = obj.field;
 				
-					$.post("{fun U('Extmolds/editOrders')}",{id:id,orders:order,molds:'{$molds['biaoshi']}'},function(r){
+					$.post("{fun U('Extmolds/editOrders')}",{'id':id,'field':field,'value':value,'molds':'{$molds['biaoshi']}'},function(r){
 						var r = JSON.parse(r);
 						if(r.code==0){
 							$("#select_data").val('');
@@ -317,6 +335,50 @@
 					
 				
 			    });
+
+			    form.on('select(change_isshow)', function(data){
+					var datas =  $("#select_data").val();
+					var isshow = parseInt(data.value);
+					if(isshow==0){
+						alert('请选择审核选项！');return false;
+					}
+					if(datas==''){
+						alert('请选择审核对象！');return false;
+					}
+					if(isshow==1){
+						var tip = '已审核';
+					}else if(isshow==2){
+						var tip = '未审核';
+					}
+					layer.confirm('确认要批量处理['+datas+']的为['+tip+']吗？',function(index){
+						
+						$.post("{fun U('Extmolds/checkAll')}",{molds:"{$molds['biaoshi']}",data:datas,isshow:isshow},function(r){
+								
+								var r = JSON.parse(r);
+								if(r.code==0){
+									$("#select_data").val('');
+									layer.msg('批量处理成功', {icon: 1,time:1000},function(){
+										table.reload('jizhi_table', {
+										  url: window.location.href+'?ajax=1'
+										  ,where: {} //设定异步数据接口的额外参数
+										 
+										});
+									});
+									
+								}else{
+									
+									layer.msg(r.msg,{icon: 5,time:1000});
+								}
+						})
+						
+						
+						
+					});
+					
+				
+			    });
+				
+
 			
 			 
               

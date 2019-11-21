@@ -536,13 +536,59 @@
 							<label for="isopenhomepower" style="width:150px" class="layui-form-label">
 								<span class="x-red"></span>是否开启前台权限
 							</label>
-							<div  style="margin-left: 150px;" class="layui-input-block">
+							<div  style="margin-left: 150px;" class="layui-input-inline">
 								<input type="radio" name="isopenhomepower" value="0" title="关闭" {if($config['isopenhomepower']==0)}checked{/if}>
 								<input type="radio" name="isopenhomepower" value="1" title="开启" {if($config['isopenhomepower']==1)}checked{/if}>
 							</div>
-							 
+							<div class="layui-form-mid layui-word-aux">
+                             开启后前台用户权限可以在后台控制
+                            </div> 
 							
 						</div>
+                         <div class="layui-form-item" pane>
+                            <label for="autocheckmessage" style="width:150px" class="layui-form-label">
+                                <span class="x-red"></span>是否留言自动审核
+                            </label>
+                            <div  style="margin-left: 150px;" class="layui-input-inline">
+                                <input type="radio" name="autocheckmessage" value="0" title="关闭" {if($config['autocheckmessage']==0)}checked{/if}>
+                                <input type="radio" name="autocheckmessage" value="1" title="开启" {if($config['autocheckmessage']==1)}checked{/if}>
+                                
+                            </div>
+                            <div class="layui-form-mid layui-word-aux">
+                             开启后留言自动审核（显示）
+                            </div> 
+                            
+                            
+                        </div>
+                         <div class="layui-form-item" pane>
+                            <label for="autocheckcomment" style="width:150px" class="layui-form-label">
+                                <span class="x-red"></span>是否评论自动审核
+                            </label>
+                            <div  style="margin-left: 150px;" class="layui-input-inline">
+                                <input type="radio" name="autocheckcomment" value="0" title="关闭" {if($config['autocheckcomment']==0)}checked{/if}>
+                                <input type="radio" name="autocheckcomment" value="1" title="开启" {if($config['autocheckcomment']==1)}checked{/if}>
+                                
+                            </div>
+                            <div class="layui-form-mid layui-word-aux">
+                             开启后评论自动审核（显示）
+                            </div> 
+                            
+                            
+                        </div>
+
+                        <div class="layui-form-item" pane>
+                            <label for="isdebug" style="width:150px" class="layui-form-label">
+                                <span class="x-red"></span>是否开启PHP调试
+                            </label>
+                            <div  style="margin-left: 150px;" class="layui-input-inline">
+                                <input type="radio" name="isdebug" value="0" title="关闭" {if(!APP_DEBUG)}checked{/if}>
+                                <input type="radio" name="isdebug" value="1" title="开启" {if(APP_DEBUG)}checked{/if}>
+                            </div>
+                            <div class="layui-form-mid layui-word-aux">
+                             开启后PHP错误会显示出来，关闭后不显示
+                            </div> 
+                            
+                        </div>
 						
 						<div class="layui-form-item">
                             <button class="layui-btn" lay-submit="" lay-filter="*">

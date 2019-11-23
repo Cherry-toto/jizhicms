@@ -225,6 +225,7 @@ switch($act){
 				'RECONNECT' => false,
 				'EXPIRE'=>1800
 			);
+			$config['APP_DEBUG'] = true;
 			
 			$ress = file_put_contents('../Conf/config.php', '<?php return ' . var_export($config, true) . '; ?>');
 			

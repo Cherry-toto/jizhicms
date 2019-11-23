@@ -170,7 +170,10 @@ class SysController extends CommonController
 			
 			$lists = M('pictures')->findAll('id in('.$id.')');
 			foreach($lists as $v){
-				unlink('.'.$v['litpic']);
+				if(file_exists('.'.$v['litpic'])){
+					unlink('.'.$v['litpic']);
+				}
+				
 			}
 			
 			$r = M('pictures')->delete('id in('.$id.')');

@@ -16,7 +16,7 @@
 define('APP_PATH', __DIR__ . '/');
 
 // 开启调试模式
-define('APP_DEBUG', true);
+//define('APP_DEBUG', true);
 
 //定义项目目录
 define('APP_HOME','Home');
@@ -32,6 +32,7 @@ define('HOME_CONTROLLER','c');
 
 //定义项目模型文件目录
 define('HOME_MODEL','m');
+
 
 //定义项目默认方法
 define('DefaultAction','jizhi');

@@ -231,7 +231,7 @@ xblock{
     font-size: 16px;
     padding-left: 30px;
     line-height: 45px;
-    width: 200px;
+    width: 170px;
 }
 .container .right{
     background-color:rgba(0,0,0,0);
@@ -289,40 +289,64 @@ xblock{
 .left-nav{
     position: absolute;
     top: 46px;
-    bottom: 42px;
     left: 0;
     z-index: 2;
-    padding-top: 10px;
-    background-color: #EEEEEE;
-    width: 220px;
-    max-width: 220px;
-    overflow: auto;
+    background-color: #393D49;
+    color: #fff;
+    width: 200px;
+    max-width: 200px;
     overflow-x:hidden;
     border-right: 1px solid #e5e5e5;
+    overflow:hidden;
 
     /*width: 0px;*/
 }
+
 .left-nav #nav li{
-    border-bottom: 1px solid #e5e5e5;
+    display: block;
+    width: 100%;
+   /* line-height: 45px;*/
 }
+ul.sub-menu li:hover {
+    background-color: #4E5465;
+}
+
+
+.sub-menu li a{
+    color: rgba(255,255,255,.7);
+}
+
 .left-nav #nav li:hover > a{
-    /*color: blue;*/
+   /*color: blue;*/
 }
 .left-nav #nav .current{
+    background-color: #009688;
+    color: #fff;
+}
+.left-nav #nav .current a{
+    color: #fff;
+}
+.sub-menu li{
     background-color: rgba(0, 0, 0, 0.3);
+}
+li.open a {
+    color: #fff;
 }
 .left-nav #nav li a{
     font-size: 14px;
-    padding: 10px 15px 10px 20px;
+    padding: 12px 5px 12px 30px;
     display: block;
     cursor: pointer;
+    color: rgba(255,255,255,.7);
 }
+
 .left-nav #nav li a cite{
     font-size: 14px;
 }
 
 .left-nav #nav li .sub-menu{
     display: none;
+    background-color: rgba(0,0,0,.3)!important;
 }
 .left-nav #nav li .opened{
     display: block;
@@ -338,7 +362,7 @@ xblock{
      /*background: #fff url() 0 0 no-repeat;*/
 }
 .left-nav #nav li .sub-menu li a{
-    padding: 12px 15px 12px 30px;
+    padding: 12px 15px 12px 45px;
     font-size: 14px;
     cursor: pointer;
 }
@@ -346,7 +370,7 @@ xblock{
     padding-left: 45px;
 }
 .left-nav #nav li .sub-menu li a:hover{
-    color: #009688;
+  /*  color: #009688;*/
 }
 .left-nav #nav li .sub-menu li a i{
     font-size: 12px;
@@ -358,6 +382,7 @@ xblock{
 .left-nav #nav li .nav_right{
     float: right;
     font-size: 16px;
+    padding-right: 0;
 }
 .x-slide_left {
     width: 17px;
@@ -374,7 +399,7 @@ xblock{
     top: 46px;
     right: 0;
     bottom: 42px;
-    left: 221px;
+    left: 200px;
     overflow: hidden;
     z-index: 1;
 }
@@ -419,7 +444,7 @@ xblock{
     border-radius: 50%;
 }
 .page-content .layui-tab-title .layui-this{
-    background: #fff url() 0 0 no-repeat;
+    background: #fff;
 }
 .page-content .layui-tab-bar{
     height:34px;
@@ -430,7 +455,7 @@ xblock{
     top: 36px;
     bottom: 0px;
     width: 100%;
-    background: #fff url() 0 0 no-repeat;
+    background: #fff;
     padding: 0px;
     overflow: hidden;
 }
@@ -528,4 +553,101 @@ table th, table td {
 	th {
 		white-space: nowrap;
 	}
+}
+
+/**右键菜单*/
+.rightmenu {
+    position: absolute;
+    width: 110px;
+    z-index: 9999;
+    display: none;
+    background-color: #fff;
+    padding: 2px;
+    color: #333;
+    border: 1px solid #eee;
+    border-radius: 2px;
+    cursor: pointer;
+}
+
+.rightmenu li {
+    text-align: center;
+    display: block;
+    height: 30px;
+    line-height: 32px;
+}
+
+.rightmenu li:hover {
+    background-color: #666;
+    color: #fff;
+}
+.cmdlist-container img {
+    width: 100%;
+}
+.cmdlist-text .txteax {
+    font-size: 14px;
+}
+.cmdlist-text .txteax b {
+    margin-right: 20px;
+}
+.cmdlist-text .txteax p {
+    display: inline-block;
+}
+.cmdlist-text .flow {
+    text-align: right;
+    float: right;
+}
+.layui-card-header .layui-a-tips {
+    position: absolute;
+    right: 15px;
+    color: #01AAED;
+}
+.layuiadmin-card-status dd {
+    padding: 15px 0;
+    border-bottom: 1px solid #EEE;
+    display: -webkit-flex;
+    display: flex;
+}
+.layuiadmin-card-status dd div.layui-status-img, .layuiadmin-card-team .layui-team-img {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background-color: #009688;
+    margin-right: 15px;
+}
+.layuiadmin-card-status dd div.layui-status-img a {
+    width: 100%;
+    height: 100%;
+    display: inline-block;
+    text-align: center;
+    line-height: 32px;
+}
+.layuiadmin-card-status dd div.layui-status-img img, .layuiadmin-card-team .layui-team-img img {
+    width: 50%;
+    height: 50%;
+}
+.layuiadmin-card-status dd div a {
+    color: #01AAED;
+}
+.layuiadmin-card-status {
+    padding: 0 10px 10px;
+}
+.layuiadmin-card-status li {
+    position: relative;
+    padding: 10px 0;
+    border-bottom: 1px solid #EEE;
+}
+.layuiadmin-card-status li h3 {
+    padding-bottom: 5px;
+    font-weight: 700;
+}
+.layuiadmin-card-status li p {
+    padding-bottom: 10px;
+}
+.layuiadmin-card-status li>span {
+    color: #999;
+}
+.layuiadmin-home2-usernote .layuiadmin-reply {
+    position: absolute;
+    right: 0;
+    bottom: 12px;
 }

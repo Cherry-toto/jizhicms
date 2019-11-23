@@ -1,9 +1,11 @@
 <!doctype html>
-<html>
+<html >
 <head>
 	<meta charset="UTF-8">
 	{include="style"}
-
+  <style type="text/css">
+  html{ overflow-y:hidden;}
+  </style>
 </head>
 <body>
     <!-- 顶部开始 -->
@@ -52,9 +54,9 @@
     <!-- 顶部结束 -->
     <!-- 中部开始 -->
      <!-- 左侧菜单开始 -->
-    <div class="left-nav">
-      <div id="side-nav">
-        <ul id="nav">
+    <div class="left-nav layui-side layui-bg-black">
+      <div id="side-nav" class="layui-side-scroll">
+        <ul id="nav" class="layui-nav-tree">
 		{if(is_array($left_layout))}
 		{foreach $left_layout as $v}
             <li>
@@ -101,11 +103,16 @@
           </div>
         </div>
     </div>
+     <ul class="rightmenu">
+        <li data-type="closethis">关闭当前</li>
+        <li data-type="closeother">关闭其他</li>
+        <li data-type="closeall">关闭所有</li>
+    </ul>
     <div class="page-content-bg"></div>
     <!-- 右侧主体结束 -->
     <!-- 中部结束 -->
     <!-- 底部开始 -->
-   {include="footer"}
+ 
     <!-- 底部结束 -->
    
 </body>

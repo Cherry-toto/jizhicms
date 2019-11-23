@@ -30,7 +30,8 @@
 				
 				<div class="layui-tab">
 					  <ul class="layui-tab-title">
-						<li class="layui-this">公共配置输出</li>
+					    <li class="layui-this">标签生成</li>
+						<li>公共配置输出</li>
 						<li>栏目相关输出</li>
 						<li>文章详情输出</li>
 						<li>商品详情输出</li>
@@ -38,31 +39,160 @@
 						<li>轮播图输出</li>
 						<li>loop标签解析</li>
 						<li>常用标签</li>
-						<li>标签生成</li>
+						
 						
 					  </ul>
 					  <div class="layui-tab-content">
-						<div class="layui-tab-item layui-show">
+					   <!--标签生成-->
+					  <div class="layui-tab-item  layui-show">
+							<div class="layui-form-item layui-form-text">
+							文章模块标签生成
+							  <div class="layui-input-block" style="margin-left:0;">
+								  <table class="layui-table">
+									<tbody>
+									  <tr>
+										<td>选择栏目</div></td>
+										<td>是否分页</div></td>
+										<td>输出子类数据</div></td>
+										<td>排序</td>
+										<td>输出条数</td>
+										<td>操作</td>
+									  </tr>
+									  <tr>
+										<td>
+										
+										<select name="type_tid" lay-filter="type_tid" id="type_tid" >
+										<option value="">选择栏目</option>
+									   {foreach $classtypes as $v}
+										{if($v['molds']=='article')}
+									   <option  value="{$v['id']}-{$v['molds']}">{fun str_repeat('--', $v['level']), $v['classname']}</option>
+										{/if}
+									   {/foreach}
+									   </select>
+									 
+										</div></td>
+										<td>
+										<select name="type_ispage" lay-filter="type_ispage"  >
+											<option value="">是否分页</option>
+											<option value="1" selected>否</option>
+											<option value="2">是</option>
+										   
+										</select>
+										</div></td>
+										<td>
+										<select name="type_isall" lay-filter="type_isall"  >
+											<option value="">输出子类</option>
+											<option value="1">否</option>
+											<option value="2" selected>是</option>
+										   
+										</select>
+										</div></td>
+										<td>
+										<select name="type_orderby" lay-filter="type_orderby">
+											<option value="">排序</option>
+											<option value="">默认</option>
+											<option value="id desc">ID倒序(大靠前)</option>
+											<option value="id asc">ID正序(小靠前)</option>
+											<option value="addtime desc">时间倒序(新靠前)</option>
+											<option value="addtime asc">时间正序(新靠后)</option>
+										</select>
+										</td>
+										<td><input type="text" id="type_limit" value="10" placeholder="条数" name="type_limit" autocomplete="off" class="layui-input"></td>
+										<td>
+										<button  class="layui-btn" lay-filter="type_save" lay-submit="">生成</button></td>
+									  </tr>
+									</tbody>
+								  </table>
+								  <pre id="lable_type" ></pre>
+							  </div>
+							 商品模块标签生成
+							  <div class="layui-input-block" style="margin-left:0;">
+								  <table class="layui-table">
+									<tbody>
+									  <tr>
+										<td>选择栏目</div></td>
+										<td>是否分页</div></td>
+										<td>输出子类数据</div></td>
+										<td>排序</td>
+										<td>输出条数</td>
+										<td>操作</td>
+									  </tr>
+									  <tr>
+										<td>
+										
+										<select name="product_tid" lay-filter="product_tid" id="product_tid" >
+										<option value="">选择栏目</option>
+									   {foreach $classtypes as $v}
+										{if($v['molds']=='product')}
+									   <option  value="{$v['id']}-{$v['molds']}">{fun str_repeat('--', $v['level']), $v['classname']}</option>
+										{/if}
+									   {/foreach}
+									   </select>
+									 
+										</div></td>
+										<td>
+										<select name="product_ispage" lay-filter="product_ispage"  >
+											<option value="">是否分页</option>
+											<option value="1" selected>否</option>
+											<option value="2">是</option>
+										   
+										</select>
+										</div></td>
+										<td>
+										<select name="product_isall" lay-filter="product_isall"  >
+											<option value="">输出子类</option>
+											<option value="1">否</option>
+											<option value="2" selected>是</option>
+										   
+										</select>
+										</div></td>
+										<td>
+										<select name="product_orderby" lay-filter="product_orderby">
+											<option value="">排序</option>
+											<option value="">默认</option>
+											<option value="id desc">ID倒序(大靠前)</option>
+											<option value="id asc">ID正序(小靠前)</option>
+											<option value="addtime desc">时间倒序(新靠前)</option>
+											<option value="addtime asc">时间正序(新靠后)</option>
+										</select>
+										</td>
+										<td><input type="text" id="product_limit" value="10" placeholder="条数" name="product_limit" autocomplete="off" class="layui-input"></td>
+										<td>
+										<button  class="layui-btn" lay-filter="product_save" lay-submit="">生成</button></td>
+									  </tr>
+									</tbody>
+								  </table>
+								  <pre id="lable_product" ></pre>
+							  </div>
 							
+							  
+							  
+							  
+						    </div>
+						</div>
+						<div class="layui-tab-item">
+								
 							  <div class="layui-field-box">
+							  <blockquote class="layui-elem-quote">扩展配置统一使用规则：      标签值{!--$customconf[配置参数]--}  或者    通过方法获取标签值{!--fun get_custom(配置参数)--}</blockquote>
+						    	<fieldset class="layui-elem-field">
+								<legend>自定义配置</legend>
+									<div class="layui-field-box">
+									{loop table="sysconfig" orderby="id asc" notin="type|0" as="v"}
+									{$v['title']}<pre class="layui-code">{!--$customconf['{$v['field']}']--}</pre>
+									{/loop}
+									
+									
+									</div>
+								</fieldset>
 								<blockquote class="layui-elem-quote">系统配置统一使用规则：{!--$webconf[配置参数]--}  或者    通过方法获取{!--fun webConf(配置参数)--}
 								</blockquote>
-								<blockquote class="layui-elem-quote">扩展配置统一使用规则：      标签值{!--$customconf[配置参数]--}  或者    通过方法获取标签值{!--fun get_custom(配置参数)--}</blockquote>
-								
 								<fieldset class="layui-elem-field">
 								<legend>系统配置</legend>
 									<div class="layui-field-box">
-									网站SEO名称<pre class="layui-code">{!--$webconf['web_name']--}</pre>
-									网站SEO关键词<pre class="layui-code">{!--$webconf['web_keyword']--}</pre>
-									网站SEO描述<pre class="layui-code">{!--$webconf['web_desc']--}</pre>
-									底部版权<pre class="layui-code">{!--$webconf['web_copyright']--}</pre>
-									备案号<pre class="layui-code">{!--$webconf['web_beian']--}</pre>
-									网站电话<pre class="layui-code">{!--$webconf['web_tel']--}</pre>
-									400电话<pre class="layui-code">{!--$webconf['web_tel_400']--}</pre>
-									网站QQ<pre class="layui-code">{!--$webconf['web_qq']--}</pre>
-									网站邮箱<pre class="layui-code">{!--$webconf['web_email']--}</pre>
-									公司地址<pre class="layui-code">{!--$webconf['web_address']--}</pre>
-									统计代码<pre class="layui-code">{!--$webconf['web_js']--}</pre>
+									{loop table="sysconfig" orderby="id asc" type="0" as="v"}
+									{$v['title']}<pre class="layui-code">{!--$webconf['{$v['field']}']--}</pre>
+									{/loop}
+									
 									
 									</div>
 								</fieldset>
@@ -71,6 +201,7 @@
 							  </div>
 							
 						</div>
+						
 						
 						<div class="layui-tab-item">
 						
@@ -233,11 +364,11 @@
 								自定义输出：
 								{!--if($listpage['list'])--}//判断是否有分页数据
 								<ul class="pagination">
-						<li class="page-item {!--if($listpage['prev'])--}disabled{!--/if--}"><a class="page-link" href="{!--$listpage['prev']--}" aria-label="Previous"><span aria-hidden="true">«</span></a></li>
+						<li class="page-item {!--if(!$listpage['prev'])--}disabled{!--/if--}"><a class="page-link" href="{!--$listpage['prev']--}" aria-label="Previous"><span aria-hidden="true">«</span></a></li>
 						{!--foreach $listpage['list'] as $ss--}
 						<li class="page-item {!--if($ss['num']==$listpage['current_num'])--}active background{!--/if--}"><a href="{!--$ss['url']--}" class="page-link">{!--$ss['num']--}</a></li>
 						{!--/foreach--}
-						<li class="page-item {!--if($listpage['next'])--}disabled{!--/if--}"><a class="page-link" href="{!--$listpage['next']--}" aria-label="Next"><span aria-hidden="true">»</span></a></li>
+						<li class="page-item {!--if(!$listpage['next'])--}disabled{!--/if--}"><a class="page-link" href="{!--$listpage['next']--}" aria-label="Next"><span aria-hidden="true">»</span></a></li>
 						</ul>
 					{!--/if--}</pre>
 							  </div>
@@ -619,7 +750,7 @@
 						 通用说明
 						 <pre class="layui-code">{!--loop table="表名" tid="栏目ID" limit="输出条数" ispage="值1" isall="值1" notin="字段|值" like="字段|值,字段2|值2" as="变量标签,默认v"--}
 						 这里面输出内容格式：{!--$v[字段参数]--}
-						 {!--$n--}：计数，从1开始计
+						 {!--$v_n--}：计数，从1开始计(v1.6更改)
 						 table：数据库的表名
 						 tid：对应表中的栏目ID，默认每条数据都会有tid字段，可以根据此值输出对应的栏目数据
 						 limit：输出的条数
@@ -639,11 +770,11 @@
 						 自定义输出：
 						 <ul class="pagination">
 				{!--if($v_listpage['list'])--}
-					<li class="page-item {!--if($v_listpage['prev'])--}disabled{!--/if--}"><a class="page-link" href="{!--$v_listpage['prev']--}" aria-label="Previous"><span aria-hidden="true">«</span></a></li>
+					<li class="page-item {!--if(!$v_listpage['prev'])--}disabled{!--/if--}"><a class="page-link" href="{!--$v_listpage['prev']--}" aria-label="Previous"><span aria-hidden="true">«</span></a></li>
 					{!--foreach $v_listpage['list'] as $ss--}
 					<li class="page-item {!--if($ss['num']==$v_listpage['current_num'])--}active background{!--/if--}"><a href="{!--$ss['url']--}" class="page-link">{!--$ss['num']--}</a></li>
 					{!--/foreach--}
-					<li class="page-item {!--if($v_listpage['next'])--}disabled{!--/if--}"><a class="page-link" href="{!--$v_listpage['next']--}" aria-label="Next"><span aria-hidden="true">»</span></a></li>
+					<li class="page-item {!--if(!$v_listpage['next'])--}disabled{!--/if--}"><a class="page-link" href="{!--$v_listpage['next']--}" aria-label="Next"><span aria-hidden="true">»</span></a></li>
 				{!--/if--}
 				</ul></pre>
 						 举例说明：输出文章栏目ID为2,3,4的所有数据，并输出分页，每页10条，变量为v
@@ -658,11 +789,11 @@
 						 输出分页
 						 <ul class="pagination">
 						{!--if($v_listpage['list'])--}
-							<li class="page-item {!--if($v_listpage['prev'])--}disabled{!--/if--}"><a class="page-link" href="{!--$v_listpage['prev']--}" aria-label="Previous"><span aria-hidden="true">«</span></a></li>
+							<li class="page-item {!--if(!$v_listpage['prev'])--}disabled{!--/if--}"><a class="page-link" href="{!--$v_listpage['prev']--}" aria-label="Previous"><span aria-hidden="true">«</span></a></li>
 							{!--foreach $v_listpage['list'] as $ss--}
 							<li class="page-item {!--if($ss['num']==$v_listpage['current_num'])--}active background{!--/if--}"><a href="{!--$ss['url']--}" class="page-link">{!--$ss['num']--}</a></li>
 							{!--/foreach--}
-							<li class="page-item {!--if($v_listpage['next'])--}disabled{!--/if--}"><a class="page-link" href="{!--$v_listpage['next']--}" aria-label="Next"><span aria-hidden="true">»</span></a></li>
+							<li class="page-item {!--if(!$v_listpage['next'])--}disabled{!--/if--}"><a class="page-link" href="{!--$v_listpage['next']--}" aria-label="Next"><span aria-hidden="true">»</span></a></li>
 						{!--/if--}
 						</ul>
 						 </pre>
@@ -678,11 +809,12 @@
 						$where:查询条件。如：['id'=>1],表示查询条件为id=1
 						$str:获取字段，默认null，返回数组，如果有对应的字段，则返回查询得到的数据的对应字段值。字段可以从数据库中查看。</pre>
 						输出任意多条数据的万能标签【多条数据】
-						<pre class="layui-code">{!--fun get_all_info_table($table,$where=null,$order=null,$limit=null)--}
+						<pre class="layui-code">{!--fun get_all_info_table($table,$where=null,$order=null,$limit=null,$field=null)--}
 						$table:表名，模块名，从数据库或模块列表可查看
 						$where:查询条件。如：['id'=>1],表示查询条件为id=1
 						$order:查询排序，默认null，表示按系统排序ID正序。如：'id desc'表示ID倒序，'addtime desc,id desc'表示按最新时间，并且ID倒序
-						$limit:查询条数，默认null，表示查询所有数据。</pre>
+						$limit:查询条数，默认null，表示查询所有数据。
+						$field:查询字段，默认null，表示可以输出哪些字段。</pre>
 						IF逻辑判断
 						<pre class="layui-code">{!--if(判断1)--}
 						//如果判断1为真，则输出这里
@@ -735,134 +867,8 @@
 							
 						</div>
 				      </div>
-					  <!--标签生成-->
-					  <div class="layui-tab-item">
-							 <div class="layui-form-item layui-form-text">
-							文章模块标签生成
-							  <div class="layui-input-block" style="margin-left:0;">
-								  <table class="layui-table">
-									<tbody>
-									  <tr>
-										<td>选择栏目</div></td>
-										<td>是否分页</div></td>
-										<td>输出子类数据</div></td>
-										<td>排序</td>
-										<td>输出条数</td>
-										<td>操作</td>
-									  </tr>
-									  <tr>
-										<td>
-										
-										<select name="type_tid" lay-filter="type_tid" id="type_tid" >
-										<option value="">选择栏目</option>
-									   {foreach $classtypes as $v}
-										{if($v['molds']=='article')}
-									   <option  value="{$v['id']}-{$v['molds']}">{fun str_repeat('--', $v['level']), $v['classname']}</option>
-										{/if}
-									   {/foreach}
-									   </select>
-									 
-										</div></td>
-										<td>
-										<select name="type_ispage" lay-filter="type_ispage"  >
-											<option value="">是否分页</option>
-											<option value="1" selected>否</option>
-											<option value="2">是</option>
-										   
-										</select>
-										</div></td>
-										<td>
-										<select name="type_isall" lay-filter="type_isall"  >
-											<option value="">输出子类</option>
-											<option value="1">否</option>
-											<option value="2" selected>是</option>
-										   
-										</select>
-										</div></td>
-										<td>
-										<select name="type_orderby" lay-filter="type_orderby">
-											<option value="">排序</option>
-											<option value="">默认</option>
-											<option value="id desc">ID倒序(大靠前)</option>
-											<option value="id asc">ID正序(小靠前)</option>
-											<option value="addtime desc">时间倒序(新靠前)</option>
-											<option value="addtime asc">时间正序(新靠后)</option>
-										</select>
-										</td>
-										<td><input type="text" id="type_limit" value="10" placeholder="条数" name="type_limit" autocomplete="off" class="layui-input"></td>
-										<td>
-										<button  class="layui-btn" lay-filter="type_save" lay-submit="">生成</button></td>
-									  </tr>
-									</tbody>
-								  </table>
-								  <pre id="lable_type" ></pre>
-							  </div>
-							 商品模块标签生成
-							  <div class="layui-input-block" style="margin-left:0;">
-								  <table class="layui-table">
-									<tbody>
-									  <tr>
-										<td>选择栏目</div></td>
-										<td>是否分页</div></td>
-										<td>输出子类数据</div></td>
-										<td>排序</td>
-										<td>输出条数</td>
-										<td>操作</td>
-									  </tr>
-									  <tr>
-										<td>
-										
-										<select name="product_tid" lay-filter="product_tid" id="product_tid" >
-										<option value="">选择栏目</option>
-									   {foreach $classtypes as $v}
-										{if($v['molds']=='product')}
-									   <option  value="{$v['id']}-{$v['molds']}">{fun str_repeat('--', $v['level']), $v['classname']}</option>
-										{/if}
-									   {/foreach}
-									   </select>
-									 
-										</div></td>
-										<td>
-										<select name="product_ispage" lay-filter="product_ispage"  >
-											<option value="">是否分页</option>
-											<option value="1" selected>否</option>
-											<option value="2">是</option>
-										   
-										</select>
-										</div></td>
-										<td>
-										<select name="product_isall" lay-filter="product_isall"  >
-											<option value="">输出子类</option>
-											<option value="1">否</option>
-											<option value="2" selected>是</option>
-										   
-										</select>
-										</div></td>
-										<td>
-										<select name="product_orderby" lay-filter="product_orderby">
-											<option value="">排序</option>
-											<option value="">默认</option>
-											<option value="id desc">ID倒序(大靠前)</option>
-											<option value="id asc">ID正序(小靠前)</option>
-											<option value="addtime desc">时间倒序(新靠前)</option>
-											<option value="addtime asc">时间正序(新靠后)</option>
-										</select>
-										</td>
-										<td><input type="text" id="product_limit" value="10" placeholder="条数" name="product_limit" autocomplete="off" class="layui-input"></td>
-										<td>
-										<button  class="layui-btn" lay-filter="product_save" lay-submit="">生成</button></td>
-									  </tr>
-									</tbody>
-								  </table>
-								  <pre id="lable_product" ></pre>
-							  </div>
-							
-							  
-							  
-							  
-						  </div>
-							 </div>
-						</div>
+					 
+					</div>
 					  
 					  
 				  

@@ -134,7 +134,7 @@ class ExtmoldsController extends Controller
 			$data = get_fields_data($data,$molds);
 			if(M($molds)->add($data)){
 				
-				JsonReturn(array('code'=>0,'msg'=>'添加成功！'));
+				JsonReturn(array('code'=>0,'msg'=>'添加成功,继续添加~','url'=>U('Extmolds/addmolds',['tid'=>$data['tid'],'molds'=>$molds])));
 				
 			}else{
 				
@@ -150,7 +150,7 @@ class ExtmoldsController extends Controller
 		$classtype = getTree($classtype);
 		
 		$this->classtypes = $classtype;
-		$this->tid=  $this->frparam('tid');
+		$this->tid =  $this->frparam('tid',0,0);
 		$this->molds = M('Molds')->find(array('biaoshi'=>$molds));
 		
 		$this->display('extmolds-add');
@@ -188,9 +188,7 @@ class ExtmoldsController extends Controller
 		}
 		$this->data = M($molds)->find(array('id'=>$this->frparam('id')));
 		$this->molds = M('Molds')->find(array('biaoshi'=>$molds));
-		//$classtype = M('classtype')->findAll(array('molds'=>$molds),'orders desc');
-		//$classtype = set_class_haschild($classtype);
-		//$classtype = getTree($classtype);
+		$this->tid =  $this->data['tid'];
 		$this->classtypetree =  get_classtype_tree();
 		$this->classtypes = $this->classtypetree;
 		$this->display('extmolds-edit');

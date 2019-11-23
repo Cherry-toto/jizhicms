@@ -73,7 +73,11 @@ class CommentController extends CommonController
 					//var_dump($match);
 					
 				}
-				
+				if($this->webconf['autocheckcomment']==1){
+					$w['isshow'] = 1;
+				}else{
+					$w['isshow'] = 0;
+				}
 				
 				$w['userid'] = $_SESSION['member']['id'];
 				$w['likes'] = $this->frparam('star',1,0);

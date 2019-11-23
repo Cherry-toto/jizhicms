@@ -302,6 +302,7 @@
 					</thead>
 					<tbody class="x-cate">
 					{foreach $classtypes as $v}
+					{if($v['molds']==$molds)}
 					  <tr cate-id="{$v['id']}" fid="{$v['pid']}" >
 						<td>
 						  <div class="layui-unselect layui-form-checkbox layui-form-checked" lay-skin="primary" data-id='{$v['id']}'><i class="layui-icon">&#xe605;</i></div>
@@ -318,6 +319,7 @@
 						</td>
 						
 					  </tr>
+					 {/if}
 					 {/foreach}
 					 
 					</tbody>
@@ -364,8 +366,9 @@
               form.on('submit(save)', function(data){
                 var tids = tableCheck.getData().join(',');
 				if(tids==''){
-					layer.alert('请选择绑定栏目！', {icon: 5});
-					return false;
+					//layer.alert('请选择绑定栏目！', {icon: 5});
+					//return false;
+					tids = 0;
 				}
 				data.field.tids = tids;
 				

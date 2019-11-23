@@ -170,7 +170,10 @@ class SysController extends CommonController
 			
 			$lists = M('pictures')->findAll('id in('.$id.')');
 			foreach($lists as $v){
-				unlink('.'.$v['litpic']);
+				if(file_exists('.'.$v['litpic'])){
+					unlink('.'.$v['litpic']);
+				}
+				
 			}
 			
 			$r = M('pictures')->delete('id in('.$id.')');
@@ -190,7 +193,9 @@ class SysController extends CommonController
 			
 			if(M('pictures')->delete('id in('.$data.')')){
 				foreach($pictures as $v){
-					unlink('.'.$v['litpic']);
+					if(file_exists('.'.$v['litpic'])){
+						unlink('.'.$v['litpic']);
+					}
 				}
 				
 				JsonReturn(array('code'=>0,'msg'=>'批量删除成功！'));

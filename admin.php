@@ -15,7 +15,7 @@
 define('APP_PATH', __DIR__ . '/');
 
 // 开启调试模式
-define('APP_DEBUG', true);
+//define('APP_DEBUG', true);
 
 //定义项目目录
 define('APP_HOME','A');

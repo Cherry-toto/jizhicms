@@ -5,14 +5,13 @@
        {include="style"}
     </head>
     <body>
-    <div class="x-body layui-anim layui-anim-up">
-        <blockquote class="layui-elem-quote">欢迎管理员：
-            <span class="x-red">{$admin['name']}</span>！当前时间:<span id="time">{fun date('Y年m月d日 H:i:s')}</span></blockquote>
-        <fieldset class="layui-elem-field">
-            <legend>数据统计</legend>
-            <div class="layui-field-box">
-                <div class="layui-col-md12">
-                    <div class="layui-card">
+    <div class="x-body layui-anim layui-anim-up" style="background-color: #f2f2f2">
+        <div class="layui-fluid">
+        <div class="layui-card">
+          <div class="layui-card-header">欢迎管理员：
+            <span class="x-red">{$admin['name']}</span>！当前时间:<span id="time">{fun date('Y年m月d日 H:i:s')}</span></div>
+          <div class="layui-card-body">
+         <div class="layui-card">
                         <div class="layui-card-body">
                             <div class="layui-carousel x-admin-carousel x-admin-backlog" lay-anim="" lay-indicator="inside" lay-arrow="none" style="width: 100%; height: 90px;">
                                 <div carousel-item="">
@@ -52,96 +51,151 @@
                             </div>
                         </div>
                     </div>
+          </div>
+        </div>
+          <div class="layui-row layui-col-space15">
+            <div class="layui-col-md8">    
+              <div class="layui-card">
+                <div class="layui-card-header">
+                  最近更新
+                  <a href="{fun U('Article/articlelist')}" class="layui-a-tips">全部文章</a>
                 </div>
+                <div class="layui-card-body">
+                  <div class="layui-row layui-col-space10">
+                  {loop table="article" orderby="addtime desc" limit="6" as="v"}
+                    <div class="layui-col-xs12 layui-col-sm4">
+                      <div class="cmdlist-container">
+                        <a href="{$v['url']}" target="_blank">
+                           <img src="{$v['litpic']}" onerror="javascipt:this.src='{__Tpl_style__}/style/images/nopic.jpg'; this.title='图片未找到';this.onerror=''">
+                        </a>
+                        <a href="{$v['url']}">
+                          <div class="cmdlist-text">
+                            <p class="info">{$v['title']}</p>
+                            <div class="txteax">
+                                <b>{fun formatTime($v['addtime'],'Y-m-d')}</b>
+                                <p>
+                                 <i class="layui-icon layui-icon-star"></i>
+                                 {fun jz_collect($v['tid'],$v['id'])}
+                                </p>
+                                <span class="flow">
+                                  <i class="layui-icon layui-icon-user"></i>
+                                  {$v['hits']}
+                                </span>
+                            </div>
+                          </div>
+                        </a>
+                    </div>
+                    </div>
+
+
+                    
+
+                  {/loop}
+                  </div>
+                </div>
+              </div>
+              {php $comment = M('molds')->find(array('biaoshi'=>'comment'));/}
+              {if($comment['isopen'])}
+              <div class="layui-card">
+                <div class="layui-card-header">最新评论</div>
+                <div class="layui-card-body">
+                  <dl class="layuiadmin-card-status">
+                  {loop table="comment" limit="10" as="v"}
+                    <dd>
+                    {php  $user = memberInfo($v['userid']);/}
+                      <div class="layui-status-img"><a href="javascript:;">{if($user['litpic']!='')}<img src="{$user['litpic']}">{/if}</a></div>
+                      <div>
+                        <p>{$user['username']} 在 <a href="{$classtypedata[$v['tid']]['url']}">{$classtypedata[$v['tid']]['classname']}</a> 发布了评论</p>
+                        <span>{fun formatTime($v['addtime'],'Y-m-d H:i:s')}</span>
+                      </div>
+                    </dd>
+                  {/loop}
+                   
+                  </dl>  
+                </div>
+              </div>  
+              {/if}   
             </div>
-        </fieldset>
-        <fieldset class="layui-elem-field">
-            <legend>个人信息</legend>
-            <div class="layui-field-box">
-                <table class="layui-table" lay-skin="line">
+            <div class="layui-col-md4">
+              <div class="layui-card">
+                <div class="layui-card-header">版本信息</div>
+                <div class="layui-card-body layui-text">
+                  <table class="layui-table">
+                    <colgroup>
+                      <col width="100">
+                      <col>
+                    </colgroup>
                     <tbody>
-                      	
-						 <tr>
-                          	<td>
-                              昵称：{$admin['name']}
-                            </td>
-                        </tr>
-                     	 <tr>
-                          	<td>
-                              手机号：{$admin['tel']}
-                            </td>
-                        </tr>
-						 <tr>
-                          	<td>
-                              邮箱：{$admin['email']}
-                            </td>
-                        </tr>
-						 <tr>
-                          	<td>
-                              注册时间：{fun date('Y-m-d H:i:s',$admin['regtime'])}
-                            </td>
-                        </tr>
-						 <tr>
-                          	<td>
-                              最近登录：{fun date('Y-m-d H:i:s',$admin['logintime'])}
-                            </td>
-                        </tr>
-                       
+                      <tr>
+                        <td>当前版本</td>
+                        <td>
+                           v{$webconf['web_version']} <a href="https://github.com/Cherry-toto/jizhicms" target="_blank" style="padding-left: 15px;">项目地址</a> 
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>服务器</td>
+                        <td>
+                          {$_SERVER['SERVER_NAME']}
+                       </td>
+                      </tr>
+                      <tr>
+                        <td>操作系统</td>
+                        <td>
+                          {fun php_uname('s')}
+                       </td>
+                      </tr>
+                      <tr>
+                        <td>运行环境</td>
+                        <td>
+                          {fun php_uname()}
+                       </td>
+                      </tr>
+                      <tr>
+                        <td>PHP版本</td>
+                        <td>
+                          {__PHP_VERSION__}
+                       </td>
+                      </tr>
+                      <tr>
+                        <td>运行方式</td>
+                        <td>
+                          {fun php_sapi_name()}
+                       </td>
+                      </tr>
+                      <tr>
+                        <td>上传限制</td>
+                        <td>
+                          {fun get_cfg_var ("upload_max_filesize")}
+                       </td>
+                      </tr>
+
+
                     </tbody>
-                </table>
+                  </table>
+                </div>
+              </div>
+             
+            <div class="layui-card">
+                <div class="layui-card-header">用户留言</div>
+                <div class="layui-card-body">
+                  <ul class="layuiadmin-card-status layuiadmin-home2-usernote">
+                  {loop table="message"  limit="10" orderby="addtime desc" as="v"}
+                    <li>
+                      <h3>{$v['user']}</h3>
+                      <p>{$v['body']}</p>
+                      <span>{fun formatTime($v['addtime'],'Y-m-d H:i:s')}</span>
+                      <a href="{fun U('Message/editmessage',['id'=>$v['id']])}"  class="layui-btn layui-btn-xs layuiadmin-reply">回复</a>
+                    </li>
+                  {/loop}
+                   
+                  </ul>
+                </div>
+              </div>
+
+              
             </div>
-        </fieldset>
-      {if($isadmin)}
-        <fieldset class="layui-elem-field">
-            <legend>系统信息</legend>
-            <div class="layui-field-box">
-                <table class="layui-table">
-                    <tbody>
-                        <tr>
-                            <th>系统版本</th>
-                            <td>{$webconf['web_version']}</td></tr>
-                        <tr>
-                            <th>服务器地址</th>
-                            <td>{$_SERVER['SERVER_NAME']}</td></tr>
-                        <tr>
-                            <th>操作系统</th>
-                            <td>{fun php_uname('s')}</td></tr>
-                        <tr>
-                            <th>运行环境</th>
-                            <td>{fun php_uname()}</td></tr>
-                        <tr>
-                            <th>PHP版本</th>
-                            <td>{__PHP_VERSION__}</td></tr>
-                        <tr>
-                            <th>PHP运行方式</th>
-                            <td>{fun php_sapi_name()}</td></tr>
-                       
-                        <tr>
-                            <th>上传附件限制</th>
-                            <td>{fun get_cfg_var ("upload_max_filesize")}</td></tr>
-                       
-                    </tbody>
-                </table>
-            </div>
-        </fieldset>
-      {/if}
-        <fieldset class="layui-elem-field">
-            <legend>开发团队</legend>
-            <div class="layui-field-box">
-                <table class="layui-table">
-                    <tbody>
-                        <tr>
-                            <th>版权所有</th>
-                            <td>极致科技网络有限公司
-                                <a href="http://www.jizhicms.cn" class='x-a' target="_blank">访问官网</a></td>
-                        </tr>
-                        <tr>
-                            <th>开发者</th>
-                            <td><a href="http://wpa.qq.com/msgrd?v=3&uin=2581047041&site=qq&menu=yes&from=message&isappinstalled=0" target="_blank">留恋风(2581047041@qq.com)</a></td></tr>
-                    </tbody>
-                </table>
-            </div>
-        </fieldset>
+          </div>
+        </div>
 
     </div>
         <script>

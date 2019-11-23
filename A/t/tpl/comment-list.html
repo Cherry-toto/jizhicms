@@ -35,9 +35,9 @@
 					  <select name="tid" lay-filter="tid" lay-search class="layui-inline autosubmit">
 					  <option value="">请选择栏目</option>
 					   {foreach $classtypes as $v}
-					   {if($v['molds']=='article')}
+					  
 					   <option {if($tid==$v['id'])} selected="selected" {/if}value="{$v['id']}">{fun str_repeat('--', $v['level']), $v['classname']}</option>
-					   {/if}
+					 
 					   {/foreach}
 					
 					  </select>

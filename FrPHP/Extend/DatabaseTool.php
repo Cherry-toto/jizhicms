@@ -37,6 +37,7 @@ class DatabaseTool
    try
    {
     $this->handler = new PDO("mysql:host=".$this->config['host'].";port={$this->config['port']};dbname={$this->config['database']}", $this->config['user'], $this->config['password']);
+    $this->handler->query("set names utf8");
    }
    catch (PDOException $e)
    {

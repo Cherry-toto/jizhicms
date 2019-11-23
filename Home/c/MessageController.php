@@ -32,7 +32,11 @@ class MessageController extends CommonController
 			$w['aid'] = $this->frparam('aid',0,0,'POST');
 			$w['tid'] = $this->frparam('tid',0,0,'POST');
 			
-			
+			if($this->webconf['autocheckmessage']==1){
+				$w['isshow'] = 1;
+			}else{
+				$w['isshow'] = 0;
+			}
 			
 			$w['ip'] = GetIP();
 			$w['addtime'] = time();

@@ -23,7 +23,7 @@ class MoldsController extends CommonController
 		$page = new Page('Molds');
 		$sql = ' 1=1 ';
 
-		$data = $page->where($sql)->page($this->frparam('page',0,1))->go();
+		$data = $page->where($sql)->orderby('id asc')->page($this->frparam('page',0,1))->go();
 		$pages = $page->pageList();
 		$this->pages = $pages;
 		$this->lists = $data;

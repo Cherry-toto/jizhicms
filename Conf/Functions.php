@@ -1310,6 +1310,33 @@ function htmldecode($data){
 	return $data;
 }
 
+//计算点赞数
+function jz_zan($tid,$id){
+	
+	$sql = " likes like '%||".$tid.'-'.$id."||%' ";
+	$count = M('member')->getCount($sql);
+	return $count;
+	
+}
+//计算收藏数
+function jz_collect($tid,$id){
+	
+	$sql = " collection like '%||".$tid.'-'.$id."||%' ";
+	$count = M('member')->getCount($sql);
+	return $count;
+	
+}
+//用户详情
+function memberInfo($id,$str=null){
+	$user = M('member')->find('id='.$id);
+  if($str!=null){
+  	return $user[$str];
+  }
+  return $user;
+
+}
+
+
 
 //引入扩展方法文件
 include(APP_PATH.'Conf/FunctionsExt.php');

@@ -20,5 +20,6 @@
         'RECONNECT' => false, //连接超时是否重连  默认不重连
         'EXPIRE'=>1800  //session垃圾回收时间 单位s  在此也是session的过期时间
     ),
+  'APP_DEBUG' => true,
 
 ); ?>

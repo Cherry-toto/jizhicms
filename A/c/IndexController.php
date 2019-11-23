@@ -135,14 +135,15 @@ class IndexController extends CommonController
 		$this->article_num = M('article')->getCount();
 		$this->product_num = M('product')->getCount();
 		$this->message_num = M('message')->getCount();
-        
+        $classtypedata = (isMobile() && $webconf['iswap']==1)?classTypeDataMobile():classTypeData();
+        $this->classtypedata = $classtypedata;
 		$this->display('welcome');
 	}
 	
 	function beifen(){
 		
 		//读取备份数据库
-		$dir = APP_PATH.'/backup';
+		$dir = APP_PATH.'backup';
 		$fileArray=array();
 		if (false != ($handle = opendir ( $dir ))) {
 			$i=0;

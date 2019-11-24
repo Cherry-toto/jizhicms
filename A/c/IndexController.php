@@ -194,7 +194,7 @@ class IndexController extends CommonController
 			'database' =>DB_NAME
 		);
 		$database = new \DatabaseTool($pconfig);
-		$file = APP_PATH.'/backup/'.$file;
+		$file = APP_PATH.'backup/'.$file;
 		$database->restore($file);
 	}
 	
@@ -203,13 +203,28 @@ class IndexController extends CommonController
 		if($file==''){
 			Error('非法操作！');
 		}
-		
-		$a = unlink(APP_PATH.'/backup/'.$file);
-		if($a){
-			Success('删除成功！',U('beifen'));
-		}else{
-			Error('删除失败！');
+		$f = explode('.php',$file);
+		$filename = $f[0];
+		if($filename==''){
+			Error('非法操作！');
 		}
+		//读取备份数据库
+		$dir = APP_PATH.'backup';
+		$fileArray=array();
+		if (false != ($handle = opendir ( $dir ))) {
+			$i=0;
+			while ( false !== ($file = readdir ( $handle )) ) {
+				//去掉"“.”、“..”以及带“.xxx”后缀的文件
+				if ($file != "." && $file != ".."&& strpos($file,$filename)!==false) {
+					unlink(APP_PATH.'backup/'.$file);
+					$i++;
+				}
+			}
+			//关闭句柄
+			closedir ( $handle );
+		}
+		
+		Success('删除成功！',U('beifen'));
 		
 	}
 	

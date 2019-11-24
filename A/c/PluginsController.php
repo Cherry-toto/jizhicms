@@ -20,7 +20,7 @@ class PluginsController extends CommonController
 	
 	public function index(){
 		
-		$dir = APP_PATH.'/'.APP_HOME.'/exts';
+		$dir = APP_PATH.APP_HOME.'/exts';
 		$fileArray=array();
 		if (false != ($handle = opendir ( $dir ))) {
 			while ( false !== ($file = readdir ( $handle )) ) {
@@ -283,7 +283,7 @@ class PluginsController extends CommonController
 			error_reporting(E_ALL^E_NOTICE);
 			
 			//执行插件控制器卸载程序
-			$dir = APP_PATH.'/'.APP_HOME.'/exts';
+			$dir = APP_PATH.APP_HOME.'/exts';
 			require_once($dir.'/'.$plugins['filepath'].'/PluginsController.php');
 			$plg = new \A\exts\PluginsController($this->frparam());
 			//转入插件内部处理
@@ -313,7 +313,7 @@ class PluginsController extends CommonController
 			error_reporting(E_ALL^E_NOTICE);
 			
 			//执行插件控制器卸载程序
-			$dir = APP_PATH.'/'.APP_HOME.'/exts';
+			$dir = APP_PATH.APP_HOME.'/exts';
 			require_once($dir.'/'.$filepath.'/PluginsController.php');
 			$plg = new \A\exts\PluginsController($this->frparam());
 			

@@ -651,3 +651,12 @@ table th, table td {
     right: 0;
     bottom: 12px;
 }
+.cmdlist-text .info {
+    height: 40px;
+    font-size: 14px;
+    line-height: 20px;
+    width: 100%;
+    overflow: hidden;
+    color: #666;
+    margin-bottom: 10px;
+}

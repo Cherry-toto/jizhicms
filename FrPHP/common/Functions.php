@@ -506,7 +506,7 @@ function getRandChar($length = 8){
 **/
 function newstr($string, $length, $dot="...") {
 	if(strlen($string) <= $length) {return $string;}
-	$string = str_replace(array('&amp;', '&quot;', '&lt;', '&gt;'), array('&','"','<','>'), $string);
+	$string = str_replace(array('&amp;', '&quot;', '&lt;', '&gt;' ,'&nbsp;'), array('&','"','<','>',''), $string);
 	$strcut = '';$n = $tn = $noc = $noct = $nc = $tnc =0;
 	while($n < strlen($string)) {
 		$t = ord($string[$n]);

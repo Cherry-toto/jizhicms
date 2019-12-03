@@ -207,6 +207,8 @@ class Model {
 		foreach($row as $key => $value){
 			$cols[] = $key;
 			$vals[] = '\''.$value.'\'';
+			
+			
 		}
 		$col = join(',', $cols);
 		$val = join(',', $vals);
@@ -229,12 +231,26 @@ class Model {
 		$table = self::$table;
 		$stmt = $this->db->getTable($table);  
 		$stmt->execute();  
-		$columns = $stmt->fetchAll(PDO::FETCH_COLUMN);
+		$columns = $stmt->fetchAll(PDO::FETCH_CLASS);
 		$newcol = array();
-		foreach( $columns as $col ){
-			$newcol[$col] = null;
+		// foreach( $columns as $col ){
+		// 	$newcol[$col] = "null";
+		// }
+		foreach ($columns as $key => $value) {
+			if(strpos($value->Type,'int')!==false || strpos($value->Type,'decimal')!==false){
+				if(isset($rows[$value->Field]) && $rows[$value->Field]!='' && $rows[$value->Field]!==false){
+					$newcol[$value->Field] = $rows[$value->Field];
+				}
+				
+			}else{
+				if(isset($rows[$value->Field]) && $rows[$value->Field]!='' && $rows[$value->Field]!==false ){
+					$newcol[$value->Field] = $rows[$value->Field];
+				}
+				
+			}
 		}
-		return array_intersect_key($rows,$newcol);
+		return $newcol;
+		//return array_intersect_key($rows,$newcol);
 	}
 	
 	

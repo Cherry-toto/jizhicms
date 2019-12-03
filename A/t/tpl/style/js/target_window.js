@@ -27,7 +27,7 @@ function x_admin_show(title,url,w,h){
         area: [w+'px', h +'px'],
         fix: false, //不固定
         maxmin: true,
-        shadeClose: true,
+        shadeClose: false,
         shade:0.4,
         title: title,
         content: url
@@ -55,7 +55,7 @@ function x_top_show(title,url,w,h){
         area: [w+'px', h +'px'],
         fix: false, //不固定
         maxmin: true,
-        shadeClose: true,
+        shadeClose: false,
         shade:0.4,
         title: title,
         content: url

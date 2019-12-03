@@ -135,7 +135,7 @@ class IndexController extends CommonController
 		$this->article_num = M('article')->getCount();
 		$this->product_num = M('product')->getCount();
 		$this->message_num = M('message')->getCount();
-        $classtypedata = (isMobile() && $webconf['iswap']==1)?classTypeDataMobile():classTypeData();
+        $classtypedata = (isMobile() && $this->webconf['iswap']==1)?classTypeDataMobile():classTypeData();
         $this->classtypedata = $classtypedata;
 		$this->display('welcome');
 	}

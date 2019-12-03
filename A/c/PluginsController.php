@@ -41,13 +41,16 @@ class PluginsController extends CommonController
 		$lists = [];
 		foreach($fileArray as $k=>$v){
 			//检查是否安装
-			if(isset($plugins[$v])){
-				$lists[$k] = $plugins[$v];
-				$lists[$k]['isinstall'] = true;
-			}else{
-				$config = require_once($dir.'/'.$v.'/config.php');
-				$lists[] = ['name'=>$config['name'],'filepath'=>$v,'description'=>$config['desc'],'version'=>$config['version'],'author'=>$config['author'],'update_time'=>strtotime($config['update_time']),'module'=>$config['module'],'isopen'=>0,'config'=>'','isinstall'=>false];
+			if(strpos($v,'.')===false){
+				if(isset($plugins[$v])){
+					$lists[$k] = $plugins[$v];
+					$lists[$k]['isinstall'] = true;
+				}else{
+					$config = require_once($dir.'/'.$v.'/config.php');
+					$lists[] = ['name'=>$config['name'],'filepath'=>$v,'description'=>$config['desc'],'version'=>$config['version'],'author'=>$config['author'],'update_time'=>strtotime($config['update_time']),'module'=>$config['module'],'isopen'=>0,'config'=>'','isinstall'=>false];
+				}
 			}
+			
 			
 		}
 		

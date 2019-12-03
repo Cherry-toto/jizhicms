@@ -154,8 +154,8 @@ function U($action=null,$field=null){
 	
 	if(APP_URL=='/index.php'){
 		if(strpos($action,'/')!==FALSE){
-			//存在'/'
-			$action  = ucfirst($action);
+			//存在'/' 取消首字母大写限制
+			//$action  = ucfirst($action);
 			$url =  get_domain().'/'.$action;
 		}else if($action!=null){
 			$url =  get_domain().'/'.APP_CONTROLLER.'/'.$action;

@@ -88,7 +88,16 @@ class ClasstypeController extends CommonController
 			$w = array_merge($data,$w);
 			$a = M('classtype')->add($w);
 			if($a){
-				
+				$fields=M('fields')->findAll(' tids like "%,'.$w['pid'].',%" ',null,'id,tids');
+				foreach ($fields as $v){
+					if($v['tids']!=0 && $v['tids']!=''){
+						M('fields')->update(array('id'=>$v['id']),array('tids'=>$v['tids'].$a.','));
+					}else{
+						M('fields')->update(array('id'=>$v['id']),array('tids'=>','.$a.','));
+					}
+					
+				}
+				//这里
 				setCache('classtypetree',null);
 				setCache('classtype',null);
 				setCache('mobileclasstype',null);

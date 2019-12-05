@@ -74,7 +74,7 @@ class View
 			
 			
         } else {
-           Error_msg('无法找到视图文件'.$controllerLayout);
+           Error_msg('无法找到视图文件，页面模板：'.$name.'.html');
         }
 		
 		

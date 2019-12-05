@@ -34,7 +34,7 @@ class HomeController extends CommonController
 	//栏目
 	function jizhi(){
 		//接收前台所有的请求
-		$request_url = REQUEST_URI;
+		$request_url = str_replace(APP_URL,'',REQUEST_URI);
 		$position = strpos($request_url,'?');
 		$url = ($position!==FALSE) ? substr($request_url,0,$position) : $request_url;
 		$url = substr($url,1,strlen($url)-1);

@@ -149,7 +149,7 @@ class IndexController extends CommonController
 			$i=0;
 			while ( false !== ($file = readdir ( $handle )) ) {
 				//去掉"“.”、“..”以及带“.xxx”后缀的文件
-				if ($file != "." && $file != ".."&& strpos($file,".php")) {
+				if ($file != "." && $file != ".." && strpos($file,".php")!==false && strpos($file,"_v")===false) {
 					$fileArray[$i]=$file;
 					if($i==100){
 						break;

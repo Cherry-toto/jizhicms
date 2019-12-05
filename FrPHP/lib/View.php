@@ -300,6 +300,7 @@ class View
 		if(isset($a['fields'])){$fields=$a['fields'];}else{$fields='null';}
 		if(isset($a['isall'])){$isall=trim($a['isall'],"'");}else{$isall=false;}
 		if(isset($a['as'])){$as=$a['as'];}else{$as='v';}
+		if(isset($a['day'])){$day=$a['day'];}else{$day=false;}
 		if(isset($a['orderby'])){
 			$order=$a['orderby'];
 			//$order=' '.str_replace('|',' ',$order).' ';
@@ -345,7 +346,7 @@ class View
 			}
 		}
 		
-		unset($a['table']);unset($a['orderby']);unset($a['limit']);unset($a['as']);unset($a['like']);unset($a['fields']);unset($a['isall']);unset($a['notin']);unset($a['notempty']);unset($a['empty']);
+		unset($a['table']);unset($a['orderby']);unset($a['limit']);unset($a['as']);unset($a['like']);unset($a['fields']);unset($a['isall']);unset($a['notin']);unset($a['notempty']);unset($a['empty']);unset($a['day']);
 		$pages='';
 		$w = ' 1=1 ';
 		$ispage=false;
@@ -439,6 +440,10 @@ class View
 				$w.=' and (trim('.$empty.') ="" or trim('.$empty.') is null) ';
 			}
 			
+		}
+		if($day){
+			$day =str_replace("'",'',$day);
+			$w.=" and DATE_SUB(CURDATE(), INTERVAL ".$day." DAY) <= date(FROM_UNIXTIME(addtime))";
 		}
 		
 		$w .= $notin_sql;

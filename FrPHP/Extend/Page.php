@@ -26,6 +26,8 @@ namespace FrPHP\Extend;
 		public $nextpage = '';
 		//每页条数
 		public $limit = 10;
+		//分页从第几开始
+		public $limit_t = 0;
 		//当前页码
 		public $currentPage = 1;
 		//间隔条数
@@ -235,7 +237,19 @@ namespace FrPHP\Extend;
 			return $this;
 		}
 		public function limit($limit=null){
-			$this->limit = ($limit==null)?$this->limit:$limit;
+			if($limit==null){
+				$this->limit = $this->limit;
+			}else{
+				if(strpos($limit,',')!==false){
+					$limit_t = explode(',',$limit);
+					$this->limit = (int)$limit_t[1];
+					$this->limit_t = (int)$limit_t[0];
+				}else{
+					$this->limit = $limit;
+				}
+
+			}
+
 			return $this;
 		}
 		public function fields($fields=null){
@@ -267,17 +281,22 @@ namespace FrPHP\Extend;
 		
 		public function go(){
 			if($this->currentPage!=1){
-				$limitsql = $this->limit*($this->currentPage-1).','.$this->limit;
+				$limitsql = (($this->limit*($this->currentPage-1)) - ($this->limit_t)).','.$this->limit;
 				//1-0:1  2-2:3
 			}else{
-				$limitsql = $this->limit;
+				if($this->limit_t!=0){
+					$limitsql = $this->limit_t.','.$this->limit;
+				}else{
+					$limitsql = $this->limit;
+				}
+				
 			}
 			
 			$this->datalist = M($this->table)->findAll($this->sql,$this->order,$this->fields,$limitsql);
 			
 			$this->sum = M($this->table)->getCount($this->sql);
 			$this->limit = $this->limit;
-			
+
 			$allpage = ceil($this->sum/$this->limit);
 			if($allpage==0){$allpage=1;}
 			$this->allpage = $allpage;
@@ -289,13 +308,26 @@ namespace FrPHP\Extend;
 			$this->sql = $sql;
 			$this->order = $order;
 			$this->fields = $fields;
-			$this->limit = $limit;
+			if(strpos($limit,',')!==false){
+				$limit_t = explode(',',$limit);
+				$this->limit = (int)$limit_t[1];
+				$this->limit_t = (int)$limit_t[0];
+			}else{
+				$this->limit = $limit;
+			}
+			
 			if($this->currentPage!=1){
-				$limitsql = $this->limit*($this->currentPage-1).','.$this->limit;
+				$limitsql = (($this->limit*($this->currentPage-1)) - ($this->limit_t)).','.$this->limit;
 				//1-0:1  2-2:3
 			}else{
-				$limitsql = $this->limit;
+				if($this->limit_t!=0){
+					$limitsql = $this->limit_t.','.$this->limit;
+				}else{
+					$limitsql = $this->limit;
+				}
+				
 			}
+			
 			$this->datalist = M($this->table)->findAll($this->sql,$this->order,$this->fields,$limitsql);
 			$this->sum = M($this->table)->getCount($sql);
 			$this->limit = $limit;

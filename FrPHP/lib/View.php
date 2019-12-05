@@ -414,11 +414,11 @@ class View
 			if(strpos($notempty,'|')!==false){
 				$notempty = explode('|',$notempty);
 				foreach($notempty as $v){
-					$w.=' and trim('.$v.') !=""  ';
+					$w.=' (and trim('.$v.') !="" or trim('.$v.') is not null) ';
 				}
 				
 			}else{
-				$w.=' and trim('.$notempty.') !=""  ';
+				$w.=' and (trim('.$notempty.') !="" or trim('.$notempty.') is not null)  ';
 			}
 			
 		}
@@ -427,11 +427,11 @@ class View
 			if(strpos($empty,'|')!==false){
 				$empty = explode('|',$empty);
 				foreach($empty as $v){
-					$w.=' and trim('.$v.') =""  ';
+					$w.=' and (trim('.$v.') ="" or  trim('.$v.') is null) ';
 				}
 				
 			}else{
-				$w.=' and trim('.$empty.') =""  ';
+				$w.=' and (trim('.$empty.') ="" or trim('.$empty.') is null) ';
 			}
 			
 		}

@@ -311,9 +311,14 @@ class View
 				$like = explode(',',trim($a['like'],"'"));
 				foreach($like as $v){
 					$s = explode('|',$v);
-					$lk[]= " ".$s[0]." like \'%".trim($s[1])."%\' ";
+					if(strpos($s[1],'$')!==false){
+						$lk[] = " ".$s[0]." like \'%'.".trim($s[1]).".'%\' ";
+					}else{
+						$lk[]= " ".$s[0]." like \'%".trim($s[1])."%\' ";
+					}
+					
 				}
-				$lk = " and ". implode(" and ",$lk);
+				$lk = " and ( ". implode(" or ",$lk)." )";
 			}else{
 				if(strpos($a['like'],'$')!==false){
 					$like = explode('|',trim($a['like'],"'"));

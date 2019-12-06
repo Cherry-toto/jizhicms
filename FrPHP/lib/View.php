@@ -292,8 +292,23 @@ class View
 	private function template_html_loop($f){
 		preg_match_all('/.*?(\s*.*?=.*?[\"|\'].*?[\"|\']\s).*?/si',' '.$f.' ',$aa);
 		$a=array();foreach($aa[1] as $v){$t=explode('=',trim(str_replace(array('"'),"'",$v)));$a=array_merge($a,array(trim($t[0]) => trim($t[1])));}
-		if(strpos($a['table'],'$')!==FALSE){$a['table']=trim($a['table'],"'");}
-		$db=$a['table'];
+		if(isset($a['table'])){
+			if(strpos($a['table'],'$')!==FALSE){$a['table']=trim($a['table'],"'");}
+			$db=$a['table'];
+		}else{
+			if(!isset($a['tid'])){ exit('缺少table参数！');}
+			if(strpos($a['tid'],'$')!==false){
+				$db = ' $classtypedata["'.trim($a['tid'],"'").'"]["molds"] ';
+			}else{
+				if(strpos($a['tid'],',')!==false){
+					$tids = explode(',',$a['tid']);
+					$db = ' $classtypedata['.trim($tids[0],"'").']["molds"] ';
+				}else{
+					$db = ' $classtypedata['.trim($a['tid'],"'").']["molds"] ';
+				}
+			}
+			
+		}
 		if(isset($a['limit'])){$limit=$a['limit'];}else{$limit='null';}
 		if(isset($a['notempty'])){$notempty=trim($a['notempty'],"'");}else{$notempty=false;}
 		if(isset($a['empty'])){$empty=trim($a['empty'],"'");}else{$empty=false;}

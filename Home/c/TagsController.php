@@ -81,7 +81,7 @@ class TagsController extends CommonController
 			$data = $page->where($sql)->orderby('orders desc,id desc')->limit($limit)->page($this->frpage)->go();
 			
 			
-			$pages = $page->pageList(3,'-');
+			$pages = $page->pageList(5,'?page=');
 			
 			$this->pages = $pages;//组合分页
 			

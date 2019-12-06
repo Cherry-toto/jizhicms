@@ -110,14 +110,7 @@ namespace FrPHP\Extend;
 					break;
 					default:
 						$url = str_ireplace('.html','',$request_uri);
-						if(strpos($url,'-')!==false){
-							$urls = explode('-',$url);
-							$num = array_pop($urls);
-							if(is_numeric($num)){
-								  $url = implode('-',$urls);
-							}
-
-						}
+						
 					
 					break;
 					
@@ -152,9 +145,19 @@ namespace FrPHP\Extend;
 				'list' => null,
 				'last' => null,
 			);
-			$this->url = $this->getUrl();
+			
 			$this->pv = $pv;
 			$this->sep = ($sep==false) ? ($this->sep) : $sep;
+			$url = $this->getUrl();
+			if(strpos($url,$this->sep)!==false){
+				$urls = explode($this->sep,$url);
+				$num = array_pop($urls);
+				if(is_numeric($num)){
+					  $url = implode($this->sep,$urls);
+				}
+
+			}
+			$this->url = $url;
 			$list = '';
 			$file_ext = $this->file_ext;
 			$listpage['home'] = $this->url.$file_ext;

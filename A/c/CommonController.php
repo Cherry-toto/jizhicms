@@ -52,6 +52,11 @@ class CommonController extends Controller
 	  $customconf = get_custom();
 	  $this->customconf = $customconf;
 	  $this->classtypetree =  get_classtype_tree();
+	  $classtypedata = (isMobile() && $webconf['iswap']==1)?classTypeDataMobile():classTypeData();
+	  foreach($classtypedata as $k=>$v){
+		$classtypedata[$k]['children'] = get_children($v,$classtypedata);
+	  }
+	  $this->classtypedata = $classtypedata;
     
     }
 	

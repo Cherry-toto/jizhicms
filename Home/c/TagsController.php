@@ -49,6 +49,7 @@ class TagsController extends CommonController
 				}
 			
 				$this->pages = $arraypage->pageList();
+				$this->pagelist = $arraypage->pagelist;
 				$this->lists = $data;
 			}else{
 				$this->pages = [];

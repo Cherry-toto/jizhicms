@@ -104,7 +104,7 @@ class CommonController extends Controller
 				JsonReturn($data);
 			}
 			$fileSize = (int)webConf('fileSize');
-			if($fileSize!=0 && $_FILES["file"]["size"]>$fileSize){
+			if($fileSize!=0 && $_FILES["file"]["size"]/(1024*1024)>$fileSize){
 				$data['error'] =  "Error: 文件大小超过网站内部限制！";
 				$data['code'] = 1003;
 				JsonReturn($data);

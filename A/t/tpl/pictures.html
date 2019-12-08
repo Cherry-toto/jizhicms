@@ -35,6 +35,7 @@
 					  <select name="molds" lay-filter="molds" lay-search="" class="layui-inline autosubmit">
 					   <option value="">筛选模块</option>
 					   <option value="other" {if($molds=='other')} selected="selected" {/if}>其他杂项</option>
+					   <option value="sysconfig" {if($molds=='sysconfig')} selected="selected" {/if}>系统配置</option>
 					   {loop table="molds" orderby="id asc" isopen="1" as="v"}
 					   <option {if($molds==$v['biaoshi'])} selected="selected" {/if}value="{$v['biaoshi']}">{$v['name']}</option>
 					   {/loop}

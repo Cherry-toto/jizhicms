@@ -125,7 +125,7 @@
 						 {if($v['tid']==0)}-{else}{$classtypedata[$v['tid']]['classname']}{/if}
 						</td>
 						 <td>
-						 {if($v['molds']=='' || empty($v['molds']))}其他{else}{fun get_info_table('molds',['biaoshi'=>$v['molds']],'name')}{/if}
+						 {if($v['molds']=='' || empty($v['molds']))}其他{else}{$v['molds']}{/if}
 						</td>
 						<td>
 						{$v['litpic']}

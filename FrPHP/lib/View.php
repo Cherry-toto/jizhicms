@@ -94,6 +94,7 @@ class View
 			$fp_txt=@fread($fp_tp,filesize($controllerLayout));
 			@fclose($fp_tp);
 			$fp_txt=$this->template_html($fp_txt);
+			$fp_txt = "<?php if (!defined('CORE_PATH')) exit();?>".$fp_txt;
 			$fpt_tpl=@fopen($cache_file,"w");
 			@fwrite($fpt_tpl,$fp_txt);
 			@fclose($fpt_tpl);
@@ -102,6 +103,7 @@ class View
 			$fp_txt=@fread($fp_tp,filesize($controllerLayout));
 			@fclose($fp_tp);
 			$fp_txt=$this->template_html($fp_txt);
+			$fp_txt = "<?php if (!defined('CORE_PATH')) exit();?>".$fp_txt;
 			$fpt_tpl=@fopen($cache_file,"w");
 			@fwrite($fpt_tpl,$fp_txt);
 			@fclose($fpt_tpl);

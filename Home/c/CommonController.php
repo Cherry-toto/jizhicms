@@ -120,7 +120,8 @@ class CommonController extends Controller
 				}else{
 					$userid = 0;
 				}
-				M('pictures')->add(['litpic'=>'/'.$filename,'addtime'=>time(),'userid'=>$userid,'size'=>$_FILES["file"]["size"]]);
+				$filesize = round(filesize(APP_PATH.$filename)/1024,2);
+				M('pictures')->add(['litpic'=>'/'.$filename,'addtime'=>time(),'userid'=>$userid,'size'=>$filesize,'tid'=>$this->frparam('tid',0,0),'molds'=>$this->frparam('molds',1,null),'path'=>'Home']);
 				
 			}else{
 				$data['error'] =  "Error: 请检查目录[Public/Home]写入权限";
@@ -307,6 +308,7 @@ layui.use("laydate", function(){
 					  var uploadInst = upload_'.$v['field'].'.render({
 						elem: "#LAY_'.$v['field'].'_upload" //绑定元素
 						,url: "'.U('Common/uploads').'" //上传接口
+						,data:{tid:function(){ return $("#tid").val();},molds:"'.$molds.'",path:"Home"}
 						,accept:"images"
 						,acceptMime:"image/*"
 						,done: function(res){
@@ -358,6 +360,7 @@ layui.use("laydate", function(){
 					  var uploadInst = upload_'.$v['field'].'.render({
 						elem: "#LAY_'.$v['field'].'_upload" //绑定元素
 						,url: "'.U('Common/uploads').'" //上传接口
+						,data:{tid:function(){ return $("#tid").val();},molds:"'.$molds.'",path:"Home"}
 						,accept:"images"
 						,multiple: true
 						,acceptMime:"image/*"
@@ -498,6 +501,7 @@ layui.use("laydate", function(){
 					  var uploadInst = upload_'.$v['field'].'.render({
 						elem: "#LAY_'.$v['field'].'_upload" //绑定元素
 						,url: "'.U('Common/uploads').'" //上传接口
+						,data:{tid:function(){ return $("#tid").val();},molds:"'.$molds.'",path:"Home"}
 						,accept:"file"
 						,exts: "'.$this->webconf['fileType'].'"
 						,done: function(res){
@@ -550,6 +554,7 @@ layui.use("laydate", function(){
 					  var uploadInst = upload_'.$v['field'].'.render({
 						elem: "#LAY_'.$v['field'].'_upload" //绑定元素
 						,url: "'.U('Common/uploads').'" //上传接口
+						,data:{tid:function(){ return $("#tid").val();},molds:"'.$molds.'",path:"Home"}
 						,multiple: true
 						,accept:"file"
 						,exts: "'.$this->webconf['fileType'].'"

@@ -294,6 +294,7 @@
               upload.render({
 			    elem: '#litpic_upload',
                 url: "{fun U('Common/uploads')}" //上传接口
+                ,data:{tid:function(){ return $("#tid").val();},molds:'product'}
                 ,done: function(res){ //上传成功后的回调
                  
 					if(res.code==0){
@@ -317,6 +318,7 @@
 				,before: function(obj){ 		
 					layer.load(); //上传loading
 				  }
+				,data:{tid:function(){ return $("#tid").val();},molds:'product'}
 				,done: function(res){
 					layer.closeAll("loading"); //关闭loading
 					if(res.code==0){

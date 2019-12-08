@@ -188,6 +188,7 @@
 								,url: "'.U('Common/uploads').'" //上传接口
 								,accept:"images"
 								,acceptMime:"image/*"
+                                ,data:{molds:'sysconfig'}
 								,done: function(res){
 								  
 									if(res.code==0){
@@ -1015,6 +1016,7 @@
 			    elem: '#wx_client_cert_upload',
 				accept:'file',
                 url: "{fun U('Sys/uploadcert')}" //上传接口
+                ,data:{molds:'sysconfig'}
                 ,done: function(res){ //上传成功后的回调
 					if(res.code==0){
 						 $('#wx_client_cert').val('/'+res.url);
@@ -1028,6 +1030,7 @@
 			    elem: '#wx_client_key_upload',
 				accept:'file',
                 url: "{fun U('Sys/uploadcert')}"  //上传接口
+                 ,data:{molds:'sysconfig'}
                 ,done: function(res){ //上传成功后的回调
 					if(res.code==0){
 						 $('#wx_client_key').val('/'+res.url);

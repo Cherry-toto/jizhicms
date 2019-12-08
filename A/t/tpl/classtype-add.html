@@ -281,6 +281,7 @@
 		  upload.render({
 			elem: '#litpic_upload',
 			url: "{fun U('Common/uploads')}" //上传接口
+			,data:{molds:'classtype'}
 			,done: function(res){ //上传成功后的回调
 			 
 				if(res.code==0){

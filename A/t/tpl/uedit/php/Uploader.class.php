@@ -391,7 +391,7 @@ class Uploader
 		//新增一条数据
 		$filesize = round(filesize($filename)/1024,2);
 		$file_url = str_replace($_SERVER['DOCUMENT_ROOT'],'',$filename);
-		$pictures->add(['litpic'=>$file_url,'addtime'=>time(),'userid'=>0,'size'=>$filesize]);
+		$pictures->add(['litpic'=>$file_url,'addtime'=>time(),'userid'=>0,'size'=>$filesize,'filetype'=>str_replace('.','',$this->fileType)]);
 		
 	}
 

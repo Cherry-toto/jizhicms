@@ -111,7 +111,7 @@ class CommonController extends Controller
 				$data['url'] = $filename;
 				$data['code'] = 0;
 				$filesize = round(filesize(APP_PATH.$filename)/1024,2);
-				M('pictures')->add(['litpic'=>'/'.$filename,'addtime'=>time(),'userid'=>$_SESSION['admin']['id'],'size'=>$filesize]);
+				M('pictures')->add(['litpic'=>'/'.$filename,'addtime'=>time(),'userid'=>$_SESSION['admin']['id'],'size'=>$filesize,'filetype'=>strtolower($pix),'tid'=>$this->frparam('tid',0,0),'molds'=>$this->frparam('molds',1,null)]);
 				
 				
 			}else{

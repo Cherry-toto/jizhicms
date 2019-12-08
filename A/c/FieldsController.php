@@ -495,6 +495,7 @@ layui.use("laydate", function(){
 					  var uploadInst = upload_'.$v['field'].'.render({
 						elem: "#LAY_'.$v['field'].'_upload" //绑定元素
 						,url: "'.U('Common/uploads').'" //上传接口
+						,data:{tid:function(){ return $("#tid").val();},molds:"'.$molds.'"}
 						,accept:"images"
 						,acceptMime:"image/*"
 						,done: function(res){
@@ -549,6 +550,7 @@ layui.use("laydate", function(){
 					  var uploadInst = upload_'.$v['field'].'.render({
 						elem: "#LAY_'.$v['field'].'_upload" //绑定元素
 						,url: "'.U('Common/uploads').'" //上传接口
+						,data:{tid:function(){ return $("#tid").val();},molds:"'.$molds.'"}
 						,accept:"images"
 						,multiple: true
 						,acceptMime:"image/*"
@@ -689,6 +691,7 @@ layui.use("laydate", function(){
 					  var uploadInst = upload_'.$v['field'].'.render({
 						elem: "#LAY_'.$v['field'].'_upload" //绑定元素
 						,url: "'.U('Common/uploads').'" //上传接口
+						,data:{tid:function(){ return $("#tid").val();},molds:"'.$molds.'"}
 						,accept:"file"
 						,exts: "'.$this->webconf['fileType'].'"
 						,done: function(res){
@@ -741,6 +744,7 @@ layui.use("laydate", function(){
 					  var uploadInst = upload_'.$v['field'].'.render({
 						elem: "#LAY_'.$v['field'].'_upload" //绑定元素
 						,url: "'.U('Common/uploads').'" //上传接口
+						,data:{tid:function(){ return $("#tid").val();},molds:"'.$molds.'"}
 						,accept:"images"
 						,multiple: true
 						,acceptMime:"image/*"

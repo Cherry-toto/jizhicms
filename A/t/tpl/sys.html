@@ -186,10 +186,9 @@
 							  var uploadInst = upload_'.$v['field'].'.render({
 								elem: "#LAY_'.$v['field'].'_upload" //绑定元素
 								,url: "'.U('Common/uploads').'" //上传接口
-                                ,data:{molds:'sysconfig'}
 								,accept:"images"
 								,acceptMime:"image/*"
-                                ,data:{molds:'sysconfig'}
+                                ,data:{molds:"sysconfig"}
 								,done: function(res){
 								  
 									if(res.code==0){

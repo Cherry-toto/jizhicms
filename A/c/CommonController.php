@@ -107,7 +107,12 @@ class CommonController extends Controller
 					}
 				   
 				}
-				
+				if( (strtolower($pix)=='png' || strtolower($pix)=='jpg' || strtolower($pix)=='jpeg') && $this->webconf['iswatermark']==1 && $this->webconf['watermark_file']!='' && !empty($this->webconf['watermark_file'])){
+					if(file_exists(APP_PATH.$this->webconf['watermark_file'])){
+						watermark($filename,APP_PATH.$this->webconf['watermark_file'],$this->webconf['watermark_t'],$this->webconf['watermark_tm']);
+					}
+					
+				}
 				$data['url'] = $filename;
 				$data['code'] = 0;
 				$filesize = round(filesize(APP_PATH.$filename)/1024,2);

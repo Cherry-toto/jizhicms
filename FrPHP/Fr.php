@@ -251,34 +251,34 @@ class FrPHP
 		// 判断插件中是否存在控制器和操作--2019/2/15 by 留恋风
 		$controller = APP_HOME.'\\plugins\\'. $controllerName . 'Controller';
 		if (!class_exists($controller) || !method_exists($controller, $actionName)) {
-			if(!method_exists(APP_HOME.'\\plugins\\HomeController', 'jizhi')){
-				// 不存在插件，则进入系统默认控制器
-	            // 判断控制器和操作是否存在
-				$controller = APP_HOME.'\\'.HOME_CONTROLLER.'\\'. $controllerName . 'Controller';
-				if (!class_exists($controller)) {
-					$controllerName = 'Home';
-	                $controller = APP_HOME.'\\'.HOME_CONTROLLER.'\\HomeController';
-	           
-	            }
-	            //规定前台数据统一到jizhi里面处理
-	            if(APP_URL=='/index.php'){
-	                if (!method_exists($controller, $actionName)) {
-	                   $actionName = 'jizhi';
-					    //Error_msg('方法不存在！');
-	                }  
-	            }else{
-	                if (!method_exists($controller, $actionName)) {
-	                    Error_msg('方法不存在！');
-	                }
-	            }
-			}else{
-				$controller = APP_HOME.'\\plugins\\HomeController';
-				$actionName = 'jizhi';	
-			}
-			
 
+			// 不存在插件，则进入系统默认控制器
+            // 判断控制器和操作是否存在
+			$controller = APP_HOME.'\\'.HOME_CONTROLLER.'\\'. $controllerName . 'Controller';
+			if (!class_exists($controller)) {
+				$controllerName = 'Home';
+                $controller = APP_HOME.'\\'.HOME_CONTROLLER.'\\HomeController';
+           
+            }
+            //规定前台数据统一到jizhi里面处理
+            if(APP_URL=='/index.php'){
+                if (!method_exists($controller, $actionName)) {
+                   $actionName = 'jizhi';
+				   //Error_msg('方法不存在！');
+                }  
+            }else{
+                if (!method_exists($controller, $actionName)) {
+                    Error_msg('方法不存在！');
+                }
+            }
 
-			
+            if($controllerName=='Home' && $actionName=='jizhi'){
+            	if(method_exists(APP_HOME.'\\plugins\\HomeController', 'jizhi')){
+					$controller = APP_HOME.'\\plugins\\HomeController';
+					$actionName = 'jizhi';
+				}
+            }
+
         }
         //定义全局控制器及方法常量
 		define('APP_CONTROLLER',$controllerName);

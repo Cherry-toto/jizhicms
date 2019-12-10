@@ -731,6 +731,7 @@ class HomeController extends CommonController
 	function error($msg){
 		//echo $msg;
 		$this->display($this->template.'/404');
+		exit;
 	}
 	
 	//开启检查缓存

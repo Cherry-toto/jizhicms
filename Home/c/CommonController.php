@@ -633,9 +633,11 @@ layui.use("laydate", function(){
 	
 	function jizhi(){
 		$this->display($this->template.'/404');
+		exit;
 	}
 	function error($msg){
 		$this->display($this->template.'/404');
+		exit;
 	}
 
 }

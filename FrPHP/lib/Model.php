@@ -233,18 +233,16 @@ class Model {
 		$stmt->execute();  
 		$columns = $stmt->fetchAll(PDO::FETCH_CLASS);
 		$newcol = array();
-		// foreach( $columns as $col ){
-		// 	$newcol[$col] = "null";
-		// }
 		foreach ($columns as $key => $value) {
-			if(strpos($value->Type,'int')!==false || strpos($value->Type,'decimal')!==false){
-				if(isset($rows[$value->Field]) && $rows[$value->Field]!='' && $rows[$value->Field]!==false){
-					$newcol[$value->Field] = $rows[$value->Field];
+			$field = strtolower($value->Field);
+			if(stripos($value->Type,'int')!==false || stripos($value->Type,'decimal')!==false){
+				if(isset($rows[$field]) && $rows[$field]!=='' && $rows[$field]!==false){
+					$newcol[$field] = $rows[$field];
 				}
 				
 			}else{
-				if(isset($rows[$value->Field]) && $rows[$value->Field]!='' && $rows[$value->Field]!==false ){
-					$newcol[$value->Field] = $rows[$value->Field];
+				if(isset($rows[$field]) && $rows[$field]!=='' && $rows[$field]!==false ){
+					$newcol[$field] = $rows[$field];
 				}
 				
 			}

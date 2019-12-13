@@ -47,9 +47,13 @@ class TagsController extends CommonController
 					$data[$k]['url'] = gourl($v['id'],$v['htmlurl']);
 					$data[$k]['classname'] = $this->classtypedata[$v['tid']]['classname'];
 				}
-			
+				
 				$this->pages = $arraypage->pageList();
-				$this->pagelist = $arraypage->pagelist;
+				$this->sum = $arraypage->sum;//总数据
+				$this->listpage = $arraypage->listpage;//分页数组-自定义分页可用
+				$this->prevpage = $arraypage->prevpage;//上一页
+				$this->nextpage = $arraypage->nextpage;//下一页
+				$this->allpage = $arraypage->allpage;//总页数
 				$this->lists = $data;
 			}else{
 				$this->pages = [];

@@ -17,6 +17,10 @@
 		public $array = '';
 		//总条数
 		public $sum = 0;
+		//上一页
+		public $prevpage = '';
+		//下一页
+		public $nextpage = '';
 		//总页数
 		public $allpage = 0;
 		//每页条数
@@ -204,6 +208,8 @@
 			$list.=$all;
 			$list = $ext.$list.'</ul></div>';
 			$this->listpage = $listpage;
+			$this->prevpage = $listpage['prev'];
+			$this->nextpage = $listpage['next'];
 			return $list;
 			
 		}

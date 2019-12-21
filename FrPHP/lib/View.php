@@ -421,7 +421,7 @@ class View
 				// }
 			}else{
 				if(strpos($v,'$')!==FALSE){
-					$w.="and ".$k."='.".trim($v,"'").".' ";
+					$w.="and ".$k."=\''.".trim($v,"'").".'\' ";
 				}else{
 					$w.="and ".$k."=\'".$v."\' ";
 				}

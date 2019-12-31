@@ -154,7 +154,12 @@ class DatabaseTool
    $dataSql = '';
    foreach ($value as $v)
    {
-    $dataSql .= "'{$v}',";
+    if($v==='' || $v===null){
+      $dataSql .= " NULL,";
+    }else{
+      $dataSql .= "'{$v}',";
+    }
+    
    }
    $dataSql = substr($dataSql, 0, -1);
    $query[]= "INSERT INTO `{$table}` ({$columns}) VALUES ({$dataSql});\r\n";
@@ -265,23 +270,10 @@ class DatabaseTool
 	//读取备份数据库
 	$dir = APP_PATH.'backup';
 	$fileArray=array();
-	if (false != ($handle = opendir ( $dir ))) {
-		$i=0;
-		while ( false !== ($file = readdir ( $handle )) ) {
-			//去掉"“.”、“..”以及带“.xxx”后缀的文件
-			if ($file != "." && $file != ".."&& strpos($file,".php")) {
-				if(strpos($file,$filename)!==false){
-					$fileArray[$i]=APP_PATH.'backup/'.$file;
-				}
-				if($i==100){
-					break;
-				}
-				$i++;
-			}
-		}
-		//关闭句柄
-		closedir ( $handle );
-	}
+	$fileArray[] = $dir.'/'.$filename.'.php';
+  for($i=1;file_exists($dir.'/'.$filename.'_v'.$i.'.php')===true;$i++){
+      $fileArray[]=$dir.'/'.$filename.'_v'.$i.'.php';
+  }
 	
    foreach($fileArray as $path){
 	   $sql = $this->parseSQL($path);

@@ -37,7 +37,7 @@
                   autocomplete="off" class="layui-input">
               </div>
               <div class="layui-form-mid layui-word-aux">
-                  <span class="x-red">*</span>将会成为您的登入名
+                  <span class="x-red">*</span>用于找回密码
               </div>
           </div>
 		  <div class="layui-form-item">
@@ -86,7 +86,7 @@
 		  
 		    <div class="layui-form-item">
               <label for="L_jifen" class="layui-form-label">
-                  <span class="x-red">*</span>积分
+                  积分
               </label>
               <div class="layui-input-inline">
                   <input type="text" id="L_jifen" name="jifen" value="0" 
@@ -96,7 +96,7 @@
 		  
 		   <div class="layui-form-item">
 				<label for="litpic" class="layui-form-label">
-					<span class="x-red">*</span>头像  
+					头像  
 				</label>
 				
 				<div class="layui-input-inline">
@@ -110,10 +110,52 @@
 					<button type="button" onclick="deleteImage(this)" class="layui-btn layui-btn-sm layui-btn-radius layui-btn-danger " title="删除这张图片" >删除</button>
 				</div>
 			</div>
-	  
-		  
-		 
-		  
+          <div class="layui-form-item">
+              <label for="birthday" class="layui-form-label">
+                  生日
+              </label>
+              <div class="layui-input-inline">
+                  <input type="text" id="birthday" name="birthday" value="" 
+                  autocomplete="off" class="layui-input">
+              </div>
+          </div>
+	         <div class="layui-form-item">
+              <label for="signature" class="layui-form-label">
+                  个性签名
+              </label>
+              <div class="layui-input-inline">
+                  <input type="text" id="signature" name="signature" value="" 
+                  autocomplete="off" class="layui-input">
+              </div>
+          </div>
+		     
+		      <div class="layui-form-item">
+              <label for="province" class="layui-form-label">
+                  省份
+              </label>
+              <div class="layui-input-inline">
+                  <input type="text" id="province" name="province" value="" 
+                  autocomplete="off" class="layui-input">
+              </div>
+          </div>
+          <div class="layui-form-item">
+              <label for="city" class="layui-form-label">
+                  城市
+              </label>
+              <div class="layui-input-inline">
+                  <input type="text" id="city" name="city" value="" 
+                  autocomplete="off" class="layui-input">
+              </div>
+          </div>
+		       <div class="layui-form-item">
+              <label for="address" class="layui-form-label">
+                  详细地址
+              </label>
+              <div class="layui-input-inline">
+                  <input type="text" id="address" name="address" value="" 
+                  autocomplete="off" class="layui-input">
+              </div>
+          </div>
           <div class="layui-form-item">
               <label for="L_pass" class="layui-form-label">
                   <span class="x-red">*</span>密码
@@ -164,14 +206,19 @@
 			$(elm).prev().attr("src", "{__Tpl_style__}/style/images/nopic.jpg");
 			$('#litpic').val("");
 		}
-        layui.use(['form','layer','upload'], function(){
+        layui.use(['form','layer','upload','laydate'], function(){
             $ = layui.jquery;
-          var form = layui.form
-          ,layer = layui.layer,
-		  upload = layui.upload;
+          var form = layui.form,
+          layer = layui.layer,
+          laydate = layui.laydate,
+		      upload = layui.upload;
+          laydate.render({
+            elem: '#birthday' //指定元素
+          });
           upload.render({
 			elem: '#litpic_upload',
 			url: "{fun U('Common/uploads')}" //上传接口
+      ,data:{molds:'member'}
 			,done: function(res){ //上传成功后的回调
 			 
 				if(res.code==0){

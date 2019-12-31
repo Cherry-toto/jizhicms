@@ -25,8 +25,9 @@
 					  <select name="isshow" lay-filter="isshow" class="layui-inline autosubmit">
 					  <option value="">状态</option>
 					   
-					   <option {if($isshow==1)} selected="selected" {/if}value="1">正常</option>
-					   <option {if($isshow==2)} selected="selected" {/if}value="2">被删除</option>
+					   <option {if($isshow==1)} selected="selected" {/if}value="1">已审核</option>
+					   <option {if($isshow==2)} selected="selected" {/if}value="2">未审核</option>
+					   <option {if($isshow==3)} selected="selected" {/if}value="3">被删除</option>
 					   
 					
 					  </select>
@@ -130,13 +131,7 @@
 		    <span class="layui-badge">未审</span>
 		    {{#  } }}
 		</script>
-		<script type="text/html" id="isread">
-			{{#  if(d.isread ==1){ }}
-			<span class="layui-badge layui-bg-green">已读</span>
-		    {{#  } else{ }}
-		    <span class="layui-badge">未读</span>
-		    {{#  } }}
-		</script>
+		
 		<script>
 	 
 	   
@@ -179,7 +174,7 @@
 				  ,{field: 'body', title: '评论内容'} 
 				  {foreach $fields_list as $v},{field: '{$v['field']}',width:150, title: '{$v['fieldname']}'}{/foreach}
 				  ,{field: 'likes', title: '喜欢点赞', width: 100,sort: true}
-				  ,{field: 'new_isread', title: '已读', width: 100,templet:'#isread'}
+				
 				  ,{field: 'new_isshow', title: '显示', width: 100,templet: '#isshow'}
 				  ,{field: 'new_addtime', title: '评论时间',width:160}
 				 

@@ -15,7 +15,52 @@
         </div>
         <div class="x-body">
           <div class="layui-row">
-			
+			<div class="layui-collapse">
+		    <div class="layui-colla-item">
+			<h2 class="layui-colla-title">搜索</h2>
+				<div class="layui-colla-content layui-show">
+				<div class="layui-row">
+					<form class="layui-form layui-col-md12 x-so" method="get" id="myform">
+					<div class="layui-input-inline">
+					  <select name="path" lay-filter="path" class="layui-inline autosubmit">
+					  <option value="">筛选上传入口</option>
+					   <option {if($path=='Admin')} selected="selected" {/if}value="Admin">后台</option>
+					   <option {if($path=='Home')} selected="selected" {/if}value="Home">前台</option>
+					   
+					   
+					
+					  </select>
+					</div>
+					<div class="layui-input-inline">
+					  <select name="molds" lay-filter="molds" lay-search="" class="layui-inline autosubmit">
+					   <option value="">筛选模块</option>
+					   <option value="other" {if($molds=='other')} selected="selected" {/if}>其他杂项</option>
+					   <option value="sysconfig" {if($molds=='sysconfig')} selected="selected" {/if}>系统配置</option>
+					   {loop table="molds" orderby="id asc" isopen="1" as="v"}
+					   <option {if($molds==$v['biaoshi'])} selected="selected" {/if}value="{$v['biaoshi']}">{$v['name']}</option>
+					   {/loop}
+					  
+					  </select>
+					</div>
+					<div class="layui-input-inline">
+					  <select name="tid" lay-filter="tid" lay-search="" class="layui-inline autosubmit">
+					  <option value="">筛选栏目</option>
+					   {foreach $classtypes as $v}
+					 
+					   <option {if($tid==$v['id'])} selected="selected" {/if}value="{$v['id']}">{fun str_repeat('--', $v['level']), $v['classname']}</option>
+					  
+					   {/foreach}
+					
+					  </select>
+					</div>
+					
+					  <button class="layui-btn"  lay-submit="" lay-filter="search"><i class="layui-icon">&#xe615;</i></button>
+					</form>
+				</div>
+				</div>
+		    </div>
+         </div> 
+		  
 		  </div>
           <xblock>
 		  <button class="layui-btn layui-btn-danger" onclick="delAll()"><i class="layui-icon"></i>批量删除</button>
@@ -33,9 +78,17 @@
                         <th>
                             ID
                         </th>
-                       
+                        <th>
+                            上传前台
+                        </th>
 						<th>
                             缩略图
+                        </th>
+                        <th>
+                            所属栏目
+                        </th>
+                        <th>
+                            所属模块
                         </th>
 						<th>
                             本地文件
@@ -61,11 +114,19 @@
                         <td>
                             {$v['id']}
                         </td>
-                        
+                        <td>
+                            {if($v['path']=='Home')}前台{else}后台{/if}
+                        </td>
                         
 						<td>
-                            <img src="{$v['litpic']}" width="100px" />
+                           {if(in_array($v['filetype'],['png','gif','jpg','jpeg']))}<img src="{$v['litpic']}" width="100px" />{else}{$v['filetype']}{/if}
                         </td>
+                        <td>
+						 {if($v['tid']==0)}-{else}{$classtypedata[$v['tid']]['classname']}{/if}
+						</td>
+						 <td>
+						 {if($v['molds']=='' || empty($v['molds']))}其他{else}{if($v['molds']=='sysconfig')}系统配置{else}{fun get_info_table('molds',['biaoshi'=>$v['molds']],'name')}{/if}{/if}
+						</td>
 						<td>
 						{$v['litpic']}
 						</td>
@@ -104,10 +165,14 @@
 			  form = layui.form;
               //以上模块根据需要引入
               form.on('select(tid)', function(data){
-					
-					$("#myform").submit();
-				
-			 });
+				$("#myform").submit();
+			  });
+			  form.on('select(molds)', function(data){
+				$("#myform").submit();
+			  });
+			  form.on('select(path)', function(data){
+				$("#myform").submit();
+			  });
 			 
               
             });

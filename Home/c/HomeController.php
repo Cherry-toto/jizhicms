@@ -34,7 +34,7 @@ class HomeController extends CommonController
 	//栏目
 	function jizhi(){
 		//接收前台所有的请求
-		$request_url = REQUEST_URI;
+		$request_url = str_replace(APP_URL,'',REQUEST_URI);
 		$position = strpos($request_url,'?');
 		$url = ($position!==FALSE) ? substr($request_url,0,$position) : $request_url;
 		$url = substr($url,1,strlen($url)-1);
@@ -704,6 +704,7 @@ class HomeController extends CommonController
 			}
 			$this->lists = $data;
 			$this->pages = $arraypage->pageList();
+			$this->pagelist = $arraypage->pagelist;
 			if($this->frparam('ajax')){
 				if($this->frparam('ajax_tpl')){
 					$this->display($this->template.'/ajax_searchall_list');
@@ -730,6 +731,7 @@ class HomeController extends CommonController
 	function error($msg){
 		//echo $msg;
 		$this->display($this->template.'/404');
+		exit;
 	}
 	
 	//开启检查缓存
@@ -811,7 +813,6 @@ class HomeController extends CommonController
 		
 		exit;
 	}
-	
 	
 
 	

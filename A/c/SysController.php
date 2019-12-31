@@ -144,10 +144,23 @@ class SysController extends CommonController
 	function pictures(){
 		$page = new Page('pictures');
 		$sql = ' 1=1 ';
-		
+		if($this->frparam('molds',1)){
+			if($this->frparam('molds',1)=='other'){
+				$sql .= " and (molds='' || molds is null) ";
+			}else{
+				$sql .= " and molds='".$this->frparam('molds',1)."' ";
+			}
+			
+		}
+		if($this->frparam('path',1)){
+			$sql .= " and path='".$this->frparam('path',1)."' ";
+		}
 		if($this->frparam('tid')){
 			$sql .= ' and tid='.$this->frparam('tid');
 		}
+		$this->tid = $this->frparam('tid');
+		$this->path = $this->frparam('path',1);
+		$this->molds = $this->frparam('molds',1);
 		
 		$data = $page->where($sql)->orderby('addtime desc,id desc')->page($this->frparam('page',0,1))->go();
 		$pages = $page->pageList();
@@ -227,7 +240,7 @@ class SysController extends CommonController
 				JsonReturn($data);
 			}
 			$fileSize = (int)webConf('fileSize');
-			if($fileSize!=0 && $_FILES["file"]["size"]>$fileSize){
+			if($fileSize!=0 && $_FILES["file"]["size"]/(1024*1024)>$fileSize){
 				$data['error'] =  "Error: 文件大小超过网站内部限制！";
 				$data['code'] = 1003;
 				JsonReturn($data);
@@ -238,6 +251,8 @@ class SysController extends CommonController
 			if(move_uploaded_file($_FILES["file"]['tmp_name'],$filename)){
 				$data['url'] = $filename;
 				$data['code'] = 0;
+				$filesize = round(filesize(APP_PATH.$filename)/1024,2);
+				M('pictures')->add(['litpic'=>'/'.$filename,'addtime'=>time(),'userid'=>$_SESSION['admin']['id'],'size'=>$filesize,'filetype'=>strtolower($pix),'tid'=>$this->frparam('tid',0,0),'molds'=>$this->frparam('molds',1,null)]);
 			}else{
 				$data['error'] =  "Error: 请检查目录[Public/cert]写入权限";
 				$data['code'] = 1001;

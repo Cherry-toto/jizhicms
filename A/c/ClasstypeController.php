@@ -88,7 +88,16 @@ class ClasstypeController extends CommonController
 			$w = array_merge($data,$w);
 			$a = M('classtype')->add($w);
 			if($a){
-				
+				$fields=M('fields')->findAll(' tids like "%,'.$w['pid'].',%" ',null,'id,tids');
+				foreach ($fields as $v){
+					if($v['tids']!=0 && $v['tids']!=''){
+						M('fields')->update(array('id'=>$v['id']),array('tids'=>$v['tids'].$a.','));
+					}else{
+						M('fields')->update(array('id'=>$v['id']),array('tids'=>','.$a.','));
+					}
+					
+				}
+				//这里
 				setCache('classtypetree',null);
 				setCache('classtype',null);
 				setCache('mobileclasstype',null);
@@ -155,7 +164,37 @@ class ClasstypeController extends CommonController
 				//批量修改栏目对应的模块内容htmlurl
 				if($this->data['htmlurl']!=$data['htmlurl']){
 					M($data['molds'])->update(array('tid'=>$data['id']),array('htmlurl'=>$data['htmlurl']));
+			
 				}
+				//批量修改栏目url
+				if($this->webconf['islevelurl']==1){
+					if( ($this->data['htmlurl']!=$data['htmlurl']) || ($this->data['pid']!=$w['pid'])){
+						
+						//层级
+						$classtypetree = classTypeData();
+						$children = get_children($w,$classtypetree,5);
+						//计算当前url
+						//以前的url替换成当前的url
+						$old_htmlurl = $this->data['htmlurl'];
+						if(strpos($w['htmlurl'],'/')!==false){
+							$html = substr($w['htmlurl'],strpos($w['htmlurl'],'/'));
+							$new_htmlurl = $classtypetree[$this->data['pid']]['htmlurl'].$html;
+						}else{
+							$new_htmlurl = $classtypetree[$this->data['pid']]['htmlurl'].$w['htmlurl'];
+						}
+						
+						foreach($children as $v){
+							$html = substr($v['htmlurl'],strpos($v['htmlurl'],'/'));
+							$htmlurl_s = $classtypetree[$v['pid']]['htmlurl'].$html;
+							M('classtype')->update(['id'=>$v['id']],['htmlurl'=>$htmlurl_s]);
+							M($v['molds'])->update(['tid'=>$v['id']],['htmlurl'=>$htmlurl_s]);
+						}
+
+					}
+
+
+				}
+				
 				setCache('classtypetree',null);
 				setCache('classtype',null);
 				setCache('mobileclasstype',null);

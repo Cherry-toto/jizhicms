@@ -26,6 +26,9 @@ class ScreenController extends CommonController
 		if(!$this->frparam('molds',1) || !$this->frparam('tid') || !$this->frparam('jz_screen',1)){
 			$this->error('参数错误！');
 		}
+		if(!M('molds')->find(['biaoshi'=>$this->frparam('molds',1)])){
+			$this->error('非法参数！');
+		}
 		if(!isset($_SESSION['screen'])){
 			$_SESSION['screen'] = [];
 		}
@@ -215,6 +218,7 @@ class ScreenController extends CommonController
 	//错误页面
 	function error($msg){
 		$this->display($this->template.'/404');
+		exit;
 	}
 
 	

@@ -52,6 +52,7 @@ class FrPHP
 		defined('Session_Path') or define('Session_Path', isset($config['Session_Path']) ? $config['Session_Path'] : $MyConfig['Session_Path']);
 		defined('APP_LANG') or define('APP_LANG', isset($config['APP_LANG']) ? $config['APP_LANG'] : $MyConfig['APP_LANG']);
 		defined('APP_LANG_REQUREST') or define('APP_LANG_REQUREST', isset($config['APP_LANG_REQUREST']) ? $config['APP_LANG_REQUREST'] : $MyConfig['APP_LANG_REQUREST']);
+		defined('ROOT') or define('ROOT', isset($config['ROOT']) ? $config['ROOT'] : $MyConfig['ROOT']);
 		//引入系统函数
 		require(CORE_PATH.'/common/Functions.php');
 		//引入项目函数
@@ -196,6 +197,8 @@ class FrPHP
 			}
 		
 		}
+		//去除二级目录
+		$url = '/'.substr($url,strlen(ROOT));
 		
 		define('REQUEST_URI',$url);
         $controllerName = DefaultController;
@@ -251,6 +254,7 @@ class FrPHP
 		// 判断插件中是否存在控制器和操作--2019/2/15 by 留恋风
 		$controller = APP_HOME.'\\plugins\\'. $controllerName . 'Controller';
 		if (!class_exists($controller) || !method_exists($controller, $actionName)) {
+
 			// 不存在插件，则进入系统默认控制器
             // 判断控制器和操作是否存在
 			$controller = APP_HOME.'\\'.HOME_CONTROLLER.'\\'. $controllerName . 'Controller';
@@ -263,7 +267,7 @@ class FrPHP
             if(APP_URL=='/index.php'){
                 if (!method_exists($controller, $actionName)) {
                    $actionName = 'jizhi';
-				    //Error_msg('方法不存在！');
+				   //Error_msg('方法不存在！');
                 }  
             }else{
                 if (!method_exists($controller, $actionName)) {
@@ -271,8 +275,13 @@ class FrPHP
                 }
             }
 
+            if($controllerName=='Home' && $actionName=='jizhi'){
+            	if(method_exists(APP_HOME.'\\plugins\\HomeController', 'jizhi')){
+					$controller = APP_HOME.'\\plugins\\HomeController';
+					$actionName = 'jizhi';
+				}
+            }
 
-			
         }
         //定义全局控制器及方法常量
 		define('APP_CONTROLLER',$controllerName);
@@ -311,11 +320,14 @@ class FrPHP
 			//['module'=>APP_HOME,'controller'=>APP_CONTROLLER,'action'=>APP_ACTION]
 			foreach($hookconfig as $v){
 				if($v['module']==APP_HOME && $v['controller']==APP_CONTROLLER && (strpos(','.$v['action'].',',','.APP_ACTION.',')!==false || $v['all_action']==1)){
+					$newhook_controller = '\\'.$v['module'].'\\plugins\\'.$v['hook_controller'].'Controller';
+					/* //防止数据库反斜杠出错，做出更改，hook_namespace参数将失效
 					if($v['hook_namespace']!=''){
 						$newhook_controller = $v['hook_namespace'].'\\'.$v['hook_controller'].'Controller';
 					}else{
 						$newhook_controller = $v['hook_controller'].'Controller';
 					}
+					*/
 					$newhook = new $newhook_controller($param);
 					$hook_action = $v['hook_action'];
 					$newhook->$hook_action($param);

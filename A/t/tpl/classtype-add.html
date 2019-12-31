@@ -205,8 +205,20 @@
                填写栏目外链后，访问栏目链接将会跳到外链，不填请留空！
               </div>
           </div>
-		  
-		  <div class="layui-form-item" pane>
+			 <div class="layui-form-item" pane>
+					<label for="ishome" class="layui-form-label">
+						<span class="x-red"></span>发布显示
+					</label>
+					<div class="layui-input-inline">
+						<input type="radio" name="ishome" value="0" title="不显示" >
+						<input type="radio" name="ishome" value="1" title="显示" checked>
+					</div>
+					<div class="layui-form-mid layui-word-aux">
+					 勾选后，前台会员发布会显示该栏目
+					</div>
+					
+			  </div>
+			<div class="layui-form-item" pane>
                     <label for="isshow" class="layui-form-label">
                         <span class="x-red"></span>导航显示
                     </label>
@@ -224,7 +236,7 @@
 					<input type="radio" name="iscover" value="0" title="不覆盖" checked >
 				</div>
 				<div class="layui-form-mid layui-word-aux">
-                 模板覆盖指：显示数量及使用模板文件下级一样，减少同步操作。如果上级勾选了覆盖下级，那么下级默认调用上级填写的模板。
+                 模板覆盖指：显示数量及使用模板文件下级一样，减少同步操作。
                 </div>
 				
 			</div>
@@ -281,6 +293,7 @@
 		  upload.render({
 			elem: '#litpic_upload',
 			url: "{fun U('Common/uploads')}" //上传接口
+			,data:{molds:function(){ return $("#molds").val(); }}
 			,done: function(res){ //上传成功后的回调
 			 
 				if(res.code==0){
@@ -328,7 +341,7 @@
 					});
                 return false;
           });
-		  
+		   get_fields(0);
 		   form.on('select(pid)', function(data){
 			  
 			  get_fields(data.value);

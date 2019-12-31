@@ -48,50 +48,7 @@ class OrderController extends Controller
 		}
 	}
 	
-	function details(){
-		$orderno = $this->frparam('orderno',1);
-		$order = M('orders')->find(['orderno'=>$orderno]);
-		if($orderno && $order){
-			//检测是否超时
-			if($this->webconf['paytype']!=0 && $this->webconf['overtime']!=0 && $order['ispay']!=1){
-				$overtime = floatval($this->webconf['overtime'])*60*60;
-				$now = time();
-				if(($order['addtime']+$overtime)<$now){
-					//订单超时
-					M('orders')->update(['id'=>$order['id']],['isshow'=>3]);
-					$order['isshow'] = 3;
-					
-				}
-				
-				
-			}
-			
-			$carts = explode('||',$order['body']);
-			$new = [];
-			foreach($carts as $v){
-				if($v!=''){
-					//tid-id-num-price
-					$d = explode('-',$v);
-					//兼容历史订单，可能出现栏目被删除的情况，防止报错
-					if(isset($this->classtypedata[$d[0]])){
-						$type = $this->classtypedata[$d[0]];//栏目
-						$new[]=['info'=>M($type['molds'])->find(['id'=>$d[1]]),'num'=>$d[2],'price'=>$d[3],'tid'=>$d[0]];
-					}else{
-						$new[]=['info'=>false,'num'=>$d[2],'price'=>$d[3],'tid'=>$d[0]];
-					}
-
-				}
-				
-			}
-			$this->carts = $new;
-			$this->order = $order;
-			$this->display($this->template.'/order_details');
-			
-		}else{
-			Error('参数错误！');
-		}
-		
-	}
+	
 	
 	function create(){
 		if($this->frparam('go') && $_POST){
@@ -107,6 +64,8 @@ class OrderController extends Controller
 				$w['tel'] = $this->member['tel']; 
 				$w['username'] = $this->member['username']; 
 				$w['addtime'] = time(); 
+				$qianbao = 0;
+				$jifen = 0;
 				foreach($carts as $v){
 					$d = explode('-',$v);
 					//tid-id-num
@@ -118,7 +77,14 @@ class OrderController extends Controller
 						$price+=$d[2]*$info['price'];
 						
 						$newcart[]=['info'=>M($type['molds'])->find(['id'=>$d[1]]),'num'=>$d[2],'price'=>$info['price'],'tid'=>$d[0]];
+						if(isset($info['jifen']) && $info['jifen']!=0){
+							$jifen+=$d[2]*$info['jifen'];
+						}else{
+							$jifen+=$d[2]*$d[3]*($this->webconf['jifen_exchange']);
+						}
+						$qianbao+=$d[2]*$d[3]*($this->webconf['money_exchange']);
 					}
+
 					
 				}
 				//运费
@@ -133,13 +99,24 @@ class OrderController extends Controller
 				$w['body'] = '||'.implode('||',$new).'||';
 				$w['yunfei'] = $yunfei;
 				$w['discount'] = $discount;
-				$w['price'] = $price-$discount-$yunfei;
+				$w['price'] = $price-$discount+$yunfei;
+				if($w['price']<0){
+					$w['price'] = 0;
+				}
 				$res = M('orders')->add($w);
 				if($res){
 					$_SESSION['cart'] = '';
 					$this->carts = $newcart;
+					$this->qianbao = $qianbao+$discount*($this->webconf['money_exchange'])-$yunfei*($this->webconf['money_exchange']);
+					$this->jifen = $jifen+$discount*($this->webconf['jifen_exchange'])-$yunfei*($this->webconf['jifen_exchange']);
 					$this->order = M('orders')->find(['id'=>$res]);
-					$this->display($this->template.'/payment');
+					if($this->webconf['isopenjifen']==1){
+						M('orders')->update(['id'=>$res],['jifen'=>$this->jifen]);
+					}
+					if($this->webconf['isopenqianbao']==1){
+						M('orders')->update(['id'=>$res],['qianbao'=>$this->qianbao]);
+					}
+					$this->display($this->template.'/user/payment');
 					
 				}else{
 					Error('创建订单失败！');
@@ -149,73 +126,18 @@ class OrderController extends Controller
 		
 	}
 	
-	//支付页面
-	function payment(){
-		$orderno = $this->frparam('orderno',1);
-		$order = M('orders')->find(['orderno'=>$orderno]);
-		if($this->frparam('go') && $orderno && $order){
-			if($order['isshow']!=1){
-				//超时或者已支付
-				if($order['isshow']==0){
-					$msg = '订单已删除';
-				}
-				if($order['isshow']==3){
-					$msg = '订单已过期，不可支付！';
-				}
-				if($order['isshow']==2){
-					$msg = '订单已支付，请勿重复操作！';
-				}
-				if($this->frparam('ajax')){
-					JsonReturn(['code'=>1,'msg'=>$msg]);
-				}
-				Error($msg);
-				
-			}
-			$carts = explode('||',$order['body']);
-			$new = [];
-			foreach($carts as $v){
-				if($v!=''){
-					//tid-id-num-price
-					$d = explode('-',$v);
-					//兼容历史订单，可能出现栏目被删除的情况，防止报错
-					if(isset($this->classtypedata[$d[0]])){
-						$type = $this->classtypedata[$d[0]];//栏目
-						$new[]=['info'=>M($type['molds'])->find(['id'=>$d[1]]),'num'=>$d[2],'price'=>$d[3],'tid'=>$d[0]];
-					}else{
-						$new[]=['info'=>false,'num'=>$d[2],'price'=>$d[3],'tid'=>$d[0]];
-					}
-
-				}
-				
-			}
-			$this->carts = $new;
-			$this->order = $order;
-			$this->display($this->template.'/payment');
-		}
-		
-	}
 	
 	//支付处理
 	function pay(){
 		if($this->frparam('go')){
 			//保存提交信息
-			$return_url = U('Order/details',['orderno'=>$this->frparam('orderno',1)]);
+			$return_url = U('user/orderdetails',['orderno'=>$this->frparam('orderno',1)]);
 			$w['orderno'] = $this->frparam('orderno',1);
 			$w['receive_username'] = $this->frparam('username',1);
 			$w['receive_tel'] = $this->frparam('tel',1);
 			$w['receive_email'] = $this->frparam('email',1);
 			$w['receive_address'] = $this->frparam('address',1);
 			$paytype = $this->frparam('paytype',0,1);//默认支付宝支付1，2微信支付
-			if($w['receive_username']=='' || $w['receive_tel']=='' || $w['receive_address']==''){
-				if($this->frparam('ajax')){
-					
-					JsonReturn(['code'=>1,'msg'=>'收件人、手机号和收货地址不能为空！','url'=>$return_url]);
-					
-				}
-				
-				Error('收件人、手机号和收货地址不能为空！',$return_url);
-				
-			}
 			
 			$order = M('orders')->find(['orderno'=>$w['orderno']]);
 			if(!$order || !$w['orderno']){
@@ -226,12 +148,34 @@ class OrderController extends Controller
 				}
 				Error('订单号不存在或已被删除！',$return_url);
 			}
+			//购物订单
+			if($order['ptype']==1){
+				if($w['receive_username']=='' || $w['receive_tel']=='' || $w['receive_address']==''){
+					if($this->frparam('ajax')){
+						
+						JsonReturn(['code'=>1,'msg'=>'收件人、手机号和收货地址不能为空！','url'=>$return_url]);
+						
+					}
+					
+					Error('收件人、手机号和收货地址不能为空！',$return_url);
+					
+				}
+			}else{
+				//充值订单
+				//检查是否支持在线支付
+				if($this->webconf['paytype']==0){
+					Error('未开启在线支付！',$return_url);
+				}
+			}
+			
+			
 			//保存信息
 			$res = M('orders')->update(['id'=>$order['id']],$w);
+
 			//未设置在线支付
-			if($this->webconf['paytype']==0){
-				//提示接收信息邮箱
-				//检测是否已经配置邮件发送
+			//提示接收信息邮箱
+			//检测是否已经配置邮件发送
+			if($this->webconf['isopenemail']==1){
 				if($this->webconf['email_server'] && $this->webconf['email_port'] &&  $this->webconf['send_email'] &&  $this->webconf['send_pass']){
 					$title = '您的订单提交成功通知-'.$this->webconf['web_name'];
 					if($this->webconf['tj_msg']!=''){
@@ -272,9 +216,13 @@ class OrderController extends Controller
 					
 					
 				}
+			}
 			
+			
+			if($this->webconf['paytype']==0 && $order['ptype']==1){
+				
 				//更新订单状态，提示收到提交订单
-				M('orders')->update(['id'=>$order['id']],['isshow'=>4]);
+				M('orders')->update(['id'=>$order['id']],['isshow'=>4,'paytype'=>'线下支付']);
 				
 				//减库存
 				$allproduct = explode('||',$order['body']);
@@ -293,17 +241,134 @@ class OrderController extends Controller
 					}
 					
 				}
-				
-				
+				//交易提醒
+				$task['aid'] = $order['id'];
+				$task['tid'] = 0;
+				$task['userid'] = $this->member['id'];
+				$task['puserid'] = $this->member['id'];
+				$task['molds'] = 'orders';
+				$task['type'] = 'rechange';
+				$task['addtime'] = time();
+				$task['body'] = '您的订单-'.$order['orderno'].'已经提交，我们会尽快给您发货！';
+				$task['url'] = U('user/orderdetails',['orderno'=>$order['orderno']]);
+				M('task')->add($task);
+
 				if($this->frparam('ajax')){
-					
-					JsonReturn(['code'=>0,'msg'=>'我们已经收到您的订单，我们会尽快给你发货，请密切关注您的邮箱以获得订单的最新消息，谢谢合作！','url'=>U('user/order')]);
+				
+					JsonReturn(['code'=>0,'msg'=>'我们已经收到您的订单，我们会尽快给你发货，请密切关注您的邮箱以获得订单的最新消息，谢谢合作！','url'=>U('user/orders')]);
 				}
 				
-				Success('我们已经收到您的订单，我们会尽快给你发货，请密切关注您的邮箱以获得订单的最新消息，谢谢合作！',U('User/order'));
+				Success('我们已经收到您的订单，我们会尽快给你发货，请密切关注您的邮箱以获得订单的最新消息，谢谢合作！',U('User/orders'));
+			
 				
 				
+			}else if($paytype==3){
+				if($this->webconf['isopenqianbao']!=1){
+					if($this->frparam('ajax')){
+						JsonReturn(['code'=>1,'msg'=>'未开启钱包支付！','url'=>$return_url]);
+					}
+					Error('未开启钱包支付！',$return_url);
+				}
+				//钱包支付
+				$money = M('member')->getField(['id'=>$this->member['id']],'money');
 				
+				$allmoney = $order['qianbao'];
+				if($money<$allmoney){
+					if($this->frparam('ajax')){
+						JsonReturn(['code'=>1,'msg'=>'钱包金额不足，请充值！','url'=>$return_url]);
+					}
+					
+					Error('钱包金额不足，请充值！',$return_url);
+				}
+
+				$money_x = $money-$allmoney;
+				$paytime = time();
+				M('orders')->update(['id'=>$order['id']],['ispay'=>1,'isshow'=>2,'paytime'=>$paytime,'paytype'=>'钱包支付']);
+				 M('member')->goDec(['id'=>$order['userid']],'money',$allmoney);
+				$ww['userid'] = $order['userid'];
+				$ww['amount'] = $allmoney;
+				$ww['money'] = $order['price'];
+				$ww['type'] = 2;
+				$ww['msg'] = '钱包支付';
+				$ww['orderno'] = $order['orderno'];
+				$ww['buytype'] = 'money';
+				$ww['addtime'] = $paytime;
+				M('buylog')->add($ww);
+
+				$_SESSION['member']['money'] = $money_x;
+				$order['ispay'] = 1;
+				$order['isshow'] = 2;
+				$order['paytime'] = $paytime;
+				$order['paytype'] = '钱包支付';
+				$this->order = $order;
+				//交易提醒
+				$task['aid'] = $order['id'];
+				$task['tid'] = 0;
+				$task['userid'] = $this->member['id'];
+				$task['puserid'] = $this->member['id'];
+				$task['molds'] = 'orders';
+				$task['type'] = 'rechange';
+				$task['addtime'] = time();
+				$task['body'] = '您的订单-'.$order['orderno'].'已经提交，我们会尽快给您发货！';
+				$task['url'] = U('user/orderdetails',['orderno'=>$order['orderno']]);
+				M('task')->add($task);
+
+				$this->display($this->template.'/paytpl/overpay');
+				exit;
+
+			}else if($paytype==4){
+				if($this->webconf['isopenjifen']!=1){
+					if($this->frparam('ajax')){
+						JsonReturn(['code'=>1,'msg'=>'未开启积分支付！','url'=>$return_url]);
+					}
+					Error('未开启积分支付！',$return_url);
+					
+				}
+				//钱包支付
+				$jifen = M('member')->getField(['id'=>$this->member['id']],'jifen');
+				
+				$allmoney = $order['jifen'];
+				if($jifen<$order['jifen']){
+					if($this->frparam('ajax')){
+						JsonReturn(['code'=>1,'msg'=>'积分不足，请充值！','url'=>$return_url]);
+					}
+					
+					Error('积分不足，请充值！',$return_url);
+				}
+				$money_x = $jifen-$allmoney;
+				$paytime = time();
+				M('orders')->update(['id'=>$order['id']],['ispay'=>1,'isshow'=>2,'paytime'=>$paytime,'paytype'=>'积分兑换']);
+				 M('member')->goDec(['id'=>$order['userid']],'jifen',$allmoney);
+				$ww['userid'] = $order['userid'];
+				$ww['amount'] = $allmoney;
+				$ww['money'] = $order['price'];
+				$ww['type'] = 2;
+				$ww['msg'] = '积分兑换';
+				$ww['orderno'] = $order['orderno'];
+				$ww['buytype'] = 'jifen';
+				$ww['addtime'] = $paytime;
+				M('buylog')->add($ww);
+
+				$_SESSION['member']['jifen'] = $money_x;
+				$order['ispay'] = 1;
+				$order['isshow'] = 2;
+				$order['paytime'] = $paytime;
+				$order['paytype'] = '积分兑换';
+				$this->order = $order;
+				//交易提醒
+				$task['aid'] = $order['id'];
+				$task['tid'] = 0;
+				$task['userid'] = $this->member['id'];
+				$task['puserid'] = $this->member['id'];
+				$task['molds'] = 'orders';
+				$task['type'] = 'rechange';
+				$task['addtime'] = time();
+				$task['body'] = '您的订单-'.$order['orderno'].'已经提交，我们会尽快给您发货！';
+				$task['url'] = U('user/orderdetails',['orderno'=>$order['orderno']]);
+				M('task')->add($task);
+				$this->display($this->template.'/paytpl/overpay');
+				exit;
+
 			}else if($this->webconf['paytype']==1){
 				//检查极致平台配置
 				if(!$this->webconf['jizhi_mchid'] || !$this->webconf['jizhi_appid'] || !$this->webconf['jizhi_key'] || !$this->webconf['jizhi_pay_url']){
@@ -337,18 +402,34 @@ class OrderController extends Controller
 						}
 						//微信支付
 						$order['paytype'] = 'wxpay';
+						M('orders')->update(['id'=>$order['id']],['paytype'=>'微信支付']);
 					}else{
 						$order['paytype'] = 'h5alipay';
+						M('orders')->update(['id'=>$order['id']],['paytype'=>'支付宝H5支付']);
 					}
 				}else{
 					if($paytype==2){
 						$order['paytype'] = 'scanwxpay';
+						M('orders')->update(['id'=>$order['id']],['paytype'=>'微信扫码支付']);
 					}else{
 						$order['paytype'] = 'alipay';
+						M('orders')->update(['id'=>$order['id']],['paytype'=>'支付宝支付']);
 					}
 					
 					
 				}
+				//交易提醒
+				$task['aid'] = $order['id'];
+				$task['tid'] = 0;
+				$task['userid'] = $this->member['id'];
+				$task['puserid'] = $this->member['id'];
+				$task['molds'] = 'orders';
+				$task['type'] = 'rechange';
+				$task['addtime'] = time();
+				$task['body'] = '您的订单-'.$order['orderno'].'已经提交，请尽快支付！';
+				$task['url'] = U('user/orderdetails',['orderno'=>$order['orderno']]);
+				M('task')->add($task);
+
 				$order['mchid'] = $this->webconf['jizhi_mchid'];
 				$order['appid'] = $this->webconf['jizhi_appid'];
 				$order['secretkey'] = $this->webconf['jizhi_key'];
@@ -374,7 +455,17 @@ class OrderController extends Controller
 				
 				
 				
-				
+				//交易提醒
+				$task['aid'] = $order['id'];
+				$task['tid'] = 0;
+				$task['userid'] = $this->member['id'];
+				$task['puserid'] = $this->member['id'];
+				$task['molds'] = 'orders';
+				$task['type'] = 'rechange';
+				$task['addtime'] = time();
+				$task['body'] = '您的订单-'.$order['orderno'].'已经提交，请尽快支付！';
+				$task['url'] = U('user/orderdetails',['orderno'=>$order['orderno']]);
+				M('task')->add($task);
 				if(isMobile()){
 					
 					//手机端
@@ -464,6 +555,7 @@ class OrderController extends Controller
 						}else{
 							//微信H5支付
 							$order['paytype'] = 'h5wxpay';
+							M('orders')->update(['id'=>$order['id']],['paytype'=>'微信H5支付']);
 							extendFile('pay/wechat/WxpayH5Service.php');
 							/** 请填写以下配置信息 */
 							$mchid = $this->webconf['wx_mchid'];   //微信支付商户号 PartnerID 通过微信支付商户资料审核后邮件发送

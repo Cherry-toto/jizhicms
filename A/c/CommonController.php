@@ -52,6 +52,11 @@ class CommonController extends Controller
 	  $customconf = get_custom();
 	  $this->customconf = $customconf;
 	  $this->classtypetree =  get_classtype_tree();
+	  $classtypedata = (isMobile() && $webconf['iswap']==1)?classTypeDataMobile():classTypeData();
+	  foreach($classtypedata as $k=>$v){
+		$classtypedata[$k]['children'] = get_children($v,$classtypedata);
+	  }
+	  $this->classtypedata = $classtypedata;
     
     }
 	
@@ -75,14 +80,18 @@ class CommonController extends Controller
 				JsonReturn($data);
 			}
 			$fileSize = (int)webConf('fileSize');
-			if($fileSize!=0 && $_FILES["file"]["size"]>$fileSize){
+			if($fileSize!=0 && $_FILES["file"]["size"]/(1024*1024)>$fileSize){
 				$data['error'] =  "Error: 文件大小超过网站内部限制！";
 				$data['code'] = 1003;
 				JsonReturn($data);
 			}
-		  
-		  $filename =  'Public/Admin/'.date('Ymd').rand(1000,9999).'.'.$pix;
-		  $filename_x =  'Public/Admin/'.date('Ymd').rand(1000,9999).'.'.$pix;
+		    if(ROOT=='/'){
+		  		$root = '';
+		  	}else{
+		  		$root = substr(ROOT,1);
+		  	}
+		  $filename =  $root.'Public/Admin/'.date('Ymd').rand(1000,9999).'.'.$pix;
+		  $filename_x =  $root.'Public/Admin/'.date('Ymd').rand(1000,9999).'.'.$pix;
 		  
 			if(move_uploaded_file($_FILES["file"]['tmp_name'],$filename)){
 			
@@ -102,11 +111,16 @@ class CommonController extends Controller
 					}
 				   
 				}
-				
+				if( (strtolower($pix)=='png' || strtolower($pix)=='jpg' || strtolower($pix)=='jpeg') && $this->webconf['iswatermark']==1 && $this->webconf['watermark_file']!='' && !empty($this->webconf['watermark_file'])){
+					if(file_exists(APP_PATH.$this->webconf['watermark_file'])){
+						watermark($filename,APP_PATH.$this->webconf['watermark_file'],$this->webconf['watermark_t'],$this->webconf['watermark_tm']);
+					}
+					
+				}
 				$data['url'] = $filename;
 				$data['code'] = 0;
 				$filesize = round(filesize(APP_PATH.$filename)/1024,2);
-				M('pictures')->add(['litpic'=>'/'.$filename,'addtime'=>time(),'userid'=>$_SESSION['admin']['id'],'size'=>$filesize]);
+				M('pictures')->add(['litpic'=>'/'.$filename,'addtime'=>time(),'userid'=>$_SESSION['admin']['id'],'size'=>$filesize,'filetype'=>strtolower($pix),'tid'=>$this->frparam('tid',0,0),'molds'=>$this->frparam('molds',1,null)]);
 				
 				
 			}else{

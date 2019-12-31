@@ -17,6 +17,10 @@
 		public $array = '';
 		//总条数
 		public $sum = 0;
+		//上一页
+		public $prevpage = '';
+		//下一页
+		public $nextpage = '';
 		//总页数
 		public $allpage = 0;
 		//每页条数
@@ -35,6 +39,8 @@
 		public $fields = null;
 		//当前页数据
 		public $datalist = array();
+		//当前分页数组
+		public $listpage = array();
 		
 		
 		
@@ -99,7 +105,28 @@
 			
 			
 			**/
+			/**
+				首页url  		home
+				上一页url		prev
+				下一页url       next
+				当前页url       current
+				总页数  	    allpage
+				当前页码		current_num
+				普通页码组      list
+				最后一页url		last
 			
+			
+			**/
+			$listpage = array(
+				'home' => null,
+				'prev' => null,
+				'next' => null,
+				'current' => null,
+				'allpage' => 0,
+				'current_num' => 0,
+				'list' => null,
+				'last' => null,
+			);
 	
 	
 			$this->pv = $pv;
@@ -114,11 +141,16 @@
 					color: #fff;
 				}
 				</style>';
+			$listpage['home'] = $this->url;	
+			$listpage['current_num'] = $this->currentPage;	
+			$listpage['allpage'] = $this->allpage;	
+
 			if($this->url==''){
 				$this->url.='?page=';
 			}else{
 				$this->url = '?'.$this->url.'&page=';
 			}
+			$listpage['current'] = $this->url.$this->currentPage;	
 			for($i=1;$i<=$this->allpage;$i++){
 				if($this->allpage >= 2*$this->pv){
 					//需要间隔
@@ -132,6 +164,7 @@
 							
 							$list .= '<li><a href="'.$this->url.$i.'" data-page="'.$i.'">'.$i.'</a></li>';
 						}
+						$listpage['list'][] = array('url'=>$this->url.$i,'num'=>$i);
 					}
 				}else{
 					if($i==$this->currentPage){
@@ -141,6 +174,7 @@
 						
 						$list .= '<li><a href="'.$this->url.$i.'" data-page="'.$i.'">'.$i.'</a></li>';
 					}
+					$listpage['list'][] = array('url'=>$this->url.$i,'num'=>$i);
 				}
 			}
 			
@@ -159,18 +193,23 @@
 			
 			if($this->currentPage!=1){
 				$list = $prev.'<li><a href="'.$this->url.'1" data-page="1">首页</a></li>'.$list;
+				$listpage['prev'] = $this->url.($this->currentPage-1);
 			}
 			
 			if($this->currentPage<$this->allpage){
 				$list .= $next;
+				$listpage['next'] = $this->url.($this->currentPage+1);
 			}
 			
 			if($this->allpage > $this->pv){
 				$list .= $last;
+				$listpage['next'] = $this->url.$this->allpage;
 			}
 			$list.=$all;
 			$list = $ext.$list.'</ul></div>';
-			
+			$this->listpage = $listpage;
+			$this->prevpage = $listpage['prev'];
+			$this->nextpage = $listpage['next'];
 			return $list;
 			
 		}

@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  {include="user/style"}
+  <title>购买 - 个人中心</title>
+</head>
+<body>
+
+{include="user/top"}
+
+<div class="login-page page">
+  <div class="container clearfix">
+    {include="user/left_nav"}
+    <div class="user-right">
+      <div class="user-tips">
+        <p><i class="iconfont iconxiaoxi3"></i> 欢迎注册本站会员，注册会员后您将享受专属会员服务!包括但不限于专属文章浏览权限，会员投稿权限，在线购物权限，下载会员可见附件等实用功能，欢迎注册体验！</p>
+      </div>
+      <div class="common-tab">
+        <h2><a href="{fun U('user/wallet')}">我的钱包</a><a href="{fun U('user/buylist',['type'=>1])}" >交易记录</a><a href="{fun U('user/buylist',['type'=>2])}"  >充值记录</a><a href="{fun U('user/buylist',['type'=>3])}"  >赠送记录</a></h2>
+      </div>
+      <style>
+      .rechage-view {
+        background: #fff;
+        padding: 15px;
+        border-radius: 5px;
+      }
+      .rechage-view h4 {
+        color: #242424;
+        font-size: 20px;
+        line-height: 30px;
+        text-align: center;
+      }
+      .rechage-view p.tips {
+        color: #808080;
+        font-size: 14px;
+        line-height: 30px;
+        text-align: center;
+      }
+      .rechage-view p {
+        color: #808080;
+        font-size: 12px;
+        line-height: 20px;
+        margin-bottom: 5px;
+      }
+      .rechage-view p span.fr {
+        color: #666;
+      }
+      </style>
+      <div class="rechage-view">
+        <h4>{if($data['type']!=2)}+{else}-{/if}{$data['amount']}</h4>
+        <p class="tips">交易成功</p>
+        <p><span>充值方式</span><span class="fr">{$data['msg']}</span></p>
+        <p><span>创建时间</span><span class="fr">{fun date('Y-m-d H:i:s',$data['addtime'])}</span></p>
+        <p><span>订单号</span><span class="fr">{$data['orderno']}</span></p>
+      </div>
+    </div>
+  </div>
+</div>
+
+{include="user/footer"}
+</body>
+</html>

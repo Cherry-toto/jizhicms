@@ -74,7 +74,7 @@ class View
 			
 			
         } else {
-           Error_msg('无法找到视图文件'.$controllerLayout);
+           Error_msg('无法找到视图文件，页面模板：'.$name.'.html');
         }
 		
 		
@@ -94,6 +94,7 @@ class View
 			$fp_txt=@fread($fp_tp,filesize($controllerLayout));
 			@fclose($fp_tp);
 			$fp_txt=$this->template_html($fp_txt);
+			$fp_txt = "<?php if (!defined('CORE_PATH')) exit();?>".$fp_txt;
 			$fpt_tpl=@fopen($cache_file,"w");
 			@fwrite($fpt_tpl,$fp_txt);
 			@fclose($fpt_tpl);
@@ -102,6 +103,7 @@ class View
 			$fp_txt=@fread($fp_tp,filesize($controllerLayout));
 			@fclose($fp_tp);
 			$fp_txt=$this->template_html($fp_txt);
+			$fp_txt = "<?php if (!defined('CORE_PATH')) exit();?>".$fp_txt;
 			$fpt_tpl=@fopen($cache_file,"w");
 			@fwrite($fpt_tpl,$fp_txt);
 			@fclose($fpt_tpl);
@@ -292,14 +294,30 @@ class View
 	private function template_html_loop($f){
 		preg_match_all('/.*?(\s*.*?=.*?[\"|\'].*?[\"|\']\s).*?/si',' '.$f.' ',$aa);
 		$a=array();foreach($aa[1] as $v){$t=explode('=',trim(str_replace(array('"'),"'",$v)));$a=array_merge($a,array(trim($t[0]) => trim($t[1])));}
-		if(strpos($a['table'],'$')!==FALSE){$a['table']=trim($a['table'],"'");}
-		$db=$a['table'];
+		if(isset($a['table'])){
+			if(strpos($a['table'],'$')!==FALSE){$a['table']=trim($a['table'],"'");}
+			$db=$a['table'];
+		}else{
+			if(!isset($a['tid'])){ exit('缺少table参数！');}
+			if(strpos($a['tid'],'$')!==false){
+				$db = ' $classtypedata["'.trim($a['tid'],"'").'"]["molds"] ';
+			}else{
+				if(strpos($a['tid'],',')!==false){
+					$tids = explode(',',$a['tid']);
+					$db = ' $classtypedata['.trim($tids[0],"'").']["molds"] ';
+				}else{
+					$db = ' $classtypedata['.trim($a['tid'],"'").']["molds"] ';
+				}
+			}
+			
+		}
 		if(isset($a['limit'])){$limit=$a['limit'];}else{$limit='null';}
 		if(isset($a['notempty'])){$notempty=trim($a['notempty'],"'");}else{$notempty=false;}
 		if(isset($a['empty'])){$empty=trim($a['empty'],"'");}else{$empty=false;}
 		if(isset($a['fields'])){$fields=$a['fields'];}else{$fields='null';}
 		if(isset($a['isall'])){$isall=trim($a['isall'],"'");}else{$isall=false;}
 		if(isset($a['as'])){$as=$a['as'];}else{$as='v';}
+		if(isset($a['day'])){$day=$a['day'];}else{$day=false;}
 		if(isset($a['orderby'])){
 			$order=$a['orderby'];
 			//$order=' '.str_replace('|',' ',$order).' ';
@@ -311,9 +329,14 @@ class View
 				$like = explode(',',trim($a['like'],"'"));
 				foreach($like as $v){
 					$s = explode('|',$v);
-					$lk[]= " ".$s[0]." like \'%".trim($s[1])."%\' ";
+					if(strpos($s[1],'$')!==false){
+						$lk[] = " ".$s[0]." like \'%'.".trim($s[1]).".'%\' ";
+					}else{
+						$lk[]= " ".$s[0]." like \'%".trim($s[1])."%\' ";
+					}
+					
 				}
-				$lk = " and ". implode(" and ",$lk);
+				$lk = " and ( ". implode(" or ",$lk)." )";
 			}else{
 				if(strpos($a['like'],'$')!==false){
 					$like = explode('|',trim($a['like'],"'"));
@@ -340,7 +363,7 @@ class View
 			}
 		}
 		
-		unset($a['table']);unset($a['orderby']);unset($a['limit']);unset($a['as']);unset($a['like']);unset($a['fields']);unset($a['isall']);unset($a['notin']);unset($a['notempty']);unset($a['empty']);
+		unset($a['table']);unset($a['orderby']);unset($a['limit']);unset($a['as']);unset($a['like']);unset($a['fields']);unset($a['isall']);unset($a['notin']);unset($a['notempty']);unset($a['empty']);unset($a['day']);
 		$pages='';
 		$w = ' 1=1 ';
 		$ispage=false;
@@ -398,7 +421,7 @@ class View
 				// }
 			}else{
 				if(strpos($v,'$')!==FALSE){
-					$w.="and ".$k."='.".trim($v,"'").".' ";
+					$w.="and ".$k."=\''.".trim($v,"'").".'\' ";
 				}else{
 					$w.="and ".$k."=\'".$v."\' ";
 				}
@@ -414,11 +437,11 @@ class View
 			if(strpos($notempty,'|')!==false){
 				$notempty = explode('|',$notempty);
 				foreach($notempty as $v){
-					$w.=' and trim('.$v.') !=""  ';
+					$w.=' (and trim('.$v.') !="" or trim('.$v.') is not null) ';
 				}
 				
 			}else{
-				$w.=' and trim('.$notempty.') !=""  ';
+				$w.=' and (trim('.$notempty.') !="" or trim('.$notempty.') is not null)  ';
 			}
 			
 		}
@@ -427,13 +450,17 @@ class View
 			if(strpos($empty,'|')!==false){
 				$empty = explode('|',$empty);
 				foreach($empty as $v){
-					$w.=' and trim('.$v.') =""  ';
+					$w.=' and (trim('.$v.') ="" or  trim('.$v.') is null) ';
 				}
 				
 			}else{
-				$w.=' and trim('.$empty.') =""  ';
+				$w.=' and (trim('.$empty.') ="" or trim('.$empty.') is null) ';
 			}
 			
+		}
+		if($day){
+			$day =str_replace("'",'',$day);
+			$w.=" and DATE_SUB(CURDATE(), INTERVAL ".$day." DAY) <= date(FROM_UNIXTIME(addtime))";
 		}
 		
 		$w .= $notin_sql;

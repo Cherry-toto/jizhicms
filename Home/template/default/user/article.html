@@ -1,137 +1,78 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="robots" content="noindex,noarchive">
-	<title>文章列表-{$webconf['web_name']}</title>
-	<meta property="og:title" 	content="文章列表-{$webconf['web_name']}" />
-	<meta name="twitter:title" 	content="文章列表-{$webconf['web_name']}" />
-	<meta name="keywords" content="文章列表-{$webconf['web_keyword']}" />
-	<meta name="description"  content="文章列表-{$webconf['web_desc']}" />
-	{include="user/user-style"}
-
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  {include="user/style"}
+  <title>我的发布 - 个人中心</title>
 </head>
 <body>
-{include="user/user-top"}
-<section class="container py-3">
-	<div class="row justify-content-center">
-		<div class="col-lg-10 step mb-2">
-			{include="user/user-content"}
-		</div>
-		<div class="col-12 step">
-			<fieldset>
-			<div style="width:100%;  overflow:scroll;overflow-y: hidden">
-			<label class="h5">文章列表</label><a href="{fun U('release')}" style="margin-left: 20px"><button class="btn btn-primary">发布文章</button></a>
-				<table border="1" rules="all" style="width:100%; height:100px; text-align:center;white-space:nowrap" class="table table-striped table-bordered">
-					
-					<tbody class="text-center">
-					
-						<tr class="table-primary">
-							<th class="num">ID</th>
-							<th class="num">标题</th>
-							<th class="num">日期</th>
-							<th class="num">阅读量</th>
-							<th class="num">状态</th>
-							<th class="num">操作</th>
-						</tr>
-						{if($lists)}
-						{foreach $lists as $v}
-						<tr>
-							<td>{$v['id']}</td>
-							<td>{$v['title']}</td>
-							<td>{fun date('Y/m/d',$v['addtime'])}</td>
-							<td>{$v['hits']}</td>
-							<td>{if($v['isshow']==1)}<span style="color:green">已通过</span>{else}<span style="color:#f00">未审核</span>{/if}</td>
-							<td><a href="javascript:if(confirm('确定要删除文章吗？'))window.location.href='{fun U('User/del',['molds'=>$v['molds'],'id'=>$v['id']])}'"><button class="btn btn-danger">删除</button></a><a href="{fun U('release',['molds'=>$v['molds'],'id'=>$v['id']])}"><button class="btn btn-primary">修改</button></a>{if($v['isshow']==1)}<a href="{$v['url']}" target="_blank"><button class="btn btn-info">预览</button></a>{/if}</td>
-						</tr>
-						{/foreach}
-						{if(!isMobile())}
-						<tr><td colspan="6">{$pages}</td></tr>
-						{/if}
-						{else}
-						<tr><td colspan="6">暂无文章</td></tr>
-						{/if}
-						<tr id="more"></tr>
-					</tbody>
-				</table>
-			</div>
-			</fieldset>
-		</div>
-	</div>
-</section>
 
+{include="user/top"}
 
+<div class="login-page page">
+  <div class="container clearfix">
+    {include="user/left_nav"}
+    <!-- 右侧列表 -->
+    <div class="user-right">
+      <div class="user-tips">
+        <p><i class="iconfont iconxiaoxi3"></i> 欢迎注册本站会员，注册会员后您将享受专属会员服务!包括但不限于专属文章浏览权限，会员投稿权限，在线购物权限，下载会员可见附件等实用功能，欢迎注册体验！</p>
+      </div>
+      <div class="common-tab">
+        <h2><a href="{fun U('user/posts',['molds'=>$molds])}" {if(!$type)}class="active"{/if}>全部投稿</a><a href="{fun U('user/posts',['type'=>1,'molds'=>$molds])}" {if($type==1)}class="active"{/if}>已退回</a><a href="{fun U('user/posts',['type'=>2,'molds'=>$molds])}" {if($type==2)}class="active"{/if}>待审核</a><a href="{fun U('user/posts',['type'=>3,'molds'=>$molds])}" {if($type==3)}class="active"{/if}>已发布</a><a href="{fun U('user/release',['molds'=>$molds])}" class="btn-info btn-release">发布{$moldsname}</a></h2>
+      </div>
+      <div class="table release-table">
+        <div class="table-scroll">
+          <table>
+            <thead>
+              <tr>
+                <th>名称</th>
+                <th>分类</th>
+                <th>状态</th>
+                <th>时间</th>
+                <th>操作</th>
+              </tr>
+            </thead>
+            <tbody>
+            {foreach $lists as $v}
+              <tr>
+                <td><a href="{$v['url']}" target="_blank" class="title">{$v['title']}</a></td>
+                <td><span class="btn-table btn-light">{$v['classname']}</span></th>
+                <td>
+                {if($v['isshow']==1)}
+                <span class="btn-table btn-success">已发布</span>
+                {else if($v['isshow']==2)}
+                <span class="btn-table btn-danger">已退回</span>
+                {else}
+                <span class="btn-table btn-info">待审核</span>
+                {/if}
+                </td>
+                <td>{$v['date']}</td>
+                <td><a href="{$v['edit']}" class="btn-edit">编辑</a><a href="javascript:;" onclick="javascript:if(confirm('您确定要删除吗？'))window.location.href='{$v['del']}'" class="btn-delete">删除</a></td>
+              </tr>
+            {/foreach}
+             
+            </tbody>
+          </table>
+        </div>
+        <div class="pagebar-common">
+          {if($listpage['list'])}
+          <ul class="pagination">
+          <li class="page-item {if(!$listpage['prev'])}disabled{/if}">
+          <a class="page-link" href="{$listpage['prev']}" aria-label="Previous"><span aria-hidden="true">«</span></a></li>
+          {foreach $listpage['list'] as $ss}
+          <li class="page-item {if($ss['num']==$listpage['current_num'])}active background{/if}"><a href="{$ss['url']}" class="page-link">{$ss['num']}</a></li>
+          {/foreach}
+          <li class="page-item {if(!$listpage['next'])}disabled{/if}"><a class="page-link" href="{$listpage['next']}" aria-label="Next"><span aria-hidden="true">»</span></a></li>
+          </ul>
+          {/if}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
 
-{include="user/common"}
-<script>
-{if(isMobile())}
-var p=1;
-$(window).scroll(function () {
-	//判断是否滑动到页面底部
-	
-	if ($(window).scrollTop() === ($(document).height() - $(window).height()) ) {	
-		p++;
-		$.ajax({
-		 url:"{fun U('User/article')}", 
-		 dataType:"json",
-		 async:true,
-		 data:{page:p,ajax:1,iscode:1},
-		 type:"POST",//请求方式
-		 beforeSend:function(){
-			//请求前的处理
-		},
-		 success:function(r){
-		//请求成功时处理
-				if(r.code==0){
-					var html = '';
-					var leng = r.data.length;
-					if(leng>0){
-						for(var i=0;i<leng;i++){
-							html+='<tr>'+
-							'<td>'+r.data[i].id+'</td>'+
-							'<td>'+r.data[i].title+'</td>'+
-							'<td>'+r.data[i].time+'</td>'+
-							'<td>'+r.data[i].hits+'</td>';
-							switch(r.data[i].isshow){
-								case 1:
-								html+='<span style="green">已通过</span>';
-								break;
-								default:
-								html+='<span style="#f00">未审核</span>';
-								break;
-							}
-							if(r.data[i].isshow==1){
-								html+='<td><a href="javascript:if(confirm(\'确定要删除文章吗？\'))window.location.href=\''+r.data[i].del+'\'"><button class="btn btn-danger">删除</button></a><a href="'+r.data[i].edit+'"><button class="btn btn-primary">修改</button></a><a target="_blank" href="'+r.data[i].url+'"><button class="btn btn-info">预览</button></a></td></tr>';
-							}else{
-								html+='<td><a href="javascript:if(confirm(\'确定要删除文章吗？\'))window.location.href=\''+r.data[i].del+'\'"><button class="btn btn-danger">删除</button></a><a href="'+r.data[i].edit+'"><button class="btn btn-primary">修改</button></a></td></tr>';
-							}
-							
-						}
-						$("#more").before(html);
-						
-					}
-				}else{
-					alert(r.msg);
-					return false;
-				}
-		},
-		 complete:function(){
-		//请求完成的处理
-		},
-		 error:function(){
-		//请求出错处理
-				alert('网络异常');
-		}
-
-			
-			
-		})
-	
-	
-	}
-})
-{/if}
-</script>
+{include="user/footer"}
 </body>
 </html>

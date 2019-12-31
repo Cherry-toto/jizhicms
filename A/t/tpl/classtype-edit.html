@@ -204,7 +204,19 @@
                填写栏目外链后，访问栏目链接将会跳到外链，不填请留空！
               </div>
           </div>
-		  
+			<div class="layui-form-item" pane>
+				<label for="ishome" class="layui-form-label">
+					<span class="x-red"></span>发布显示
+				</label>
+				<div class="layui-input-inline">
+					<input type="radio" name="ishome" value="0" title="不显示" {if($data['ishome']==0)}checked{/if}>
+					<input type="radio" name="ishome" value="1" title="显示" {if($data['ishome']==1)}checked{/if}>
+				</div>
+				<div class="layui-form-mid layui-word-aux">
+				 勾选后，前台会员发布会显示该栏目
+				</div>
+					
+			</div>
 		  <div class="layui-form-item" pane>
 				<label for="isshow" class="layui-form-label">
 					<span class="x-red"></span>导航显示
@@ -283,6 +295,7 @@
 		  upload.render({
 			elem: '#litpic_upload',
 			url: "{fun U('Common/uploads')}" //上传接口
+			,data:{tid:{$data['id']},molds:function(){ return $("#molds").val(); }}
 			,done: function(res){ //上传成功后的回调
 			 
 				if(res.code==0){

@@ -1,124 +1,76 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="robots" content="noindex,noarchive">
-	<title>点赞列表-{$webconf['web_name']}</title>
-	<meta property="og:title" 	content="点赞列表-{$webconf['web_name']}" />
-	<meta name="twitter:title" 	content="点赞列表-{$webconf['web_name']}" />
-	<meta name="keywords" content="点赞列表-{$webconf['web_keyword']}" />
-	<meta name="description"  content="点赞列表-{$webconf['web_desc']}" />
-	{include="user/user-style"}
-
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  {include="user/style"}
+  <title>我的点赞-个人中心</title>
 </head>
 <body>
-{include="user/user-top"}
-<section class="container py-3">
-	<div class="row justify-content-center">
-		<div class="col-lg-10 step mb-2">
-		{include="user/user-content"}
-		</div>
-		<div class="col-12 step">
-			<fieldset>
-				<table class="table table-striped table-bordered">
-					<thead><!--好像沒必要-->
-						<label class="h5">点赞列表</label>
-					</thead>
-					<tbody>
-						<tr class="table-primary">
-							<th class="num text-center">#</th>
-							<th class="text-center">栏目</a></th>
-							<th >标题</a></th>
-							<th class="num text-center">操作</th>
-						</tr>
-						{if($lists)}
-						{foreach $lists as $v}
-						{if($v)}
-						<tr>					
-							<td class="text-center">{$v['id']}</td>
-							<td class="text-center">{$classtypedata[$v['tid']]['classname']}</td>
-							<td><a href="{fun gourl($v['id'],$v['htmlurl'])}" target="_blank">{$v['title']}<a/></td>
-							
-							<td class="text-center"><a href="javascript:if(confirm('确定要删除这条记录吗？'))window.location.href='{fun U('User/likes_del',['id'=>$v['id'],'tid'=>$v['tid']])}'">删除</a></td>
-						</tr>
-						{else}
-						<tr>					
-							<td colspan="3">[已被删除]</td>
-							
-							<td class="text-center"><a href="javascript:if(confirm('确定要删除这条记录吗？'))window.location.href='{fun U('User/likes_del',['id'=>$v['id'],'tid'=>$v['tid']])}'">删除</a></td>
-						</tr>
-						{/if}
-						{/foreach}
-						{if(!isMobile())}
-						<tr><td colspan="4">{$pages}</td></tr>
-						{/if}
-						{else}
-						<tr><td colspan="4">没有任何记录哦~</td></tr>
-						{/if}
-						<tr id="more"></tr>
-					</tbody>
-				</table>
-			</fieldset>
-		</div>
-	</div>
-</section>
-{include="user/common"}
 
-{if(isMobile())}
-<script>
-var p=1;
-$(window).scroll(function () {
-	//判断是否滑动到页面底部
-	
-	if ($(window).scrollTop() === ($(document).height() - $(window).height()) ) {	
-		p++;
-		$.ajax({
-		 url:"{fun U('User/likes')}", 
-		 dataType:"json",
-		 async:true,
-		 data:{page:p,ajax:1,iscode:1},
-		 type:"GET",//请求方式
-		 beforeSend:function(){
-		//请求前的处理
-		},
-		 success:function(r){
-		//请求成功时处理
-				if(r.code==0){
-					var html = '';
-					var leng = r.data.length;
-					if(leng>0){
-						for(var i=0;i<leng;i++){
-							html+='<tr>'+
-							'<td class="text-center">'+r.data[i].id+'</td>'+
-							'<td class="text-center">'+r.data[i].classname+'</td>'+
-							'<td><a href="'+r.data[i].url+'" target="_blank">'+r.data[i].title+'<a/></td>'+
-							'<td class="text-center"><a href="javascript:if(confirm(\'确定要删除这条记录吗？\'))window.location.href=\''+r.data[i].likes_del+'\'">删除</a></td></tr>';
-						}
-						$("#more").before(html);
-					}
-				}else{
-					alert(r.msg);
-					return false;
-				}
-		},
-		 complete:function(){
-		//请求完成的处理
-		},
-		 error:function(){
-		//请求出错处理
-				alert('網絡異常');
-		}
+{include="user/top"}
+<div class="login-page page">
+  <div class="container clearfix">
+    {include="user/left_nav"}
+    <div class="user-right">
+      <div class="user-tips">
+        <p><i class="iconfont iconxiaoxi3"></i> 欢迎注册本站会员，注册会员后您将享受专属会员服务!包括但不限于专属文章浏览权限，会员投稿权限，在线购物权限，下载会员可见附件等实用功能，欢迎注册体验！</p>
+      </div>
+      <div class="common-tab">
+        <h2><a href="{fun U('user/collect')}" {if(APP_ACTION=='collect')}class="active"{/if}>收藏</a><a href="{fun U('user/likes')}" {if(APP_ACTION=='likes')}class="active"{/if}>点赞</a><a href="{fun U('user/comment')}" {if(APP_ACTION=='comment')}class="active"{/if}>评论</a></h2>
+      </div>
 
-			
-			
-		})
-	
-	
-	}
-})
-</script>
-{/if}
+        <div class="table release-table">
+        <div class="table-scroll">
+          <table>
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>名称</th>
+                <th>分类</th>
+                <th>作者</th>
+                <th>操作</th>
+              </tr>
+            </thead>
+            <tbody>
+             {if($lists)}
+              {foreach $lists as $v}
+              <tr>
+                <td>{$v['id']}</td>
+                <td><a href="{$v['url']}" target="_blank" class="title">{$v['title']}</a></td>
+                <td><span class="btn-table btn-light">{$v['classname']}</span></th>
+                <td><a {if($v['member_id']!=0)}href="{fun U('user/active',['uid'=>$v['member_id']])}"{/if} target="_blank" class="title">{if($v['member_id']!=0)}{fun memberInfo($v['member_id'],'username')}{else}[官方]{/if}</a></td>
+                <td><a href="{$v['url']}" target="_blank" class="btn-edit">查看</a><a href="javascript:;" onclick="javascript:if(confirm('您确定要删除吗?'))window.location.href='{$v['del']}'" class="btn-delete">删除</a></td>
+              </tr>
+              {/foreach}
+              {else}
+              <p style="text-align: center;width: 100%;display: block;height: 50px;line-height: 50px;"> 暂无收藏~ </p>
+              {/if}
+             
+            </tbody>
+          </table>
+        </div>
+        <div class="pagebar-common">
+          {if($listpage['list'])}
+          <ul class="pagination">
+          <li class="page-item {if(!$listpage['prev'])}disabled{/if}">
+          <a class="page-link" href="{$listpage['prev']}" aria-label="Previous"><span aria-hidden="true">«</span></a></li>
+          {foreach $listpage['list'] as $ss}
+          <li class="page-item {if($ss['num']==$listpage['current_num'])}active background{/if}"><a href="{$ss['url']}" class="page-link">{$ss['num']}</a></li>
+          {/foreach}
+          <li class="page-item {if(!$listpage['next'])}disabled{/if}"><a class="page-link" href="{$listpage['next']}" aria-label="Next"><span aria-hidden="true">»</span></a></li>
+          </ul>
+          {/if}
+        </div>
+      </div>
+    
 
+      
+    </div>
+  </div>
+</div>
+
+{include="user/footer"}
 </body>
 </html>

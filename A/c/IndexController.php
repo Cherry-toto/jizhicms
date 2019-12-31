@@ -135,7 +135,7 @@ class IndexController extends CommonController
 		$this->article_num = M('article')->getCount();
 		$this->product_num = M('product')->getCount();
 		$this->message_num = M('message')->getCount();
-        $classtypedata = (isMobile() && $webconf['iswap']==1)?classTypeDataMobile():classTypeData();
+        $classtypedata = (isMobile() && $this->webconf['iswap']==1)?classTypeDataMobile():classTypeData();
         $this->classtypedata = $classtypedata;
 		$this->display('welcome');
 	}
@@ -149,7 +149,7 @@ class IndexController extends CommonController
 			$i=0;
 			while ( false !== ($file = readdir ( $handle )) ) {
 				//去掉"“.”、“..”以及带“.xxx”后缀的文件
-				if ($file != "." && $file != ".."&& strpos($file,".php")) {
+				if ($file != "." && $file != ".." && strpos($file,".php")!==false && strpos($file,"_v")===false) {
 					$fileArray[$i]=$file;
 					if($i==100){
 						break;

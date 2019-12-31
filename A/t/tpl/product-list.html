@@ -23,10 +23,11 @@
 					<form class="layui-form layui-col-md12 x-so" method="get" id="myform">
 					<div class="layui-input-inline">
 					  <select name="isshow" lay-filter="isshow" class="layui-inline autosubmit">
-					  <option value="">是否显示</option>
+					  <option value="">是否审核</option>
 					   
-					   <option {if($isshow==1)} selected="selected" {/if}value="1">显示</option>
-					   <option {if($isshow==2)} selected="selected" {/if}value="2">隐藏</option>
+					   <option {if($isshow==1)} selected="selected" {/if}value="1">已审</option>
+					   <option {if($isshow==2)} selected="selected" {/if}value="2">未审</option>
+					   <option {if($isshow==3)} selected="selected" {/if}value="3">退回</option>
 					   
 					
 					  </select>
@@ -109,8 +110,9 @@
 		  <div class="layui-input-inline" style="margin-right: 10px;margin-bottom: 10px;width:150px;">
 			   <select class="layui-btn" id="change_isshow"  lay-filter="change_isshow" >
 			   <option value="0">批量审核</option>
-			   <option   value="1">显示</option>
-			   <option   value="2">不显示</option>
+			   <option   value="1">已审</option>
+			   <option   value="2">未审</option>
+			   <option   value="3">退回</option>
 			  
 			   </select>
 			   </div>
@@ -124,23 +126,25 @@
 		<script type="text/html" id="tuijian">
 			{{#  if(d.istop ==1){ }}
 			<span class="layui-badge layui-bg-black">顶</span>
-			{{#  } else if(d.ishot==1){ }}
+			{{#  } }}
+			{{#  if(d.ishot==1){ }}
 		        <span class="layui-badge">热</span>
-		    {{#  } else if(d.istuijian==1){ }}
+		    {{#  } }}
+		    {{#  if(d.istuijian==1){ }}
 		        <span class="layui-badge layui-bg-green">荐</span>
-		    {{#  } else{ }}
-		    	{{d.tuijian}}
 		    {{#  } }}
 		</script>
 		<script type="text/html" id="isshow">
 			{{#  if(d.isshow ==1){ }}
-			<span class="layui-badge layui-bg-green">显示</span>
+			<span class="layui-badge layui-bg-green">已审</span>
+			{{#  } else if(d.isshow ==2){ }}
+		    <span class="layui-badge layui-bg-black">退回</span>
 		    {{#  } else{ }}
-		    <span class="layui-badge">不显示</span>
+		    <span class="layui-badge">未审</span>
 		    {{#  } }}
 		</script>
 	 	<script type="text/html" id="litpic">
-			{{#  if(d.litpic ==''){ }}
+			{{#  if(!d.litpic){ }}
 			无
 		    {{#  } else{ }}
 		    <a href="{{d.litpic}}" target="_blank"><img src="{{d.litpic}}" width="100px" /></a>
@@ -184,11 +188,11 @@
 				  ,{type:'checkbox'}
 				  ,{field: 'orders', title: '排序',width: 100, edit:'text',sort: true}
 				  ,{field: 'new_tid', title: '栏目', sort: true}
-				  ,{field: 'tuijian', title: '推荐',width:80, templet: '#tuijian'}
+				  ,{field: 'tuijian', title: '推荐', templet: '#tuijian'}
 				  ,{field: 'title', title: '标题', edit:'text', sort: true}
 				  ,{field: 'new_litpic', title: '缩略图',templet: '#litpic'} 
 				  {foreach $fields_list as $v},{field: '{$v['field']}', title: '{$v['fieldname']}'}{/foreach}
-				  ,{field: 'new_isshow', title: '显示', width: 100,templet: '#isshow'}
+				  ,{field: 'new_isshow', title: '审核', width: 100,templet: '#isshow'}
 				  ,{field: 'new_addtime', title: '时间'}
 				  ,{field: '', title: '操作',width:280, toolbar: '#rightbar', fixed:'right'}
 				 

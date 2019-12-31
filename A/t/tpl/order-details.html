@@ -180,17 +180,17 @@
                       </tr>
 					<tr>
                         <td>折扣：</div></td>
-                        <td colspan="4">￥{$data['discount']}元</div></td>
+                        <td colspan="4">-￥{$data['discount']}元</div></td>
                         
                       </tr>
 					  <tr>
                         <td>运费：</div></td>
-                        <td colspan="4">￥{$data['yunfei']}元</div></td>
+                        <td colspan="4">+￥{$data['yunfei']}元</div></td>
                         
                       </tr>
                      <tr>
                         <td>合计：</div></td>
-                        <td colspan="4">￥{$data['price']}元</div></td>
+                        <td colspan="4">￥{$data['price']-$data['discount']+$data['yunfei']}元</div></td>
                         
                       </tr>
                     </tbody>

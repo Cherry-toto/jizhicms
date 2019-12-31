@@ -227,11 +227,12 @@
 				
 				<div class="layui-form-item" pane>
                     <label for="isshow" class="layui-form-label">
-                        <span class="x-red"></span>是否显示
+                        <span class="x-red"></span>是否审核
                     </label>
                     <div class="layui-input-inline">
-                        <input type="radio" name="isshow" value="0" title="不显示" {if($data['isshow']==0)}checked{/if}>
-						<input type="radio" name="isshow" value="1" title="显示" {if($data['isshow']==1)}checked{/if}>
+                        <input type="radio" name="isshow" value="0" title="未审" {if($data['isshow']==0)}checked{/if}>
+						<input type="radio" name="isshow" value="1" title="已审" {if($data['isshow']==1)}checked{/if}>
+						<input type="radio" name="isshow" value="2" title="退回" {if($data['isshow']==2)}checked{/if}>
                     </div>
 					 
 					
@@ -294,6 +295,7 @@
               upload.render({
 			    elem: '#litpic_upload',
                 url: "{fun U('Common/uploads')}" //上传接口
+                ,data:{tid:function(){ return $("#tid").val();},molds:'product'}
                 ,done: function(res){ //上传成功后的回调
                  
 					if(res.code==0){
@@ -317,6 +319,7 @@
 				,before: function(obj){ 		
 					layer.load(); //上传loading
 				  }
+				,data:{tid:function(){ return $("#tid").val();},molds:'product'}
 				,done: function(res){
 					layer.closeAll("loading"); //关闭loading
 					if(res.code==0){

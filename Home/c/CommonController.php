@@ -78,17 +78,87 @@ class CommonController extends Controller
 		}
 		 
 	}
+	function checklogin(){
+		if(!$this->islogin){
+			if($this->frparam('ajax')){
+				JsonReturn(['code'=>1,'msg'=>'您还未登录，请重新登录！']);
+			}
+			Redirect(U('login/index'));
+		}
+		
+	}
 	
+	function multiuploads(){
+		$file = $this->frparam('filename',1);
+		if(!$file){
+			$file = 'file';
+		}
+	    //检测是否允许前台上传文件
+	    if(!$this->webconf['isopenhomeupload']){
+		   $data['error'] =  "Error: 已关闭前台上传文件功能";
+		   $data['code'] = 1004;
+		   JsonReturn($data);
+	    }
+		foreach($_FILES[$file]['name'] as $k=>$v){
+			$pix = explode('.',$v);
+		    $pix = end($pix);
+		    $fileType = webConf('fileType');
+			if(strpos($fileType,strtolower($pix))===false){
+				$data['error'] =  "Error: 文件类型不允许上传！";
+				$data['code'] = 1002;
+				JsonReturn($data);
+			}
+			$fileSize = (int)webConf('fileSize');
+			if($fileSize!=0 && $_FILES[$file]["size"][$k]/(1024*1024)>$fileSize){
+				$data['error'] =  "Error: 文件大小超过网站内部限制！";
+				$data['code'] = 1003;
+				JsonReturn($data);
+			}
+		 
+			$filename[]='Public/Home/'.date('Ymd').rand(1000,9999).'.'.$pix; //定义文件名 
+		}
+
+		$response = array();
+		foreach ($_FILES[$file]['tmp_name'] as $k=>$v){
+			if(move_uploaded_file($v, $filename[$k])){
+				
+				if(isset($_SESSION['member'])){
+					$userid = $_SESSION['member']['id'];
+				}else{
+					$userid = 0;
+				}
+				$filesize = round(filesize(APP_PATH.$filename[$k])/1024,2);
+				M('pictures')->add(['litpic'=>'/'.$filename[$k],'addtime'=>time(),'userid'=>$userid,'size'=>$filesize,'tid'=>$this->frparam('tid',0,0),'molds'=>$this->frparam('molds',1,null),'path'=>'Home']);
+				$response[] = $filename[$k];
+
+			}else{  
+				$data['error'] =  "Error: 请检查目录[Public/Home]写入权限";
+				$data['code'] = 1001;
+				JsonReturn($data,true);
+			} 
+		}
+		$data = ['code'=>0,'urls'=>$response,'msg'=>'上传成功！'];
+		JsonReturn($data,true);
+
+
+		
+	}
+
 	function uploads(){
-		if ($_FILES["file"]["error"] > 0){
-		  $data['error'] =  "Error: " . $_FILES["file"]["error"];
+		$this->checklogin();
+		$file = $this->frparam('filename',1);
+		if(!$file){
+			$file = 'file';
+		}
+		if ($_FILES[$file]["error"] > 0){
+		  $data['error'] =  "Error: 上传错误！";
 		  $data['code'] = 1000;
 		}else{
 		  // echo "Upload: " . $_FILES["file"]["name"] . "<br />";
 		  // echo "Type: " . $_FILES["file"]["type"] . "<br />";
 		  // echo "Size: " . ($_FILES["file"]["size"] / 1024) . " Kb<br />";
 		  // echo "Stored in: " . $_FILES["file"]["tmp_name"];
-		  $pix = explode('.',$_FILES['file']['name']);
+		  $pix = explode('.',$_FILES[$file]['name']);
 		  $pix = end($pix);
 		  //检测是否允许前台上传文件
 		  if(!$this->webconf['isopenhomeupload']){
@@ -104,15 +174,22 @@ class CommonController extends Controller
 				JsonReturn($data);
 			}
 			$fileSize = (int)webConf('fileSize');
-			if($fileSize!=0 && $_FILES["file"]["size"]>$fileSize){
+			if($fileSize!=0 && $_FILES[$file]["size"]/(1024*1024)>$fileSize){
 				$data['error'] =  "Error: 文件大小超过网站内部限制！";
 				$data['code'] = 1003;
 				JsonReturn($data);
 			}
+		  	
+		  	if(ROOT=='/'){
+		  		$root = '';
+		  	}else{
+		  		$root = substr(ROOT,1);
+		  	}
+
+		  	
+		    $filename =  $root.'Public/Home/'.date('Ymd').rand(1000,9999).'.'.$pix;
 		  
-		    $filename =  'Public/Home/'.date('Ymd').rand(1000,9999).'.'.$pix;
-		  
-			if(move_uploaded_file($_FILES["file"]['tmp_name'],$filename)){
+			if(move_uploaded_file($_FILES[$file]['tmp_name'],$filename)){
 				$data['url'] = $filename;
 				$data['code'] = 0;
 				if(isset($_SESSION['member'])){
@@ -120,7 +197,8 @@ class CommonController extends Controller
 				}else{
 					$userid = 0;
 				}
-				M('pictures')->add(['litpic'=>'/'.$filename,'addtime'=>time(),'userid'=>$userid,'size'=>$_FILES["file"]["size"]]);
+				$filesize = round(filesize(APP_PATH.$filename)/1024,2);
+				M('pictures')->add(['litpic'=>'/'.$filename,'addtime'=>time(),'userid'=>$userid,'size'=>$filesize,'tid'=>$this->frparam('tid',0,0),'molds'=>$this->frparam('molds',1,null),'path'=>'Home']);
 				
 			}else{
 				$data['error'] =  "Error: 请检查目录[Public/Home]写入权限";
@@ -139,8 +217,6 @@ class CommonController extends Controller
 		
 		
 	}
-	
-	
 	function qrcode(){
 		extendFile('phpqrcode/phpqrcode.php');
 		$data = $this->frparam('data',1);
@@ -153,23 +229,214 @@ class CommonController extends Controller
 	}
 	
 	function get_fields(){
+		$this->checklogin();
+		error_reporting(E_ALL^E_NOTICE);
 		$tid = $this->frparam('tid');
 		$sql = array();
 		if($tid!=0){
 			$sql[] = " tids like '%,".$tid.",%' "; 
 		}
-		$molds = $this->frparam('molds',1);
+		$molds = strtolower($this->frparam('molds',1));
+		if(!M('molds')->find(['biaoshi'=>$molds])){
+			JsonReturn(['code'=>1,'msg'=>'参数错误！']);
+		}
+		if(in_array($molds,['level','level_group','member_group','plugins','sysconfig','ruler','molds','power','hook','layout','fields','comment','classtype'])){
+			JsonReturn(['code'=>1,'msg'=>'参数错误！']);
+		}
 		$id = $this->frparam('id');
-		$isdata = $this->frparam('isdata');
 		if($id){
 			$data = M($molds)->find(array('id'=>$id));
 		}else{
 			$data = array();
 		}
-		$sql[] = " molds = '".$molds."' ";
+		$sql[] = " molds = '".$molds."' and isshow=1 ";
 		$sql = implode(' and ',$sql);
 		$fields_list = M('Fields')->findAll($sql,'orders desc,id asc');
 		$l = '';
+		$rd = time();
+		if($molds=='article'){
+		$l .= '<div class="form-control">
+            <label for="">文章标题：</label>
+            <input type="text" name="title" id="title" value="'.$data['title'].'" placeholder="请输入文章标题">
+            <label></label>
+        </div>
+		<div class="form-control">
+            <label for="">关键词：</label>
+            <input type="text" name="keywords" id="keywords" value="'.$data['keywords'].'" placeholder="请输入关键词">
+            <label>用逗号（ , ）分隔</label>
+        </div>
+        <div class="form-control">
+            <label for="">文章主图：</label>
+              <span class="view_img_litpic">';
+            if($data['litpic']){
+            $l .= '<img src="'.$data['litpic'].'" height="100"  />';
+            }
+            $l .= '</span><br/>
+              <input name="litpic" type="hidden" id="file_url_litpic" value="'.$data['litpic'].'" /><br/>
+              <input type="file" class="upload_input_litpic" name="file_litpic" id="upload_input_litpic">
+        </div>
+		<script type="text/javascript">
+			$(document).ready(function(){
+			  $("#upload_input_litpic").change(function(){
+			    var form=document.getElementById("jizhiform");
+			    var data = new FormData(form);
+			    data.append("filename",$(this).attr("name"));
+			    $.ajax({
+			       url: "'.U('common/uploads').'",//处理图片的文件路径
+			       type: "POST",//传输方式
+			       data: data,
+			       dataType:"json",   //返回格式为json
+			       processData: false,  // 告诉jQuery不要去处理发送的数据
+			       contentType: false,   // 告诉jQuery不要去设置Content-Type请求头
+			       success: function(response){
+			        if(response.code==0){
+			          var result = "";
+			          result +=\'<img src="/\' + response["url"] + \'" height="100"  />\';
+			          $(".view_img_litpic").html(result);
+			          $("#file_url_litpic").val("/"+response["url"]);
+			        }else{
+			          alert(response.error);
+			        }
+			        
+			       }
+			    });
+			  });
+			});
+		</script>
+        <div class="form-control">
+            <label for="">文章简介：</label>
+            <textarea name="description" id="description" placeholder="请输入简介">'.$data['description'].'</textarea>
+            <label>150字以内</label>
+        </div>
+        <div class="form-control">
+            <label for="">文章内容：</label>
+            <div class="layui-input-block" style="width:100%;">
+			<script id="body'.$rd.'" name="body" type="text/plain" style="width:100%;height:400px;">'.$data['body'].'</script>
+				
+			</div>
+            <label>1500字以内</label>
+        </div>
+        <script type="text/javascript">
+			$(document).ready(function(){
+			var ue_body'.$rd.' = UE.getEditor("body'.$rd.'",{
+				toolbars:[["undo", "redo", "|","paragraph","bold", "italic", "blockquote", "insertparagraph", "justifyleft", "justifycenter", "justifyright","justifyjustify","|","indent", "insertorderedlist", "insertunorderedlist","|", "insertimage", "inserttable", "deletetable", "insertparagraphbeforetable", "insertrow", "deleterow", "insertcol", "deletecol","mergecells", "mergeright", "mergedown", "splittocells", "splittorows", "splittocols", "|","drafts", "|","fullscreen"]]
+				});
+			});
+		</script>';
+		}else if($molds=='product'){
+			$l .= '<div class="form-control">
+            <label for="">商品名称：</label>
+            <input type="text" name="title" id="title" value="'.$data['title'].'" placeholder="请输入商品名称">
+            <label></label>
+        </div>
+		<div class="form-control">
+            <label for="">关键词：</label>
+            <input type="text" name="keywords" id="keywords" value="'.$data['keywords'].'" placeholder="请输入关键词">
+            <label>用逗号（ , ）分隔</label>
+        </div>
+        <div class="form-control">
+            <label for="">商品主图：</label>
+              <span class="view_img_litpic">';
+            if($data['litpic']){
+            $l .= '<img src="'.$data['litpic'].'" height="100"  />';
+            }
+            $l .= '</span><br/>
+              <input name="litpic" type="hidden" id="file_url_litpic" value="'.$data['litpic'].'" /><br/>
+              <input type="file" class="upload_input_litpic" name="file_litpic" id="upload_input_litpic">
+        </div>
+		<script type="text/javascript">
+			$(document).on("change","#upload_input_litpic",function(){
+			    var form=document.getElementById("jizhiform");
+			    var data =new FormData(form);
+			    data.append("filename",$(this).attr("name"));
+			    $.ajax({
+			       url: "'.U('common/uploads').'",//处理图片的文件路径
+			       type: "POST",//传输方式
+			       data: data,
+			       dataType:"json",   //返回格式为json
+			       processData: false,  // 告诉jQuery不要去处理发送的数据
+			       contentType: false,   // 告诉jQuery不要去设置Content-Type请求头
+			       success: function(response){
+			        if(response.code==0){
+			          var result = "";
+			          result +=\'<img src="/\' + response["url"] + \'" height="100"  />\';
+			          $(".view_img_litpic").html(result);
+			          $("#file_url_litpic").val("/"+response["url"]);
+			        }else{
+			          alert(response.error);
+			        }
+			        
+			       }
+			    });
+			});
+		</script>
+		<div class="form-control">
+            <label for="">商品图集：</label>
+              <span class="view_img_pictures">';
+            if($data['pictures']){
+            	foreach(explode('||',$data['pictures']) as $v){
+            		if($v!=''){
+            			 $l .= '<span><img src="'.$v.'" height="100"  /><input name="pictures_url[]" type="text" value="'.$v.'"><span onclick="deleteImage_auto(this)">删除</span></span>';
+            		}
+            	}
+           
+            }
+            $l .= '</span><br/>
+              <input name="pictures" type="hidden" id="pictures" value="'.$data['pictures'].'" /><br/>
+              <input type="file" class="upload_input_pictures" file-name="file_pictures" name="file_pictures[]" multiple="multiple" id="upload_input_pictures">
+        </div>
+		<script type="text/javascript">
+			 $(document).on("change","#upload_input_pictures",function(){
+			    var form=document.getElementById("jizhiform");
+			    var data =new FormData(form);
+			    data.append("filename",$(this).attr("file-name"));
+			    $.ajax({
+			       url: "'.U('common/multiuploads').'",//处理图片的文件路径
+			       type: "POST",//传输方式
+			       data: data,
+			       dataType:"json",   //返回格式为json
+			       processData: false,  // 告诉jQuery不要去处理发送的数据
+			       contentType: false,   // 告诉jQuery不要去设置Content-Type请求头
+			       success: function(response){
+			       	console.log(response);
+			        if(response.code==0){
+			          var result = "";
+			          for(var i=0;i<response["urls"].length;i++){
+			          	 result +=\'<span><img src="/\' + response["urls"][i] + \'" height="100"  /><input name="pictures_urls[]" type="text" value="/\' + response["urls"][i] + \'" ><span onclick="deleteImage_auto(this)">删除</span></span>\';
+			             	
+			          }
+			          $(".view_img_pictures").append(result);
+			         
+			        }else{
+			          alert(response.error);
+			        }
+			        
+			       }
+			    });
+			  });
+		</script>
+        <div class="form-control">
+            <label for="">商品简介：</label>
+            <textarea name="description" id="description" placeholder="请输入简介">'.$data['description'].'</textarea>
+            <label>150字以内</label>
+        </div>
+        <div class="form-control">
+            <label for="">商品详情：</label>
+            <div class="layui-input-block" style="width:100%;">
+			<script id="body'.$rd.'" name="body" type="text/plain" style="width:100%;height:400px;">'.$data['body'].'</script>
+			</div>
+            <label>1500字以内</label>
+        </div>
+        <script type="text/javascript">
+			$(document).ready(function(){
+			var ue_body'.$rd.' = UE.getEditor("body'.$rd.'",{
+				toolbars:[["undo", "redo", "|","paragraph","bold", "italic", "blockquote", "insertparagraph", "justifyleft", "justifycenter", "justifyright","justifyjustify","|","indent", "insertorderedlist", "insertunorderedlist","|", "insertimage", "inserttable", "deletetable", "insertparagraphbeforetable", "insertrow", "deleterow", "insertcol", "deletecol","mergecells", "mergeright", "mergedown", "splittocells", "splittorows", "splittocols", "|","drafts", "|","fullscreen"]]
+				});
+			});
+		</script>
+          ';
+		}
+
 		foreach($fields_list as $k=>$v){
 			if(!array_key_exists($v['field'],$data)){
 				//使用默认值
@@ -177,52 +444,30 @@ class CommonController extends Controller
 			}
 			switch($v['fieldtype']){
 				case 1:
-				$l .= '<div class="layui-form-item">
-                    <label for="'.$v['field'].'" class="layui-form-label">
-                        <span class="x-red"></span>'.$v['fieldname'].'
-                    </label>
-                    <div class="layui-input-block">
-                        <input type="text" id="'.$v['field'].'" value="'.$data[$v['field']].'" name="'.$v['field'].'" ';
-				if($v['ismust']==1){
-					$l.=' required="" lay-verify="required" ';
-				}		
-                $l .=  'autocomplete="off" class="layui-input">
-                    </div>
-					<div class="layui-form-mid layui-word-aux">
-					  '.$v['tips'].'
-					</div>
-					
-                </div>';
+				case 14:
+				$l .= '<div class="form-control">
+		            <label for="'.$v['field'].'">'.$v['fieldname'].'：</label>
+		            <input type="text" id="'.$v['field'].'" value="'.$data[$v['field']].'" name="'.$v['field'].'">
+		            <label>'.$v['tips'].'</label>
+		        </div>';
 				break;
 				case 2:
-				$l .= '<div class="layui-form-item  layui-form-text">
-                    <label for="'.$v['field'].'" class="layui-form-label">
-                        <span class="x-red"></span>'.$v['fieldname'].'
-                    </label>
-                    <div class="layui-input-block">
-                        <textarea  class="layui-textarea" id="'.$v['field'].'"  name="'.$v['field'].'" ';
-				if($v['ismust']==1){
-					$l.=' required="" lay-verify="required" ';
-				}		
-                $l .=  '>'.$data[$v['field']].'</textarea>
-                    </div>
-					<div class="layui-form-mid layui-word-aux">
-					  '.$v['tips'].'
-					</div>
-					
-                </div>';
+				$l .= '<div class="form-control">
+		            <label for="'.$v['field'].'">'.$v['fieldname'].'：</label>
+		            <textarea id="'.$v['field'].'"  name="'.$v['field'].'" >'.$data[$v['field']].'</textarea>
+		            <label>'.$v['tips'].'</label>
+		        </div>';
 				break;
 				case 3:
 				$rd = time();
-				$l .= '<div class="layui-form-item layui-form-text">
-							<label for="'.$v['field'].'" class="layui-form-label">
-								<span class="x-red">*</span>'.$v['fieldname'].'
-							</label>
-							<div class="layui-input-block" style="width:100%;">
-							<script id="'.$v['field'].$rd.'" name="'.$v['field'].'" type="text/plain" style="width:100%;height:400px;">'.$data[$v['field']].'</script>
-								
-							</div>
-						</div>
+				$l .= '<div class="form-control">
+		            <label for="'.$v['field'].'">'.$v['fieldname'].'：</label>
+		            <div class="layui-input-block" style="width:100%;">
+					<script id="body'.$rd.'" name="body" type="text/plain" style="width:100%;height:400px;">'.$data[$v['field']].'</script>
+						
+					</div>
+		            <label>'.$v['tips'].'</label>
+		        </div>
 						<script>
 						$(document).ready(function(){
 						var ue_'.$v['field'].$rd.' = UE.getEditor("'.$v['field'].$rd.'",{';
@@ -236,352 +481,237 @@ class CommonController extends Controller
 				
 				break;
 				case 4:
-				$l .= '<div class="layui-form-item">
-                    <label for="'.$v['field'].'" class="layui-form-label">
-                        <span class="x-red"></span>'.$v['fieldname'].'
-                    </label>
-                    <div class="layui-input-block">
-                        <input type="number" id="'.$v['field'].'" value="'.$data[$v['field']].'" name="'.$v['field'].'" ';
-				if($v['ismust']==1){
-					$l.=' required="" lay-verify="required" ';
-				}		
-                $l .=  'autocomplete="off" class="layui-input">
-                    </div>
-					<div class="layui-form-mid layui-word-aux">
-					  '.$v['tips'].'
-					</div>
-					
-                </div>';
+				$l .= '<div class="form-control">
+		            <label for="'.$v['field'].'">'.$v['fieldname'].'：</label>
+		            <input type="number" id="'.$v['field'].'" value="'.$data[$v['field']].'" name="'.$v['field'].'">
+		            <label>'.$v['tips'].'</label>
+		        </div>';
 				break;
 				case 11:
 				$laydate = ($data[$v['field']]=='' || $data[$v['field']]==0)?time():$data[$v['field']];
-				$l .= '<div class="layui-form-item">
-                    <label for="'.$v['field'].'" class="layui-form-label">
-                        <span class="x-red"></span>'.$v['fieldname'].'
-                    </label>
-                    <div class="layui-input-block">
-                        <input id="laydate_'.$v['field'].'" value="'.date('Y-m-d H:i:s',$laydate).'" name="'.$v['field'].'" ';
-				if($v['ismust']==1){
-					$l.=' required="" lay-verify="required" ';
-				}		
-                $l .=  'autocomplete="off" class="layui-input">
-                    </div>
-					<div class="layui-form-mid layui-word-aux">
-					  '.$v['tips'].'
-					</div>
-                </div><script>
-layui.use("laydate", function(){
-  var laydate = layui.laydate;
-  laydate.render({elem: "#laydate_'.$v['field'].'",type:"datetime" });});</script>';
+				$l .= '<div class="form-control">
+		            <label for="'.$v['field'].'">'.$v['fieldname'].'：</label>
+		            <input type="date" id="'.$v['field'].'" value="'.date('Y-m-d H:i:s',$laydate).'" name="'.$v['field'].'">
+		            <label>'.$v['tips'].'</label>
+		        </div>';
 				break;
 				case 5:
-				$l .= '<div class="layui-form-item">
-                    <label for="'.$v['field'].'" class="layui-form-label">
-						<span class="x-red">*</span>'.$v['fieldname'].'  
-                    </label>
+				$l .= '<div class="form-control">
+		              <label for="'.$v['field'].'">'.$v['fieldname'].'：</label>
+		              <span class="view_img_'.$v['field'].'">';
+		            if($data[$v['field']]){
+		            $l .= '<img src="'.$data[$v['field']].'" height="100"  />';
+		            }
+		            $l .= '</span><br/>
+		              <input name="'.$v['field'].'" type="hidden" id="file_url_'.$v['field'].'" value="'.$data[$v['field']].'" /><br/>
+		              <input type="file" class="upload_input_'.$v['field'].'" name="file_'.$v['field'].'" id="upload_input_'.$v['field'].'">
+		        </div>
+				<script type="text/javascript">
 					
-                    <div class="layui-input-inline">
-						<input name="'.$v['field'].'" placeholder="上传图片" type="text" class="layui-input" id="'.$v['field'].'" ';
-					if($v['ismust']==1){
-						$l.=' required="" lay-verify="required" ';
-					}
-						$l.=' value="'.$data[$v['field']].'" />
-					</div>
-					<div class="layui-input-inline">
-						<button class="layui-btn layui-btn-primary" id="LAY_'.$v['field'].'_upload" type="button" >选择图片</button>
-					</div>
-					<div class="layui-input-inline">
-						<img id="'.$v['field'].'_img" class="img-responsive img-thumbnail" style="max-width: 200px;" src="" onerror="javascipt:this.src=\''.Tpl_style.'/style/images/nopic.jpg\'; this.title=\'图片未找到\';this.onerror=\'\'">
-						<button type="button" onclick="deleteImage_auto(this,\''.$v['field'].'\')" class="layui-btn layui-btn-sm layui-btn-radius layui-btn-danger " title="删除这张图片" >删除</button>
-					</div>
-					<div class="layui-form-mid layui-word-aux">
-					  '.$v['tips'].'
-					</div>
-                </div>
-				<script>
-				
-				layui.use("upload", function(){
-					  var upload_'.$v['field'].' = layui.upload;
-					   
-					  //执行实例
-					  var uploadInst = upload_'.$v['field'].'.render({
-						elem: "#LAY_'.$v['field'].'_upload" //绑定元素
-						,url: "'.U('Common/uploads').'" //上传接口
-						,accept:"images"
-						,acceptMime:"image/*"
-						,done: function(res){
-						  
-							if(res.code==0){
-								 $("#'.$v['field'].'_img").attr("src","/"+res.url);
-								 $("#'.$v['field'].'").val("/"+res.url);
-							}else{
-								 layer.alert(res.error, {icon: 5});
-							}
-						}
-						,error: function(){
-						  //请求异常回调
-						  layer.alert("上传异常！");
-						}
-					  });
-					});
+				  $(document).on("change","#upload_input_'.$v['field'].'",function(){
+				    var form=document.getElementById("jizhiform");
+				    var data =new FormData(form);
+				    data.append("filename",$(this).attr("name"));
+				    $.ajax({
+				       url: "'.U('common/uploads').'",//处理图片的文件路径
+				       type: "POST",//传输方式
+				       data: data,
+				       dataType:"json",   //返回格式为json
+				       processData: false,  // 告诉jQuery不要去处理发送的数据
+				       contentType: false,   // 告诉jQuery不要去设置Content-Type请求头
+				       success: function(response){
+				        if(response.code==0){
+				          var result = "";
+				          result +=\'<img src="/\' + response["url"] + \'" height="100"  />\';
+				          $(".view_img_'.$v['field'].'").html(result);
+				          $("#file_url_'.$v['field'].'").val("/"+response["url"]);
+				        }else{
+				          alert(response.error);
+				        }
+				        
+				       }
+				    });
+				  });
+					
 				</script>';
 				break;
 				case 6:
-				$l .= '<div class="layui-form-item">
-                    <label for="'.$v['field'].'" class="layui-form-label">
-						<span class="x-red">*</span>'.$v['fieldname'].'  
-                    </label>
-                    <div class="layui-input-inline">
-                      <div class="site-demo-upbar">
-                     <span class="preview_'.$v['field'].'" >';
-				if($data[$v['field']]!=''){
-					foreach(explode('||',$data[$v['field']]) as $vv){
-						$l.='<span class="upload-icon-img" ><div class="upload-pre-item"><img src="'.$vv.'" class="img" max-width="200px" ><input name="'.$v['field'].'_urls[]" type="text" class="layui-input"  value="'.$vv.'" /><i  class="layui-icon delete_file" >&#xe640;</i></div></span>';
-					}
-				}	 
-				$l .= '</span>
-						<button type="button" class="layui-btn" id="LAY_'.$v['field'].'_upload">
-						  <i class="layui-icon">&#xe67c;</i>上传图片
-						</button>
-                      </div>
-                    </div>
-					<div class="layui-form-mid layui-word-aux">
-					  '.$v['tips'].'
-					</div>
-                </div>
-				<script>
-				
-				layui.use("upload", function(){
-					  var upload_'.$v['field'].' = layui.upload;
-					   
-					  //执行实例
-					  var uploadInst = upload_'.$v['field'].'.render({
-						elem: "#LAY_'.$v['field'].'_upload" //绑定元素
-						,url: "'.U('Common/uploads').'" //上传接口
-						,accept:"images"
-						,multiple: true
-						,acceptMime:"image/*"
-						,before: function(obj){ 		
-							layer.load(); //上传loading
-						  }
-						,done: function(res){
-							layer.closeAll("loading"); //关闭loading
-							if(res.code==0){
-							
-							$(".preview_'.$v['field'].'").append(\'<span class="upload-icon-img" ><div class="upload-pre-item"><img src="/\' + res.url + \'" class="img" max-width="200px" ><input name="'.$v['field'].'_urls[]" type="text" class="layui-input"  value="/\' + res.url + \'" /><i  class="layui-icon delete_file" >&#xe640;</i></div></span>\');
-								
-								
-							}else{
-								 layer.alert(res.error, {icon: 5});
-							}
-						}
-						,error: function(){
-						  //请求异常回调
-						  layer.alert("上传异常！");
-						}
-					  });
+				$l .= '<div class="form-control">
+		            <label for="'.$v['field'].'">'.$v['fieldname'].'：</label>
+		            <span class="view_img_'.$v['field'].'">';
+		            if($data[$v['field']]){
+		            	foreach(explode('||',$data[$v['field']]) as $v){
+		            		if($v!=''){
+		            			 $l .= '<span><img src="'.$v.'" height="100"  /><input name="'.$v['field'].'_url[]" type="text" value="'.$v.'"><span onclick="deleteImage_auto(this)">删除</span></span>';
+		            		}
+		            	}
+		           
+		            }
+		            $l .= '</span><br/>
+		              <input name="'.$v['field'].'" type="hidden" id="'.$v['field'].'" value="'.$data[$v['field']].'" /><br/>
+		              <input type="file" class="upload_input_'.$v['field'].'" file-name="file_'.$v['field'].'" name="file_'.$v['field'].'[]" multiple="multiple" id="upload_input_'.$v['field'].'">
+		        </div>
+				<script type="text/javascript">
+					$(document).on("change","#upload_input_'.$v['field'].'",function(){
+					    var form=document.getElementById("jizhiform");
+					    var data =new FormData(form);
+					    data.append("filename",$(this).attr("file-name"));
+					    $.ajax({
+					       url: "'.U('common/multiuploads').'",//处理图片的文件路径
+					       type: "POST",//传输方式
+					       data: data,
+					       dataType:"json",   //返回格式为json
+					       processData: false,  // 告诉jQuery不要去处理发送的数据
+					       contentType: false,   // 告诉jQuery不要去设置Content-Type请求头
+					       success: function(response){
+					        if(response.code==0){
+					          var result = "";
+					          for(var i=0;i<response["urls"].length;i++){
+					          	result +=\'<span><img src="/\' + response["urls"][i] + \'" height="100"  /><input name="'.$v['field'].'_urls[]" type="text" value="/\' + response["urls"][i] + \'" ><span onclick="deleteImage_auto(this)">删除</span></span>\';
+					          	
+					          }
+					          $(".view_img_'.$v['field'].'").append(result);	
+					         
+					        }else{
+					          alert(response.error);
+					        }
+					        
+					       }
+					    });
 					});
 				</script>';
 				break;
 				case 7:
-				$l .= '<div class="layui-form-item">
-                    <label for="'.$v['field'].'" class="layui-form-label">
-                        <span class="x-red">*</span>'.$v['fieldname'].'  
-                    </label>
-                    <div class="layui-input-inline">
-						<select name="'.$v['field'].'" id="'.$v['field'].'" >';
-				foreach(explode(',',$v['body']) as $vv){
-					$s=explode('=',$vv);
-					$l.='<option value="'.$s[1].'" ';
-					if($data[$v['field']]==$s[1]){
-						$l.='selected="selected"';
+				$l .= '<div class="form-control">
+                    <label for="'.$v['field'].'">'.$v['fieldname'].'：</label>
+					<select name="'.$v['field'].'" id="'.$v['field'].'" >';
+					foreach(explode(',',$v['body']) as $vv){
+						$s=explode('=',$vv);
+						$l.='<option value="'.$s[1].'" ';
+						if($data[$v['field']]==$s[1]){
+							$l.='selected="selected"';
+						}
+						$l.='>'.$s[0].'</option>';
 					}
-					$l.='>'.$s[0].'</option>';
-				}
-					$l.=  '</select>
-                    </div>
-					<div class="layui-form-mid layui-word-aux">
-					  '.$v['tips'].'
-					</div>
-                </div><script>
-							layui.use("form", function () {
-								var form_'.$v['field'].' = layui.form;
-								form_'.$v['field'].'.render();
-							});
-							 
-						</script>';
+						$l.=  '</select>
+						<label>'.$v['tips'].'</label>
+	                </div>';
 				break;
 				case 12:
-				$l .= '<div class="layui-form-item" pane>
-                    <label for="'.$v['field'].'" class="layui-form-label">
-                        <span class="x-red">*</span>'.$v['fieldname'].'  
-                    </label>
-                    <div class="layui-input-inline">';
+				$l .= '<div class="form-control">
+                    <label for="'.$v['field'].'">'.$v['fieldname'].'：</label>
+                    <div class="check-box">';
 				foreach(explode(',',$v['body']) as $vv){
 					$s=explode('=',$vv);
 					$l.='<input type="radio" name="'.$v['field'].'" value="'.$s[1].'" title="'.$s[0].'" ';
 					if($data[$v['field']]==$s[1]){
 						$l.='checked="checked"';
 					}
-					$l.=' >';
+					$l.=' >'.$s[0];
 				}
 					$l.='</div>
-					<div class="layui-form-mid layui-word-aux">
-					  '.$v['tips'].'
-					</div>
-					</div><script>
-							layui.use("form", function () {
-								var form_'.$v['field'].' = layui.form;
-								form_'.$v['field'].'.render();
-							});
-							 
-						</script>';
+					<label>'.$v['tips'].'</label>
+					</div>';
 				break;
 				case 8:
-				$l .= '<div class="layui-form-item">
-						<label for="'.$v['field'].'" class="layui-form-label">
-							<span class="x-red">*</span>'.$v['fieldname'].'  
-						</label>
-						<div class="layui-input-block">';
+				$l .= ' <div class="form-control">
+					<label for="'.$v['field'].'">'.$v['fieldname'].'：</label>
+					<div class="check-box">';
 				foreach(explode(',',$v['body']) as $vv){
 					$s=explode('=',$vv);
 					$l.='<input type="checkbox" title="'.$s[0].'" name="'.$v['field'].'[]" value="'.$s[1].'" ';
 					if(strpos($data[$v['field']],','.$s[1].',')!==false){
 						$l.='checked="checked"';};
-					$l.='>';
+					$l.='>'.$s[0];
 				}
 				$l 	.= '</div>
-					<div class="layui-form-mid layui-word-aux">
-					  '.$v['tips'].'
-					</div>
-					  </div>
-					  <script>
-							layui.use("form", function () {
-								var form_'.$v['field'].' = layui.form;
-								form_'.$v['field'].'.render();
-							});
-							 
-						</script>';
-				
+					<label>'.$v['tips'].'</label>
+					</div>';
 				break;
 				case 9:
-				$l .= '<div class="layui-form-item">
-                    <label for="'.$v['field'].'" class="layui-form-label">
-						<span class="x-red">*</span>'.$v['fieldname'].'  
-                    </label>
-					
-                    <div class="layui-input-inline">
-                      <div class="site-demo-upbar">
-                      
-					  <input name="'.$v['field'].'" type="text" class="layui-input" id="'.$v['field'].'" ';
-				if($v['ismust']==1){
-					$l.=' required="" lay-verify="required" ';
-				}
-				$l  .=	'value="'.$data[$v['field']].'" />
-						<button type="button" class="layui-btn" id="LAY_'.$v['field'].'_upload">
-						  <i class="layui-icon">&#xe67c;</i>上传附件
-						</button>
-
-					  
-                      </div>
-                    </div>
-					<div class="layui-form-mid layui-word-aux">
-					  '.$v['tips'].'
-					</div>
-                </div>
-				<script>
-				
-				layui.use("upload", function(){
-					  var upload_'.$v['field'].' = layui.upload;
-					   
-					  //执行实例
-					  var uploadInst = upload_'.$v['field'].'.render({
-						elem: "#LAY_'.$v['field'].'_upload" //绑定元素
-						,url: "'.U('Common/uploads').'" //上传接口
-						,accept:"file"
-						,exts: "'.$this->webconf['fileType'].'"
-						,done: function(res){
-							if(res.code==0){
-								
-								 $("#'.$v['field'].'").val("/"+res.url);
-							}else{
-								 layer.alert(res.error, {icon: 5});
-							}
-						}
-						,error: function(){
-						  //请求异常回调
-						  layer.alert("上传异常！");
-						}
-					  });
+				$l .= '<div class="form-control">
+		              <label for="'.$v['field'].'">'.$v['fieldname'].'：</label>
+		              <span class="view_img_'.$v['field'].'">';
+		            $l .= '</span><br/>
+		              <input name="'.$v['field'].'" type="hidden" id="file_url_'.$v['field'].'" value="'.$data[$v['field']].'" /><br/>
+		              <input type="file" class="upload_input_'.$v['field'].'" name="file_'.$v['field'].'" id="upload_input_'.$v['field'].'">
+		        </div>
+				<script type="text/javascript">
+					$(document).on("change","#upload_input_'.$v['field'].'",function(){
+					    var form=document.getElementById("jizhiform");
+					    var data =new FormData(form);
+					    data.append("filename",$(this).attr("name"));
+					    $.ajax({
+					       url: "'.U('common/uploads').'",//处理图片的文件路径
+					       type: "POST",//传输方式
+					       data: data,
+					       dataType:"json",   //返回格式为json
+					       processData: false,  // 告诉jQuery不要去处理发送的数据
+					       contentType: false,   // 告诉jQuery不要去设置Content-Type请求头
+					       success: function(response){
+					        if(response.code==0){
+					          $("#file_url_'.$v['field'].'").val("/"+response["url"]);
+					        }else{
+					          alert(response.error);
+					        }
+					        
+					       }
+					    });
 					});
 				</script>';
 				break;
 				case 10:
-				$l .= '<div class="layui-form-item">
-                    <label for="'.$v['field'].'" class="layui-form-label">
-						<span class="x-red">*</span>'.$v['fieldname'].'  
-                    </label>
-					
-                    <div class="layui-input-inline">
-                      <div class="site-demo-upbar">
-                     <span class="preview_'.$v['field'].'" >';
-				if($data[$v['field']]!=''){
-					foreach(explode('||',$data[$v['field']]) as $vv){
-						$l.='<span class="upload-icon-img" ><div class="upload-pre-item"><i class="layui-icon layui-icon-file"></i><input type="text" value="'.$vv.'" name="'.$v['field'].'_urls[]" class="layui-input" /><i   class="layui-icon delete_file">&#xe640;</i></div></span>';
-					}
-				}	
-				$l	.= '</span>
+				$l .= '<div class="form-control">
+		            <label for="'.$v['field'].'">'.$v['fieldname'].'：</label>
+		            <span class="view_img_'.$v['field'].'">';
+		            if($data[$v['field']]){
+		            	foreach(explode('||',$data[$v['field']]) as $v){
+		            		if($v!=''){
+		            			 $l .= '<span><input name="'.$v['field'].'_url[]" type="text" value="'.$v.'"><span onclick="deleteImage_auto(this)">删除</span></span>';
+		            		}
+		            	}
+		           
+		            }
+		            $l .= '</span><br/>
+		              <input name="'.$v['field'].'" type="hidden" id="'.$v['field'].'" value="'.$data[$v['field']].'" /><br/>
+		              <input type="file" class="upload_input_'.$v['field'].'" file-name="file_'.$v['field'].'" name="file_'.$v['field'].'[]" multiple="multiple" id="upload_input_'.$v['field'].'">
+		        </div>
+				<script type="text/javascript">
+					$(document).on("change","#upload_input_'.$v['field'].'",function(){
+					    var form=document.getElementById("jizhiform");
+					    var data =new FormData(form);
+					    data.append("filename",$(this).attr("file-name"));
+					    $.ajax({
+					       url: "'.U('common/multiuploads').'",//处理图片的文件路径
+					       type: "POST",//传输方式
+					       data: data,
+					       dataType:"json",   //返回格式为json
+					       processData: false,  // 告诉jQuery不要去处理发送的数据
+					       contentType: false,   // 告诉jQuery不要去设置Content-Type请求头
+					       success: function(response){
+					        if(response.code==0){
+					          var result = "";
+					          for(var i=0;i<response["urls"].length;i++){
+					          	result +=\'<span><input name="'.$v['field'].'_urls[]" type="text" value="/\' + response["urls"][i] + \'" ><span onclick="deleteImage_auto(this)">删除</span></span>\';
+					          }
+					          $(".view_img_'.$v['field'].'").append(result);
+					          
+					         
+					        }else{
+					          alert(response.error);
+					        }
+					        
+					       }
+					    });
 					  
-						<button type="button" class="layui-btn" id="LAY_'.$v['field'].'_upload">
-						  <i class="layui-icon">&#xe67c;</i>上传附件
-						</button>
-                      </div>
-                    </div>
-					<div class="layui-form-mid layui-word-aux">
-					  '.$v['tips'].'
-					</div>
-                </div>
-				<script>
-				
-				layui.use("upload", function(){
-					  var upload_'.$v['field'].' = layui.upload;
-					   
-					  //执行实例
-					  var uploadInst = upload_'.$v['field'].'.render({
-						elem: "#LAY_'.$v['field'].'_upload" //绑定元素
-						,url: "'.U('Common/uploads').'" //上传接口
-						,multiple: true
-						,accept:"file"
-						,exts: "'.$this->webconf['fileType'].'"
-						,before: function(obj){ 		
-							layer.load(); //上传loading
-						  }
-						,done: function(res){
-							layer.closeAll("loading"); //关闭loading
-							if(res.code==0){
-							var fileurl = $("#'.$v['field'].'").val();
-							$(".preview_'.$v['field'].'").append(\'<span class="upload-icon-img" ><div class="upload-pre-item"><i class="layui-icon layui-icon-file"></i><input type="text" value="/\'+res.url+\'" name="'.$v['field'].'_urls[]" class="layui-input delete_file" /><i   class="layui-icon">&#xe640;</i></div></span>\');
-								
-							}else{
-								 layer.alert(res.error, {icon: 5});
-							}
-						}
-						,error: function(){
-						  //请求异常回调
-						  layer.alert("上传异常！");
-						}
-					  });
 					});
 				</script>';
 				break;
 				case 13:
 				//tid,field
-				$l .= '<div class="layui-form-item">
-                    <label for="'.$v['field'].'" class="layui-form-label">
-                        <span class="x-red">*</span>'.$v['fieldname'].'  
-                    </label>
-                    <div class="layui-input-inline">
-						<select name="'.$v['field'].'" id="'.$v['field'].'" >';
+				$l .= '<div class="form-control">
+                    <label for="'.$v['field'].'">'.$v['fieldname'].'：</label>
+					<select name="'.$v['field'].'" id="'.$v['field'].'" >';
 						$body = explode(',',$v['body']);
 				$biaoshi = M('molds')->getField(['id'=>$body[0]],'biaoshi');
 				$datalist = M($biaoshi)->findAll();
@@ -593,17 +723,8 @@ layui.use("laydate", function(){
 					$l.='>'.$vv[$body[1]].'</option>';
 				}
 					$l.=  '</select>
-                    </div>
-					<div class="layui-form-mid layui-word-aux">
-					  '.$v['tips'].'
-					</div>
-                </div><script>
-							layui.use("form", function () {
-								var form_'.$v['field'].' = layui.form;
-								form_'.$v['field'].'.render();
-							});
-							 
-						</script>';
+                    <label>'.$v['tips'].'</label>
+                </div>';
 				break;
 			}
 			
@@ -616,9 +737,8 @@ layui.use("laydate", function(){
 			})
 		})
 
-		function deleteImage_auto(elm,field){
-			$(elm).prev().attr("src", "/A/t/tpl/style/images/nopic.jpg");
-			$("#"+field).val("");
+		function deleteImage_auto(elm){
+			$(elm).parent().remove();
 		}
 		</script>';
 		
@@ -628,9 +748,11 @@ layui.use("laydate", function(){
 	
 	function jizhi(){
 		$this->display($this->template.'/404');
+		exit;
 	}
 	function error($msg){
 		$this->display($this->template.'/404');
+		exit;
 	}
 
 }

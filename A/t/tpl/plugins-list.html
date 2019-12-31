@@ -42,7 +42,7 @@
            
            
             <td>{$v['name']}</td>
-            <td>v{$v['version']}</td>
+            <td>v{$v['version']}{if($v['isupdate'])}<span style="cursor:pointer;" title="点击查看" onclick="x_all_show('更新说明','{fun U('Plugins/update',array('filepath'=>$v['filepath']))}')" class="layui-badge">新</span>{/if}</td>
             <td>{$v['author']}</td>
             <td >{$v['description']}</td>
 			<td>{if($v['module']=='Home')}前台{else}后台{/if}</td>

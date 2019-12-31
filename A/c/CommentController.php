@@ -84,6 +84,14 @@ class CommentController extends CommonController
 			
 			$page = new Page('Comment');
 			$sql = '1=1';
+			if($this->isshow==1){
+				$sql .= ' and isshow=1 ';
+			}else if($this->isshow==2){
+				$sql .= ' and isshow=0 ';
+			}else if($this->isshow==3){
+				$sql .= ' and isshow=2 ';
+			}
+
 			if($this->frparam('tid')){
 				$sql .= ' and tid='.$this->frparam('tid');
 			}
@@ -124,8 +132,14 @@ class CommentController extends CommonController
 				
 				$v['new_zid'] = $v['zid']!=0 ? U('Comment/editcomment',array('id'=>$v['zid'])) : '';
 				$v['new_pid'] = $v['pid']!=0 ? U('Comment/editcomment',array('id'=>$v['pid'])) : '';
+				if($v['isshow']==1){
+					$v['new_isshow'] = '已审核';
+				}else if($v['isshow']==2){
+					$v['new_isshow'] = '被删除';
+				}else{
+					$v['new_isshow'] = '未审核';
+				}
 				
-				$v['new_isshow'] = $v['isshow']==1 ? '已审' : '未审';
 				$v['new_isread'] = $v['isread']==1 ? '已读' : '未读';
 				$v['new_addtime'] = date('Y-m-d H:i:s',$v['addtime']);
 				$v['edit_url'] = U('Comment/editcomment',array('id'=>$v['id']));

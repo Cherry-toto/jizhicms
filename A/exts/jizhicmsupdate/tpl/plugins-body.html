@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  {include="style"}
+
+</head>
+<body >
+
+  <div class="layui-rows" style="    margin: 10px;">
+    <form class="layui-form layui-form-pane" action="">
+  <!--表单必须要携带ID-->
+  <blockquote class="layui-elem-quote">暂时无需配置，如果有特殊情况，更新时会通知。</blockquote>
+  
+   
+    
+   
+  
+</form>
+</div>
+
+
+
+
+
+    <script>
+        $(function  () {
+      
+            layui.use('form', function(){
+              var form = layui.form;
+             
+              //监听提交
+              form.on('submit(formDemo)', function(data){
+           
+        $.post("{fun U('setconf')}",data.field,function(res){
+            //console.log(res);return false;
+           var res = JSON.parse(res);
+           if(res.code==1){
+            layer.msg(res.msg);
+           }else{
+            layer.msg(res.msg, {icon: 6,time: 2000},function(){
+            window.location.reload();
+            });
+                     
+            
+             
+           }
+        })
+        
+                return false;
+              });
+            });
+        })
+
+        
+    </script>
+
+    
+ 
+</body>
+</html>

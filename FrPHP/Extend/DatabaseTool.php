@@ -154,7 +154,7 @@ class DatabaseTool
    $dataSql = '';
    foreach ($value as $v)
    {
-    if($v=='' || empty($v)){
+    if($v==='' || $v===null){
       $dataSql .= " NULL,";
     }else{
       $dataSql .= "'{$v}',";

@@ -37,7 +37,7 @@
 				<span class="x-red">*</span>选择模块
 			</label>
 			<div class="layui-input-inline">
-				<select name="molds" id="molds" lay-filter="molds" >
+				<select name="molds" id="molds" >
 			   
 			   {foreach $molds as $v}
 			   {if($v['biaoshi']!='classtype')}
@@ -174,8 +174,8 @@
                   <span class="x-red"></span>栏目模板
               </label>
               <div  style="width:350px"  class="layui-input-inline">
-                 <select name="lists_html" lay-search="" id="lists_html"  >
-              	 </select>
+                  <input type="text" placeholder="请填写完整文件名，如:index，不填请留空" id="lists_html" name="lists_html" 
+                  autocomplete="off" value="{$data['lists_html']}" class="layui-input">
               </div>
               <div class="layui-form-mid layui-word-aux">
                  请将模板文件放到对应的模块文件夹下面，如文章(article)模块，那么就要在当前模板目录的article文件夹下面。默认栏目首页
@@ -186,8 +186,8 @@
                   <span class="x-red"></span>详情页模板
               </label>
               <div  style="width:350px"  class="layui-input-inline">
-                  <select name="details_html" lay-search="" id="details_html"  >
-              	  </select>
+                  <input type="text" placeholder="请填写完整文件名，如:index，不填请留空" id="details_html" name="details_html" 
+                  autocomplete="off" value="{$data['details_html']}" class="layui-input">
               </div>
               <div class="layui-form-mid layui-word-aux">
                  请将模板文件放到对应的模块文件夹下面，如文章(article)模块，那么就要在当前模板目录的article文件夹下面，列表内的详情页。
@@ -204,7 +204,19 @@
                填写栏目外链后，访问栏目链接将会跳到外链，不填请留空！
               </div>
           </div>
-		  
+			<div class="layui-form-item" pane>
+				<label for="ishome" class="layui-form-label">
+					<span class="x-red"></span>发布显示
+				</label>
+				<div class="layui-input-inline">
+					<input type="radio" name="ishome" value="0" title="不显示" {if($data['ishome']==0)}checked{/if}>
+					<input type="radio" name="ishome" value="1" title="显示" {if($data['ishome']==1)}checked{/if}>
+				</div>
+				<div class="layui-form-mid layui-word-aux">
+				 勾选后，前台会员发布会显示该栏目
+				</div>
+					
+			</div>
 		  <div class="layui-form-item" pane>
 				<label for="isshow" class="layui-form-label">
 					<span class="x-red"></span>导航显示
@@ -283,6 +295,7 @@
 		  upload.render({
 			elem: '#litpic_upload',
 			url: "{fun U('Common/uploads')}" //上传接口
+			,data:{tid:{$data['id']},molds:function(){ return $("#molds").val(); }}
 			,done: function(res){ //上传成功后的回调
 			 
 				if(res.code==0){
@@ -332,75 +345,9 @@
 			  
 			  
 			});
-
-			form.on('select(molds)', function(data){
-			  
-			 get_molds_html($("#molds").val());
-			 form.render('select');
-			  
-			});
 			
           
         });
-
-        function get_molds_html(molds){
-        	$.ajax({
-				 url:"{fun U('ClasstypeTemplate/get_html')}",//请求的url地址
-				 dataType:"json",//返回格式为json
-				 async:false,
-				 data:{molds:molds},//参数值
-				 type:"POST",//请求方式
-				 beforeSend:function(){
-					//请求前的处理
-					},
-					 success:function(r){
-					 	var t = '<option value="">请选择模板页面</option>';var tt = '<option value="">请选择模板页面</option>';
-						if(r.code==0){
-							var len = r.data.length;
-							if(len>0){
-								var lists_html = "{$data['lists_html']}";
-								var details_html = "{$data['details_html']}";
-								for(var i=0;i<len;i++){
-									if(lists_html==r.data[i].value){
-										t+='<option value="'+r.data[i].value+'" selected>'+r.data[i].html+'</option>';
-									}else{
-										t+='<option value="'+r.data[i].value+'">'+r.data[i].html+'</option>';
-									}
-									
-								}
-								for(var i=0;i<len;i++){
-									if(details_html==r.data[i].value){
-										tt+='<option value="'+r.data[i].value+'" selected>'+r.data[i].html+'</option>';
-									}else{
-										tt+='<option value="'+r.data[i].value+'">'+r.data[i].html+'</option>';
-									}
-									
-								}
-								
-							}
-
-						}else{
-							alert(r.msg);
-						}
-						$("#lists_html").html(t);
-						$("#details_html").html(tt);
-					},
-					 complete:function(){
-					//请求完成的处理
-					},
-					 error:function(){
-					//请求出错处理
-					}
-
-			})
-        	}
-
-
-        $(document).ready(function(){
-
-        	
-        	get_molds_html($("#molds").val());
-        })
     </script>
     
   </body>

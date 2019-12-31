@@ -40,8 +40,18 @@ define('DefaultAction','jizhi');
 //取消log
 define('StopLog',false);
 
+if(basename($_SERVER['SCRIPT_NAME']) === basename($_SERVER['SCRIPT_FILENAME'])){
+	$url_path_base = $_SERVER['SCRIPT_NAME'];
+}else if (basename($_SERVER['PHP_SELF']) === basename($_SERVER['SCRIPT_FILENAME'])){
+	$url_path_base = $_SERVER['PHP_SELF'];
+}else if (isset($_SERVER['ORIG_SCRIPT_NAME']) && basename($_SERVER['ORIG_SCRIPT_NAME']) === basename($_SERVER['SCRIPT_FILENAME'])){
+	$url_path_base = $_SERVER['ORIG_SCRIPT_NAME'];
+}	
+$rooturl = pathinfo($url_path_base);
+$root=str_replace($rooturl["basename"],'',$url_path_base);
+
 //定义静态文件路径
-define('Tpl_style','/static/');
+define('Tpl_style',$root.'static/');
 
 // 加载框架文件
 require(APP_PATH . 'FrPHP/Fr.php');

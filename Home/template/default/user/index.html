@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  {include="user/style"}
+  <title>个人中心</title>
+</head>
+<body>
+
+{include="user/top"}
+
+<div class="login-page page">
+  <div class="container clearfix">
+    {include="user/left_nav"}
+    <div class="user-right">
+      <div class="user-tips">
+        <p><i class="iconfont iconxiaoxi3"></i> 欢迎注册本站会员，注册会员后您将享受专属会员服务!包括但不限于专属文章浏览权限，会员投稿权限，在线购物权限，下载会员可见附件等实用功能，欢迎注册体验！</p>
+      </div>
+      <div class="user-content">
+        <div class="user-tab">
+          <div class="num">
+            <a href="{fun U('user/posts',['molds'=>'article'])}" title="">
+              <h4>{$article_num}</h4>
+              <p>投稿</p>
+            </a>
+          </div>
+          <div class="num">
+            <a href="{fun U('user/posts',['molds'=>'product'])}" title="">
+              <h4>{$product_num}</h4>
+              <p>商品</p>
+            </a>
+          </div>
+          <div class="num">
+            <a href="{fun U('user/follow')}" title="">
+              <h4>{fun jz_follow($member['id'])}</h4>
+              <p>关注</p>
+            </a>
+          </div>
+          <div class="num">
+            <a href="{fun U('user/fans')}" title="">
+              <h4>{fun jz_fans($member['id'])}</h4>
+              <p>粉丝</p>
+            </a>
+          </div>
+          <div class="num">
+            <a href="{fun U('user/collect')}" title="">
+              <h4>{$collect_num}</h4>
+              <p>收藏</p>
+            </a>
+          </div>
+          <div class="num">
+            <a href="{fun U('user/comment')}" title="">
+              <h4>{$comment_num}</h4>
+              <p>评论</p>
+            </a>
+          </div>
+          <div class="num">
+            <a href="{fun U('user/likes')}" title="">
+              <h4>{$likes_num}</h4>
+              <p>点赞</p>
+            </a>
+          </div>
+          <div class="num">
+            <a href="{fun U('user/orders')}" title="">
+              <h4>{$order_num}</h4>
+              <p>订单</p>
+            </a>
+          </div>
+        </div>
+      </div>
+      <div class="user-data">
+        <h2>个人中心</h2>
+        <p><span>用户名：</span><span>{$member['username']}</span></p>
+        <p><span>个性签名：</span><span>{if($member['signature'])}{$member['signature']}{else}他很懒，什么都没有留下~{/if}</span></p>
+        <p><span>手机号码：</span><span>{$member['tel']}</span></p>
+        <p><span>电子邮箱：</span><span>{$member['email']}</span></p>
+        <p><span>生日：</span><span>{if($member['birthday'])}{$member['birthday']}{else}-{/if}</span></p>
+        <p><span>性别：</span><span>{if($member['sex']==1)}男{else if($member['sex']==2)}女{else}未知{/if}</span></p>
+      </div>
+    </div>
+  </div>
+</div>
+
+{include="user/footer"}
+
+</body>
+</html>

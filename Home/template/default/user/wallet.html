@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  {include="user/style"}
+  <title>我的钱包 - 个人中心</title>
+</head>
+<body>
+
+{include="user/top"}
+
+<div class="login-page page">
+  <div class="container clearfix">
+    {include="user/left_nav"}
+    <div class="user-right">
+      <div class="user-tips">
+        <p><i class="iconfont iconxiaoxi3"></i> 欢迎注册本站会员，注册会员后您将享受专属会员服务!包括但不限于专属文章浏览权限，会员投稿权限，在线购物权限，下载会员可见附件等实用功能，欢迎注册体验！</p>
+      </div>
+      <div class="common-tab">
+          <h2><a class="active">我的钱包</a><a href="{fun U('user/buylist',['type'=>1])}">交易记录</a><a href="{fun U('user/buylist',['type'=>2])}">充值记录</a><a href="{fun U('user/buylist',['type'=>3])}">奖励记录</a></h2>
+      </div>
+      <div class="wallet">
+        <div class="wallet-left">
+          <div class="wallet-rmb">
+            <p class="mb10">总资产(单位：元)</p>
+            <h4>￥{$user['money']} <a href="{fun U('user/buy')}" class="fr">钱包充值 <i class="iconfont iconright"></i></a></h4>
+            <p>累计充值：￥{$cz_money}</p>
+          </div>
+          <div class="wallet-jifen">
+            <p class="mb10">积分</p>
+            <h4>{$user['jifen']} <a href="{fun U('user/buy')}" class="fr">积分充值 <i class="iconfont iconright"></i></a></h4>
+            <p>累计获取：{$cz_jifen}</p>
+          </div>
+        </div>
+        <div class="wallet-right">
+          <h4>FAQ</h4>
+          <p><span>Q:</span><span>如何获取积分？</span></p>
+          <p><span>A:</span>1、每日登录奖励20积分</p>
+          <p><span></span>2、发布文章奖励25积分，每日上限100分</p>
+          <p><span></span>3、收藏文章奖励5积分，每日上限20分</p>
+          <p><span></span>4、点赞文章奖励5积分，每日上限20分</p>
+          <p><span></span>5、评论文章奖励5积分，每日上限20分</p>
+          <p><span></span>6、被关注奖励10积分，每人上限1000分</p>
+          <p><span></span>7、关注他人奖励10积分，每人上限1000分</p>
+          <p><span>Q:</span><span>积分有什么用处？</span></p>
+          <p><span>A:</span>1、通过积分到积分商城进行购物</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+{include="user/footer"}
+</body>
+</html>

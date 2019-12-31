@@ -38,7 +38,7 @@
 				<span class="x-red">*</span>选择模块
 			</label>
 			<div class="layui-input-inline">
-				<select name="molds" id="molds" >
+				<select name="molds" id="molds" lay-filter="molds" >
 			   
 			   {foreach $molds as $v}
 			   {if($v['biaoshi']!='classtype')}
@@ -175,8 +175,10 @@
                   <span class="x-red"></span>栏目模板
               </label>
               <div  style="width:350px"  class="layui-input-inline">
-                  <input type="text" value="lists_html" placeholder="请填写完整文件名，如:index，不填请留空" id="lists_html" name="lists_html" 
-                  autocomplete="off" class="layui-input">
+              	<select name="lists_html" lay-search="" id="lists_html"  >
+				
+              	</select>
+                  
               </div>
               <div class="layui-form-mid layui-word-aux">
                  请将模板文件放到对应的模块文件夹下面，如文章(article)模块，那么就要在当前模板目录的article文件夹下面。默认栏目首页
@@ -187,8 +189,9 @@
                   <span class="x-red"></span>详情页模板
               </label>
               <div  style="width:350px"  class="layui-input-inline">
-                  <input type="text" value="details_html" placeholder="请填写文件名，如:index，不填请留空" id="details_html" name="details_html" 
-                  autocomplete="off" class="layui-input">
+              	<select name="details_html" lay-search="" id="details_html"  >
+              	</select>
+                
               </div>
               <div class="layui-form-mid layui-word-aux">
                  请将模板文件放到对应的模块文件夹下面，如文章(article)模块，那么就要在当前模板目录的article文件夹下面，列表内的详情页。
@@ -281,7 +284,6 @@
 		  upload.render({
 			elem: '#litpic_upload',
 			url: "{fun U('Common/uploads')}" //上传接口
-			,data:{molds:'classtype'}
 			,done: function(res){ //上传成功后的回调
 			 
 				if(res.code==0){
@@ -293,6 +295,8 @@
 			 
 			}
 		  });
+
+
           //监听提交
           form.on('submit(add)', function(data){
             
@@ -329,17 +333,23 @@
 					});
                 return false;
           });
-		   get_fields(0);
+		  
 		   form.on('select(pid)', function(data){
 			  
 			  get_fields(data.value);
 			  
 			  
 			});
+		   form.on('select(molds)', function(data){
+			  
+			 get_molds_html($("#molds").val());
+			 form.render('select');
+			  
+			});
 			
            $("#classname").blur(function(){
 				var classname = $("#classname").val();
-				console.log(classname);
+				
 				$.post("{fun U('get_pinyin')}",{'classname':classname},function(r){
 					var res = JSON.parse(r);
 					if(res.code==0){
@@ -352,6 +362,53 @@
 			});
           
         });
+
+        function get_molds_html(molds){
+        	$.ajax({
+				 url:"{fun U('ClasstypeTemplate/get_html')}",//请求的url地址
+				 dataType:"json",//返回格式为json
+				 async:false,
+				 data:{molds:molds},//参数值
+				 type:"POST",//请求方式
+				 beforeSend:function(){
+					//请求前的处理
+					},
+					 success:function(r){
+					 	var t = '';
+						if(r.code==0){
+							var len = r.data.length;
+							if(len>0){
+								t+='<option value="">请选择模板页面</option>';
+								for(var i=0;i<len;i++){
+
+									t+='<option value="'+r.data[i].value+'">'+r.data[i].html+'</option>';
+								}
+								
+							}
+
+						}else{
+							alert(r.msg);
+						}
+						$("#lists_html").html(t);
+						$("#details_html").html(t);
+					},
+					 complete:function(){
+					//请求完成的处理
+					},
+					 error:function(){
+					//请求出错处理
+					}
+
+			})
+        	}
+
+
+        $(document).ready(function(){
+
+        	
+        	get_molds_html($("#molds").val());
+        })
+
     </script>
     
   </body>

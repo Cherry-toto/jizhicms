@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  {include="user/style"}
+  <title>我的订单 - 个人中心</title>
+</head>
+<body>
+
+{include="user/top"}
+
+<div class="login-page page">
+  <div class="container clearfix">
+    {include="user/left_nav"}
+    <div class="user-right">
+      <div class="user-tips">
+        <p><i class="iconfont iconxiaoxi3"></i> 欢迎注册本站会员，注册会员后您将享受专属会员服务!包括但不限于专属文章浏览权限，会员投稿权限，在线购物权限，下载会员可见附件等实用功能，欢迎注册体验！</p>
+      </div>
+      <div class="common-tab">
+        <h2><a href="{fun U('user/orders')}" {if(!$type)}class="active"{/if}>全部订单</a>
+        <a href="{fun U('user/orders',['type'=>1])}" {if($type==1)}class="active"{/if}>待付款</a>
+        <a href="{fun U('user/orders',['type'=>2])}" {if($type==2)}class="active"{/if}>已付款</a>
+        <a href="{fun U('user/orders',['type'=>3])}" {if($type==3)}class="active"{/if}>超时订单</a>
+        <a href="{fun U('user/orders',['type'=>4])}" {if($type==4)}class="active"{/if}>待发货</a>
+        <a href="{fun U('user/orders',['type'=>5])}" {if($type==5)}class="active"{/if}>已发货</a>
+        <a href="{fun U('user/orders',['type'=>6])}" {if($type==6)}class="active"{/if}>已废弃</a>
+        </h2>
+      </div>
+      <div class="table release-table">
+        <ul class="shop-record-list">
+        {foreach $lists as $v}
+          <li>
+            <div class="record-item">
+              <p><span>下单时间：{$v['date']}</span>
+              {if($v['isshow']==1)}
+              <span class="fr btn-sm btn-info">待支付</span>
+              {else if($v['isshow']==2)}
+              <span class="fr btn-sm btn-success">交易成功</span>
+              {else if($v['isshow']==3)}
+              <span class="fr btn-sm btn-danger">已超时</span>
+              {else if($v['isshow']==4)}
+              <span class="fr btn-sm btn-warning">待发货</span>
+              {else if($v['isshow']==5)}
+              <span class="fr btn-sm btn-success">已发货</span>
+              {else}
+              <span class="fr btn-sm btn-warning">已废弃</span>
+              {/if}
+              </p>
+              <p><span>订单号：<a href="{$v['details']}">{$v['orderno']}</a></span></p>
+              <p><span>交易类型：{$v['paytype']}</span></p>
+              <h4><span class="text-info">￥{$v['price']}</span><span class="fr"><a href="javascript:;" onclick="javascript:if(confirm('您确定要删除吗？'))window.location.href='{$v['del']}'" class="change" title="删除">删除</a><a href="{$v['details']}" class="btn-more" title="查看详情">查看详情</a></span></h4>
+            </div>
+          </li>
+        {/foreach}
+         
+        </ul>
+        <div class="pagebar-common">
+          {if($listpage['list'])}
+          <ul class="pagination">
+          <li class="page-item {if(!$listpage['prev'])}disabled{/if}">
+          <a class="page-link" href="{$listpage['prev']}" aria-label="Previous"><span aria-hidden="true">«</span></a></li>
+          {foreach $listpage['list'] as $ss}
+          <li class="page-item {if($ss['num']==$listpage['current_num'])}active background{/if}"><a href="{$ss['url']}" class="page-link">{$ss['num']}</a></li>
+          {/foreach}
+          <li class="page-item {if(!$listpage['next'])}disabled{/if}"><a class="page-link" href="{$listpage['next']}" aria-label="Next"><span aria-hidden="true">»</span></a></li>
+          </ul>
+          {/if}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+{include="user/footer"}
+</body>
+</html>

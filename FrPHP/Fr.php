@@ -52,6 +52,7 @@ class FrPHP
 		defined('Session_Path') or define('Session_Path', isset($config['Session_Path']) ? $config['Session_Path'] : $MyConfig['Session_Path']);
 		defined('APP_LANG') or define('APP_LANG', isset($config['APP_LANG']) ? $config['APP_LANG'] : $MyConfig['APP_LANG']);
 		defined('APP_LANG_REQUREST') or define('APP_LANG_REQUREST', isset($config['APP_LANG_REQUREST']) ? $config['APP_LANG_REQUREST'] : $MyConfig['APP_LANG_REQUREST']);
+		defined('ROOT') or define('ROOT', isset($config['ROOT']) ? $config['ROOT'] : $MyConfig['ROOT']);
 		//引入系统函数
 		require(CORE_PATH.'/common/Functions.php');
 		//引入项目函数
@@ -196,6 +197,8 @@ class FrPHP
 			}
 		
 		}
+		//去除二级目录
+		$url = '/'.substr($url,strlen(ROOT));
 		
 		define('REQUEST_URI',$url);
         $controllerName = DefaultController;

@@ -40,7 +40,13 @@ class ProductController extends CommonController
 			$page = new Page('product');
 			$sql = ' 1=1 ';
 			if($this->frparam('isshow')){
-				$isshow = $this->frparam('isshow')==1 ? 1 : 0;
+				if($this->frparam('isshow')==1){
+					$isshow=1;
+				}else if($this->frparam('isshow')==2){
+					$isshow=0;
+				}else{
+					$isshow = 2;
+				}
 				$sql .= ' and isshow='.$isshow;
 			}
 			if($this->frparam('tid')){
@@ -265,7 +271,44 @@ class ProductController extends CommonController
 						
 						
 					}
-					
+					if($this->webconf['release_award_open']==1 && $data['isshow']==1){
+						$award = round($this->webconf['release_award'],2);
+						$max_award = round($this->webconf['release_max_award'],2);
+						$member_id = M('product')->getField(['id'=>$this->frparam('id')],'member_id');
+						
+						if($member_id!=0 && $award>0){
+							$rr = M('buylog')->find(['userid'=>$member_id,'type'=>3,'molds'=>'product','aid'=>$this->frparam('id'),'msg'=>'发布奖励']);
+							if(!$rr){
+								$start = mktime(0, 0, 0, date('m'), date('d'), date('Y'));
+								$end = mktime(23, 59, 59, date('m'), date('d'), date('Y'));
+
+								$sql = " addtime>=".$start." and addtime<".$end." and userid=".$member_id." and type=3 and msg='发布奖励' ";
+								$all = M('buylog')->findAll($sql,null,'amount');
+								$all_jifen = 0;
+								if($all){
+									foreach($all as $v){
+										$all_jifen+=$v['amount'];
+									}
+								}
+								
+								if($max_award==0 || ($all_jifen<$max_award && $max_award!=0)){
+									$w['userid'] = $member_id;
+		                			$w['buytype'] = 'jifen';
+						   	  		$w['type'] = 3;
+						   	  		$w['molds'] = 'product';
+						   	  		$w['aid'] = $this->frparam('id');
+						   	  		$w['msg'] = '发布奖励';
+						   	  		$w['addtime'] = time();
+						   	  		$w['orderno'] = 'No'.date('YmdHis');
+						   	  		$w['amount'] = $award;
+						   	  		$w['money'] = $w['amount']/($this->webconf['money_exchange']);
+						   	  		$r = M('buylog')->add($w);
+						   	  		M('member')->goInc(['id'=>$member_id],'jifen',$award);
+								}
+							}
+							
+						}
+					}
 					
 					JsonReturn(array('code'=>0,'msg'=>'修改成功！','url'=>U('index')));
 					exit;
@@ -410,11 +453,65 @@ class ProductController extends CommonController
 	function checkAll(){
 		$data = $this->frparam('data',1);
 		if($data!=''){
-			$isshow = $this->frparam('isshow')==1 ? 1 : 0;
+			if($this->frparam('isshow')==1){
+				$isshow = 1;
+			}else if($this->frparam('isshow')==2){
+				$isshow = 0;
+			}else{
+				$isshow = 2;
+			}
+			if($isshow==1){
+				$all = M('product')->findAll('id in('.$data.')');
+				$award = round($this->webconf['release_award'],2);
+				$max_award = round($this->webconf['release_max_award'],2);
+				$start = mktime(0, 0, 0, date('m'), date('d'), date('Y'));
+				$end = mktime(23, 59, 59, date('m'), date('d'), date('Y'));
+
+				foreach ($all as $k => $v) {
+					if($v['isshow']!=1){
+						//start
+						if($this->webconf['release_award_open']==1){
+							$member_id = $v['member_id'];
+							if($member_id!=0 && $award>0){
+								$rr = M('buylog')->find(['userid'=>$member_id,'type'=>3,'molds'=>'product','aid'=>$v['id'],'msg'=>'发布奖励']);
+								if(!$rr){
+									
+									$sql = " addtime>=".$start." and addtime<".$end." and userid=".$member_id." and type=3 and msg='发布奖励' ";
+									$all = M('buylog')->findAll($sql,null,'amount');
+									$all_jifen = 0;
+									if($all){
+										foreach($all as $vv){
+											$all_jifen+=$vv['amount'];
+										}
+									}
+									
+									if($max_award==0 || ($all_jifen<$max_award && $max_award!=0)){
+										$w['userid'] = $member_id;
+			                			$w['buytype'] = 'jifen';
+							   	  		$w['type'] = 3;
+							   	  		$w['molds'] = 'product';
+							   	  		$w['aid'] = $v['id'];
+							   	  		$w['msg'] = '发布奖励';
+							   	  		$w['addtime'] = time();
+							   	  		$w['orderno'] = 'No'.date('YmdHis');
+							   	  		$w['amount'] = $award;
+							   	  		$w['money'] = $w['amount']/($this->webconf['money_exchange']);
+							   	  		$r = M('buylog')->add($w);
+							   	  		M('member')->goInc(['id'=>$member_id],'jifen',$award);
+									}
+								}
+								
+							}
+						}
+						//end
+					}
+				}
+				
+			}
 			M('product')->update('id in('.$data.')',['isshow'=>$isshow]);
-			JsonReturn(array('code'=>0,'msg'=>'批量审核成功！'));
+			JsonReturn(array('code'=>0,'msg'=>'批量操作成功！'));
 		}else{
-			JsonReturn(array('code'=>1,'msg'=>'批量审核失败！'));
+			JsonReturn(array('code'=>1,'msg'=>'批量操作失败！'));
 		}
 	}
 

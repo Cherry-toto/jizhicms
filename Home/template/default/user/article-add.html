@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  {include="user/style"}
+  <script type="text/javascript" charset="utf-8" src="{$common}user/uedit/ueditor.config.js?v=1"></script>
+  <script type="text/javascript" charset="utf-8" src="{$common}user/uedit/editor_api.js?v=2"> </script>
+  <script type="text/javascript" charset="utf-8" src="{$common}user/uedit/lang/zh-cn/zh-cn.js"></script>
+  <title>发布内容 - 个人中心</title>
+</head>
+<body>
+
+{include="user/top"}
+
+<div class="login-page page">
+  <div class="container clearfix">
+    {include="user/left_nav"}
+    <div class="user-right">
+      <div class="user-tips">
+        <p><i class="iconfont iconxiaoxi3"></i> 欢迎注册本站会员，注册会员后您将享受专属会员服务!包括但不限于专属文章浏览权限，会员投稿权限，在线购物权限，下载会员可见附件等实用功能，欢迎注册体验！</p>
+      </div>
+      <div class="user-content">
+        <form action="" method="POST" id="jizhiform" class="user-form">
+          <input name="id" type="hidden" value="{$data['id']}">
+          <input name="isshow" type="hidden" value="{$data['isshow']}">
+          <div class="form-control">
+            <label for="">选择专栏：</label>
+            <select id="molds" {if($data)}disabled{/if}  name="molds">
+            <option value="article" {if($molds=='article')}selected{/if}>文章</option>
+            <option value="product" {if($molds=='product')}selected{/if}>商品</option>
+            </select>
+            {if($data)}
+            <label >不可修改</label>
+            {/if}
+          </div>
+          <div class="form-control">
+            <label for="">选择分类：</label>
+            <select id="tid" name="tid">
+            
+            </select>
+          </div>
+          <span id="fields_ext"></span>
+          <div class="form-control">
+            <label for="submit"></label>
+            <input type="submit" name="submit" value="提交">
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+{include="user/footer"}
+<script type="text/javascript">
+
+function get_fields(tid,id){
+    var id = arguments[1]?arguments[1]:0;
+    $.post("{fun U('common/get_fields')}",{molds:$("#molds").val(),tid:tid,id:id},function(res){
+      if(res.code==0){
+        //默认 res.tpl输出的是layui的模板HTML,可以审核元素查看res里面的内容
+        //$("#ext_fields").html(res.tpl);
+        var html = '';
+        var len = res.fields_list.length;
+        if(len>0){
+          //根据对应的字段，进行HTML设计
+          for(var i=0;i<len;i++){
+            
+          }
+          
+        }
+        $("#fields_ext").html(res.tpl);
+      }
+      
+    },'json');
+  }
+
+function getclass(molds){
+   $.post("{fun U('user/getclass')}",{molds:molds},function(res){
+        if(res.code==0){
+          {if($data)}
+          var id = {$data['id']};
+          {else}
+          var id = 0;
+          {/if}
+          var tid = {$tid};
+          var html = '';
+          for(var i=0;i<res['data'].length;i++){
+            if(tid==res['data'][i]['id']){
+              html+='<option value="'+res['data'][i]['id']+'" selected>'+res['data'][i]['classname']+'</option>';
+            }else{
+              html+='<option value="'+res['data'][i]['id']+'" >'+res['data'][i]['classname']+'</option>';
+            }
+          }
+          $("#tid").html(html);
+          
+          get_fields(tid,id)
+        }
+        
+      },'json');
+}  
+  $(document).ready(function(){
+     getclass($('#molds').val());
+     $("#molds").change(function () {
+        var molds = $('#molds').val();
+        if(molds==''){
+          return false;
+        }
+        getclass(molds)
+     });
+     $("#tid").change(function () {
+          {if($data)}
+          var id = {$data['id']};
+          {else}
+          var id = 0;
+          {/if}
+          var tid = $("#tid").val();
+          get_fields(tid,id)
+     });
+  });
+
+</script>
+</body>
+</html>

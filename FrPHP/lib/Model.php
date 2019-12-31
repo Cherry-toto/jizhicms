@@ -100,8 +100,13 @@ class Model {
 			if(null != $conditions)$where = "WHERE ".$conditions;
 		}
 		foreach($row as $key => $value){
-			$value = '\''.$value.'\'';
-			$vals[] = "{$key} = {$value}";
+			if($value!==null){
+				$value = '\''.$value.'\'';
+				$vals[] = "{$key} = {$value}";
+			}else{
+				$vals[] = "{$key} = null";
+			}
+			
 		}
 		$values = join(", ",$vals);
 		$table = self::$table;
@@ -205,10 +210,10 @@ class Model {
 		$row = $this->__prepera_format($row);
 		if(empty($row))return FALSE;
 		foreach($row as $key => $value){
-			$cols[] = $key;
-			$vals[] = '\''.$value.'\'';
-			
-			
+			if($value!==null){
+				$cols[] = $key;
+				$vals[] = '\''.$value.'\'';
+			}
 		}
 		$col = join(',', $cols);
 		$val = join(',', $vals);
@@ -236,14 +241,24 @@ class Model {
 		foreach ($columns as $key => $value) {
 			$field = strtolower($value->Field);
 			if(stripos($value->Type,'int')!==false || stripos($value->Type,'decimal')!==false){
-				if(isset($rows[$field]) && $rows[$field]!=='' && $rows[$field]!==false){
-					$newcol[$field] = $rows[$field];
+				
+				if(isset($rows[$field])){
+					if($rows[$field]!=='' && $rows[$field]!==false){
+						$newcol[$field] = $rows[$field];
+					}else{
+						$newcol[$field] = 0;
+					}
 				}
 				
 			}else{
-				if(isset($rows[$field]) && $rows[$field]!=='' && $rows[$field]!==false ){
-					$newcol[$field] = $rows[$field];
+				if(isset($rows[$field])){
+					if($rows[$field]!=='' && $rows[$field]!==false ){
+						$newcol[$field] = $rows[$field];
+					}else{
+						$newcol[$field] = null;
+					}
 				}
+				
 				
 			}
 		}

@@ -42,8 +42,21 @@ define('DefaultAction','Index');
 //取消log
 define('StopLog',false);
 
+if(basename($_SERVER['SCRIPT_NAME']) === basename($_SERVER['SCRIPT_FILENAME'])){
+	$url_path_base = $_SERVER['SCRIPT_NAME'];
+}else if (basename($_SERVER['PHP_SELF']) === basename($_SERVER['SCRIPT_FILENAME'])){
+	$url_path_base = $_SERVER['PHP_SELF'];
+}else if (isset($_SERVER['ORIG_SCRIPT_NAME']) && basename($_SERVER['ORIG_SCRIPT_NAME']) === basename($_SERVER['SCRIPT_FILENAME'])){
+	$url_path_base = $_SERVER['ORIG_SCRIPT_NAME'];
+}	
+$rooturl = pathinfo($url_path_base);
+$root=str_replace($rooturl["basename"],'',$url_path_base);
+
+//定义根路径
+define('ROOT',$root);
+
 //定义静态文件路径
-define('Tpl_style','/A/t/tpl');
+define('Tpl_style',ROOT.'A/t/tpl');
 
 // 加载框架文件
 require(APP_PATH . 'FrPHP/Fr.php');

@@ -31,6 +31,9 @@
                 {if(checkAction('Sys/wechatbind'))}
                 <li>公众号绑定</li> 
                 {/if}
+                {if(checkAction('Sys/jifenset'))}
+                <li>积分设置</li> 
+                {/if}
               </ul>
              
               <div class="layui-tab-content" >
@@ -680,15 +683,25 @@
                 {/if}
                 {if(checkAction('Sys/email-order'))}
                 <div class="layui-tab-item">
-                    
+                        <div class="layui-form-item" pane>
+                            <label for="isopenemail" style="width:150px"  class="layui-form-label">
+                                <span class="x-red"></span>发送邮件
+                            </label>
+                            <div  style="margin-left: 150px;" class="layui-input-block">
+                                <input type="radio" name="isopenemail" value="0" title="关闭" {if($config['isopenemail']==0)}checked{/if}>
+                                <input type="radio" name="isopenemail" value="1" title="开启" {if($config['isopenemail']==1)}checked{/if}>
+                            </div>
+                        </div>
                         {if($admin['gid']==1)}
                         <div class="layui-form-item">
                             <label style="width:150px" class="layui-form-label">
                                 <span class='x-red'>*</span>邮件服务器
                             </label>
                             <div   style="margin-left: 150px;" class="layui-input-block">
-                                <input type="text" name="email_server" value="{$config['email_server']}" autocomplete="off" placeholder="请输入邮件服务器"
-                                class="layui-input">
+                                <select id="email_server" name="email_server">
+                                <option value="smtp.163.com" {if($config['email_server']=='smtp.163.com')}selected{/if}>163邮件服务器</option>
+                                <option value="smtp.qq.com" {if($config['email_server']=='smtp.qq.com')}selected{/if}>QQ邮件服务器</option>
+                                </select>
                             </div>
                         </div>
                         <div class="layui-form-item">
@@ -696,8 +709,10 @@
                                 <span class='x-red'>*</span>收发端口
                             </label>
                             <div   style="margin-left: 150px;" class="layui-input-block">
-                                <input type="text" name="email_port" value="{$config['email_port']}" autocomplete="off" placeholder="邮件收发端口"
-                                class="layui-input">
+                                <select id="email_port" name="email_port">
+                                <option value="465" {if($config['email_port']==465)}selected{/if}>163邮件端口(465)</option>
+                                <option value="587" {if($config['email_port']==587)}selected{/if}>QQ邮件端口(587)</option>
+                                </select>
                             </div>
                         </div>
                         <div class="layui-form-item">
@@ -790,6 +805,67 @@
                 {/if}
                 {if(checkAction('Sys/payconfig'))}
                 <div class="layui-tab-item">
+                    
+                    <div class="layui-form-item">
+                            <label style="width:150px" class="layui-form-label">
+                                <span  class='x-red'>*</span>钱包兑换率
+                            </label>
+                            <div   class="layui-input-inline">
+                                <input type="text" name="money_exchange" value="{$config['money_exchange']}" autocomplete="off" placeholder="站内钱包与RMB的兑换率"
+                                class="layui-input">
+                            </div>
+                            <div class="layui-form-mid layui-word-aux">
+                                <span class="x-red">*</span>站内钱包与RMB的兑换率，即1元=多少金币
+                            </div>
+                    </div>
+                    <div class="layui-form-item">
+                            <label style="width: 150px;"  class="layui-form-label">
+                                <span  class='x-red'>*</span>积分兑换率
+                            </label>
+                            <div   class="layui-input-inline">
+                                <input type="text" name="jifen_exchange" value="{$config['jifen_exchange']}" autocomplete="off" placeholder="站内积分与RMB的兑换率"
+                                class="layui-input">
+                            </div>
+                            <div class="layui-form-mid layui-word-aux">
+                                <span class="x-red">*</span>站内积分与RMB的兑换率，即1元=多少积分
+                            </div>
+                    </div>
+                    <div class="layui-form-item" pane>
+                        <label for="isopenjifen" style="width:150px"  class="layui-form-label">
+                            <span class="x-red"></span>积分支付
+                        </label>
+                        <div  style="margin-left: 150px;" class="layui-input-block">
+                            <input type="radio" name="isopenjifen" value="0" title="关闭" {if($config['isopenjifen']==0)}checked{/if}>
+                            <input type="radio" name="isopenjifen" value="1" title="开启" {if($config['isopenjifen']==1)}checked{/if}>
+                        </div>
+                    </div>
+                    <div class="layui-form-item" pane>
+                        <label for="isopenqianbao" style="width:150px"  class="layui-form-label">
+                            <span class="x-red"></span>钱包支付
+                        </label>
+                        <div  style="margin-left: 150px;" class="layui-input-block">
+                            <input type="radio" name="isopenqianbao" value="0" title="关闭" {if($config['isopenqianbao']==0)}checked{/if}>
+                            <input type="radio" name="isopenqianbao" value="1" title="开启" {if($config['isopenqianbao']==1)}checked{/if}>
+                        </div>
+                    </div>
+                    <div class="layui-form-item" pane>
+                        <label for="isopenweixin" style="width:150px"  class="layui-form-label">
+                            <span class="x-red"></span>微信支付
+                        </label>
+                        <div  style="margin-left: 150px;" class="layui-input-block">
+                            <input type="radio" name="isopenweixin" value="0" title="关闭" {if($config['isopenweixin']==0)}checked{/if}>
+                            <input type="radio" name="isopenweixin" value="1" title="开启" {if($config['isopenweixin']==1)}checked{/if}>
+                        </div>
+                    </div>
+                    <div class="layui-form-item" pane>
+                        <label for="isopenzfb" style="width:150px"  class="layui-form-label">
+                            <span class="x-red"></span>支付宝支付
+                        </label>
+                        <div  style="margin-left: 150px;" class="layui-input-block">
+                            <input type="radio" name="isopenzfb" value="0" title="关闭" {if($config['isopenzfb']==0)}checked{/if}>
+                            <input type="radio" name="isopenzfb" value="1" title="开启" {if($config['isopenzfb']==1)}checked{/if}>
+                        </div>
+                    </div>
                     <div class="layui-form-item" pane>
                         <label for="paytype" style="width:150px"  class="layui-form-label">
                             <span class="x-red"></span>支付方式
@@ -1063,6 +1139,208 @@
                         </div>
                         
                     
+                </div>
+                {/if}
+                {if(checkAction('Sys/jifenset'))}
+                <div class="layui-tab-item" >
+                    <div class="layui-form-item" >
+                        <label style="width:150px" class="layui-form-label">
+                            <span class='x-red'>*</span>登录奖励
+                        </label>
+                        <div class="layui-input-inline">
+                            <input type="number" name="login_award"  autocomplete="off" value="{$config['login_award']}"  placeholder=""
+                            class="layui-input">
+                        </div>
+                         <div  class="layui-input-inline">
+                            <input type="radio" name="login_award_open" value="0" title="关闭" {if($config['login_award_open']==0)}checked{/if}>
+                            <input type="radio" name="login_award_open" value="1" title="开启" {if($config['login_award_open']==1)}checked{/if}>
+                        </div>
+                        <div class="layui-form-mid layui-word-aux">
+                              每天登录奖励积分数，最小为0，每天登录只奖励一次
+                        </div> 
+                        
+                    </div>
+                    <div class="layui-form-item" >
+                    <fieldset class="layui-elem-field">
+                      <legend>发布奖励</legend>
+                      <div class="layui-field-box">
+                        <label style="width:150px" class="layui-form-label">
+                            <span class='x-red'>*</span>每次奖励
+                        </label>
+                        <div class="layui-input-inline">
+                            <input type="number" name="release_award"  autocomplete="off" value="{$config['release_award']}"  placeholder=""
+                            class="layui-input">
+                        </div>
+                        <label style="width:150px" class="layui-form-label">
+                            <span class='x-red'>*</span>每天最高奖励
+                        </label>
+                        <div class="layui-input-inline">
+                            <input type="number" name="release_max_award"  autocomplete="off" value="{$config['release_max_award']}"  placeholder=""
+                            class="layui-input">
+                        </div>
+                     
+                        <label style="width:150px" class="layui-form-label">
+                            <span class='x-red'>*</span>是否关闭
+                        </label>
+                        <div  class="layui-input-inline">
+                            <input type="radio" name="release_award_open" value="0" title="关闭" {if($config['release_award_open']==0)}checked{/if}>
+                            <input type="radio" name="release_award_open" value="1" title="开启" {if($config['release_award_open']==1)}checked{/if}>
+                        </div>
+                        <div class="layui-form-mid layui-word-aux">
+                            每次发布内容奖励（后台审核通过才奖励），每天奖励不超过最高奖励，设置0则无上限
+                        </div> 
+                      </div>
+                    </fieldset>
+                       
+                        
+                    </div>
+
+                    <div class="layui-form-item" >
+                    <fieldset class="layui-elem-field">
+                      <legend>收藏奖励</legend>
+                      <div class="layui-field-box">
+                        <label style="width:150px" class="layui-form-label">
+                            <span class='x-red'>*</span>每次奖励
+                        </label>
+                        <div class="layui-input-inline">
+                            <input type="number" name="collect_award"  autocomplete="off" value="{$config['collect_award']}"  placeholder=""
+                            class="layui-input">
+                        </div>
+                        <label style="width:150px" class="layui-form-label">
+                            <span class='x-red'>*</span>每天最高奖励
+                        </label>
+                        <div class="layui-input-inline">
+                            <input type="number" name="collect_max_award"  autocomplete="off" value="{$config['collect_max_award']}"  placeholder=""
+                            class="layui-input">
+                        </div>
+                   
+                        <label style="width:150px" class="layui-form-label">
+                            <span class='x-red'>*</span>是否关闭
+                        </label>
+                        <div  class="layui-input-inline">
+                            <input type="radio" name="collect_award_open" value="0" title="关闭" {if($config['collect_award_open']==0)}checked{/if}>
+                            <input type="radio" name="collect_award_open" value="1" title="开启" {if($config['collect_award_open']==1)}checked{/if}>
+                        </div>
+                        <div class="layui-form-mid layui-word-aux">
+                            发布的内容被收藏，发布用户会得到奖励，每天最低0，每天不超过最高奖励，0代表无上限
+                        </div> 
+                      </div>
+                    </fieldset>
+                       
+                        
+                    </div>
+
+                    <div class="layui-form-item" >
+                    <fieldset class="layui-elem-field">
+                      <legend>点赞奖励</legend>
+                      <div class="layui-field-box">
+                        <label style="width:150px" class="layui-form-label">
+                            <span class='x-red'>*</span>每次奖励
+                        </label>
+                        <div class="layui-input-inline">
+                            <input type="number" name="likes_award"  autocomplete="off" value="{$config['likes_award']}"  placeholder=""
+                            class="layui-input">
+                        </div>
+                        <label style="width:150px" class="layui-form-label">
+                            <span class='x-red'>*</span>每天最高奖励
+                        </label>
+                        <div class="layui-input-inline">
+                            <input type="number" name="likes_max_award"  autocomplete="off" value="{$config['likes_max_award']}"  placeholder=""
+                            class="layui-input">
+                        </div>
+                      
+                        <label style="width:150px" class="layui-form-label">
+                            <span class='x-red'>*</span>是否关闭
+                        </label>
+                        <div  class="layui-input-inline">
+                            <input type="radio" name="likes_award_open" value="0" title="关闭" {if($config['likes_award_open']==0)}checked{/if}>
+                            <input type="radio" name="likes_award_open" value="1" title="开启" {if($config['likes_award_open']==1)}checked{/if}>
+                        </div>
+                        <div class="layui-form-mid layui-word-aux">
+                            发布的内容被点赞，发布用户会得到奖励，每天最低0，每天不超过最高奖励，0代表无上限
+                        </div> 
+                      </div>
+                    </fieldset>
+                       
+                        
+                    </div>
+
+                    <div class="layui-form-item" >
+                    <fieldset class="layui-elem-field">
+                      <legend>评论奖励</legend>
+                      <div class="layui-field-box">
+                        <label style="width:150px" class="layui-form-label">
+                            <span class='x-red'>*</span>每次奖励
+                        </label>
+                        <div class="layui-input-inline">
+                            <input type="number" name="comment_award"  autocomplete="off" value="{$config['comment_award']}"  placeholder=""
+                            class="layui-input">
+                        </div>
+                        <label style="width:150px" class="layui-form-label">
+                            <span class='x-red'>*</span>每天最高奖励
+                        </label>
+                        <div class="layui-input-inline">
+                            <input type="number" name="comment_max_award"  autocomplete="off" value="{$config['comment_max_award']}"  placeholder=""
+                            class="layui-input">
+                        </div>
+                    
+                        <label style="width:150px" class="layui-form-label">
+                            <span class='x-red'>*</span>是否关闭
+                        </label>
+                        <div  class="layui-input-inline">
+                            <input type="radio" name="comment_award_open" value="0" title="关闭" {if($config['comment_award_open']==0)}checked{/if}>
+                            <input type="radio" name="comment_award_open" value="1" title="开启" {if($config['comment_award_open']==1)}checked{/if}>
+                        </div>
+                        <div class="layui-form-mid layui-word-aux">
+                            发布的内容被评论，发布用户会得到奖励，每天最低0，每天不超过最高奖励，0代表无上限
+                        </div> 
+                      </div>
+                    </fieldset>
+                       
+                        
+                    </div>
+
+                    <div class="layui-form-item" >
+                    <fieldset class="layui-elem-field">
+                      <legend>关注奖励</legend>
+                      <div class="layui-field-box">
+                        <label style="width:150px" class="layui-form-label">
+                            <span class='x-red'>*</span>每次奖励
+                        </label>
+                        <div class="layui-input-inline">
+                            <input type="number" name="follow_award"  autocomplete="off" value="{$config['follow_award']}"  placeholder=""
+                            class="layui-input">
+                        </div>
+                        <label style="width:150px" class="layui-form-label">
+                            <span class='x-red'>*</span>每天最高奖励
+                        </label>
+                        <div class="layui-input-inline">
+                            <input type="number" name="follow_max_award"  autocomplete="off" value="{$config['follow_max_award']}"  placeholder=""
+                            class="layui-input">
+                        </div>
+                      
+                        <label style="width:150px" class="layui-form-label">
+                            <span class='x-red'>*</span>是否关闭
+                        </label>
+                        <div  class="layui-input-inline">
+                            <input type="radio" name="follow_award_open" value="0" title="关闭" {if($config['follow_award_open']==0)}checked{/if}>
+                            <input type="radio" name="follow_award_open" value="1" title="开启" {if($config['follow_award_open']==1)}checked{/if}>
+                        </div>
+                        <div class="layui-form-mid layui-word-aux">
+                            用户被粉丝关注，将得到奖励，相应取消关注也会被扣除奖励
+                        </div> 
+                      </div>
+                    </fieldset>
+                       
+                        
+                    </div>
+
+    
+                    <div class="layui-form-item">
+                        <button class="layui-btn" lay-submit="" lay-filter="*">
+                            保存
+                        </button>
+                    </div>
                 </div>
                 {/if}
              

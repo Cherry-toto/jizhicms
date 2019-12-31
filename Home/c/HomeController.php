@@ -815,7 +815,9 @@ class HomeController extends CommonController
 	}
 	
 	
-
+	function aa(){
+		mac_send_mail('2581047041@qq.com', '测试测试！', '123456');
+	}
 	
 
 }

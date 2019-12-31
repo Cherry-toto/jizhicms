@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  {include="user/style"}
+  <title>资料与账号 - 个人中心</title>
+</head>
+<body>
+
+{include="user/top"}
+
+<div class="login-page page">
+  <div class="container clearfix">
+    {include="user/left_nav"}
+    <div class="user-right">
+      <div class="user-tips">
+        <p><i class="iconfont iconxiaoxi3"></i> 欢迎注册本站会员，注册会员后您将享受专属会员服务!包括但不限于专属文章浏览权限，会员投稿权限，在线购物权限，下载会员可见附件等实用功能，欢迎注册体验！</p>
+      </div>
+      <div class="user-content">
+        <h2>消息提醒设置</h2>
+        <form action="" method="POST" class="user-form">
+           <div class="form-control">
+            <label for="">消息提醒：</label>
+            <div class="check-box"><input type="checkbox" id="ismsg" name="ismsg" value="1" {if($member['ismsg']==1)}checked="checked"{/if} class="switch"></div>
+            <label >关闭消息提醒后，将不会收到以下信息提醒</label>
+          </div>
+          <div class="form-control">
+            <label for="">评论提醒：</label>
+            <div class="check-box"><input type="checkbox" name="iscomment" value="1" {if($member['iscomment']==1)}checked="checked"{/if} class="switch"></div>
+            <label >关闭评论提醒后，将不会收到评论提醒</label>
+          </div>
+          <div class="form-control">
+            <label for="">收藏提醒：</label>
+            <div class="check-box"><input type="checkbox" name="iscollect" value="1" {if($member['iscollect']==1)}checked="checked"{/if} class="switch"></div>
+            <label >关闭收藏提醒后，将不会收到收藏提醒</label>
+          </div>
+          <div class="form-control">
+            <label for="">赞同提醒：</label>
+            <div class="check-box"><input type="checkbox" name="islikes" value="1" {if($member['islikes']==1)}checked="checked"{/if} class="switch"></div>
+            <label >关闭赞同提醒后，将不会收到赞同提醒</label>
+          </div>
+          <div class="form-control">
+            <label for="">@我提醒：</label>
+            <div class="check-box"><input type="checkbox" name="isat" value="1" {if($member['isat']==1)}checked="checked"{/if} class="switch"></div>
+            <label >关闭@我提醒后，将不会收到@我提醒</label>
+          </div>
+          <div class="form-control">
+            <label for="">交易提醒：</label>
+            <div class="check-box"><input type="checkbox" name="isrechange" value="1" {if($member['isrechange']==1)}checked="checked"{/if} class="switch"></div>
+            <label >关闭交易提醒后，将不会收到交易提醒</label>
+          </div>
+          <div class="form-control">
+            <label for="submit"></label>
+            <input type="submit" name="submit" value="提交">
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+{include="user/footer"}
+</body>
+</html>

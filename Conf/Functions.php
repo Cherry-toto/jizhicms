@@ -524,7 +524,7 @@ function classTypeDataMobile(){
  **/
  function get_fields_data($data,$molds,$isadmin=1){
 	 if($isadmin){
-		 $fields = M('fields')->findAll(['molds'=>$molds],'orders desc,id asc');
+		 $fields = M('fields')->findAll(['molds'=>$molds,'isadmin'=>1],'orders desc,id asc');
 	 }else{
 		 //前台需要判断是否前台显示
 		 $fields = M('fields')->findAll(['molds'=>$molds,'isshow'=>1],'orders desc,id asc');
@@ -550,7 +550,9 @@ function classTypeDataMobile(){
 				 case 13:
 				 $data[$v['field']] = format_param($data[$v['field']]);
 				 break;
-				 
+				 case 14:
+				 $data[$v['field']] = format_param($data[$v['field']],3);
+				 break;
 				 case 8:
 				 $r = implode(',',format_param($data[$v['field']],2));
 				 if($r!=''){
@@ -599,6 +601,7 @@ function classTypeDataMobile(){
 			 case 6:
 			 case 9:
 			 case 10:
+			 case 14:
 			 $fields_search .= '<input type="text" name="'.$v['field'].'" value="'.format_param($data[$v['field']],1).'" placeholder="请输入'.$v['fieldname'].'" autocomplete="off" class="layui-input">';
 			 if(array_key_exists($v['field'],$data)){
 				 if(format_param($data[$v['field']],1)!=''){
@@ -1133,7 +1136,7 @@ function get_fields_show($tid,$molds){
 		$sql[] = " tids like '%,".$tid.",%' "; 
 	}
 	
-	$sql[] = " molds = '".$molds."' ";
+	$sql[] = " molds = '".$molds."' and isshow=1 ";
 	$sql = implode(' and ',$sql);
 	$fields_list = M('Fields')->findAll($sql,'orders desc,id asc');
 	return $fields_list;
@@ -1142,9 +1145,9 @@ function get_fields_show($tid,$molds){
 //发送邮件处理
 function send_mail($send_mail,$password,$send_name,$to_mail,$title,$body,$email_ext=''){
 	
-	require APP_PATH.'/FrPHP/Extend/PHPMailer/PHPMailerAutoload.php';
-	require_once(APP_PATH.'/FrPHP/Extend/PHPMailer/class.phpmailer.php');
-	require_once(APP_PATH."/FrPHP/Extend/PHPMailer/class.smtp.php");
+	require APP_PATH.'FrPHP/Extend/PHPMailer/PHPMailerAutoload.php';
+	require_once(APP_PATH.'FrPHP/Extend/PHPMailer/class.phpmailer.php');
+	require_once(APP_PATH."FrPHP/Extend/PHPMailer/class.smtp.php");
 	
 	    $mail = new PHPMailer();
 
@@ -1154,43 +1157,65 @@ function send_mail($send_mail,$password,$send_name,$to_mail,$title,$body,$email_
 			exit('邮件服务器未配置完成');
 		}
 
-        $mail->IsSMTP(); // telling the class to use SMTP
+		if(strpos($host,'qq')!==false){
+			$mail->isSMTP();
+		    $mail->CharSet = "UTF-8";
+		    $mail->Host = $host;
+		    $mail->SMTPAuth = true;
+		    $mail->Username = $send_mail;
+		    $mail->Password = $password;
+		    $mail->SMTPSecure = 'tls';
+		    $mail->Port = $port;
+		    $mail->SetFrom($send_mail, $send_name);
+		    $address = $to_mail;
+		    if($email_ext!=''){
+				 $mail->AddAddress($email_ext, $send_name);
+			}
+	        $mail->AddAddress($address, $send_name);
+		    $mail->isHTML(true);
+		    $mail->Subject = $title;
+		    $mail->Body    = $body;
+		}else{
+			$mail->IsSMTP(); // telling the class to use SMTP
 
-        $mail->SMTPDebug = 0; // enables SMTP debug information (for testing)
+	        $mail->SMTPDebug = 0; // enables SMTP debug information (for testing)
 
-        $mail->SMTPAuth = true; // enable SMTP authentication
+	        $mail->SMTPAuth = true; // enable SMTP authentication
 
-        $mail->SMTPSecure = "ssl"; // sets the prefix to the servier
-       
-     	//$mail->SMTPSecure = false; // sets the prefix to the servier
+	        $mail->SMTPSecure = "ssl"; // sets the prefix to the servier
+	       
+	     	//$mail->SMTPSecure = false; // sets the prefix to the servier
 
-        $mail->Host = $host; // sets GMAIL as the SMTP server
+	        $mail->Host = $host; // sets GMAIL as the SMTP server
 
-        $mail->Port = $port; // set the SMTP port for the GMAIL server
+	        $mail->Port = $port; // set the SMTP port for the GMAIL server
 
-        $mail->Username = $send_mail; // GMAIL username
+	        $mail->Username = $send_mail; // GMAIL username
 
-        $mail->Password = $password; // GMAIL password
+	        $mail->Password = $password; // GMAIL password
 
-        $mail->SetFrom($send_mail, $send_name);
+	        $mail->SetFrom($send_mail, $send_name);
 
-        //$mail->AddReplyTo("xxx@xxx.com","First Last");
+	        //$mail->AddReplyTo("xxx@xxx.com","First Last");
 
-        $mail->Subject = $title;
+	        $mail->Subject = $title;
 
-        $mail->AltBody = $title; // optional, comment out and test
+	        $mail->AltBody = $title; // optional, comment out and test
 
-        $mail->MsgHTML($body);
+	        $mail->MsgHTML($body);
 
-        $mail->CharSet = "utf-8"; // 这里指定字符集！
+	        $mail->CharSet = "utf-8"; // 这里指定字符集！
 
-        $address = $to_mail;
-		if($email_ext!=''){
-			
-			 $mail->AddAddress($email_ext, $send_name);
+	        $address = $to_mail;
+			if($email_ext!=''){
+				
+				 $mail->AddAddress($email_ext, $send_name);
+			}
+	        $mail->AddAddress($address, $send_name);
+
 		}
-        $mail->AddAddress($address, $send_name);
 
+        
 
         if(!$mail->Send()) {
 
@@ -1237,12 +1262,42 @@ function checkLikes($tid=0,$id=0){
 	
 }
 
-//检查是否已有评论未查看
+//检查多少未读评论
 function has_no_read_comment(){
     if(!isset($_SESSION['member'])){
         return 0;
     }
-    $count = M('comment')->getCount(['userid'=>$_SESSION['member']['id'],'isread'=>0]);
+    $sql = 'userid='.$_SESSION['member']['id']." and isshow=1 and (type = 'comment' or type = 'reply') and isread=0 ";
+    $count = M('task')->getCount($sql);
+    return $count;
+}
+//检查多少未读消息
+function has_no_read_msg(){
+	if(!isset($_SESSION['member'])){
+        return 0;
+    }
+    //增对个人用户是否关闭提醒
+    $sql = 'userid='.$_SESSION['member']['id']." and isshow=1  and isread=0 ";
+    if(!$_SESSION['member']['ismsg']){
+    	$sql.=" and type = '0' ";//只接收交易提醒
+    }
+    if(!$_SESSION['member']['iscomment']){
+    	$sql.=" and type != 'comment' and type != 'reply'  ";
+    }
+    if(!$_SESSION['member']['iscollect']){
+    	$sql.=" and type != 'collect'  ";
+    }
+    if(!$_SESSION['member']['islikes']){
+    	$sql.=" and type != 'likes'  ";
+    }
+    if(!$_SESSION['member']['isat']){
+    	$sql.=" and type != 'at'  ";
+    }
+	if(!$_SESSION['member']['isrechange']){
+    	$sql.=" and type != 'rechange'  ";
+    }
+    
+    $count = M('task')->getCount($sql);
     return $count;
 }
 
@@ -1435,6 +1490,40 @@ function getImageInfo($path) {
 	 }
 	 return $img;
  }
+//检查是否关注
+function isfollow($id,$other){
+	$follow = M('member')->getField(['id'=>$id],'follow');
+	if(strpos($follow,','.$other.',')!==false){
+		return true;
+	}else{
+		return false;
+	}
+}
+//计算粉丝数
+function jz_fans($id=0){
+	if($id){
+		$user_num = M('member')->getCount(" follow like '%,".$id.",%'");
+		return $user_num;
+	}else{
+		return 0;
+	}
+}
+//计算关注数
+function jz_follow($id=0){
+	if($id){
+		//,1,2,2,4,
+		$follow = M('member')->getField(['id'=>$id],'follow');
+		if($follow!=''){
+			$follow = trim($follow,',');
+			$num = substr_count($follow,',');
+			return $num;
+		}else{
+			return 0;
+		}
+	}else{
+		return 0;
+	}
+}
 
 //引入扩展方法文件
 include(APP_PATH.'Conf/FunctionsExt.php');

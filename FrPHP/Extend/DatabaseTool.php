@@ -154,7 +154,12 @@ class DatabaseTool
    $dataSql = '';
    foreach ($value as $v)
    {
-    $dataSql .= "'{$v}',";
+    if($v=='' || empty($v)){
+      $dataSql .= " NULL,";
+    }else{
+      $dataSql .= "'{$v}',";
+    }
+    
    }
    $dataSql = substr($dataSql, 0, -1);
    $query[]= "INSERT INTO `{$table}` ({$columns}) VALUES ({$dataSql});\r\n";

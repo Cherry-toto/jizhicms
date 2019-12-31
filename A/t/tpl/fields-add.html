@@ -101,6 +101,13 @@
 							<td>只能填写数字，长度不能超过11位</td>
 						   </tr>
 						   <tr>
+							<td><input type="radio" name="fieldtype" value="14" /></div></td>
+							<td>小数<br/>decimal</div></td>
+							<td><input type="text" class="layui-input" name="fieldlong_14" value="10,2"></div></td>
+							<td><input type="text" class="layui-input" name="fieldlong_14" value="0.00"></div></div></td>
+							<td>金钱，小数等，保留2位</td>
+						   </tr>
+						   <tr>
 							<td><input type="radio" name="fieldtype" value="11" /></div></td>
 							<td>时间<br/>int</div></td>
 							<td><input type="text" class="layui-input" name="fieldlong_11" value="11"></div></td>
@@ -238,6 +245,17 @@
                     <div class="layui-input-inline">
                         <input type="radio" name="isshow" value="0" title="不显示">
 						<input type="radio" name="isshow" value="1" title="显示" checked>
+                    </div>
+					 
+					
+                </div>
+                <div class="layui-form-item" pane>
+                    <label for="isadmin" class="layui-form-label">
+                        <span class="x-red"></span>后台显示
+                    </label>
+                    <div class="layui-input-inline">
+                        <input type="radio" name="isadmin" value="0" title="不显示">
+						<input type="radio" name="isadmin" value="1" title="显示" checked>
                     </div>
 					 
 					

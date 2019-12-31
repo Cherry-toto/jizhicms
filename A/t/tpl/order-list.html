@@ -37,13 +37,18 @@
 					  </select>
 					</div>
 					<div class="layui-input-inline">
-					  <select name="tid" lay-filter="tid" lay-search class="layui-inline autosubmit">
-					  <option value="">请选择栏目</option>
-					   {foreach $classtypes as $v}
+					  <select name="paytype" lay-filter="paytype" class="layui-inline autosubmit">
+					  <option value="">支付方式</option>
 					   
-					   <option {if($tid==$v['id'])} selected="selected" {/if}value="{$v['id']}">{fun str_repeat('--', $v['level']), $v['classname']}</option>
-					  
-					   {/foreach}
+					   <option {if($paytype=='线下支付')} selected="selected" {/if}value="线下支付">线下支付</option>
+					   <option {if($paytype=='钱包支付')} selected="selected" {/if}value="钱包支付">钱包支付</option>
+					   <option {if($paytype=='积分兑换')} selected="selected" {/if}value="积分兑换">积分兑换</option>
+					   <option {if($paytype=='支付宝支付')} selected="selected" {/if}value="支付宝支付">支付宝支付</option>
+					   <option {if($paytype=='微信支付')} selected="selected" {/if}value="微信支付">微信支付</option>
+					   <option {if($paytype=='微信H5支付')} selected="selected" {/if}value="微信H5支付">微信H5支付</option>
+					   <option {if($paytype=='微信扫码支付')} selected="selected" {/if}value="微信扫码支付">微信扫码支付</option>
+					   <option {if($paytype=='支付宝H5支付')} selected="selected" {/if}value="支付宝H5支付">支付宝H5支付</option>
+					   
 					
 					  </select>
 					</div>
@@ -91,7 +96,30 @@
 			
 		 </div>
 		</script>
-
+		<script type="text/html" id="ispay">
+			{{#  if(d.ispay ==1){ }}
+			<span class="layui-badge layui-bg-green">已付</span>
+		    {{#  } else{ }}
+		    <span class="layui-badge">未付</span>
+		    {{#  } }}
+		</script>
+		<script type="text/html" id="isshow">
+			{{#  if(d.isshow ==1){ }}
+			<span class="layui-badge">待付款</span>
+			{{#  } else if(d.isshow ==2){ }}
+			<span class="layui-badge layui-bg-green">已付</span>
+			{{#  } else if(d.isshow ==3){ }}
+			<span class="layui-badge layui-bg-orange">超时</span>
+			{{#  } else if(d.isshow ==4){ }}
+			<span class="layui-badge">待审核待支付</span>
+			{{#  } else if(d.isshow ==5){ }}
+			<span class="layui-badge layui-bg-black">已发货</span>
+			{{#  } else if(d.isshow ==6){ }}
+			<span class="layui-badge layui-bg-gray">已废弃</span>
+		    {{#  } else{ }}
+		    <span class="layui-badge layui-bg-blue">被删除</span>
+		    {{#  } }}
+		</script>
 	 
 		<script>
 	 
@@ -143,9 +171,9 @@
 				,cols: [[ //表头
 				  {type:'checkbox'}
 				  ,{field: 'id', title: 'ID', width:50, sort: true}
-				  ,{field: 'new_isshow', title: '状态', width: 100}
-				  ,{field: 'orderno', title: '订单号',width: 200,sort: true}
-				  ,{field: 'new_tid', title: '栏目',width:150, sort: true}
+				  ,{field: 'isshow', title: '状态', width: 100, templet: '#isshow'}
+				  ,{field: 'orderno', title: '订单号',sort: true}
+				  ,{field: 'paytype', title: '付款方式',width:150, sort: true}
 				  ,{field: 'username', title: '用户昵称',width:150,  sort: true}
 				  ,{field: 'tel', title: '手机号',width:150} 
 				  ,{field: 'price', title: '金额',width:150} 
@@ -153,7 +181,7 @@
 				  
 				  {foreach $fields_list as $v},{field: '{$v['field']}',width:150, title: '{$v['fieldname']}'}{/foreach}
 				  
-				  ,{field: 'new_ispay', title: '是否付款', width: 100}
+				  ,{field: 'ispay', title: '是否付款', width: 100, templet: '#ispay'}
 				  ,{field: 'new_paytime', title: '付款时间',width:160}
 				  ,{field: 'new_addtime', title: '提交时间',width:160}
 				  ,{field: '', title: '操作',width:160, toolbar: '#rightbar', fixed:'right'}

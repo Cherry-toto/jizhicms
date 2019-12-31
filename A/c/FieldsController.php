@@ -151,6 +151,17 @@ class FieldsController extends CommonController
 				}
 				$data['body'] = $this->frparam('molds_select',1).','.$this->frparam('molds_list_field',1);
 				break;
+				case 14:
+				if(strpos($data['fieldlong'],',')===false){
+					JsonReturn(array('code'=>1,'msg'=>'字段长度不对,decimal字段长度格式[ 整数位数,小数位数 ]'));
+				}
+				$sql .= "DECIMAL(".$data['fieldlong'].") DEFAULT ";
+				if($data['vdata']){
+					$sql .=  "'".$data['vdata']."'";
+				}else{
+					$sql .= " '0.00' NOT NULL ";
+				}
+				break;
 				
 			}
 			$x = M()->runSql($sql);
@@ -211,14 +222,18 @@ class FieldsController extends CommonController
 							break;
 							case 4:
 							case 11:
+							case 13:
 							$sql.=" int(".$data['fieldlong'].") ";
+							break;
+							case 14:
+							$sql.=" decimal(".$data['fieldlong'].") ";
 							break;
 							
 						}
 						$x = M()->runSql($sql);
 						
 					}
-					if($data['fieldtype']==7 || $data['fieldtype']==8 || $data['fieldtype']==12){
+					if($data['fieldtype']==7 || $data['fieldtype']==8 || $data['fieldtype']==12 || $data['fieldtype']==14){
                     	$data['body'] = $this->frparam('body_'.$data['fieldtype'],1);
                     }
 					if($data['fieldtype']==13){
@@ -270,6 +285,17 @@ class FieldsController extends CommonController
 						$sql .=  "'".$data['vdata']."'";
 					}else{
 						$sql .= " '0' NOT NULL ";
+					}
+					break;
+					case 14:
+					if(strpos($data['fieldlong'],',')===false){
+						JsonReturn(array('code'=>1,'msg'=>'字段长度不对,decimal字段长度格式[ 整数位数,小数位数 ]'));
+					}
+					$sql .= "DECIMAL(".$data['fieldlong'].") DEFAULT ";
+					if($data['vdata']){
+						$sql .=  "'".$data['vdata']."'";
+					}else{
+						$sql .= " '0.00' NOT NULL ";
 					}
 					break;
 					case 5:
@@ -352,7 +378,7 @@ class FieldsController extends CommonController
 		}else{
 			$data = array();
 		}
-		$sql[] = " molds = '".$molds."' ";
+		$sql[] = " molds = '".$molds."' and isadmin=1 ";
 		$sql = implode(' and ',$sql);
 		$fields_list = M('Fields')->findAll($sql,'orders desc,id asc');
 		$l = '';
@@ -428,6 +454,24 @@ class FieldsController extends CommonController
                     </label>
                     <div class="layui-input-block">
                         <input type="number" id="'.$v['field'].'" value="'.$data[$v['field']].'" name="'.$v['field'].'" ';
+				if($v['ismust']==1){
+					$l.=' required="" lay-verify="required" ';
+				}		
+                $l .=  'autocomplete="off" class="layui-input">
+                    </div>
+					<div class="layui-form-mid layui-word-aux">
+					  '.$v['tips'].'
+					</div>
+					
+                </div>';
+				break;
+				case 14:
+				$l .= '<div class="layui-form-item">
+                    <label for="'.$v['field'].'" class="layui-form-label">
+                        <span class="x-red"></span>'.$v['fieldname'].'
+                    </label>
+                    <div class="layui-input-block">
+                        <input type="text" id="'.$v['field'].'" value="'.$data[$v['field']].'" name="'.$v['field'].'" ';
 				if($v['ismust']==1){
 					$l.=' required="" lay-verify="required" ';
 				}		

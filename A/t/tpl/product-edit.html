@@ -227,11 +227,12 @@
 				
 				<div class="layui-form-item" pane>
                     <label for="isshow" class="layui-form-label">
-                        <span class="x-red"></span>是否显示
+                        <span class="x-red"></span>是否审核
                     </label>
                     <div class="layui-input-inline">
-                        <input type="radio" name="isshow" value="0" title="不显示" {if($data['isshow']==0)}checked{/if}>
-						<input type="radio" name="isshow" value="1" title="显示" {if($data['isshow']==1)}checked{/if}>
+                        <input type="radio" name="isshow" value="0" title="未审" {if($data['isshow']==0)}checked{/if}>
+						<input type="radio" name="isshow" value="1" title="已审" {if($data['isshow']==1)}checked{/if}>
+						<input type="radio" name="isshow" value="2" title="退回" {if($data['isshow']==2)}checked{/if}>
                     </div>
 					 
 					

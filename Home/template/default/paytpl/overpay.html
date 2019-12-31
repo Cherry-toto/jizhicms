@@ -5,7 +5,11 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-	<meta http-equiv="refresh" content="3;URL={fun U('Order/details',['orderno'=>$order['orderno']])}">
+     {if($order['ptype']!=1)}
+     <meta http-equiv="refresh" content="3;URL={fun U('user/wallet')}">
+     {else}
+	<meta http-equiv="refresh" content="3;URL={fun U('user/orderdetails',['orderno'=>$order['orderno']])}">
+    {/if}
 	<title>支付完成-{$webconf['web_name']}</title>
 <meta name="keywords" content="{$webconf['web_keyword']}" />
 <meta name="description" content="{$webconf['web_desc']}" />
@@ -30,7 +34,13 @@
                     <p></p>
                 </div>
 				<div class="rows">
-				<a href="/"><button class="btn btn-primary">返回首页</button></a><a href="{fun U('Order/details',['orderno'=>$order['orderno']])}"><button class="btn btn-info">跳转订单</button></a>
+				<a href="/"><button class="btn btn-primary">返回首页</button></a>
+                {if($order['ptype']!=1)}
+                <a href="{fun U('user/wallet')}"><button class="btn btn-info">返回钱包</button></a>
+                {else}
+                <a href="{fun U('user/orderdetails',['orderno'=>$order['orderno']])}"><button class="btn btn-info">跳转订单</button></a>
+                {/if}
+                
 				</div>
                 
             </div>

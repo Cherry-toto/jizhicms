@@ -327,6 +327,7 @@ CREATE TABLE `jz_orders` (
   `orderno` varchar(255) DEFAULT NULL,
   `userid` int(11) NOT NULL DEFAULT '0',
   `paytype` varchar(20) DEFAULT NULL COMMENT '支付方式',
+  `ptype` tinyint(1) DEFAULT '1' COMMENT '1商品购买2充值金额3充值积分',
   `tel` varchar(50) DEFAULT NULL,
   `username` varchar(50) DEFAULT NULL,
   `tid` int(11) NOT NULL DEFAULT '0',
@@ -623,6 +624,7 @@ INSERT INTO `jz_molds` (`id`,`name`,`biaoshi`,`sys`,`isopen`,`isclasstype`) VALU
 INSERT INTO `jz_molds` (`id`,`name`,`biaoshi`,`sys`,`isopen`,`isclasstype`) VALUES ('10','友情链接','links','0','1','0');
 INSERT INTO `jz_molds` (`id`,`name`,`biaoshi`,`sys`,`isopen`,`isclasstype`) VALUES ('11','管理员','level','1','1','1');
 INSERT INTO `jz_molds` (`id`,`name`,`biaoshi`,`sys`,`isopen`,`isclasstype`) VALUES ('12','TAG','tags','0','1','1');
+INSERT INTO `jz_molds` (`id`,`name`,`biaoshi`,`sys`,`isopen`,`isclasstype`) VALUES ('13','单页','page','1','1','1');
 -- ----------------------------
 -- Records of jz_orders
 -- ----------------------------

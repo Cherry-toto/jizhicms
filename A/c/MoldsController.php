@@ -67,7 +67,9 @@ class MoldsController extends CommonController
 				$sql = "CREATE TABLE IF NOT EXISTS `".DB_PREFIX.$data['biaoshi']."` (
 				`id` int(11) unsigned NOT NULL auto_increment,
 				`tid` int(11) DEFAULT 0,
+				`userid` int(11) DEFAULT 0,
 				`orders` int(11) DEFAULT 0,
+				`member_id` int(11) DEFAULT 0,
 				`comment_num` int(11) DEFAULT 0,
 				`htmlurl` varchar(100) DEFAULT NULL,
 				`isshow` tinyint(1) DEFAULT 1,
@@ -76,6 +78,22 @@ class MoldsController extends CommonController
 				) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1";
 				
 				$x = M()->runSql($sql);
+				//新增一个扩展字段信息
+				$w['field'] = 'member_id';
+				$w['molds'] = $data['biaoshi'];
+				$w['fieldname'] = '发布会员';
+				$w['tips'] = '前台发布会员ID记录';
+				$w['fieldtype'] = 13;
+				$w['fieldlong'] = 11;
+				$w['body'] = '3,username';
+				$w['ismust'] = 0;
+				$w['isshow'] = 0;
+				$w['isadmin'] = 0;
+				$w['issearch'] = 0;
+				$w['islist'] = 0;
+				$w['vdata'] = '0';
+				M('field')->add($w);
+				
 				//if($x){
 					//添加权限管理
 					$ruler['name'] = $data['name'].'列表';

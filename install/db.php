@@ -317,7 +317,7 @@ CREATE TABLE `jz_molds` (
   `isopen` tinyint(1) NOT NULL DEFAULT '1',
   `isclasstype` tinyint(1) NOT NULL DEFAULT '1' COMMENT '是否显示栏目',
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=13 DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM AUTO_INCREMENT=14 DEFAULT CHARSET=utf8;
 -- ----------------------------
 -- Table structure for jz_orders
 -- ----------------------------
@@ -327,6 +327,7 @@ CREATE TABLE `jz_orders` (
   `orderno` varchar(255) DEFAULT NULL,
   `userid` int(11) NOT NULL DEFAULT '0',
   `paytype` varchar(20) DEFAULT NULL COMMENT '支付方式',
+  `ptype` tinyint(1) DEFAULT '1' COMMENT '1商品购买2充值金额3充值积分',
   `tel` varchar(50) DEFAULT NULL,
   `username` varchar(50) DEFAULT NULL,
   `tid` int(11) NOT NULL DEFAULT '0',
@@ -572,6 +573,7 @@ INSERT INTO `jz_molds` (`id`,`name`,`biaoshi`,`sys`,`isopen`,`isclasstype`) VALU
 INSERT INTO `jz_molds` (`id`,`name`,`biaoshi`,`sys`,`isopen`,`isclasstype`) VALUES ('10','友情链接','links','0','1','0');
 INSERT INTO `jz_molds` (`id`,`name`,`biaoshi`,`sys`,`isopen`,`isclasstype`) VALUES ('11','管理员','level','1','1','1');
 INSERT INTO `jz_molds` (`id`,`name`,`biaoshi`,`sys`,`isopen`,`isclasstype`) VALUES ('12','TAG','tags','0','1','1');
+INSERT INTO `jz_molds` (`id`,`name`,`biaoshi`,`sys`,`isopen`,`isclasstype`) VALUES ('13','单页','page','1','1','1');
 -- ----------------------------
 -- Records of jz_orders
 -- ----------------------------
@@ -847,7 +849,7 @@ INSERT INTO `jz_ruler` (`id`,`name`,`fc`,`pid`,`isdesktop`,`sys`) VALUES ('182',
 -- ----------------------------
 -- Records of jz_sysconfig
 -- ----------------------------
-INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`) VALUES ('1','web_version','系统版号', NULL,'0','1.6.3');
+INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`) VALUES ('1','web_version','系统版号', NULL,'0','1.6.4');
 INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`) VALUES ('2','web_name','网站SEO名称', NULL,'0','极致CMS建站系统');
 INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`) VALUES ('3','web_keyword','网站SEO关键词', NULL,'0','极致CMS');
 INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`) VALUES ('4','web_desc','网站SEO描述', NULL,'0','极致CMS');

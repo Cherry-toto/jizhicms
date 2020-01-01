@@ -27,10 +27,10 @@
         <li>
           <div class="follow-list-item">
             {if(isfollow($v['id'],$member['id']))}<div class="each-other"><i class="iconfont iconhuxiangguanzhu3" title="互相关注"></i></div>{/if}
-            <div class="img-box"><img src="{if($v['litpic'])}{$v['litpic']}{else}{$common}images/login1.png{/if}" alt="{$v['username']}"></div>
+            <div class="img-box"><img src="{if($v['litpic'])}{$v['litpic']}{else}{$common}user/images/login1.png{/if}" alt="{$v['username']}"></div>
             <h4>{$v['username']}</h4>
             <p>{if($v['signature'])}{$v['signature']}{else}他很懒，什么都没有留下~{/if}</p>
-            <a href="{fun U('User/nofollow',['uid'=>$v['id']])}" title="取消关注">取消关注</a>
+            <a href="{fun U('user/nofollow',['uid'=>$v['id']])}" title="取消关注">取消关注</a>
           </div>
         </li>
       {/foreach}

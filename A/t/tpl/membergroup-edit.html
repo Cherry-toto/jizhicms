@@ -45,9 +45,11 @@
                                 </td>
                                 <td>
                                     <div class="layui-input-block">
+									{if(isset($ruler_children[$v['id']]))}
 									{foreach $ruler_children[$v['id']] as $vv}
                                         <input name="ruler[]" lay-skin="primary" type="checkbox" title="{$vv['name']}" value="{$vv['action']}" {if(strpos($data["paction"],','.$vv["action"].',')!==false)}checked{/if}> 
 									{/foreach}
+									{/if}
                                         
                                     </div>
                                 </td>

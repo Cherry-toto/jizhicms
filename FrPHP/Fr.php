@@ -198,7 +198,7 @@ class FrPHP
 		
 		}
 		//去除二级目录
-		$url = '/'.substr($url,strlen(ROOT));
+		$url = str_replace(ROOT,'/',$url);
 		
 		define('REQUEST_URI',$url);
         $controllerName = DefaultController;

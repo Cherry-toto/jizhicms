@@ -491,6 +491,20 @@ CREATE TABLE `jz_task` (
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 -- ----------------------------
+-- Table structure for jz_page
+-- ----------------------------
+DROP TABLE IF EXISTS `jz_page`;
+CREATE TABLE `jz_page` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `isshow` tinyint(1) DEFAULT '1',
+  `tid` int(11) NOT NULL DEFAULT '0',
+  `htmlurl` varchar(50) DEFAULT NULL,
+  `orders` int(11) NOT NULL DEFAULT '0',
+  `member_id` int(11) NOT NULL DEFAULT '0',
+  `isshow` tinyint(1) DEFAULT '1',
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+-- ----------------------------
 -- Records of jz_article
 -- ----------------------------
 -- ----------------------------

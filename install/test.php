@@ -502,7 +502,6 @@ CREATE TABLE `jz_task` (
 DROP TABLE IF EXISTS `jz_page`;
 CREATE TABLE `jz_page` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `isshow` tinyint(1) DEFAULT '1',
   `tid` int(11) NOT NULL DEFAULT '0',
   `htmlurl` varchar(50) DEFAULT NULL,
   `orders` int(11) NOT NULL DEFAULT '0',

@@ -207,7 +207,7 @@ class PluginsController extends CommonController
 			}else{
 				//卸载
 				$config = require_once($dir.'/'.$filepath.'/config.php');
-				$w = ['name'=>$config['name'],'filepath'=>$filepath,'description'=>$config['desc'],'version'=>$config['version'],'author'=>$config['author'],'update_time'=>strtotime($config['update_time']),'module'=>$config['module']];
+				$w = ['filepath'=>$filepath];
 				$plugins = M('plugins')->find($w);
 				if(!$plugins){
 					JsonReturn(array('code'=>1,'msg'=>'插件已移除，请勿重复操作！'));

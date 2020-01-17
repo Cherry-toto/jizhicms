@@ -172,20 +172,32 @@ class ClasstypeController extends CommonController
 						
 						//层级
 						$classtypetree = classTypeData();
-						$children = get_children($w,$classtypetree,5);
+						$children = get_children($classtypetree[$w['id']],$classtypetree,5);
 						//计算当前url
 						//以前的url替换成当前的url
 						$old_htmlurl = $this->data['htmlurl'];
 						if(strpos($w['htmlurl'],'/')!==false){
-							$html = substr($w['htmlurl'],strpos($w['htmlurl'],'/'));
-							$new_htmlurl = $classtypetree[$this->data['pid']]['htmlurl'].$html;
+							//获取最后一个
+							$htl = explode('/',$w['htmlurl']);
+							$htl_new = end($htl);//最后一个名字
+							
 						}else{
-							$new_htmlurl = $classtypetree[$this->data['pid']]['htmlurl'].$w['htmlurl'];
+							$htl_new = $w['htmlurl'];
 						}
 						
+						if($w['pid']!=0){
+							$p_html = $classtypetree[$w['pid']]['htmlurl'];
+							$new_htmlurl = $p_html.'/'.$htl_new;
+						}else{
+							$new_htmlurl = $htl_new;
+						}
+						//更新栏目及其内容HTML
+						M('classtype')->update(['id'=>$data['id']],['htmlurl'=>$new_htmlurl]);
+						M($data['molds'])->update(array('tid'=>$data['id']),array('htmlurl'=>$new_htmlurl));
+						
 						foreach($children as $v){
-							$html = substr($v['htmlurl'],strpos($v['htmlurl'],'/'));
-							$htmlurl_s = $classtypetree[$v['pid']]['htmlurl'].$html;
+							$html = substr($v['htmlurl'],strlen($old_htmlurl));
+							$htmlurl_s = $new_htmlurl.$html;
 							M('classtype')->update(['id'=>$v['id']],['htmlurl'=>$htmlurl_s]);
 							M($v['molds'])->update(['tid'=>$v['id']],['htmlurl'=>$htmlurl_s]);
 						}

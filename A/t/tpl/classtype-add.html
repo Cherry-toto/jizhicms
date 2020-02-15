@@ -57,7 +57,9 @@
 				<select name="pid" lay-search="" id="pid"  lay-filter="pid">
 			   <option value="0">顶级栏目</option>
 			   {foreach $classtypes as $v}
+			   {if($admin['isadmin']==1 || strpos($tids,','.$v['id'].',')!==false)}
 			   <option {if($pid==$v['id'])} selected="selected" {/if}  value="{$v['id']}">{fun str_repeat('--', $v['level']), $v['classname']}</option>
+			   {/if}
 			   {/foreach}
 			
 			   </select>

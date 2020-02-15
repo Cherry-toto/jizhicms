@@ -43,7 +43,9 @@
 						<option value="0">不限栏目</option>
 					   {foreach $classtypes as $v}
 					   {if($v['molds']==$molds['biaoshi'])}
+					   {if($admin['isadmin']==1 || strpos($tids,','.$v['id'].',')!==false)}
 					   <option {if($data['tid']==$v['id'])} selected="selected" {/if}  value="{$v['id']}">{fun str_repeat('--', $v['level']), $v['classname']}</option>
+					   {/if}
 					   {/if}
 					   {/foreach}
 					   </select>

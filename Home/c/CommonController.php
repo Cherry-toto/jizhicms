@@ -258,7 +258,7 @@ class CommonController extends Controller
 		$l .= '<div class="form-control">
             <label for="">文章标题：</label>
             <input type="text" name="title" id="title" value="'.$data['title'].'" placeholder="请输入文章标题">
-            <label></label>
+            <label>[必填]</label>
         </div>
 		<div class="form-control">
             <label for="">关键词：</label>
@@ -327,7 +327,7 @@ class CommonController extends Controller
 			$l .= '<div class="form-control">
             <label for="">商品名称：</label>
             <input type="text" name="title" id="title" value="'.$data['title'].'" placeholder="请输入商品名称">
-            <label></label>
+            <label>[必填]</label>
         </div>
 		<div class="form-control">
             <label for="">关键词：</label>
@@ -442,20 +442,25 @@ class CommonController extends Controller
 				//使用默认值
 				$data[$v['field']] = $v['vdata'];
 			}
+			if($v['ismust']==1){
+				$must = '[必填]';
+			}else{
+				$must = '';
+			}
 			switch($v['fieldtype']){
 				case 1:
 				case 14:
 				$l .= '<div class="form-control">
 		            <label for="'.$v['field'].'">'.$v['fieldname'].'：</label>
 		            <input type="text" id="'.$v['field'].'" value="'.$data[$v['field']].'" name="'.$v['field'].'">
-		            <label>'.$v['tips'].'</label>
+		            <label>'.$must.$v['tips'].'</label>
 		        </div>';
 				break;
 				case 2:
 				$l .= '<div class="form-control">
 		            <label for="'.$v['field'].'">'.$v['fieldname'].'：</label>
 		            <textarea id="'.$v['field'].'"  name="'.$v['field'].'" >'.$data[$v['field']].'</textarea>
-		            <label>'.$v['tips'].'</label>
+		            <label>'.$must.$v['tips'].'</label>
 		        </div>';
 				break;
 				case 3:
@@ -466,7 +471,7 @@ class CommonController extends Controller
 					<script id="body'.$rd.'" name="body" type="text/plain" style="width:100%;height:400px;">'.$data[$v['field']].'</script>
 						
 					</div>
-		            <label>'.$v['tips'].'</label>
+		            <label>'.$must.$v['tips'].'</label>
 		        </div>
 						<script>
 						$(document).ready(function(){
@@ -484,7 +489,7 @@ class CommonController extends Controller
 				$l .= '<div class="form-control">
 		            <label for="'.$v['field'].'">'.$v['fieldname'].'：</label>
 		            <input type="number" id="'.$v['field'].'" value="'.$data[$v['field']].'" name="'.$v['field'].'">
-		            <label>'.$v['tips'].'</label>
+		            <label>'.$must.$v['tips'].'</label>
 		        </div>';
 				break;
 				case 11:
@@ -492,7 +497,7 @@ class CommonController extends Controller
 				$l .= '<div class="form-control">
 		            <label for="'.$v['field'].'">'.$v['fieldname'].'：</label>
 		            <input type="date" id="'.$v['field'].'" value="'.date('Y-m-d H:i:s',$laydate).'" name="'.$v['field'].'">
-		            <label>'.$v['tips'].'</label>
+		            <label>'.$must.$v['tips'].'</label>
 		        </div>';
 				break;
 				case 5:
@@ -594,7 +599,7 @@ class CommonController extends Controller
 						$l.='>'.$s[0].'</option>';
 					}
 						$l.=  '</select>
-						<label>'.$v['tips'].'</label>
+						<label>'.$must.$v['tips'].'</label>
 	                </div>';
 				break;
 				case 12:
@@ -610,7 +615,7 @@ class CommonController extends Controller
 					$l.=' >'.$s[0];
 				}
 					$l.='</div>
-					<label>'.$v['tips'].'</label>
+					<label>'.$must.$v['tips'].'</label>
 					</div>';
 				break;
 				case 8:
@@ -625,7 +630,7 @@ class CommonController extends Controller
 					$l.='>'.$s[0];
 				}
 				$l 	.= '</div>
-					<label>'.$v['tips'].'</label>
+					<label>'.$must.$v['tips'].'</label>
 					</div>';
 				break;
 				case 9:
@@ -723,7 +728,7 @@ class CommonController extends Controller
 					$l.='>'.$vv[$body[1]].'</option>';
 				}
 					$l.=  '</select>
-                    <label>'.$v['tips'].'</label>
+                    <label>'.$must.$v['tips'].'</label>
                 </div>';
 				break;
 			}

@@ -959,10 +959,38 @@ class UserController extends Controller
 			}
 			$w['molds'] = $this->classtypedata[$w['tid']]['molds'];
 			$w['htmlurl'] = $this->classtypedata[$w['tid']]['htmlurl'];
+			$sql = array();
+			if($w['tid']!=0){
+				$sql[] = " tids like '%,".$w['tid'].",%' "; 
+			}
+			$sql[] = " molds = '".$w['molds']."' and isshow=1 ";
+			$sql = implode(' and ',$sql);
+			$fields_list = M('Fields')->findAll($sql,'orders desc,id asc');
+			if($fields_list){
+				foreach($fields_list as $v){
+					if($v['ismust']==1){
+						if($data[$v['field']]==''){
+							if(in_array($v['fieldtype'],array(6,10))){
+								if($data[$v['field'].'_urls']==''){
+									Error($v['fieldname'].'不能为空！');
+								}
+							}else{
+								Error($v['fieldname'].'不能为空！');
+							}
+							
+						}
+					}
+				}
+			}
+			
+
 			switch($w['molds']){
 				case 'article':
 					if(!$data['body']){
 						Error('内容不能为空！');
+					}
+					if(!$data['title']){
+						Error('标题不能为空！');
 					}
 					$data['body'] = $this->frparam('body',4);
 					$w['title'] = $this->frparam('title',1);
@@ -977,6 +1005,9 @@ class UserController extends Controller
 				case 'product':
 					if(!$data['body']){
 						Error('内容不能为空！');
+					}
+					if(!$data['title']){
+						Error('标题不能为空！');
 					}
 					$w['title'] = $this->frparam('title',1);
 					$w['seo_title'] = $w['title'];

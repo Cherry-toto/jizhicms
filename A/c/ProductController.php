@@ -39,6 +39,14 @@ class ProductController extends CommonController
 			
 			$page = new Page('product');
 			$sql = ' 1=1 ';
+			if($this->admin['isadmin']!=1){
+				$a1 = explode(',',$this->tids);
+				$a2 = array_filter($a1);
+				$tids = implode(',',$a2);
+				$sql.=' and tid in('.$tids.') ';
+
+
+			}
 			if($this->frparam('isshow')){
 				if($this->frparam('isshow')==1){
 					$isshow=1;

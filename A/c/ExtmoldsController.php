@@ -41,6 +41,7 @@ class ExtmoldsController extends Controller
 		   
 		  
 		}
+		 $this->admin = $_SESSION['admin'];
 		
 		  $webconf = webConf();
 		  $template = get_template();
@@ -50,6 +51,26 @@ class ExtmoldsController extends Controller
 		  $customconf = get_custom();
 		  $this->customconf = $customconf;
 		  $this->classtypetree =  get_classtype_tree();
+		  if($_SESSION['admin']['isadmin']!=1){
+			$tids = $_SESSION['admin']['tids'];
+			foreach ($this->classtypetree as $k => $v) {
+				if($v['pid']==0){
+					if(strpos($_SESSION['admin']['tids'],','.$v['id'].',')!==false){
+						$children = get_children($v,$this->classtypetree,5);
+						foreach($children as $vv){
+							if(strpos($_SESSION['admin']['tids'],','.$vv['id'].',')===false){
+								$tids .= ','.$vv['id'].',';
+							}
+						}
+					}
+				}
+				
+			}
+			
+		}else{
+			$tids = '0';
+		}
+		$this->tids = $tids;
 	}
 	public function index(){
 		
@@ -72,6 +93,12 @@ class ExtmoldsController extends Controller
 		if($this->frparam('ajax')){
 			
 			$sql = '1=1';
+			if($this->admin['isadmin']!=1){
+				$a1 = explode(',',$this->tids);
+				$a2 = array_filter($a1);
+				$tids = implode(',',$a2);
+				$sql.=' and tid in('.$tids.') ';
+			}
 			if($this->frparam('isshow')){
 				if($this->frparam('isshow')==1){
 					$isshow=1;

@@ -68,6 +68,7 @@ class AdminController extends CommonController
 			}
 			
 			$data['paction'] = (count($this->frparam('ruler',2))>0)?','.implode(',',$this->frparam('ruler',2)).',':'';
+			$data['tids'] = (count($this->frparam('tids',2))>0)?','.implode(',',$this->frparam('tids',2)).',':'';
 			if(M('level_group')->update(array('id'=>$data['id']),$data)){
 				JsonReturn(array('code'=>0,'msg'=>'修改成功！'));
 			}else{
@@ -104,6 +105,7 @@ class AdminController extends CommonController
 		if($this->frparam('go')==1){
 			$data = $this->frparam();
 			$data['paction'] = (count($this->frparam('ruler',2))>0)?','.implode(',',$this->frparam('ruler',2)).',':'';
+			$data['tids'] = (count($this->frparam('tids',2))>0)?','.implode(',',$this->frparam('tids',2)).',':'';
 			if(M('level_group')->add($data)){
 				JsonReturn(array('code'=>0,'msg'=>'新增成功！'));
 			}else{

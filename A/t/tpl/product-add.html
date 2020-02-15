@@ -63,7 +63,9 @@
 						<option value="0">选择栏目</option>
 					   {foreach $classtypes as $v}
 					   {if($v['molds']=='product')}
+					   {if($admin['isadmin']==1 || strpos($tids,','.$v['id'].',')!==false)}
 					   <option {if($tid==$v['id'])}selected{/if} value="{$v['id']}">{fun str_repeat('--', $v['level']), $v['classname']}</option>
+					   {/if}
 					   {/if}
 					   {/foreach}
 					   </select>

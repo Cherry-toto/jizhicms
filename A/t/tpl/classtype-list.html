@@ -64,12 +64,13 @@
 			  {$v['classname']}
             </td>
 			<td>{$moldslist[$v['molds']]['name']}</td>
+			{if($admin['isadmin'] || strpos($tids,','.$v['id'].',')!==false)}
 			<td class="td-status" >
 			{if(checkAction('Classtype/change_status'))}	
 				<input type="checkbox" value="{$v['id']}" name="switch" lay-filter="status"   lay-text="显示|隐藏"  lay-skin="switch" {if($v['isshow']==1)}checked{/if}>
 			{else}
 				{if($v['isshow']==1)}
-				<span class="layui-badge layui-bg-green">正常</span>
+				<span class="layui-badge layui-bg-green">显示</span>
 				{else}
 				<span class="layui-badge">隐藏</span>
 				{/if}
@@ -94,6 +95,20 @@
               <button class="layui-btn-danger layui-btn layui-btn-xs"  onclick="member_del(this,'{$v['id']}')" href="javascript:;" ><i class="layui-icon">&#xe640;</i>删除</button>
 			{/if}
             </td>
+			{else}
+			<td class="td-status" >
+				{if($v['isshow']==1)}
+				<span class="layui-badge layui-bg-green">显示</span>
+				{else}
+				<span class="layui-badge">隐藏</span>
+				{/if}
+			</td>
+			<td class="td-manage">-</td>
+			<td class="td-manage">-</td>
+	
+
+			{/if}
+
           </tr>
 		 {/foreach}
          

@@ -43,7 +43,35 @@
 					</div>
 					
                 </div>
-				
+				<div class="layui-form-item layui-form-text">
+                    <label class="layui-form-label">
+                        栏目权限
+                    </label>
+                    <table  class="layui-table layui-input-block">
+                        <tbody>
+
+                        {foreach $classtypetree as $v}
+                        {if($v['pid']==0)}
+                            <tr>
+                                <td>
+                                    <input type="checkbox" name="tids[]" lay-skin="primary" value="{$v['id']}" title="{$v['classname']}" {if(strpos($data['tids'],','.$v['id'].',')!==false)}checked{/if}>
+                                </td>
+                                <td>
+                                    <div class="layui-input-block">
+                                    {php $children = get_children($v,$classtypetree,5);/}
+                                    {foreach $children as $vv}
+                                        <input name="tids[]" lay-skin="primary" type="checkbox" title="{$vv['classname']}" value="{$vv['id']}" {if(strpos($data['tids'],','.$vv['id'].',')!==false)}checked{/if}> 
+                                    {/foreach}
+                                        
+                                    </div>
+                                </td>
+                            </tr>
+                        {/if}
+                        {/foreach}
+                           
+                        </tbody>
+                    </table>
+                </div>
                 <div class="layui-form-item layui-form-text">
                     <label class="layui-form-label">
                         拥有权限

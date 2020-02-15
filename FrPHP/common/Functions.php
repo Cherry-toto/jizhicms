@@ -39,7 +39,7 @@ function M($name=null) {
 			$path = 'FrPHP\lib\\Model';
 			return $path::getInstance($table);
 		}else{
-			return $name::getInstance();
+			return $name::getInstance($table);
 		}
 		
 	}

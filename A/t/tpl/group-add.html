@@ -35,14 +35,42 @@
                     </label>
                     <div class="layui-input-inline">
                         <input type="radio" name="isadmin" value="0" title="不是" checked>
-						<input type="radio" name="isadmin" value="1" title="是" {>
+						<input type="radio" name="isadmin" value="1" title="是" >
                     </div>
 					<div class="layui-form-mid layui-word-aux">
 					  超级管理员拥有无上权利，无视下面权限限制
 					</div>
 					
                 </div>
-				
+				<div class="layui-form-item layui-form-text">
+                    <label class="layui-form-label">
+                        栏目权限
+                    </label>
+                    <table  class="layui-table layui-input-block">
+                        <tbody>
+
+						{foreach $classtypetree as $v}
+						{if($v['pid']==0)}
+                            <tr>
+                                <td>
+                                    <input type="checkbox" name="tids[]" lay-skin="primary" value="{$v['id']}" title="{$v['classname']}" checked>
+                                </td>
+                                <td>
+                                    <div class="layui-input-block">
+                                    {php $children = get_children($v,$classtypetree,5);/}
+									{foreach $children as $vv}
+                                        <input name="tids[]" lay-skin="primary" type="checkbox" title="{$vv['classname']}" value="{$vv['id']}" checked> 
+									{/foreach}
+                                        
+                                    </div>
+                                </td>
+                            </tr>
+                        {/if}
+						{/foreach}
+                           
+                        </tbody>
+                    </table>
+                </div>
                 <div class="layui-form-item layui-form-text">
                     <label class="layui-form-label">
                         拥有权限

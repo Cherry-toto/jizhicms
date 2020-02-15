@@ -37,7 +37,6 @@ class ClasstypeController extends CommonController
 			$fs[$v['biaoshi']] = $v;
 		}
 		$this->molds = M('molds')->find(['biaoshi'=>'classtype']);
-		
 		$this->moldslist = $fs;
 		$this->display('classtype-list');
 	}
@@ -113,7 +112,7 @@ class ClasstypeController extends CommonController
 		$this->biaoshi = $this->frparam('biaoshi',1);
 		//$classtype = M('classtype')->findAll(null,'orders desc');
 		//$classtype = getTree($classtype);
-		$this->classtypes = $this->classtypetree;;
+		$this->classtypes = $this->classtypetree;
 			//var_dump($this->classtypes);
 		$this->display('classtype-add');
 		
@@ -221,7 +220,7 @@ class ClasstypeController extends CommonController
 		//$classtype = M('classtype')->findAll(null,'orders desc');
 		//$classtype = getTree($classtype);
 	
-		$this->classtypes = $this->classtypetree;;
+		$this->classtypes = $this->classtypetree;
 		$this->display('classtype-edit');
 		
 	}

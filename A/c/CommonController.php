@@ -41,6 +41,7 @@ class CommonController extends Controller
        
       
       }
+
 	  
 	  $this->admin = $_SESSION['admin'];
 	  
@@ -57,6 +58,27 @@ class CommonController extends Controller
 		$classtypedata[$k]['children'] = get_children($v,$classtypedata);
 	  }
 	  $this->classtypedata = $classtypedata;
+
+	  if($_SESSION['admin']['isadmin']!=1){
+			$tids = $_SESSION['admin']['tids'];
+			foreach ($this->classtypetree as $k => $v) {
+				if($v['pid']==0){
+					if(strpos($_SESSION['admin']['tids'],','.$v['id'].',')!==false){
+						$children = get_children($v,$this->classtypetree,5);
+						foreach($children as $vv){
+							if(strpos($_SESSION['admin']['tids'],','.$vv['id'].',')===false){
+								$tids .= ','.$vv['id'].',';
+							}
+						}
+					}
+				}
+				
+			}
+			
+		}else{
+			$tids = '0';
+		}
+		$this->tids = $tids;
     
     }
 	

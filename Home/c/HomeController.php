@@ -206,7 +206,7 @@ class HomeController extends CommonController
 			$this->pages = $pages;//组合分页
 			
 			foreach($data as $k=>$v){
-				if(isset($v['htmlurl'])){
+				if(isset($v['htmlurl']) && !isset($v['url'])){
 					$data[$k]['url'] = gourl($v['id'],$v['htmlurl']);
 				}
 				
@@ -382,7 +382,7 @@ class HomeController extends CommonController
 			$pages = $page->pageList(3,'-');
 			$this->pages = $pages;//组合分页
 			foreach($data as $k=>$v){
-				if(isset($v['htmlurl'])){
+				if(isset($v['htmlurl']) && !isset($v['url'])){
 					$data[$k]['url'] = gourl($v['id'],$v['htmlurl']);
 				}
 				
@@ -486,7 +486,10 @@ class HomeController extends CommonController
 			$this->error('未找到相应内容！');
 			exit;
 		}
-		$details['url'] = gourl($details['id'],$details['htmlurl']);
+		if(!isset($details['url'])){
+			$details['url'] = gourl($details['id'],$details['htmlurl']);
+		}
+		
 		
 		//body
 		if(array_key_exists('body',$details)){
@@ -624,7 +627,10 @@ class HomeController extends CommonController
 			$this->pages = $pages;//组合分页
 			
 			foreach($data as $k=>$v){
-				$data[$k]['url'] = gourl($v['id'],$v['htmlurl']);
+				if(isset($v['htmlurl']) && !isset($v['url'])){
+					$data[$k]['url'] = gourl($v['id'],$v['htmlurl']);
+				}
+				
 				$data[$k]['title'] = str_replace($word,'<b style="color:#f00">'.$word.'</b>',$v['title']);
 			}
 			
@@ -698,7 +704,10 @@ class HomeController extends CommonController
 			$data = $arraypage->setPage(['limit'=>10])->go();
 			
 			foreach($data as $k=>$v){
-				$data[$k]['url'] = gourl($v['id'],$v['htmlurl']);
+				if(isset($v['htmlurl']) && !isset($v['url'])){
+					$data[$k]['url'] = gourl($v['id'],$v['htmlurl']);
+				}
+				
 				$data[$k]['classname'] = $this->classtypedata[$v['tid']]['classname'];
 				$data[$k]['title'] = str_replace($word,'<b style="color:#f00">'.$word.'</b>',$v['title']);
 			}

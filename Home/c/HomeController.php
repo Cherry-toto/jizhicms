@@ -713,7 +713,7 @@ class HomeController extends CommonController
 			}
 			$this->lists = $data;
 			$this->pages = $arraypage->pageList();
-			$this->pagelist = $arraypage->pagelist;
+			$this->pagelist = $arraypage->listpage;
 			if($this->frparam('ajax')){
 				if($this->frparam('ajax_tpl')){
 					$this->display($this->template.'/ajax_searchall_list');

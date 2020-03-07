@@ -61,7 +61,7 @@
 			
 			</td>
 			<td>
-			{if(checkAction('Plugins/desc'))}
+			{if(checkAction('Plugins/desc') && $v['exists'])}
 			<button type="button" onclick="x_all_show('安装说明','{fun U('Plugins/desc',array('filepath'=>$v['filepath']))}')" class="layui-btn  layui-btn-xs"><i class="iconfont">&#xe6a3;</i>安装说明</button>
 			{else}
 			-
@@ -72,9 +72,15 @@
 				{if($v['isinstall'])}
 				<button type="button" onclick="actionDo('{$v['filepath']}',0)" class="layui-btn layui-btn-danger  layui-btn-xs"><i class="layui-icon layui-icon-close-fill">卸载</i></button> 
 				<button type="button" onclick="x_all_show('配置','{fun U('Plugins/setconf',array('id'=>$v['id']))}')" class="layui-btn layui-btn-normal layui-btn-xs"><i class="layui-icon layui-icon-set">配置</i></button>			
+				{else if($v['exists'])}
+				<button type="button" onclick="actionDo('{$v['filepath']}',2)" class="layui-btn  layui-btn-xs"><i class="layui-icon layui-icon-download-circle">安装</i></button>
 				{else}
-				<button type="button" onclick="actionDo('{$v['filepath']}',1)" class="layui-btn  layui-btn-xs"><i class="layui-icon layui-icon-download-circle">安装</i></button>
-				
+				<form class="layui-form" action="">
+				<button lay-submit  lay-filter="down" data-{$v['filepath']}-size="0" data-{$v['filepath']}-url="{$v['downurl']}" data="{$v['filepath']}" id="{$v['filepath']}-downbutton" class="layui-btn  layui-btn-xs layui-btn-warm"><i class="layui-icon layui-icon-download-circle">下载插件</i></button>
+				<div class="layui-progress  layui-progress-big"   id="{$v['filepath']}-down-action" lay-showpercent="true" lay-filter="demo-{$v['filepath']}-progress" style="margin: 30px;display:none;">
+				  <div class="layui-progress-bar" lay-percent="0%"></div>
+				</div>
+				</form>
 				{/if}
 			{else}
 			-
@@ -99,10 +105,78 @@
 		
 			$.post("{fun U('change_status')}",{filepath:data.elem.value},function(r){});
 		});
+		form.on('submit(down)', function (data) {
+			var filepath = $(data.elem).attr('data');
+			var download_url = $(data.elem).attr('data-'+filepath+'-url');
+			$("#"+filepath+"-downbutton").hide();
+			$("#"+filepath+"-down-action").show();
+			var othis = $("#"+filepath+"-down-action");
+          	var DISABLED = 'layui-btn-disabled';
+		    if(othis.hasClass(DISABLED)) return;
+			//获取文件大小
+			$.post({
+				url:"{fun U('plugins/update')}",
+				data:{action:'prepare-download',filepath:filepath,download_url:download_url},
+				async : false,
+				type : "POST",
+				dataType:'json',
+				success:function(res){
+					 if(res.code==0){
+						$(data.elem).attr('data-'+filepath+'-size',res.size);
+					 }else{
+					  layer.alert('获取文件大小失败，请检查网络！');return false;	
+					 }
+				}
+			});
+			
+		    $.post("{fun U('plugins/update')}",{action:'start-download',filepath:filepath,download_url:download_url},function(res){
+			    //开始下载
+			    console.log(res);
+			},'json');
+			
+		      //模拟loading
+		    var n = 0, timer = setInterval(function(){ 
+		        $.post("{fun U('plugins/update')}",{action:'get-file-size',filepath:filepath,download_url:download_url},function(res){
+		        	console.log(res);
+				    var cur_size = parseInt(res.size);
+				    console.log(cur_size);
+				    var filesize = parseInt($(data.elem).attr('data-'+filepath+'-size'));
+				    n = Math.round(cur_size/filesize)*100;
+				    if(n>=100){
+					  n = 90;//只加载到90%，剩下10%解压
+			          //$("#down-text").html('插件下载完成');
+					  console.log('插件下载完成，正在解压~');
+			          clearInterval(timer);
+			          othis.removeClass(DISABLED);
+			          element.progress('demo-'+filepath+'-progress', n+'%');
+					  $.post("{fun U('plugins/update')}",{filepath:filepath,download_url:download_url,'filesize':$(data.elem).attr('data-'+filepath+'-size'),'action':'file-upzip'},function(res){
+				        	if(res.code==0){
+				        		//$("#down-text").html('插件已下载完毕！');
+								console.log('插件已解压完毕！');
+				        		element.progress('demo-'+filepath+'-progress', '100%');
+								window.location.reload();
+				        	}else{
+				        		
+				        		layer.msg(res.msg);return false;
+				        	}
 
+						   
+						},'json');
+			          
+
+			        }
+			        element.progress('demo-'+filepath+'-progress', n+'%');
+				},'json');
+
+		       
+		    }, 1000);
+			
+			 return false;
+			})
+		
 		
       });
-	  
+
 	  function actionDo(path,type){
 			  $.ajax({
 				 url:"{fun U('action_do')}",

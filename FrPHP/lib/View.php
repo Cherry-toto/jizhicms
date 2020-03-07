@@ -85,8 +85,9 @@ class View
 	public function template($controllerLayout){
 		extract($this->variables);//分配变量到模板中
 		//对路径文件换为缓存目录  '/'换为'-'
-		$layout = str_ireplace(array("//","/"),'_',$controllerLayout);
-		$cache_file = str_ireplace('.html','.php',APP_PATH.'/cache/'.$layout);
+		//$layout = str_ireplace(array("//","/"),'_',$controllerLayout);
+		//$cache_file = str_ireplace('.html','.php',APP_PATH.'/cache/'.$layout);
+		$cache_file = Cache_Path.'/'.md5($controllerLayout).'.php';
 		$this->_cachefile = $cache_file;//传入系统中
 		
 		if(APP_DEBUG===true){

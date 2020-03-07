@@ -45,48 +45,79 @@ class PluginsController extends CommonController
 		$timeout = 3;
 		curl_setopt($ch,CURLOPT_FOLLOWLOCATION,1);
 		curl_setopt($ch,CURLOPT_RETURNTRANSFER,1);
-		curl_setopt($ch, CURLOPT_HEADER, 1);
+		curl_setopt($ch, CURLOPT_HEADER, false);
 		curl_setopt ($ch, CURLOPT_CONNECTTIMEOUT, $timeout);
 		curl_setopt($ch,CURLOPT_URL,$api);
-		curl_exec($ch);
+		$res = curl_exec($ch);
 		$httpcode = curl_getinfo($ch,CURLINFO_HTTP_CODE);
 		curl_close($ch);
 		if($httpcode==200){
 			$isok = true;
+			$res1 = json_decode($res,1);
+			if($res1['code']!=0){
+				$isok = false;
+			}else{
+				$allplugins = $res1['data'];
+			}
 		}else{
 			$isok = false;
 		}
-		foreach($fileArray as $k=>$v){
-
-			//检查是否安装
-			if(strpos($v,'.')===false){
-				$config = require_once($dir.'/'.$v.'/config.php');
-				if(isset($plugins[$v])){
-					$lists[$k] = $plugins[$v];
-					$lists[$k]['isinstall'] = true;
-				}else{
-					$lists[] = ['name'=>$config['name'],'filepath'=>$v,'description'=>$config['desc'],'version'=>$config['version'],'author'=>$config['author'],'update_time'=>strtotime($config['update_time']),'module'=>$config['module'],'isopen'=>0,'config'=>'','isinstall'=>false];
-				}
-				//检查是否有更新
-				if($isok){
-					$r = file_get_contents('http://api.jizhicms.cn/plugins.php?name='.$v.'&v='.$config['version']);
-					$rr = json_decode($r,1);
-					if($rr['code']==0){
+		if($isok){
+			foreach($allplugins as $k=>$v){
+				if(in_array($k,$fileArray)){
+					//已下载该插件
+					$config = require_once($dir.'/'.$k.'/config.php');
+					if(isset($plugins[$k])){
+						$lists[$k] = $plugins[$k];
+						$lists[$k]['isinstall'] = true;
+					}else{
+						$lists[$k] = ['name'=>$config['name'],'filepath'=>$k,'description'=>$config['desc'],'version'=>$config['version'],'author'=>$config['author'],'update_time'=>strtotime($config['update_time']),'module'=>$config['module'],'isopen'=>0,'config'=>'','isinstall'=>false];
+					}
+					if(!version_compare($config['version'],$v['version'],'==')){
 						//有更新
 						$lists[$k]['isupdate'] = true;
 					}else{
 						//无更新
 						$lists[$k]['isupdate'] = false;
 					}
+					$lists[$k]['exists'] = true;
+					
+					
 				}else{
+					$lists[$k] = $v;
+					$lists[$k]['exists'] = false;
+					$lists[$k]['description'] = $v['desc'];
+					$lists[$k]['isinstall'] = false;
 					$lists[$k]['isupdate'] = false;
+					
 				}
+				
+				
+			}
+		}else{
+			
+			foreach($fileArray as $k=>$v){
+
+				//检查是否安装
+				if(strpos($v,'.')===false){
+					$config = require_once($dir.'/'.$v.'/config.php');
+					if(isset($plugins[$v])){
+						$lists[$k] = $plugins[$v];
+						$lists[$k]['isinstall'] = true;
+					}else{
+						$lists[] = ['name'=>$config['name'],'filepath'=>$v,'description'=>$config['desc'],'version'=>$config['version'],'author'=>$config['author'],'update_time'=>strtotime($config['update_time']),'module'=>$config['module'],'isopen'=>0,'config'=>'','isinstall'=>false];
+					}
+					$lists[$k]['isupdate'] = false;
+					$lists[$k]['exists'] = true;
+					
+				}
+				
+				
 				
 			}
 			
-			
-			
 		}
+		
 		
 		$this->lists = $lists;
 		
@@ -125,7 +156,7 @@ class PluginsController extends CommonController
 		$type = $this->frparam('type');
 		$dir = APP_PATH.APP_HOME.'/exts';
 		if($filepath){
-			if($type){
+			if($type==1){
 				//安装
 				//执行插件控制器安装程序
 				require_once($dir.'/'.$filepath.'/PluginsController.php');
@@ -204,6 +235,9 @@ class PluginsController extends CommonController
 				
 				
 				JsonReturn(array('code'=>0,'msg'=>'安装成功！'));
+			}else if($type==2){
+				//下载插件
+				
 			}else{
 				//卸载
 				$config = require_once($dir.'/'.$filepath.'/config.php');
@@ -373,7 +407,19 @@ class PluginsController extends CommonController
 				switch ($action) {
 				    case 'prepare-download':
 				    	$code = 0;
-				        JsonReturn(compact('code','remote_url', 'tmp_path', 'file_size'));
+						ob_start(); 
+						$ch=curl_init($remote_url); 
+						curl_setopt($ch,CURLOPT_HEADER,1); 
+						curl_setopt($ch,CURLOPT_NOBODY,1); 
+						$okay=curl_exec($ch); 
+						curl_close($ch); 
+						$head=ob_get_contents(); 
+						ob_end_clean(); 
+						$regex='/Content-Length:\s([0-9].+?)\s/'; 
+						$count=preg_match($regex,$head,$matches); 
+						$filesize = isset($matches[1])&&is_numeric($matches[1])?$matches[1]:0; 
+
+				        JsonReturn(array('code'=>0,'size'=>$filesize));
 				        break;
 				    case 'start-download':
 				        // 这里检测下 tmp_path 是否存在
@@ -458,10 +504,14 @@ class PluginsController extends CommonController
 						}
 
 						$config = require_once($dir.'/'.$filepath.'/config.php');
-						$w = ['name'=>$config['name'],'filepath'=>$filepath,'description'=>$config['desc'],'version'=>$config['version'],'author'=>$config['author'],'update_time'=>strtotime($config['update_time']),'module'=>$config['module'],'isopen'=>0,'config'=>'','addtime'=>time()];
-						//if(M('plugins')->find(['filepath'=>$w['filepath']])){
-						//	JsonReturn(array('code'=>1,'msg'=>'插件已安装，请勿重复操作！'));
-						//}
+						
+						$plg_old = M('plugins')->find(['filepath'=>$w['filepath']]);
+						if($plg_old){
+							//保存原配置
+							$w = ['name'=>$config['name'],'filepath'=>$filepath,'description'=>$config['desc'],'version'=>$config['version'],'author'=>$config['author'],'update_time'=>strtotime($config['update_time']),'module'=>$config['module'],'isopen'=>0,'config'=>$plg_old['config'],'addtime'=>time()];
+						}else{
+							$w = ['name'=>$config['name'],'filepath'=>$filepath,'description'=>$config['desc'],'version'=>$config['version'],'author'=>$config['author'],'update_time'=>strtotime($config['update_time']),'module'=>$config['module'],'isopen'=>0,'config'=>'','addtime'=>time()];
+						}
 						//复制文件到对应文件夹
 						//移动前台插件控制器
 						$sourcefile = $dir.'/'.$filepath.'/controller/home';
@@ -553,7 +603,8 @@ class PluginsController extends CommonController
 				$this->filepath = $filepath;
 				$this->display('plugins-update');exit;
 			}else{
-				JsonReturn(array('code'=>1,'msg'=>'该插件暂无更新！'));
+				//JsonReturn(array('code'=>1,'msg'=>'该插件暂无更新！'));
+				exit('该插件暂无更新！');
 			}
 
 			

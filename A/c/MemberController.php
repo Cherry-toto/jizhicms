@@ -95,6 +95,14 @@ class MemberController extends CommonController
 		if($this->frparam('go')==1){
 			$data = $this->frparam();
 			$data = get_fields_data($data,'member');
+			$data['username'] = $this->frparam('username',1);
+			$data['email'] = $this->frparam('email',1);
+			$data['litpic'] = $this->frparam('litpic',1);
+			$data['address'] = $this->frparam('address',1);
+			$data['province'] = $this->frparam('province',1);
+			$data['city'] = $this->frparam('city',1);
+			$data['signature'] = $this->frparam('signature',1);
+			$data['birthday'] = $this->frparam('birthday',1);
 			//检查是否邮箱/手机号重复
 			if(M('member')->find(['email'=>$data['email']])){
 				JsonReturn(array('code'=>1,'msg'=>'邮箱已被注册！'));
@@ -123,6 +131,14 @@ class MemberController extends CommonController
 		if($this->frparam('go')==1){
 			$data = $this->frparam();
 			$data = get_fields_data($data,'member');
+			$data['username'] = $this->frparam('username',1);
+			$data['email'] = $this->frparam('email',1);
+			$data['litpic'] = $this->frparam('litpic',1);
+			$data['address'] = $this->frparam('address',1);
+			$data['province'] = $this->frparam('province',1);
+			$data['city'] = $this->frparam('city',1);
+			$data['signature'] = $this->frparam('signature',1);
+			$data['birthday'] = $this->frparam('birthday',1);
 			if($data['pass']!=''){
 				if($data['pass']!=$data['repass']){
 					JsonReturn(array('code'=>1,'msg'=>'两次密码不同！'));
@@ -214,6 +230,8 @@ class MemberController extends CommonController
 		$this->fields_biaoshi = 'member_group';
 		if($this->frparam('go')==1){
 			$data = $this->frparam();
+			$data['name'] = $this->frparam('name',1);
+			$data['description'] = $this->frparam('description',1);
 			if($this->frparam('ruler',2)){
 				$data['paction'] = (count($this->frparam('ruler',2))>0)?','.implode(',',$this->frparam('ruler',2)).',':'';
 			}else{
@@ -251,6 +269,8 @@ class MemberController extends CommonController
 		$this->fields_biaoshi = 'member_group';
 		if($this->frparam('go')==1){
 			$data = $this->frparam();
+			$data['name'] = $this->frparam('name',1);
+			$data['description'] = $this->frparam('description',1);
 			if($this->frparam('ruler',2)){
 				$data['paction'] = (count($this->frparam('ruler',2))>0)?','.implode(',',$this->frparam('ruler',2)).',':'';
 			}else{

@@ -66,7 +66,8 @@ class AdminController extends CommonController
 			if($data['id']==1 && $this->admin['gid']!=1){
 				JsonReturn(array('code'=>1,'msg'=>'修改失败，您的权限不足！'));
 			}
-			
+			$data['name'] = $this->frparam('name',1);
+			$data['description'] = $this->frparam('description',1);
 			$data['paction'] = (count($this->frparam('ruler',2))>0)?','.implode(',',$this->frparam('ruler',2)).',':'';
 			$data['tids'] = (count($this->frparam('tids',2))>0)?','.implode(',',$this->frparam('tids',2)).',':'';
 			if(M('level_group')->update(array('id'=>$data['id']),$data)){
@@ -104,6 +105,8 @@ class AdminController extends CommonController
 		$this->fields_biaoshi = 'level_group';
 		if($this->frparam('go')==1){
 			$data = $this->frparam();
+			$data['name'] = $this->frparam('name',1);
+			$data['description'] = $this->frparam('description',1);
 			$data['paction'] = (count($this->frparam('ruler',2))>0)?','.implode(',',$this->frparam('ruler',2)).',':'';
 			$data['tids'] = (count($this->frparam('tids',2))>0)?','.implode(',',$this->frparam('tids',2)).',':'';
 			if(M('level_group')->add($data)){

@@ -159,7 +159,7 @@ class FieldsController extends CommonController
 				if($data['vdata']){
 					$sql .=  "'".$data['vdata']."'";
 				}else{
-					$sql .= " '0.00' NOT NULL ";
+					$sql .= " '".$data['body_14']."' NOT NULL ";
 				}
 				break;
 				
@@ -295,7 +295,7 @@ class FieldsController extends CommonController
 					if($data['vdata']){
 						$sql .=  "'".$data['vdata']."'";
 					}else{
-						$sql .= " '0.00' NOT NULL ";
+						$sql .= " '".$data['body_14']."' NOT NULL ";
 					}
 					break;
 					case 5:

@@ -145,7 +145,6 @@ class CommonController extends Controller
 	}
 
 	function uploads(){
-		$this->checklogin();
 		$file = $this->frparam('filename',1);
 		if(!$file){
 			$file = 'file';
@@ -229,14 +228,18 @@ class CommonController extends Controller
 	}
 	
 	function get_fields(){
-		$this->checklogin();
+		
 		error_reporting(E_ALL^E_NOTICE);
+		$molds = strtolower($this->frparam('molds',1,'message'));
+		if($molds!='message'){
+			$this->checklogin();
+		}
 		$tid = $this->frparam('tid');
 		$sql = array();
 		if($tid!=0){
 			$sql[] = " tids like '%,".$tid.",%' "; 
 		}
-		$molds = strtolower($this->frparam('molds',1));
+		
 		if(!M('molds')->find(['biaoshi'=>$molds])){
 			JsonReturn(['code'=>1,'msg'=>'参数错误！']);
 		}

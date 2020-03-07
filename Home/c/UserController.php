@@ -1052,7 +1052,7 @@ class UserController extends Controller
     	$molds = $this->frparam('molds',1,'article');
     	$tid = $this->frparam('tid',0,0);
     	if($this->frparam('id')){
-    		$this->data = M('article')->find(['id'=>$this->frparam('id'),'member_id'=>$this->member['id']]);
+    		$this->data = M($molds)->find(['id'=>$this->frparam('id'),'member_id'=>$this->member['id']]);
     		$molds = $this->data['molds'];
     		$tid = $this->data['tid'];
     	}else{

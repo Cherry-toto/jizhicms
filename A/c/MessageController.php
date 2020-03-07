@@ -45,6 +45,14 @@ class MessageController extends CommonController
 		if($this->frparam('ajax')){
 			$page = new Page('Message');
 			$sql = ' 1=1 ';
+			if($this->admin['isadmin']!=1){
+				$a1 = explode(',',$this->tids);
+				$a2 = array_filter($a1);
+				$tids = implode(',',$a2);
+				$sql.=' and tid in('.$tids.') ';
+
+
+			}
 			if($this->frparam('isshow')){
 				$isshow = $this->frparam('isshow')==1 ? 1 : 0;
 				$sql .= ' and isshow='.$isshow;

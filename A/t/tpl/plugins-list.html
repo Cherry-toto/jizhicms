@@ -73,7 +73,7 @@
 				<button type="button" onclick="actionDo('{$v['filepath']}',0)" class="layui-btn layui-btn-danger  layui-btn-xs"><i class="layui-icon layui-icon-close-fill">卸载</i></button> 
 				<button type="button" onclick="x_all_show('配置','{fun U('Plugins/setconf',array('id'=>$v['id']))}')" class="layui-btn layui-btn-normal layui-btn-xs"><i class="layui-icon layui-icon-set">配置</i></button>			
 				{else if($v['exists'])}
-				<button type="button" onclick="actionDo('{$v['filepath']}',2)" class="layui-btn  layui-btn-xs"><i class="layui-icon layui-icon-download-circle">安装</i></button>
+				<button type="button" onclick="actionDo('{$v['filepath']}',1)" class="layui-btn  layui-btn-xs"><i class="layui-icon layui-icon-download-circle">安装</i></button>
 				{else}
 				<form class="layui-form" action="">
 				<button lay-submit  lay-filter="down" data-{$v['filepath']}-size="0" data-{$v['filepath']}-url="{$v['downurl']}" data="{$v['filepath']}" id="{$v['filepath']}-downbutton" class="layui-btn  layui-btn-xs layui-btn-warm"><i class="layui-icon layui-icon-download-circle">下载插件</i></button>

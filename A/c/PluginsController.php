@@ -502,7 +502,7 @@ class PluginsController extends CommonController
 
 						$config = require_once($dir.'/'.$filepath.'/config.php');
 						
-						$plg_old = M('plugins')->find(['filepath'=>$w['filepath']]);
+						$plg_old = M('plugins')->find(['filepath'=>$filepath]);
 						if($plg_old){
 							//保存原配置
 							$w = ['name'=>$config['name'],'filepath'=>$filepath,'description'=>$config['desc'],'version'=>$config['version'],'author'=>$config['author'],'update_time'=>strtotime($config['update_time']),'module'=>$config['module'],'isopen'=>0,'config'=>$plg_old['config'],'addtime'=>time()];

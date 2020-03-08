@@ -156,7 +156,7 @@ class PluginsController extends CommonController
 		$type = $this->frparam('type');
 		$dir = APP_PATH.APP_HOME.'/exts';
 		if($filepath){
-			if($type==1){
+			if($type){
 				//安装
 				//执行插件控制器安装程序
 				require_once($dir.'/'.$filepath.'/PluginsController.php');
@@ -235,9 +235,6 @@ class PluginsController extends CommonController
 				
 				
 				JsonReturn(array('code'=>0,'msg'=>'安装成功！'));
-			}else if($type==2){
-				//下载插件
-				
 			}else{
 				//卸载
 				$config = require_once($dir.'/'.$filepath.'/config.php');

@@ -44,6 +44,7 @@ CREATE TABLE `jz_buylog` (
   `type` tinyint(1) DEFAULT '1',
   `buytype` varchar(20) DEFAULT NULL,
   `msg` varchar(255) DEFAULT NULL,
+  `molds` varchar(255) DEFAULT NULL,
   `amount` decimal(10,2) NOT NULL DEFAULT '0.00',
   `money` decimal(10,2) NOT NULL DEFAULT '0.00',
   `addtime` int(11) DEFAULT '0',

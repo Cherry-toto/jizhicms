@@ -482,11 +482,16 @@ class PluginsController extends CommonController
 						}
 						} 
 						zip_close($resource); //关闭压缩包
-						if(M('plugins')->find(['filepath'=>$filepath])){
+						if($filepath=='jizhicmsupdate'){
 							$isinstall = true;
 						}else{
-							$isinstall = false;
+							if(M('plugins')->find(['filepath'=>$filepath])){
+								$isinstall = true;
+							}else{
+								$isinstall = false;
+							}
 						}
+						
 						JsonReturn(['code'=>0,'msg'=>'解压完成！','isinstall'=>$isinstall]);
 				    	break;
 				    case 'plugin-install':

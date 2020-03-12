@@ -39,6 +39,7 @@ CREATE TABLE `jz_article` (
 DROP TABLE IF EXISTS `jz_buylog`;
 CREATE TABLE `jz_buylog` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `aid` int(11) DEFAULT '0',
   `userid` int(11) DEFAULT '0',
   `orderno` varchar(255) DEFAULT NULL,
   `type` tinyint(1) DEFAULT '1',

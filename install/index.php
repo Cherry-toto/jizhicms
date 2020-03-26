@@ -286,7 +286,7 @@ switch($act){
 			$admin_url = $admin_url.'.php';
 		}
 		$r = file_put_contents('../'.$admin_url,$data);
-		if($r){
+		if($r && $old_url!=$admin_url){
 			if(file_exists('../'.$old_url)){
 				unlink('../'.$old_url);
 			}

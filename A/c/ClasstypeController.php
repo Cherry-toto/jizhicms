@@ -337,6 +337,40 @@ class ClasstypeController extends CommonController
 		
 	}
 	
+	public function get_html(){
+		$molds = $this->frparam('molds',1,'article');
+		//获取前台template
+		$indexdata = file_get_contents(APP_PATH.'index.php');
+		$r = preg_match("/define\('HOME_VIEW','([^']+)'\)/",$indexdata,$matches);
+		if($r){
+			$template = $matches[1];
+		}else{
+			$template = 'template';
+		}
+		
+		$dir = APP_PATH.'Home/'.$template.'/'.$this->webconf['pc_template'].'/'.strtolower($molds);
+		$fileArray=array();
+		if(is_dir($dir)){
+
+			if (false != ($handle = opendir ( $dir ))) {
+				$i=0;
+				while ( false !== ($file = readdir ( $handle )) ) {
+					//去掉"“.”、“..”以及带“.xxx”后缀的文件
+					if ($file != "." && $file != ".."&& strpos($file,".html")!==false) {
+						$fileArray[$i]=['html'=>$file,'value'=>str_replace('.html','',$file)];
+						
+						$i++;
+					}
+				}
+				//关闭句柄
+				closedir ( $handle );
+			}
+		}
+		
+		JsonReturn(['code'=>0,'data'=>$fileArray,'path'=>$dir]);
+
+	}
+	
 	
 }
 	

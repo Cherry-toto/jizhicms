@@ -440,7 +440,7 @@ CREATE TABLE `jz_ruler` (
   `isdesktop` tinyint(1) NOT NULL DEFAULT '0',
   `sys` tinyint(1) NOT NULL DEFAULT '0' COMMENT '1系统自带0不是系统自带',
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=183 DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM AUTO_INCREMENT=184 DEFAULT CHARSET=utf8;
 -- ----------------------------
 -- Table structure for jz_sysconfig
 -- ----------------------------
@@ -862,6 +862,7 @@ INSERT INTO `jz_ruler` (`id`,`name`,`fc`,`pid`,`isdesktop`,`sys`) VALUES ('179',
 INSERT INTO `jz_ruler` (`id`,`name`,`fc`,`pid`,`isdesktop`,`sys`) VALUES ('180','批量删除记录','Order/delAllbuylog','128','0','1');
 INSERT INTO `jz_ruler` (`id`,`name`,`fc`,`pid`,`isdesktop`,`sys`) VALUES ('181','积分配置','Sys/jifenset','39','0','1');
 INSERT INTO `jz_ruler` (`id`,`name`,`fc`,`pid`,`isdesktop`,`sys`) VALUES ('182','插件更新','Plugins/update','75','0','1');
+INSERT INTO `jz_ruler` (`id`,`name`,`fc`,`pid`,`isdesktop`,`sys`) VALUES ('183','获取栏目模板','Classtype/get_html','41','0','1');
 -- ----------------------------
 -- Records of jz_sysconfig
 -- ----------------------------

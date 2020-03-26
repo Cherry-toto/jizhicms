@@ -335,13 +335,15 @@
 		  {/foreach}
 		  {else if($type==5)}
 		  {foreach $lists as $v}
-		  <tr>
-			<td>{$v['id']}</td>
-			<td><a href="{$v['url']}" target="_blank" class="title">{$v['title']}</a></td>
-			<td><span class="btn-table btn-light">{$v['classname']}</span></th>
-			<td><a {if($v['member_id']!=0)}href="{fun U('user/active',['uid'=>$v['member_id']])}"{/if} target="_blank" class="title">{if($v['member_id']!=0)}{fun memberInfo($v['member_id'],'username')}{else}[官方]{/if}</a></td>
-			<td><a href="{$v['url']}" target="_blank" class="btn-edit">查看</a><a href="javascript:;" onclick="javascript:if(confirm('您确定要删除吗?'))window.location.href='{$v['del']}'" class="btn-delete">删除</a></td>
-		  </tr>
+		  <li>
+		   
+			<p>
+			<a href="{$v['url']}" target="_blank" class="title">{$v['title']}</a>
+			<span class="btn-table btn-light">{$v['classname']}</span>
+			<a {if($v['member_id']!=0)}href="{fun U('user/active',['uid'=>$v['member_id']])}"{/if} target="_blank" class="title">{if($v['member_id']!=0)}{fun memberInfo($v['member_id'],'username')}{else}[官方]{/if}</a>
+			</p>
+			
+		  </li>
 		  {/foreach}
 		  {else if($type==6)}
 		  {foreach $lists as $v}

@@ -39,11 +39,13 @@ CREATE TABLE `jz_article` (
 DROP TABLE IF EXISTS `jz_buylog`;
 CREATE TABLE `jz_buylog` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `aid` int(11) DEFAULT '0',
   `userid` int(11) DEFAULT '0',
   `orderno` varchar(255) DEFAULT NULL,
   `type` tinyint(1) DEFAULT '1',
   `buytype` varchar(20) DEFAULT NULL,
   `msg` varchar(255) DEFAULT NULL,
+  `molds` varchar(255) DEFAULT NULL,
   `amount` decimal(10,2) NOT NULL DEFAULT '0.00',
   `money` decimal(10,2) NOT NULL DEFAULT '0.00',
   `addtime` int(11) DEFAULT '0',
@@ -937,7 +939,7 @@ INSERT INTO `jz_ruler` (`id`,`name`,`fc`,`pid`,`isdesktop`,`sys`) VALUES ('182',
 -- ----------------------------
 -- Records of jz_sysconfig
 -- ----------------------------
-INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`) VALUES ('1','web_version','系统版号', NULL,'0','1.6.6');
+INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`) VALUES ('1','web_version','系统版号', NULL,'0','1.6.7');
 INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`) VALUES ('2','web_name','网站SEO名称', NULL,'0','极致CMS建站系统');
 INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`) VALUES ('3','web_keyword','网站SEO关键词', NULL,'0','极致CMS');
 INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`) VALUES ('4','web_desc','网站SEO描述', NULL,'0','极致CMS');
@@ -1000,7 +1002,7 @@ INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`) VALUES ('5
 INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`) VALUES ('52','wx_login_token','公众号token','用户登录相关，如果跟支付的一样，那就再填写一遍','0', NULL);
 INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`) VALUES ('53','huanying','公众号关注欢迎语','公众号关注时发送的第一句推送','0','欢迎关注公众号~');
 INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`) VALUES ('54','wx_token','自主平台微信token','支付相关','0', NULL);
-INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`) VALUES ('55','jz_55','测试ABC', NULL,'1', NULL);
+INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`) VALUES ('55','web_logo','网站LOGO', NULL,'0', '/static/default/assets/img/logo.png');
 INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`) VALUES ('56','admintpl','后台模板风格','默认tpl,原始风格default','0','tpl');
 INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`) VALUES ('58','isopenwebsite','是否绑定多域名','开启绑定多域名后，需要到插件中配置','0','1');
 INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`) VALUES ('59','domain','网站网址','全局网址,最后不带/（斜杠）','0', NULL);

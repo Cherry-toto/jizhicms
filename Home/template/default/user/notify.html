@@ -62,8 +62,8 @@
           <li>
             <div class="record-item">
             <p><span>时间：{$v['date']}</span>{if(!$v['isread'])}<span class="fr btn-sm btn-warning">未读</span>{else}<span class="fr btn-sm btn-success">已读</span>{/if}</p>
-              <p><span>交易提醒： <a href="{$v['turl']}">{fun newstr($v['body'],30)}</a> </span></p>
-              <h4><span class="text-info">【{$classtypedata[$v['tid']]['classname']}】</span><span class="fr"><a href="javascript:;" onclick="javascript:if(confirm('您确定要删除吗?'))window.location.href='{$v['del']}'" class="change" title="删除">删除</a><a href="{$v['turl']}" class="btn-more" title="查看详情">查看详情</a></span></h4>
+              <p><span>交易提醒： <a href="{$v['turl']}">{$v['body']}</a> </span></p>
+              <h4><span class="text-info">  </span><span class="fr"><a href="javascript:;" onclick="javascript:if(confirm('您确定要删除吗?'))window.location.href='{$v['del']}'" class="change" title="删除">删除</a><a href="{$v['turl']}" class="btn-more" title="查看详情">查看详情</a></span></h4>
             </div>
           </li>
         {/if}

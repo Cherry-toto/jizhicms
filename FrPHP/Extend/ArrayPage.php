@@ -193,9 +193,8 @@
 			
 			if($this->currentPage!=1){
 				$list = $prev.'<li><a href="'.$this->url.'1" data-page="1">首页</a></li>'.$list;
-				$listpage['prev'] = $this->url.($this->currentPage-1);
 			}
-			
+			$listpage['prev'] = $this->url.($this->currentPage-1);
 			if($this->currentPage<$this->allpage){
 				$list .= $next;
 				$listpage['next'] = $this->url.($this->currentPage+1);
@@ -203,8 +202,8 @@
 			
 			if($this->allpage > $this->pv){
 				$list .= $last;
-				$listpage['next'] = $this->url.$this->allpage;
 			}
+			$listpage['next'] = $this->url.$this->allpage;
 			$list.=$all;
 			$list = $ext.$list.'</ul></div>';
 			$this->listpage = $listpage;

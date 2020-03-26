@@ -57,14 +57,16 @@ class SysController extends CommonController
 			   $new['title'] = $this->frparam('custom_title',1);
 			   $new['data'] = '';
 			   $new['type'] = $this->frparam('custom_type');
-			  
-			   $new['field'] = 'jizhi_demo';
-			   $n = M('sysconfig')->add($new);
-			   if($n){
-				   M('sysconfig')->update(['id'=>$n],['field'=>'jz_'.$n]);
-			   }
-			   
-			   
+			   if($this->frparam('custom_fields',1)){
+				   $new['field'] = $this->frparam('custom_fields',1);
+				   $n = M('sysconfig')->add($new);
+			   }else{
+				   $new['field'] = 'jizhi_demo';
+				   $n = M('sysconfig')->add($new);
+				   if($n){
+					   M('sysconfig')->update(['id'=>$n],['field'=>'jz_'.$n]);
+				   }
+			   } 
 		   }
 		   
 		   if($this->frparam('isdebug')){

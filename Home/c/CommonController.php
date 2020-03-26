@@ -179,14 +179,8 @@ class CommonController extends Controller
 				JsonReturn($data);
 			}
 		  	
-		  	if(ROOT=='/'){
-		  		$root = '';
-		  	}else{
-		  		$root = substr(ROOT,1);
-		  	}
-
-		  	
-		    $filename =  $root.'Public/Home/'.date('Ymd').rand(1000,9999).'.'.$pix;
+		  
+		    $filename =  'Public/Home/'.date('Ymd').rand(1000,9999).'.'.$pix;
 		  
 			if(move_uploaded_file($_FILES[$file]['tmp_name'],$filename)){
 				$data['url'] = $filename;

@@ -94,6 +94,24 @@ class PluginsController extends CommonController
 				
 				
 			}
+			
+			//检查软件是否还有自定义软件未加入进去
+			foreach($fileArray as $v){
+				if(!isset($lists[$v])){
+					//已下载该插件
+					$config = require_once($dir.'/'.$v.'/config.php');
+					if(isset($plugins[$v])){
+						$lists[$v] = $plugins[$v];
+						$lists[$v]['isinstall'] = true;
+					}else{
+						$lists[$v] = ['name'=>$config['name'],'filepath'=>$v,'description'=>$config['desc'],'version'=>$config['version'],'author'=>$config['author'],'update_time'=>strtotime($config['update_time']),'module'=>$config['module'],'isopen'=>0,'config'=>'','isinstall'=>false];
+					}
+					$lists[$v]['isupdate'] = false;
+					$lists[$v]['exists'] = true;
+				}
+			}
+			
+			
 		}else{
 			
 			foreach($fileArray as $k=>$v){
@@ -482,11 +500,16 @@ class PluginsController extends CommonController
 						}
 						} 
 						zip_close($resource); //关闭压缩包
-						if(M('plugins')->find(['filepath'=>$filepath])){
+						if($filepath=='jizhicmsupdate'){
 							$isinstall = true;
 						}else{
-							$isinstall = false;
+							if(M('plugins')->find(['filepath'=>$filepath])){
+								$isinstall = true;
+							}else{
+								$isinstall = false;
+							}
 						}
+						
 						JsonReturn(['code'=>0,'msg'=>'解压完成！','isinstall'=>$isinstall]);
 				    	break;
 				    case 'plugin-install':
@@ -502,7 +525,7 @@ class PluginsController extends CommonController
 
 						$config = require_once($dir.'/'.$filepath.'/config.php');
 						
-						$plg_old = M('plugins')->find(['filepath'=>$w['filepath']]);
+						$plg_old = M('plugins')->find(['filepath'=>$filepath]);
 						if($plg_old){
 							//保存原配置
 							$w = ['name'=>$config['name'],'filepath'=>$filepath,'description'=>$config['desc'],'version'=>$config['version'],'author'=>$config['author'],'update_time'=>strtotime($config['update_time']),'module'=>$config['module'],'isopen'=>0,'config'=>$plg_old['config'],'addtime'=>time()];

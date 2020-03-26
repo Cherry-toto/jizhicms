@@ -39,7 +39,7 @@ class IndexController extends CommonController
 	}
 	public function details(){
 		$this->fields_biaoshi = 'level';
-		$id = frdecode($this->frparam('id',1));
+		$id = $this->admin['id'];
 		if($this->frparam('go')==1){
 			$data = $this->frparam();
 			$data = get_fields_data($data,'level');

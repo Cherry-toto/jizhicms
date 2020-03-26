@@ -365,7 +365,8 @@ class FrPHP
     {
      
         if (APP_DEBUG === true) {
-            error_reporting(E_ALL);
+            //error_reporting(E_ALL);
+			error_reporting(E_ALL & ~E_NOTICE & ~E_WARNING);
             ini_set('display_errors','On');
         } else {
             error_reporting(E_ALL);
@@ -421,6 +422,10 @@ class FrPHP
             define('DB_USER', $this->config['db']['username']);
             define('DB_PASS', $this->config['db']['password']);
             define('DB_PORT', $this->config['db']['port']);
+			if(DB_HOST=='' || DB_NAME=='' || DB_USER=='' || DB_PASS==''){
+				exit('<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />数据库无法链接，如果您是第一次使用，请先执行<a href="/install/">安装程序</a><br /><br /><a href="http://jizhicms.com" target="_blank">极致CMS建站程序 jizhicms.com</a>');
+			}
+			
         }
 		
     }

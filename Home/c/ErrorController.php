@@ -19,7 +19,7 @@ class ErrorController extends Controller
 {
 	//错误处理示例
 	function index($msg){
-		echo '错误信息提示示例：<br/>';	
+		echo '错误信息提示：<br/>';	
 		echo $msg;
 
     }

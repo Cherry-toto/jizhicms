@@ -78,15 +78,20 @@ function new_is_writeable($file) {
 function get_admin_url(){
 	//读取根目录文件
 	$admin_url = '';
-	if (false != ($handle = opendir ( dirname(dirname(__FILE__)) ))) {
+	$filepath = '../';
+	if (false !== ($handle = opendir ($filepath))) {
 		$i=0;
 		while ( false !== ($file = readdir ( $handle )) ) {
 			//去掉"“.”、“..”以及带“.xxx”后缀的文件
 			if ($file != "." && $file != ".."&&strpos($file,".")) {
 				
 				if(strpos($file,'.php')!==false && $file!='index.php'){
-					$admin_url = $file;
-					break;
+					$data = file_get_contents('../'.$file);
+					if(strpos($data,"define('APP_HOME','A')")!==false){
+						$admin_url = $file;
+						break;
+					}
+					
 				}
 				
 			}
@@ -187,9 +192,6 @@ switch($act){
 				//去掉"“.”、“..”以及带“.xxx”后缀的文件
 				if ($file != "." && $file != ".."&& (strpos($file,".php")!==false) && (strpos($file,'_v')===false)) {
 					$fileArray[$i]=$file;
-					if($i==100){
-						break;
-					}
 					$i++;
 				}
 			}
@@ -238,11 +240,60 @@ switch($act){
 		//更改后台文件
 		$old_url = get_admin_url();
 		$admin_url = $_POST['adminpath'];
+		$data = "<?php
+		// 应用目录为当前目录
+		define('APP_PATH', __DIR__ . '/');
+
+		// 开启调试模式
+		//define('APP_DEBUG', true);
+
+		//定义项目目录
+		define('APP_HOME','A');
+
+		//定义项目模板文件目录
+		define('HOME_VIEW','t');
+
+		//定义项目模板文件目录
+		define('Tpl_template','tpl');
+		
+		//定义项目控制器文件目录
+		define('HOME_CONTROLLER','c');
+
+		//定义项目模型文件目录
+		define('HOME_MODEL','m');
+
+		//定义默认控制器
+		define('DefaultController','Index');
+
+		//定义默认方法
+		define('DefaultAction','Index');
+
+		//取消log
+		define('StopLog',false);
+
+		//定义静态文件路径
+		define('Tpl_style','/A/t/tpl');
+
+		// 加载框架文件
+		require(APP_PATH . 'FrPHP/Fr.php');
+
+		// 就这么简单~
+				
+				";
 		if(strpos($admin_url,'.php')!==false && $admin_url!='index.php'){
-			rename('../'.$old_url,'../'.$admin_url);
+			$admin_url = $admin_url;
 		}else{
-			rename('../'.$old_url,'../'.$admin_url.'.php');
+			$admin_url = $admin_url.'.php';
 		}
+		$r = file_put_contents('../'.$admin_url,$data);
+		if($r){
+			if(file_exists('../'.$old_url)){
+				unlink('../'.$old_url);
+			}
+			
+		}
+		chmod('../'.$admin_url, 0777); 
+		
 		
 		//传入管理员信息
 		$admin_name = $_POST['admin_name'];

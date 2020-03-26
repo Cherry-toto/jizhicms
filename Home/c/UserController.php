@@ -366,10 +366,9 @@ class UserController extends Controller
 		$this->checklogin();
 		$orderno = $this->frparam('orderno',1);
 		if(!$orderno){ Error('缺少订单号！');}
-		$order = M('orders')->find(" orderno='".$orderno."' and isshow!=0 ");
+		$order = M('orders')->find(" orderno='".$orderno."' and userid=".$this->member['id']." and isshow!=0 ");
 		if(!$order){ Error('订单号错误！');}
-		//軟刪除
-		$r = M('orders')->update(['orderno'=>$orderno],['isshow'=>0]);
+		$r = M('orders')->update(['orderno'=>$orderno,'userid'=>$this->member['id']],['isshow'=>0]);
 		if($r){
 			Success('删除成功！',U('user/orders'));
 		}else{
@@ -397,7 +396,6 @@ class UserController extends Controller
 		$this->checklogin();
 		$page = new Page('Comment');
 		$sql = 'userid='.$this->member['id'].' and isshow!=2 ';
-		//$sql = 'userid='.$this->member['id'];
 		$data = $page->where($sql)->orderby('addtime desc')->limit(5)->page($this->frparam('page',0,1))->go();
 		$page->file_ext = '';
 		$pages = $page->pageList(5,'?page=');
@@ -433,15 +431,13 @@ class UserController extends Controller
 		$this->display($this->template.'/user/comment');
        
     }
-	//刪除评论
 	function commentdel(){
 		$this->checklogin();
 		$id = $this->frparam('id');
 		if(!$id){ Error('缺少ID！');}
-		$comment = M('comment')->find(['id'=>$id,'isshow'=>1]);
+		$comment = M('comment')->find(['id'=>$id,'isshow'=>1,'userid'=>$this->member['id']]);
 		if(!$comment){ Error('未找到评论！');}
-		//软删除
-		$r = M('comment')->update(['id'=>$id],['isshow'=>2]);
+		$r = M('comment')->update(['id'=>$id,'userid'=>$this->member['id']],['isshow'=>2]);
 		if($r){
 			Success('删除成功！',U('user/comment'));
 		}else{
@@ -1030,9 +1026,7 @@ class UserController extends Controller
 
 				break;
 			}
-			if(!$this->frparam("id")){
-				$w['isshow'] = 0;
-			}
+			$w['isshow'] = 0;//修改后的文章一律为未审核
 			$w['member_id'] = $this->member['id'];
 			$data = get_fields_data($data,$w['molds']);
 			

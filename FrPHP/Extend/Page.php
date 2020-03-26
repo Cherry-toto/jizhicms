@@ -214,17 +214,14 @@ namespace FrPHP\Extend;
 				$list = $prev.$list;
 				$listpage['prev'] = $this->prevpage;
 			}
-			
 			if($this->currentPage<$this->allpage){
 				$list .= $next;
 				$listpage['next'] = $this->nextpage;
 			}
-			
 			if($this->allpage > $this->pv){
 				$list .= $last;
-				$listpage['last'] = $this->url.$this->sep.$this->allpage.$file_ext;
 			}
-			
+			$listpage['last'] = $this->url.$this->sep.$this->allpage.$file_ext;
 			$list = $ext.$list.'</ul></div>';
 			$this->listpage = $listpage;
 			return $list;

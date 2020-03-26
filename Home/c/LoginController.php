@@ -157,7 +157,7 @@ class LoginController extends Controller
 				if($this->frparam('ajax')){
 					JsonReturn(['code'=>0,'msg'=>'登录成功！','url'=>$_SESSION['return_url']]);
 				}
-				Redirect(get_domain());
+				Redirect($_SESSION['return_url']);
 			}else{
 				if($this->frparam('ajax')){
 					JsonReturn(['code'=>1,'msg'=>'账户密码错误！','url'=>$_SESSION['return_url']]);
@@ -356,7 +356,8 @@ class LoginController extends Controller
   
   function loginout(){
   	  $_SESSION['member'] = null;
-      Error('安全退出~',U('index'));
+	  $_SESSION['return_url'] = null;
+      Error('安全退出~',get_domain());
   }
   
 }

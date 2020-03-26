@@ -94,6 +94,24 @@ class PluginsController extends CommonController
 				
 				
 			}
+			
+			//检查软件是否还有自定义软件未加入进去
+			foreach($fileArray as $v){
+				if(!isset($lists[$v])){
+					//已下载该插件
+					$config = require_once($dir.'/'.$v.'/config.php');
+					if(isset($plugins[$v])){
+						$lists[$v] = $plugins[$v];
+						$lists[$v]['isinstall'] = true;
+					}else{
+						$lists[$v] = ['name'=>$config['name'],'filepath'=>$v,'description'=>$config['desc'],'version'=>$config['version'],'author'=>$config['author'],'update_time'=>strtotime($config['update_time']),'module'=>$config['module'],'isopen'=>0,'config'=>'','isinstall'=>false];
+					}
+					$lists[$v]['isupdate'] = false;
+					$lists[$v]['exists'] = true;
+				}
+			}
+			
+			
 		}else{
 			
 			foreach($fileArray as $k=>$v){

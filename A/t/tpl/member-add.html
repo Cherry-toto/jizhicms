@@ -4,6 +4,9 @@
   <head>
     <meta charset="UTF-8">
    {include="style"}
+    <script type="text/javascript" charset="utf-8" src="/static/common/user/uedit/ueditor.config.js?v=1"></script>
+	<script type="text/javascript" charset="utf-8" src="/static/common/user/uedit/ueditor.all.min.js?v=1"> </script>
+	<script type="text/javascript" charset="utf-8" src="/static/common/user/uedit/lang/zh-cn/zh-cn.js"></script>
   </head>
   
   <body>
@@ -222,8 +225,8 @@
 			,done: function(res){ //上传成功后的回调
 			 
 				if(res.code==0){
-					 $('#litpic_img').attr('src','/'+res.url);
-					 $('#litpic').val('/'+res.url);
+					 $('#litpic_img').attr('src',res.url);
+					 $('#litpic').val(res.url);
 				}else{
 					 layer.alert(res.error, {icon: 5});
 				}

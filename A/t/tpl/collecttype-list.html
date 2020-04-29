@@ -73,19 +73,17 @@
               //发异步删除数据
 			  $.post('{fun U('Collect/collectTypeDelete')}',{id:id},function(r){
 					r = JSON.parse(r);
-					if(r.status==0){
-						layer.msg(r.info, {
-						  icon:5
-						});
+					if(r.code==1){
+						layer.msg(r.msg,{icon: 5,time:1000});
 					}else{
-						layer.msg('删除成功！', {
+						layer.msg(r.msg, {
 						 time:1000,icon:6
 						},function(){
 							 $(obj).parents("tr").remove();
 								layer.msg('已删除!',{icon:1,time:1000});
 						});
 						
-						}
+					}
 				
 			  });
 		

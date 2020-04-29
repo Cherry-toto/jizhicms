@@ -87,9 +87,9 @@ class ClasstypeController extends CommonController
 			$w = array_merge($data,$w);
 			$a = M('classtype')->add($w);
 			if($a){
-				$fields=M('fields')->findAll(' tids like "%,'.$w['pid'].',%" ',null,'id,tids');
+				$fields=M('fields')->findAll(' tids like "%,'.$w['pid'].',%" ');
 				foreach ($fields as $v){
-					if($v['tids']!=0 && $v['tids']!=''){
+					if($v['tids']){
 						M('fields')->update(array('id'=>$v['id']),array('tids'=>$v['tids'].$a.','));
 					}else{
 						M('fields')->update(array('id'=>$v['id']),array('tids'=>','.$a.','));
@@ -211,7 +211,7 @@ class ClasstypeController extends CommonController
 				setCache('mobileclasstype',null);
 				JsonReturn(array('status'=>1));
 			}else{
-				JsonReturn(array('status'=>0,'info'=>'修改失败！'));
+				JsonReturn(array('status'=>0,'info'=>'您未做任何修改，不能提交！'));
 			}
 		}
 		
@@ -288,35 +288,37 @@ class ClasstypeController extends CommonController
 	
 	function addmany(){
 		if($_POST){
-			$data_0 = $this->frparam('data_0',2);
-			$data_1 = $this->frparam('data_1',2);
-			$data_2 = $this->frparam('data_2',2);
-			$data_3 = $this->frparam('data_3',2);
-			$data_4 = $this->frparam('data_4',2);
-			$data_5 = $this->frparam('data_5',2);
-			$data_6 = $this->frparam('data_6',2);
-			$data_7 = $this->frparam('data_7',2);
-			$data_8 = $this->frparam('data_8',2);
+			
+			$molds = $this->frparam('molds',1);
+			$pid = $this->frparam('pid',0,0);
+			$classname = $this->frparam('classname',1);
+			if(!trim($classname)){
+				JsonReturn(['code'=>1,'msg'=>'栏目不能为空！']);
+			}
+			$classname = explode("\n",trim($classname));
 			$classtypetree = classTypeData();
-			foreach($data_1 as $k=>$v){
-				if($v && $v!=''){
-					
-					$w['molds'] = $data_0[$k];
-					$w['classname'] = $v;
-					$w['pid'] = $data_2[$k];
+			foreach($classname as $k=>$v){
+				if($v){
+					if(strpos($v,'|')!==false){
+						$d = explode('|',$v);
+					}else{
+						$d = [$v,pinyin($v,'first')];
+					}
+					$w['molds'] = $molds;
+					$w['classname'] = $d[0];
+					$w['pid'] = $pid;
 					if($this->webconf['islevelurl'] && $w['pid']!=0){
 						//层级
-						$html = $classtypetree[$w['pid']]['htmlurl'].'/'.$data_3[$k];
+						$html = $classtypetree[$w['pid']]['htmlurl'].'/'.$d[1];
 					}else{
-						$html = $data_3[$k];
+						$html = $d[1];
 					}
-							
 					$w['htmlurl'] = $html;
-					$w['lists_num'] = $data_4[$k];
-					$w['lists_html'] = $data_5[$k];
-					$w['details_html'] = $data_6[$k];
-					$w['isshow'] = $data_7[$k];
-					$w['orders'] = $data_8[$k];
+					$w['lists_num'] = $this->frparam('lists_num',0,10);
+					$w['lists_html'] = $this->frparam('lists_html',1);
+					$w['details_html'] = $this->frparam('details_html',1);
+					$w['isshow'] =$this->frparam('isshow',0,1);
+					$w['ishome'] =$this->frparam('ishome',0,1);
 					M('classtype')->add($w);
 					$w = [];
 				}
@@ -366,8 +368,10 @@ class ClasstypeController extends CommonController
 				closedir ( $handle );
 			}
 		}
+		$m = M('molds')->find(['biaoshi'=>$molds]);
 		
-		JsonReturn(['code'=>0,'data'=>$fileArray,'path'=>$dir]);
+
+		JsonReturn(['code'=>0,'data'=>$fileArray,'path'=>$dir,'lists_html'=>str_replace('.html','',$m['list_html']),'details_html'=>str_replace('.html','',$m['details_html'])]);
 
 	}
 	

@@ -621,8 +621,10 @@ function setCache($str,$data,$timeout=-1){
 	
 	$res = json_encode($rdata,JSON_UNESCAPED_UNICODE);
 	$res = '<?php die();?>'.$res;
-	if(file_put_contents($cache_file_data,$res)){
-		
+	$f = @fopen($cache_file_data,'w');
+	$r = @fwrite($f,$res);
+	@fclose($f);
+	if($r!==false){
 		return true;
 	}else{
 		Error_msg('数据缓存失败，'.APP_PATH.'cache/data文件夹的读写权限设置为777！');

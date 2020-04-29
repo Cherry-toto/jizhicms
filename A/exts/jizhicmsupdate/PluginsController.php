@@ -7,7 +7,7 @@
 // +----------------------------------------------------------------------
 // | Author: 留恋风 <2581047041@qq.com>
 // +----------------------------------------------------------------------
-// | Date：2019/12/31
+// | Date：2020/02/16
 // +----------------------------------------------------------------------
 
 namespace A\exts;
@@ -45,7 +45,7 @@ class PluginsController extends Controller {
 				}
 			}
 		   
-		  
+		  	
 		}
 	  	
 	    $webconf = webConf();
@@ -66,8 +66,8 @@ class PluginsController extends Controller {
 	
 	//执行SQL语句在此处处理,或者移动文件也可以在此处理
 	public  function install(){
-		//下面是新增test表的SQL操作
 		
+
 	
 		return true;
 		

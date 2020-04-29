@@ -147,7 +147,7 @@
 					</td>
 					<td>{$v['name']}</td>
 					<td>{fun date('Y-m-d H:i:s',$v['update_time'])}</td>
-					<td>{$v['url']}</td>
+					<td>{if($data['type']=='image')}<img src="{$v['url']}" width="200px" />{else}{$v['url']}{/if}</td>
 				 </tr>
 				 {/if}
 				 {/foreach}

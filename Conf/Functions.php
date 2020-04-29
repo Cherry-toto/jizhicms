@@ -23,7 +23,7 @@ function webConf($str=null){
 	//$web_config = include(APP_PATH.'Conf/webconf.php');
 	$webconfig = getCache('webconfig');
 	if(!$webconfig){
-		$wcf = M('sysconfig')->findAll(array('type'=>0));
+		$wcf = M('sysconfig')->findAll();
 		$webconfig = array();
 		foreach($wcf as $k=>$v){
 			if($v['field']=='web_js' || $v['field']=='ueditor_config'){
@@ -365,7 +365,11 @@ function classTypeData(){
 			if($v['gourl']!=''){
 				$d[$v['id']]['url'] = $v['gourl'];
 			}else{
-				$d[$v['id']]['url'] = get_domain().$htmlpath.'/'.$v['htmlurl'].File_TXT;
+				$file_txt = File_TXT_HIDE ? '' : File_TXT;
+				if($file_txt==''){
+					$file_txt = CLASS_HIDE_SLASH ? $file_txt : $file_txt.'/';
+				}
+				$d[$v['id']]['url'] = get_domain().$htmlpath.'/'.$v['htmlurl'].$file_txt;
 			}
 			
 		}
@@ -393,7 +397,11 @@ function classTypeDataMobile(){
 			if($v['gourl']!=''){
 				$d[$v['id']]['url'] = $v['gourl'];
 			}else{
-				$d[$v['id']]['url'] = get_domain().$htmlpath.'/'.$v['htmlurl'].File_TXT;
+				$file_txt = File_TXT_HIDE ? '' : File_TXT;
+				if($file_txt==''){
+					$file_txt = CLASS_HIDE_SLASH ? $file_txt : $file_txt.'/';
+				}
+				$d[$v['id']]['url'] = get_domain().$htmlpath.'/'.$v['htmlurl'].$file_txt;
 			}
 			
 		}
@@ -913,6 +921,21 @@ function isWeixin(){
 
 //内容url
 function gourl($id,$htmlurl=null,$molds='article'){
+		if(is_array($id)){
+			/**
+			ownurl target id 
+			**/
+			$value = $id;
+			if($value['target']){
+				return $value['target'];
+			}else{
+				if($value['ownurl']){
+					return get_domain().'/'.$value['ownurl'];
+					
+				}
+			}
+			$id = $value['id'];
+		}
 		if(!$id){Error_msg('缺少ID！');}
 		if(isset($_SESSION['terminal'])){
 			$htmlpath = $_SESSION['terminal']=='mobile' ? webConf('mobile_html') : webConf('pc_html');
@@ -921,16 +944,30 @@ function gourl($id,$htmlurl=null,$molds='article'){
 		}
 		$htmlpath = ($htmlpath=='' || $htmlpath=='/') ? '' : '/'.$htmlpath; 
 		if($htmlurl!=null){
-			return get_domain().$htmlpath.'/'.$htmlurl.'/'.$id.File_TXT;
+			return get_domain().$htmlpath.'/'.$htmlurl.'/'.$id.'.html';
 		}
 		
 		$tid = M($molds)->getField(array('id'=>$id),'tid');
 		$htmlurl = M('classtype')->getField(array('id'=>$tid),'htmlurl');
-		return get_domain().$htmlpath.'/'.$htmlurl.'/'.$id.File_TXT;
+		return get_domain().$htmlpath.'/'.$htmlurl.'/'.$id.'.html';
 }
 
 //输出任何模块的内容URL
 function all_url($id,$molds='article',$htmlurl=null){
+	if(is_array($id)){
+		/**
+		ownurl target id 
+		**/
+		$value = $id;
+		if($value['target']){
+			return $value['target'];
+		}else{
+			if($value['ownurl']){
+				return get_domain().'/'.$value['ownurl'];
+			}
+		}
+		$id = $value['id'];
+	}
 	if(!$id){Error_msg('缺少ID！');}
 		if(isset($_SESSION['terminal'])){
 			$htmlpath = $_SESSION['terminal']=='mobile' ? webConf('mobile_html') : webConf('pc_html');
@@ -939,11 +976,13 @@ function all_url($id,$molds='article',$htmlurl=null){
 		}
 		$htmlpath = ($htmlpath=='' || $htmlpath=='/') ? '' : '/'.$htmlpath; 
 		if($htmlurl!=null){
-			return get_domain().$htmlpath.'/'.$htmlurl.'/'.$id.File_TXT;
+			$file_txt = File_TXT_HIDE ? '' : File_TXT;
+			return get_domain().$htmlpath.'/'.$htmlurl.'/'.$id.$file_txt;
 		}
 		$tid = M($molds)->getField(array('id'=>$id),'tid');
 		$htmlurl = M('classtype')->getField(array('id'=>$tid),'htmlurl');
-		return get_domain().$htmlpath.'/'.$htmlurl.'/'.$id.File_TXT;
+		$file_txt = File_TXT_HIDE ? '' : File_TXT;
+		return get_domain().$htmlpath.'/'.$htmlurl.'/'.$id.$file_txt;
 }
 
 //递增
@@ -1324,35 +1363,36 @@ function str_replace_limit($search, $replace, $subject, $limit=-1) {
 //人性化时间显示
 function formatTime($sTime, $formt = 'Y-m-d') {
  
-    if (!$sTime) {
-        return '';
-    }
- 
     //sTime=源时间，cTime=当前时间，dTime=时间差
     $cTime = time();
     $dTime = $cTime - $sTime;
-    $dDay = intval(date('z',$cTime)) - intval(date('z',$sTime));
+    $dDay = intval($dTime/86400);
     $dYear = intval(date('Y',$cTime)) - intval(date('Y',$sTime));
  
     //n秒前，n分钟前，n小时前，日期
     if ($dTime < 60 ) {
         if ($dTime < 10) {
-            return '刚刚';
+			
+			if($dTime<0){
+				return date($formt, $sTime);
+			}else{
+				return '刚刚';
+			}
         } else {
             return intval(floor($dTime / 10) * 10).'秒前';
         }
-    } elseif ($dTime < 3600 ) {
+    } else if ($dTime < 3600 ) {
         return intval($dTime/60).'分钟前';
-    } elseif( $dTime >= 3600 && $dDay == 0  ){
+    } else if( $dTime >= 3600 && $dDay == 0){
         return intval($dTime/3600).'小时前';
-    } elseif( $dDay > 0 && $dDay<=7 ){
+    } else if( $dDay > 0 && $dDay<=7){
         return intval($dDay).'天前';
-    } elseif( $dDay > 7 &&  $dDay <= 30 ){
+    } else if( $dDay > 7 &&  $dDay <= 30){
         return intval($dDay/7).'周前';
-    } elseif( $dDay > 30 ){
+    } else if( $dDay > 30  && $dDay < 365){
         return intval($dDay/30).'个月前';
-    } elseif ($dYear==0) {
-        return date('m月d日', $sTime);
+	} else if($dDay >= 365 && $dDay < 3650){
+		return intval($dDay/365).'年前';
     } else {
         return date($formt, $sTime);
     }
@@ -1522,6 +1562,29 @@ function jz_follow($id=0){
 		}
 	}else{
 		return 0;
+	}
+}
+	
+//删除文件目录
+function deldir($dir) {
+	//先删除目录下的文件：
+	$dh=opendir($dir);
+	while ($file=readdir($dh)) {
+		if($file!="." && $file!="..") {
+			$fullpath=$dir."/".$file;
+			if(!is_dir($fullpath)) {
+				unlink($fullpath);
+			} else {
+				deldir($fullpath);
+			}
+		}
+	}
+	closedir($dh);
+	//删除当前文件夹：
+	if(rmdir($dir)) {
+		return true;
+	} else {
+		return false;
 	}
 }
 

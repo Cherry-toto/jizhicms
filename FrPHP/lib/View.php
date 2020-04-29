@@ -139,14 +139,14 @@ class View
 		preg_match_all('/\{foreach(.*?)\}/si',$content,$i);
 		$this->check_template_err(substr_count($content, '{/foreach}'),count($i[0]),'foreach');
 		foreach($i[0] as $k=>$v){
-			$content=str_ireplace($v,'<?php foreach('.$i[1][$k].'){ ?>',$content);
+			$content=str_ireplace($v,$this->template_html_foreach(strtolower($i[1][$k])),$content);
 		}
 		$content=str_ireplace('{/foreach}','<?php } ?>',$content);
 		//screen标签
 		preg_match_all('/\{screen (.*?)\}/si',$content,$i);
 		$this->check_template_err(substr_count($content, '{/screen}'),count($i[0]),'screen');
 		foreach($i[0] as $k=>$v){
-			$content=str_ireplace($v,$this->check_template_screen(strtolower($i[1][$k])),$content);
+			$content=str_ireplace($v,$this->template_html_screen(strtolower($i[1][$k])),$content);
 		}
 		$content=str_ireplace('{/screen}','<?php } ?>',$content);
 		//for循环
@@ -205,10 +205,14 @@ class View
 		}
 		if(APP_URL=='/index.php'){
 			$includefile = str_replace('//','/',APP_PATH . APP_HOME .'/'.HOME_VIEW.'/'.get_template().'/'.$filename. $prefix);
+			$file = get_template().'/'.$filename. $prefix;
 		}else{
 			$includefile = str_replace('//','/',APP_PATH . APP_HOME .'/'.HOME_VIEW.'/'.Tpl_template.'/'. Tpl_common .'/'.$filename. $prefix);
+			$file = Tpl_common .'/'.$filename. $prefix;
 		}
-		if(!is_file($includefile)) Error_msg($includefile.'不存在！');
+		if(!is_file($includefile)){
+			Error_msg($file.'不存在！');
+		}
 		$content = file_get_contents($includefile);
 		$content = $this->template_html($content);
 		return $content;
@@ -223,7 +227,7 @@ class View
 		输出参数：筛选列表all(item)，链接url，升降序(id,orders,addtime)
 		{screen molds="article" orderby="orders desc" tid="1|2" fields='pingpai,yanse' as="v"}
 	**/
-	public function check_template_screen($f){
+	public function template_html_screen($f){
 		preg_match_all('/.*?(\s*.*?=.*?[\"|\'].*?[\"|\']\s).*?/si',' '.$f.' ',$aa);
 		$a=array();
 		foreach($aa[1] as $v){
@@ -289,7 +293,19 @@ class View
 		return $txt;
 	}
 	
-	
+	//foreach全局标签
+	/**
+	$content=str_ireplace($v,'<?php foreach('.$i[1][$k].'){  ?>',$content);
+	*/
+	private function template_html_foreach($f){
+		$ff = explode(' as ',$f);
+		if(strpos($ff[1],'=>')!==false){
+			$fff = explode('=>',$ff[1]);
+			return '<?php '.$fff[1].'_n=0;foreach('.$f.'){ '.$fff[1].'_n++; ?>';
+		}else{
+			return '<?php '.$ff[1].'_n=0;foreach('.$f.'){ '.$ff[1].'_n++;?>';
+		}
+	}
 	
 	//loop全局标签
 	private function template_html_loop($f){
@@ -301,7 +317,7 @@ class View
 		}else{
 			if(!isset($a['tid'])){ exit('缺少table参数！');}
 			if(strpos($a['tid'],'$')!==false){
-				$db = ' $classtypedata["'.trim($a['tid'],"'").'"]["molds"] ';
+				$db = ' $classtypedata['.trim($a['tid'],"'").']["molds"] ';
 			}else{
 				if(strpos($a['tid'],',')!==false){
 					$tids = explode(',',$a['tid']);
@@ -363,8 +379,21 @@ class View
 				
 			}
 		}
+		//在某个参数范围内
+		$in_sql = '';
+		if(isset($a['in'])){
+			if(strpos($a['in'],'|')!==false){
+				$in = explode('|',trim($a['in'],"'"));
+				if(strpos($in[1],'$')!==false){
+					$in_sql = ' and '.$in[0].' in(\'.'.$in[1].'.\') ';
+				}else{
+					$in_sql = ' and '.$in[0].' in('.$in[1].') ';
+				}
+				
+			}
+		}
 		
-		unset($a['table']);unset($a['orderby']);unset($a['limit']);unset($a['as']);unset($a['like']);unset($a['fields']);unset($a['isall']);unset($a['notin']);unset($a['notempty']);unset($a['empty']);unset($a['day']);
+		unset($a['table']);unset($a['orderby']);unset($a['limit']);unset($a['as']);unset($a['like']);unset($a['fields']);unset($a['isall']);unset($a['notin']);unset($a['notempty']);unset($a['empty']);unset($a['day']);unset($a['in']);
 		$pages='';
 		$w = ' 1=1 ';
 		$ispage=false;
@@ -465,6 +494,7 @@ class View
 		}
 		
 		$w .= $notin_sql;
+		$w .= $in_sql;
 		$w.= $lk;
 		$as = trim($as,"'");
 		$txt="<?php
@@ -499,7 +529,7 @@ class View
 				if($'.$as.'_table==\'classtype\'){
 					$'.$as.'[\'url\'] = $classtypedata[$'.$as.'[\'id\']][\'url\'];
 				}else{
-					$'.$as.'[\'url\'] = gourl($'.$as.'[\'id\'],$'.$as.'[\'htmlurl\']);
+					$'.$as.'[\'url\'] = gourl($'.$as.',$'.$as.'[\'htmlurl\']);
 				}
 				
 			}

@@ -5,6 +5,10 @@
 	{include="style"}
   <style type="text/css">
   html{ overflow-y:hidden;}
+  i.jzicon {
+		font-size: 18px;
+		margin-right: 10px;
+	}
   </style>
 </head>
 <body>
@@ -26,7 +30,7 @@
 			
 			{foreach $v['nav'] as $vv}
 			{if($vv!=0)}
-			<dd><a x_href="{fun U($actions[$vv]['fc'])}" class="top_nav">{$actions[$vv]['name']}</a></dd>
+			<dd class="top-nav"><a x_href="{fun U($actions[$vv]['fc'])}" class="top_nav">{$actions[$vv]['name']}</a></dd>
             {/if}        
             {/foreach}  
               
@@ -38,8 +42,12 @@
         </ul>
 		{/if}
         <ul class="layui-nav right" lay-filter="">
+			<li class="layui-nav-item">
+            <a class="top_nav_right"  x_href="{fun U('index/cleanCache')}"><i class="layui-icon layui-icon-delete jzicon"></i>清理缓存</a>
+            
+          </li>
           <li class="layui-nav-item">
-            <a href="javascript:;">{$admin['name']}</a>
+            <a href="javascript:;"><i class="layui-icon layui-icon-username jzicon"></i>{$admin['name']}</a>
             <dl class="layui-nav-child"> <!-- 二级菜单 -->
               <dd><a x_href="{fun U('Index/details',['id'=>frencode($admin['id'])])}" class="top_nav_right"      >个人信息</a></dd>
               
@@ -47,7 +55,7 @@
             </dl>
           </li>
 
-          <li class="layui-nav-item to-index"><a target="_blank" href="/">前台首页</a></li>
+          <li class="layui-nav-item to-index"><a target="_blank" href="/"><i class="layui-icon layui-icon-home jzicon"></i>前台首页</a></li>
         </ul>
         
     </div>

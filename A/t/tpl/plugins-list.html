@@ -4,6 +4,12 @@
   <head>
     <meta charset="UTF-8">
    {include="style"}
+   <style>
+	.btn-jz{
+		margin-left:0px !important;
+	}
+
+   </style>
   </head>
   
   <body>
@@ -21,7 +27,10 @@
         
       </div>
       
-
+		<a href="{fun U('plugins/index')}" class="layui-btn layui-btn-primary">全部</a>
+		<a href="{fun U('plugins/index',['isdown'=>1])}" class="layui-btn">已安装</a>
+		<a href="{fun U('plugins/index',['isdown'=>2])}" class="layui-btn layui-btn-normal">未安装</a>
+		<a href="{fun U('plugins/index',['isdown'=>3])}" class="layui-btn layui-btn-warm">云插件</a>
         <table border="1" rules="all"  class="layui-table layui-form">
         <thead>
           <tr>
@@ -39,8 +48,6 @@
         <tbody>
 		 {foreach $lists as $v}
           <tr>
-           
-           
             <td>{$v['name']}</td>
             <td>v{$v['version']}{if($v['isupdate'])}<span style="cursor:pointer;" title="点击查看" onclick="x_all_show('更新说明','{fun U('Plugins/update',array('filepath'=>$v['filepath']))}')" class="layui-badge">新</span>{/if}</td>
             <td>{$v['author']}</td>
@@ -70,13 +77,17 @@
             <td class="td-manage">
 			{if(checkAction('Plugins/action_do'))}
 				{if($v['isinstall'])}
-				<button type="button" onclick="actionDo('{$v['filepath']}',0)" class="layui-btn layui-btn-danger  layui-btn-xs"><i class="layui-icon layui-icon-close-fill">卸载</i></button> 
-				<button type="button" onclick="x_all_show('配置','{fun U('Plugins/setconf',array('id'=>$v['id']))}')" class="layui-btn layui-btn-normal layui-btn-xs"><i class="layui-icon layui-icon-set">配置</i></button>			
+				<a onclick="x_all_show('配置','{fun U('Plugins/setconf',array('id'=>$v['id']))}')" class="layui-btn layui-btn-normal layui-btn-xs btn-jz"><i class="layui-icon layui-icon-set">配置</i></a>
+				<a href="{fun U('plugins/output',['filepath'=>$v['filepath']])}" class="layui-btn btn-jz  layui-btn-xs"><i class="layui-icon layui-icon-download-circle">导出</i></a> 
+				<a onclick="actionDo('{$v['filepath']}',0)" class="layui-btn layui-btn-warm btn-jz layui-btn-xs"><i class="layui-icon layui-icon-close-fill">卸载</i></a> 
+				<a onclick="actionDo('{$v['filepath']}',2)" class="layui-btn layui-btn-danger  btn-jz layui-btn-xs"><i class="layui-icon layui-icon-close-fill">删除</i></a> 
+								
 				{else if($v['exists'])}
-				<button type="button" onclick="actionDo('{$v['filepath']}',1)" class="layui-btn  layui-btn-xs"><i class="layui-icon layui-icon-download-circle">安装</i></button>
+				<a onclick="actionDo('{$v['filepath']}',1)" class="layui-btn  layui-btn-xs"><i class="layui-icon layui-icon-download-circle">安装</i></a>
+				<a onclick="actionDo('{$v['filepath']}',2)" class="layui-btn layui-btn-danger  layui-btn-xs"><i class="layui-icon layui-icon-close-fill">删除</i></a> 
 				{else}
 				<form class="layui-form" action="">
-				<button lay-submit  lay-filter="down" data-{$v['filepath']}-size="0" data-{$v['filepath']}-url="{$v['downurl']}" data="{$v['filepath']}" id="{$v['filepath']}-downbutton" class="layui-btn  layui-btn-xs layui-btn-warm"><i class="layui-icon layui-icon-download-circle">下载插件</i></button>
+				<a lay-submit  lay-filter="down" data-{$v['filepath']}-size="0" data-{$v['filepath']}-url="{$v['downurl']}" data="{$v['filepath']}" id="{$v['filepath']}-downbutton" class="layui-btn  layui-btn-xs layui-btn-warm"><i class="layui-icon layui-icon-download-circle">下载</i></a>
 				<div class="layui-progress  layui-progress-big"   id="{$v['filepath']}-down-action" lay-showpercent="true" lay-filter="demo-{$v['filepath']}-progress" style="margin: 30px;display:none;">
 				  <div class="layui-progress-bar" lay-percent="0%"></div>
 				</div>
@@ -93,8 +104,10 @@
 		  {/foreach}
         </tbody>
       </table>
-	 
-     
+	  <div class="page">
+		{$pages}
+	  </div>
+ 
     </div>
     <script>
       layui.use(['laydate','form'], function(){
@@ -188,6 +201,8 @@
 					//请求前的处理
 					if(parseInt(type)==1){
 						layer.msg('正在安装中，请稍等~');
+					}else if(parseInt(type)==-1){
+						layer.msg('正在删除中，请稍等~');
 					}else{
 						layer.msg('正在卸载中，请稍等~');
 					}

@@ -151,9 +151,7 @@ class IndexController extends CommonController
 				//去掉"“.”、“..”以及带“.xxx”后缀的文件
 				if ($file != "." && $file != ".." && strpos($file,".php")!==false && strpos($file,"_v")===false) {
 					$fileArray[$i]=$file;
-					if($i==100){
-						break;
-					}
+					
 					$i++;
 				}
 			}
@@ -577,6 +575,11 @@ class IndexController extends CommonController
 			$pc_html = trim($pc_html);
 			$mobile_html = (trim($this->webconf['mobile_html'])=='' || $this->webconf['mobile_html']=='/') ? '/' : '/'.$this->webconf['mobile_html'].'/';;
 			$mobile_html = trim($mobile_html);
+			
+			 $classtypedataMobile = classTypeDataMobile();
+			 foreach($classtypedataMobile as $k=>$v){
+				$classtypedataMobile[$k]['children'] = get_children($v,$classtypedataMobile);
+			 }
 			foreach($model as $k=>$v){
 				if($isshow[$k]==1){
 					$list = M($v)->findAll(['isshow'=>1]);
@@ -587,32 +590,33 @@ class IndexController extends CommonController
 				if($v=='classtype' && $list){
 					foreach($list as $s){
 						$l.='<url>
-							  <loc>'.$www.$pc_html.$s['htmlurl'].File_TXT.'</loc>
+							  <loc>'.$this->classtypedata[$s['id']]['url'].'</loc>
 							  <lastmod>'.date('Y-m-d').'T08:00:00+00:00</lastmod>
 							  <changefreq>'.$freq[$k].'</changefreq>
 							  <priority>'.$priority[$k].'</priority>
 							</url>';
 						if($this->webconf['iswap']==1){
 							$l.='<url>
-							  <loc>'.$www.$mobile_html.$s['htmlurl'].File_TXT.'</loc>
+							  <loc>'.$classtypedataMobile[$s['id']]['url'].'</loc>
 							  <lastmod>'.date('Y-m-d').'T08:00:00+00:00</lastmod>
 							  <changefreq>'.$freq[$k].'</changefreq>
 							  <priority>'.$priority[$k].'</priority>
 							</url>';
 						}	
 					}
-				}else if(($v=='article' || $v=='product') && $list){
+				}else if($list){
 					foreach($list as $s){
+						$s['addtime'] = isset($s['addtime']) ? $s['addtime'] : time();
 					//文章-商品
 						$l.='<url>
-						  <loc>'.$www.$pc_html.$s['htmlurl'].'/'.$s['id'].File_TXT.'</loc>
+						  <loc>'.gourl($s,$s['htmlurl']).'</loc>
 						  <lastmod>'.date('Y-m-d',$s['addtime']).'T08:00:00+00:00</lastmod>
 						  <changefreq>'.$freq[$k].'</changefreq>
 						  <priority>'.$priority[$k].'</priority>
 						</url>';
 						if($this->webconf['iswap']==1){
 							$l.='<url>
-							  <loc>'.$www.$mobile_html.$s['htmlurl'].'/'.$s['id'].File_TXT.'</loc>
+							  <loc>'.gourl($s,$s['htmlurl']).'</loc>
 							  <lastmod>'.date('Y-m-d',$s['addtime']).'T08:00:00+00:00</lastmod>
 							  <changefreq>'.$freq[$k].'</changefreq>
 							  <priority>'.$priority[$k].'</priority>
@@ -627,6 +631,9 @@ class IndexController extends CommonController
 			
 			$l.='</urlset>';
 			
+			//$f = @fopen(APP_PATH.'sitemap.xml','w');
+			//$n = @fwrite($f,$l);
+			//@fclose($f);
 			$n = file_put_contents(APP_PATH.'sitemap.xml',$l);
 			if($n){
 				JsonReturn(['code'=>0,'msg'=>'网站地图创建成功！']);
@@ -810,7 +817,12 @@ class IndexController extends CommonController
 
 
 					}else{
-						$r = file_put_contents($value['html'],file_get_contents($value['url'],false,$context));
+						
+						$f = @fopen($value['html'],'w');
+						//$r = @fwrite($f,file_get_contents($value['url'],false,$context));
+						$r = @fwrite($f,curl_http($value['url']));
+						@fclose($f);
+						//$r = file_put_contents($value['html'],file_get_contents($value['url'],false,$context));
 						if(!$r){
 							echo $value['html'].'生成失败！<br/>';
 						}else{
@@ -895,13 +907,15 @@ class IndexController extends CommonController
 			//3 从缓存中抓取是最快的
 			
 			foreach($lists as $v){
-				$filename = $v['htmlurl'].File_TXT;
+				
+				if($v['gourl']){
+					continue;
+				}
+				$filename = $v['htmlurl'];
 				//创建文件夹
 				if(!is_dir(APP_PATH.$terminal_path)){
 					$r = mkdir(APP_PATH.$terminal_path,0777,true);
 					if(!$r){
-						//JsonReturn(['code'=>1,'msg'=>'根目录创建目录失败！']);
-						//echo '系统创建 [ '.str_replace('/','\\',APP_PATH.$terminal_path).' ] 目录失败!';exit;
 						JsonReturn(['code'=>1,'msg'=>'系统创建 [ '.str_replace('/','\\',APP_PATH.$terminal_path).' ] 目录失败!']);
 					}
 				}
@@ -915,8 +929,7 @@ class IndexController extends CommonController
 						if(!is_dir($create_dir)){
 							$r = mkdir($create_dir,0777,true);
 							if(!$r){
-								//JsonReturn(['code'=>1,'msg'=>'根目录创建目录失败！']);
-								//echo '系统创建['.str_replace('/','\\',$create_dir).']目录失败!';exit;
+							
 								JsonReturn(['code'=>1,'msg'=>'系统创建['.str_replace('/','\\',$create_dir).']目录失败!']);
 							}
 						}
@@ -925,11 +938,22 @@ class IndexController extends CommonController
 					}
 				}
 				
+				if(File_TXT_HIDE){
+					if(!file_exists(APP_PATH.$terminal_path.$filename)){
+						$r = mkdir(APP_PATH.$terminal_path.$filename,0777);
+						if(!$r){
+							JsonReturn(['code'=>1,'msg'=>'系统创建['.str_replace('/','\\',APP_PATH.$terminal_path.$filename).']目录失败!']);
+						}
+					}
+					$url = APP_PATH.$terminal_path.$filename.'/index.html';
+					
+				}else{
+					$url = APP_PATH.$terminal_path.$filename.'.html';
+				}
 				
 				
-				$url = APP_PATH.$terminal_path.$filename;
-
-				$urls[] = ['url'=>$www.'/'.$terminal_path.$filename,'html'=>$url];
+				
+				$urls[] = ['url'=>$www.'/'.$terminal_path.$filename.'.html','html'=>$url];
 
 
 				//检查分页
@@ -938,9 +962,18 @@ class IndexController extends CommonController
 				$pagenum = ceil($count/$v['lists_num']);
 				if($pagenum>1){
 					for($i=1;$i<=$pagenum;$i++){
-						$filename = $v['htmlurl'].'-'.$i.File_TXT;
-						$url = APP_PATH.$terminal_path.$filename;
-						$urls[] = ['url'=>$www.'/'.$terminal_path.$filename,'html'=>$url];
+						$filename = $v['htmlurl'].'-'.$i;
+						if(File_TXT_HIDE){
+							$url = APP_PATH.$terminal_path.$filename.'/index.html';
+						}else{
+							$url = APP_PATH.$terminal_path.$filename.'.html';
+						}
+						if(File_TXT_HIDE){
+							if(!file_exists(APP_PATH.$terminal_path.$filename)){
+								mkdir(APP_PATH.$terminal_path.$filename,0777);
+							}
+						}
+						$urls[] = ['url'=>$www.'/'.$terminal_path.$filename.'.html','html'=>$url];
 					}
 					
 				}
@@ -968,7 +1001,12 @@ class IndexController extends CommonController
 			//3 从缓存中抓取是最快的
 			
 			foreach($lists as $v){
-				
+				if($v['target']){
+					continue;
+				}
+				if($v['ownurl']){
+					continue;
+				}
 				//检测htmlurl是否为空
 				if(trim($v['htmlurl'])==''){
 					//JsonReturn(['code'=>1,'msg'=>$modelname.'模块未绑定栏目，无法生存HTML！']);
@@ -1022,10 +1060,10 @@ class IndexController extends CommonController
 				
 				
 				
-				$url = APP_PATH.$terminal_path.$v['htmlurl'].'/'.$v['id'].File_TXT;
-				$filename = APP_PATH.$terminal_path.$v['htmlurl'].'/'.$v['id'].File_TXT;
+				$url = APP_PATH.$terminal_path.$v['htmlurl'].'/'.$v['id'].'.html';
+				$filename = APP_PATH.$terminal_path.$v['htmlurl'].'/'.$v['id'].'.html';
 
-				$urls[] = ['url'=>$www.'/'.$v['htmlurl'].'/'.$v['id'].File_TXT,'html'=>$filename];
+				$urls[] = ['url'=>$www.'/'.$v['htmlurl'].'/'.$v['id'].'.html','html'=>$filename];
 
 				
 				

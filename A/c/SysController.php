@@ -44,7 +44,12 @@ class SysController extends CommonController
 			   
 			foreach($custom as $v){
 			   if(array_key_exists($v['field'],$data)){
-					M('sysconfig')->update("type!=0 and field='".$v['field']."'",['data'=>$this->frparam($v['field'],1)]);
+					if($v['type']==4){
+						M('sysconfig')->update("type!=0 and field='".$v['field']."'",['data'=>$this->frparam($v['field'],4)]);
+					}else{
+						M('sysconfig')->update("type!=0 and field='".$v['field']."'",['data'=>$this->frparam($v['field'],1)]);
+					}
+					
 			   }
 			  
 			}
@@ -68,16 +73,18 @@ class SysController extends CommonController
 				   }
 			   } 
 		   }
-		   
+		   $config = include(APP_PATH.'Conf/config.php');
 		   if($this->frparam('isdebug')){
-		   		$config = include(APP_PATH.'Conf/config.php');
 		   		$config['APP_DEBUG'] = true;
-		   		$ress = file_put_contents(APP_PATH.'Conf/config.php', '<?php return ' . var_export($config, true) . '; ?>');
 		   }else{
-		   		$config = include(APP_PATH.'Conf/config.php');
 		   		$config['APP_DEBUG'] = false;
-		   		$ress = file_put_contents(APP_PATH.'Conf/config.php', '<?php return ' . var_export($config, true) . '; ?>');
 		   }
+		   if($this->frparam('hideclasspath')){
+		   		$config['File_TXT_HIDE'] = true;
+		   }else{
+		   		$config['File_TXT_HIDE'] = false;
+		   }
+		   $ress = file_put_contents(APP_PATH.'Conf/config.php', '<?php return ' . var_export($config, true) . '; ?>');
 
 		   $custom = M('sysconfig')->findAll('type!=0');
 		   setCache('customconfig',null);
@@ -87,7 +94,32 @@ class SysController extends CommonController
 		   JsonReturn(['code'=>0,'msg'=>'提交成功！']);
 		   
 		}
+		//获取前台template
+		$indexdata = file_get_contents(APP_PATH.'index.php');
+		$r = preg_match("/define\('HOME_VIEW',[\'|\"](.*?)[\'|\"]\)/",$indexdata,$matches);
+		if($r){
+			$template = $matches[1];
+		}else{
+			$template = 'template';
+		}
+		$dir = APP_PATH.'Home/'.$template;
+		$fileArray=array();
+		if(is_dir($dir)){
 
+			if (false != ($handle = opendir ( $dir ))) {
+				$i=0;
+				while ( false !== ($file = readdir ( $handle )) ) {
+					//去掉"“.”、“..”以及带“.xxx”后缀的文件
+					if ($file != "." && $file != ".."&& strpos($file,".html")===false) {
+						$fileArray[]=$file;
+						$i++;
+					}
+				}
+				//关闭句柄
+				closedir ( $handle );
+			}
+		}
+		$this->templatelist = $fileArray;
 		$this->config = $web_config;
 		$this->custom =	$custom;
 		$this->admin = $_SESSION['admin'];
@@ -180,19 +212,24 @@ class SysController extends CommonController
 	
 	//删除图片
 	function deletePic(){
-		$id = $this->frparam('id',1);
+		$id = $this->frparam('id');
 		if($id){
 			
-			$lists = M('pictures')->findAll('id in('.$id.')');
-			foreach($lists as $v){
-				if(file_exists('.'.$v['litpic'])){
-					unlink('.'.$v['litpic']);
+			$pic = M('pictures')->find(['id'=>$id]);
+			if(strpos($pic['litpic'],'http')===false){
+				if(file_exists('.'.$pic['litpic'])){
+					unlink('.'.$pic['litpic']);
+					$r = M('pictures')->delete(['id'=>$id]);
+					JsonReturn(['code'=>0,'msg'=>'删除成功！']);
+				}else{
+					JsonReturn(['code'=>1,'msg'=>'图片不存在，删除失败！']);
 				}
 				
+			}else{
+				JsonReturn(['code'=>1,'msg'=>'远程存储图片无法删除！']);
 			}
 			
-			$r = M('pictures')->delete('id in('.$id.')');
-			JsonReturn(['code'=>0,'msg'=>'删除成功！']);
+			
 			
 		}else{
 			JsonReturn(['code'=>1,'msg'=>'图片ID错误！']);
@@ -205,19 +242,24 @@ class SysController extends CommonController
 		if($data!=''){
 			
 			$pictures = M('pictures')->findAll('id in('.$data.')');
-			
-			if(M('pictures')->delete('id in('.$data.')')){
-				foreach($pictures as $v){
+			$isall = true;
+			foreach($pictures as $v){
+				if(strpos($v['litpic'],'http')===false){
 					if(file_exists('.'.$v['litpic'])){
 						unlink('.'.$v['litpic']);
+						M('pictures')->delete(['id'=>$v['id']]);
 					}
+				}else{
+					$isall = false;
 				}
-				
-				JsonReturn(array('code'=>0,'msg'=>'批量删除成功！'));
-				
-			}else{
-				JsonReturn(array('code'=>1,'msg'=>'批量操作失败！'));
 			}
+			if($isall){
+				JsonReturn(array('code'=>0,'msg'=>'批量删除成功！'));
+			}else{
+				JsonReturn(array('code'=>0,'msg'=>'部分删除成功，存在远程链接无法删除！'));
+			}
+			
+			
 		}
 		
 	}

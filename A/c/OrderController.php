@@ -75,7 +75,7 @@ class OrderController extends CommonController
 			$sql .= $get_sql;
 			
 			$page = new Page('Orders');
-			$pagelist = $page->where($sql)->setPage(array('limit'=>20,'page'=>$this->frparam('page',0,1)))->orderby('addtime desc,id desc')->go();
+			$pagelist = $page->where($sql)->orderby('addtime desc,id desc')->limit($this->frparam('limit',0,10))->page($this->frparam('page',0,1))->go();
 			
 			$ajaxdata = [];
 			$overpay_num = 0;
@@ -207,8 +207,11 @@ class OrderController extends CommonController
 					
 				
 				}
-					M('orders')->update(['id'=>$data['id']],['isshow'=>$isshow]);
-					JsonReturn(['code'=>0,'msg'=>'操作成功！']);
+				$paytime = $this->frparam('paytime',1)=='-' ? '-' : strtotime($this->frparam('paytime',1));
+				$addtime = strtotime($this->frparam('addtime',1));
+				
+					M('orders')->update(['id'=>$data['id']],['isshow'=>$isshow,'ispay'=>$this->frparam('ispay',0,0)]);
+					JsonReturn(['code'=>0,'msg'=>'操作成功！','paytime'=>$paytime,'addtime'=>$addtime]);
 					
 				
 			}
@@ -302,8 +305,7 @@ class OrderController extends CommonController
 			$sql .= $get_sql;
 			
 			$page = new Page('buylog');
-			$pagelist = $page->where($sql)->setPage(array('limit'=>20,'page'=>$this->frparam('page',0,1)))->orderby('addtime desc,id desc')->go();
-			
+			$pagelist = $page->where($sql)->orderby('addtime desc,id desc')->limit($this->frparam('limit',0,10))->page($this->frparam('page',0,1))->go();
 			$ajaxdata = [];
 			$chongzhi_num = 0;
 			$rechange_num = 0;

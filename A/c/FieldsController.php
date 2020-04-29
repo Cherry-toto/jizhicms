@@ -545,8 +545,8 @@ layui.use("laydate", function(){
 						,done: function(res){
 						  
 							if(res.code==0){
-								 $("#'.$v['field'].'_img").attr("src","/"+res.url);
-								 $("#'.$v['field'].'").val("/"+res.url);
+								 $("#'.$v['field'].'_img").attr("src",res.url);
+								 $("#'.$v['field'].'").val(res.url);
 							}else{
 								 layer.alert(res.error, {icon: 5});
 							}
@@ -605,7 +605,7 @@ layui.use("laydate", function(){
 							layer.closeAll("loading"); //关闭loading
 							if(res.code==0){
 							
-							$(".preview_'.$v['field'].'").append(\'<div class="upload-icon-img layui-input-inline" ><div class="upload-pre-item"><img src="/\' + res.url + \'" class="img" width="200px" height="200px" ><input name="'.$v['field'].'_urls[]" type="text" class="layui-input"  value="/\' + res.url + \'" /><i  class="layui-icon delete_file" >&#xe640;</i></div></div>\');
+							$(".preview_'.$v['field'].'").append(\'<div class="upload-icon-img layui-input-inline" ><div class="upload-pre-item"><img src="\' + res.url + \'" class="img" width="200px" height="200px" ><input name="'.$v['field'].'_urls[]" type="text" class="layui-input"  value="\' + res.url + \'" /><i  class="layui-icon delete_file" >&#xe640;</i></div></div>\');
 								
 								
 							}else{
@@ -741,7 +741,7 @@ layui.use("laydate", function(){
 						,done: function(res){
 							if(res.code==0){
 								
-								 $("#'.$v['field'].'").val("/"+res.url);
+								 $("#'.$v['field'].'").val(res.url);
 							}else{
 								 layer.alert(res.error, {icon: 5});
 							}
@@ -799,7 +799,7 @@ layui.use("laydate", function(){
 							layer.closeAll("loading"); //关闭loading
 							if(res.code==0){
 							
-							$(".preview_'.$v['field'].'").append(\'<div class="upload-icon-img layui-input-inline" ><div class="upload-pre-item"><input name="'.$v['field'].'_urls[]" type="text" class="layui-input"  value="/\' + res.url + \'" /><i  class="layui-icon delete_file" >&#xe640;</i></div></div>\');
+							$(".preview_'.$v['field'].'").append(\'<div class="upload-icon-img layui-input-inline" ><div class="upload-pre-item"><input name="'.$v['field'].'_urls[]" type="text" class="layui-input"  value="\' + res.url + \'" /><i  class="layui-icon delete_file" >&#xe640;</i></div></div>\');
 								
 								
 							}else{
@@ -863,6 +863,11 @@ layui.use("laydate", function(){
 		if($id){
 			
 			$fields = M('fields')->find(array('id'=>$id));
+			//不允许删除字段
+			$noallow = ['addtime','member_id','hits','target','ownurl','istop'];
+			if(in_array($fields['field'],$noallow)){
+				JsonReturn(array('code'=>1,'msg'=>'系统字段不允许删除！'));
+			}
 			if(M('Fields')->delete('id='.$id)){
 				$sql = "ALTER TABLE ".DB_PREFIX.$fields['molds']." DROP COLUMN ".$fields['field'];
 				$x = M()->runSql($sql);

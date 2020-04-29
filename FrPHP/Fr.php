@@ -53,6 +53,8 @@ class FrPHP
 		defined('APP_LANG') or define('APP_LANG', isset($config['APP_LANG']) ? $config['APP_LANG'] : $MyConfig['APP_LANG']);
 		defined('APP_LANG_REQUREST') or define('APP_LANG_REQUREST', isset($config['APP_LANG_REQUREST']) ? $config['APP_LANG_REQUREST'] : $MyConfig['APP_LANG_REQUREST']);
 		defined('ROOT') or define('ROOT', isset($config['ROOT']) ? $config['ROOT'] : $MyConfig['ROOT']);
+		defined('File_TXT_HIDE') or define('File_TXT_HIDE', isset($config['File_TXT_HIDE']) ? $config['File_TXT_HIDE'] : $MyConfig['File_TXT_HIDE']);
+		defined('CLASS_HIDE_SLASH') or define('CLASS_HIDE_SLASH', isset($config['CLASS_HIDE_SLASH']) ? $config['CLASS_HIDE_SLASH'] : $MyConfig['CLASS_HIDE_SLASH']);
 		//引入系统函数
 		require(CORE_PATH.'/common/Functions.php');
 		//引入项目函数
@@ -173,7 +175,7 @@ class FrPHP
 		//读取系统配置
 		$webconfig = getCache('webconfig');
 		if(!$webconfig){
-			$wcf = M('sysconfig')->findAll(array('type'=>0));
+			$wcf = M('sysconfig')->findAll();
 			$webconfig = array();
 			foreach($wcf as $k=>$v){
 				if($v['field']=='web_js' || $v['field']=='ueditor_config'){

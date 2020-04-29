@@ -27,6 +27,7 @@ class CommentController extends CommonController
 			$data = $this->frparam();
 			$data['addtime'] = strtotime($data['addtime']);
 			$data['body'] = $this->frparam('body',4);
+			$data['reply'] = $this->frparam('reply',4);
 			$data['userid'] = $_SESSION['admin']['id'];
 			
 			
@@ -80,6 +81,7 @@ class CommentController extends CommonController
 		$get_sql = ($res['fields_search_check']!='') ? (' and '.$res['fields_search_check']) : '';
 		$this->fields_search = $res['fields_search'];
 		$this->classtypes = $this->classtypetree;
+		$this->molds = M('molds')->find(['biaoshi'=>'comment']);
 		if($this->frparam('ajax')){
 			
 			$page = new Page('Comment');
@@ -91,7 +93,13 @@ class CommentController extends CommonController
 			}else if($this->isshow==3){
 				$sql .= ' and isshow=2 ';
 			}
-
+			if($this->admin['classcontrol']==1 && $this->admin['isadmin']!=1 && $this->molds['iscontrol']!=0 && $this->molds['isclasstype']==1){
+				$a1 = explode(',',$this->tids);
+				$a2 = array_filter($a1);
+				$tids = implode(',',$a2);
+				$sql.=' and tid in('.$tids.') ';
+			}
+			
 			if($this->frparam('tid')){
 				$sql .= ' and tid='.$this->frparam('tid');
 			}
@@ -105,8 +113,7 @@ class CommentController extends CommonController
 				$sql.=" and userid = ".$this->frparam('userid')." ";
 			}
 			$sql .= $get_sql;
-			$data = $page->where($sql)->orderby('id desc')->page($this->frparam('page',0,1))->go();
-			
+			$data = $page->where($sql)->orderby('addtime desc,id desc')->limit($this->frparam('limit',0,10))->page($this->frparam('page',0,1))->go();
 			$ajaxdata = [];
 			$classtypedata = classTypeData();
 			
@@ -174,6 +181,7 @@ class CommentController extends CommonController
 			$data = $this->frparam();
 			$data['addtime'] = strtotime($data['addtime']);
 			$data['body'] = $this->frparam('body',4);
+			$data['reply'] = $this->frparam('reply',4);
 			$data = get_fields_data($data,'comment');
 			if($this->frparam('id')){
 				if(M('Comment')->update(array('id'=>$this->frparam('id')),$data)){

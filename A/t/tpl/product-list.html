@@ -187,7 +187,9 @@
 				  {field: 'id', title: 'ID', width:50, sort: true, fixed:'left'}
 				  ,{type:'checkbox'}
 				  ,{field: 'orders', title: '排序',width: 100, edit:'text',sort: true}
+				  {if($molds['isclasstype']==1)}
 				  ,{field: 'new_tid', title: '栏目', sort: true}
+				  {/if}
 				  ,{field: 'tuijian', title: '推荐', templet: '#tuijian'}
 				  ,{field: 'title', title: '标题', edit:'text', sort: true}
 				  ,{field: 'new_litpic', title: '缩略图',templet: '#litpic'} 

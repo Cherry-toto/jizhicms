@@ -181,13 +181,40 @@ class ScreenController extends CommonController
 		//echo $sql;
 		//筛选分页的特殊性
 		$page->typeurl = 'screen';
-		$data = $page->where($sql)->orderby('orders desc,id desc')->limit($limit)->page($this->frpage)->go();
+		
+		$orders = 'istop desc,orders desc,addtime desc,id desc';
+		$ot = $this->frparam('orders') ? $this->frparam('orders') : $res['orderstype'];
+		switch($ot){
+			case 1:
+				$orders = 'istop desc,orders desc,addtime desc,id desc';
+			break;
+			case 2:
+				$orders = 'istop desc,orders desc,id asc';
+			break;
+			case 3:
+				$orders = 'istop desc,orders asc';
+			break;
+			case 4:
+				$orders = 'istop desc,addtime desc';
+			break;
+			case 5:
+				$orders = 'istop desc,id asc';
+			break;
+			case 6:
+				$orders = 'istop desc,hits desc';
+			break;
+			case 7:
+				$orders = 'istop desc,addtime asc';
+			break;
+		}
+
+		$data = $page->where($sql)->orderby($orders)->limit($limit)->page($this->frpage)->go();
 		$pages = $page->pageList(3,'-page-');
 		
 		$this->pages = $pages;//组合分页
 		
 		foreach($data as $k=>$v){
-			$data[$k]['url'] = gourl($v['id'],$v['htmlurl']);
+			$data[$k]['url'] = gourl($v,$v['htmlurl']);
 		}
 		$this->type = $res;
 		$this->lists = $data;//列表数据
@@ -196,7 +223,7 @@ class ScreenController extends CommonController
 		$this->prevpage = $page->prevpage;//上一页
 		$this->nextpage = $page->nextpage;//下一页
 		$this->allpage = $page->allpage;//总页数
-		if($this->frparam('ajax')){
+		if($this->frparam('ajax') && $this->webconf['isajax']){
 			if($this->frparam('ajax_tpl',1)){
 				$this->display($this->template.'/'.$res['molds'].'/screen_list_'.$res['lists_html']);
 				exit;

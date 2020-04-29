@@ -98,6 +98,7 @@ namespace FrPHP\Extend;
 							$url = $urls[0];
 						}
 						
+						
 					break;
 					case 'search':
 						$param = $_REQUEST;
@@ -118,6 +119,11 @@ namespace FrPHP\Extend;
 				
 				
 			}
+			
+			if(File_TXT_HIDE && !CLASS_HIDE_SLASH){
+				$url = (strripos($url,'/')+1 == strlen($url)) ? substr($url,0,strripos($url,'/')) : $url; 
+			}
+			
 			return $url;
             
 		}
@@ -159,7 +165,12 @@ namespace FrPHP\Extend;
 			}
 			$this->url = $url;
 			$list = '';
-			$file_ext = $this->file_ext;
+			//$file_ext = $this->file_ext;
+			$file_ext = File_TXT_HIDE ? '' : File_TXT;
+			if($file_ext==''){
+				$file_ext = CLASS_HIDE_SLASH ? $file_ext : $file_ext.'/';
+			}
+			
 			$listpage['home'] = $this->url.$file_ext;
 			for($i=1;$i<=$this->allpage;$i++){
 				if($this->allpage >= 2*$this->pv){

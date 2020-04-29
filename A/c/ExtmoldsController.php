@@ -93,7 +93,7 @@ class ExtmoldsController extends Controller
 		if($this->frparam('ajax')){
 			
 			$sql = '1=1';
-			if($this->admin['isadmin']!=1){
+			if($this->admin['classcontrol']==1 && $this->admin['isadmin']!=1 && $this->molds['isclasstype']==1 && $this->molds['iscontrol']!=0){
 				$a1 = explode(',',$this->tids);
 				$a2 = array_filter($a1);
 				$tids = implode(',',$a2);
@@ -117,7 +117,7 @@ class ExtmoldsController extends Controller
 			}
 			
 			$page = new Page($molds);
-			$data = $page->where($sql)->orderby('orders desc,id desc')->page($this->frparam('page',0,1))->go();
+			$data = $page->where($sql)->orderby('orders desc,id desc')->limit($this->frparam('limit',0,10))->page($this->frparam('page',0,1))->go();
 			$ajaxdata = [];
 			foreach($data as $k=>$v){
 				if(isset($classtypedata[$v['tid']])){
@@ -159,14 +159,28 @@ class ExtmoldsController extends Controller
 		if($this->frparam('go',1)==1){
 			
 			$data = $this->frparam();
-			if(isset($data['tid'])){
+			$data['tid'] = $this->frparam('tid',0,0);
+			if($data['tid']){
 				$pclass = get_info_table('classtype',array('id'=>$data['tid']));
 				$data['htmlurl'] = $pclass['htmlurl'];
 			}
 			
 			$data = get_fields_data($data,$molds);
-			if(M($molds)->add($data)){
+			
+			//处理自定义URL
+			if(isset($data['ownurl'])){
+				if(M('customurl')->find(['molds'=>$molds,'url'=>$data['ownurl']])){
+					JsonReturn(array('code'=>1,'msg'=>'已存在相同的自定义URL！'));
+				}
 				
+			}
+			$data['userid'] = $this->admin['id'];
+			$data['molds'] = $molds;
+			$r = M($molds)->add($data);
+			if($r){
+				if(isset($data['ownurl'])){
+					M('customurl')->add(['molds'=>$molds,'tid'=>$data['tid'],'url'=>$data['ownurl'],'addtime'=>time(),'aid'=>$r]);
+				}
 				JsonReturn(array('code'=>0,'msg'=>'添加成功,继续添加~','url'=>U('Extmolds/addmolds',['tid'=>$data['tid'],'molds'=>$molds])));
 				
 			}else{
@@ -178,11 +192,7 @@ class ExtmoldsController extends Controller
 			
 			
 		}
-		$classtype = M('classtype')->findAll(array('molds'=>$molds),'orders desc');
-		$classtype = set_class_haschild($classtype);
-		$classtype = getTree($classtype);
-		
-		$this->classtypes = $classtype;
+		$this->classtypes = $this->classtypetree;
 		$this->tid =  $this->frparam('tid',0,0);
 		$this->molds = M('Molds')->find(array('biaoshi'=>$molds));
 		
@@ -195,12 +205,36 @@ class ExtmoldsController extends Controller
 		if($this->frparam('go',1)==1){
 			
 			$data = $this->frparam();
-			if(isset($data['tid'])){
+			$data['tid'] = $this->frparam('tid',0,0);
+			if($data['tid']){
 				$pclass = get_info_table('classtype',array('id'=>$data['tid']));
 				$data['htmlurl'] = $pclass['htmlurl'];
 			}
 			$data = get_fields_data($data,$molds);
 			if($this->frparam('id')){
+				
+				//处理自定义URL
+				if($data['ownurl']){
+					$customurl = M('customurl')->find(['url'=>$data['ownurl']]);
+					if($customurl){
+						if($customurl['aid']!=$this->frparam('id')){
+							JsonReturn(array('code'=>1,'msg'=>'已存在相同的自定义URL！'));
+						}else if($customurl['url']!=$data['ownurl']){
+							M('customurl')->update(['molds'=>$molds,'tid'=>$data['tid'],'aid'=>$this->frparam('id')],['url'=>$data['ownurl']]);
+						}
+						
+					}else{
+						if(M('customurl')->find(['aid'=>$this->frparam('id')])){
+							M('customurl')->update(['molds'=>$molds,'tid'=>$data['tid'],'aid'=>$this->frparam('id')],['url'=>$data['ownurl']]);
+						}else{
+							M('customurl')->add(['molds'=>$molds,'tid'=>$data['tid'],'url'=>$data['ownurl'],'addtime'=>time(),'aid'=>$this->frparam('id')]);
+						}
+					}
+					
+				}else{
+					M('customurl')->delete(['molds'=>$molds,'aid'=>$this->frparam('id')]);
+				}
+				
 				if(M($molds)->update(array('id'=>$this->frparam('id')),$data)){
 					if($this->webconf['release_award_open']==1 && $data['isshow']==1){
 						$award = round($this->webconf['release_award'],2);
@@ -244,7 +278,7 @@ class ExtmoldsController extends Controller
 					
 				}else{
 					
-					JsonReturn(array('code'=>1,'msg'=>'修改失败！'));
+					JsonReturn(array('code'=>1,'msg'=>'您未做任何修改，不能提交！'));
 					
 				}
 			

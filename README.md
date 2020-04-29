@@ -15,7 +15,7 @@ QQ交流群：774764507（官方群）[【加群】](https://jq.qq.com/?_wv=1027
 > 1. jizhicms的开发语言是PHP，支持PHP5.6+，发布之日起就已经兼容到PHP7.3版本，推荐使用PHP7.0版本以上。
 > 2. 安装环境建议Linux服务器，当然Windows也是可以安装的，云服务器建议安装宝塔面板【[查看](http://www.bt.cn/)】
 > 3. 无论是Windows还是Linux建议安装Apache、mysql、phpMyAdmin配件
-> 4. 本系统当前版本(v1.6)仅支持mysql数据库
+> 4. 本系统当前版本(v1.6x)仅支持mysql数据库
 
 *****
 ## 安装须知  

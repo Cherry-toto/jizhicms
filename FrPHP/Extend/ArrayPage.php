@@ -130,17 +130,7 @@
 	
 	
 			$this->pv = $pv;
-			$list = '<style>li {
-					float: left;
-					list-style: none;
-					padding: 10px;
-				}
-				a{text-decoration:none;}
-				li.active {
-					background: #f00;
-					color: #fff;
-				}
-				</style>';
+			$list = '';
 			$listpage['home'] = $this->url;	
 			$listpage['current_num'] = $this->currentPage;	
 			$listpage['allpage'] = $this->allpage;	
@@ -193,8 +183,8 @@
 			
 			if($this->currentPage!=1){
 				$list = $prev.'<li><a href="'.$this->url.'1" data-page="1">首页</a></li>'.$list;
+				$listpage['prev'] = $this->url.($this->currentPage-1);
 			}
-			$listpage['prev'] = $this->url.($this->currentPage-1);
 			if($this->currentPage<$this->allpage){
 				$list .= $next;
 				$listpage['next'] = $this->url.($this->currentPage+1);
@@ -203,7 +193,7 @@
 			if($this->allpage > $this->pv){
 				$list .= $last;
 			}
-			$listpage['next'] = $this->url.$this->allpage;
+			$listpage['last'] = $this->url.$this->allpage;
 			$list.=$all;
 			$list = $ext.$list.'</ul></div>';
 			$this->listpage = $listpage;
@@ -231,14 +221,15 @@
 			$this->sum = count($this->datalist);
 			$lists = array();
             $start = $this->limit * ($this->currentPage-1);
+			
             $end = $this->limit * $this->currentPage;
-			foreach($this->datalist as $k=>$v){
-				if($end>$k && $start<=$k){
+			$i = 0;
+			foreach($this->datalist as $v){
+				if($end>$i && $start<=$i){
 					$lists[]=$v;
 				}
+				$i++;
 			}
-			
-			
 			$allpage = ceil($this->sum/$this->limit);
 			if($allpage==0){$allpage=1;}
 			$this->allpage = $allpage;

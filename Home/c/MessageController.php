@@ -97,7 +97,7 @@ class MessageController extends CommonController
 			$res = M('message')->add($w);
 			if($res){
 				if($this->frparam('ajax')){
-					JsonReturn(['code'=>1,'msg'=>'提交成功！我们会尽快回复您！','url'=>get_domain()]);
+					JsonReturn(['code'=>0,'msg'=>'提交成功！我们会尽快回复您！','url'=>get_domain()]);
 				}
 				Success('提交成功！我们会尽快回复您！',get_domain());
 			}else{

@@ -102,14 +102,57 @@ class CommonController extends Controller
 				JsonReturn($data);
 			}
 			$fileSize = (int)webConf('fileSize');
-			if($fileSize!=0 && $_FILES["file"]["size"]/(1024*1024)>$fileSize){
+			if($fileSize!=0 && ($_FILES["file"]["size"]/1024)>$fileSize){
 				$data['error'] =  "Error: 文件大小超过网站内部限制！";
 				$data['code'] = 1003;
 				JsonReturn($data);
 			}
-		   
-		  $filename =  'Public/Admin/'.date('Ymd').rand(1000,9999).'.'.$pix;
-		  $filename_x =  'Public/Admin/'.date('Ymd').rand(1000,9999).'.'.$pix;
+		  if(isset($this->webconf['admin_save_path'])){
+			  //替换日期事件
+				$t = time();
+				$d = explode('-', date("Y-y-m-d-H-i-s"));
+				$format = $this->webconf['admin_save_path'];
+				$format = str_replace("{yyyy}", $d[0], $format);
+				$format = str_replace("{yy}", $d[1], $format);
+				$format = str_replace("{mm}", $d[2], $format);
+				$format = str_replace("{dd}", $d[3], $format);
+				$format = str_replace("{hh}", $d[4], $format);
+				$format = str_replace("{ii}", $d[5], $format);
+				$format = str_replace("{ss}", $d[6], $format);
+				$format = str_replace("{time}", $t, $format);
+				if($format!=''){
+					//检查文件是否存在
+					if(strpos($format,'/')!==false && !file_exists(APP_PATH.$format)){
+						$path = explode('/',$format);
+						$path1 = APP_PATH;
+						foreach($path as $v){
+							if($path1==APP_PATH){
+								if(!file_exists($path1.$v)){
+									mkdir($path1.$v,0777);
+								}
+								$path1.=$v;
+							}else{
+								if(!file_exists($path1.'/'.$v)){
+									mkdir($path1.'/'.$v,0777);
+								}
+								$path1.='/'.$v;
+							}
+						}
+					}else if(!file_exists(APP_PATH.$format)){
+						mkdir(APP_PATH.$format,0777);
+					}
+					$admin_save_path = $format;
+					
+				}else{
+					$admin_save_path = 'Public/Admin';
+				}
+				
+				
+		  }else{
+			 $admin_save_path = 'Public/Admin';
+		  }
+		  $filename =  $admin_save_path.'/'.date('Ymd').rand(1000,9999).'.'.$pix;
+		  $filename_x =  $admin_save_path.'/'.date('Ymd').rand(1000,9999).'.'.$pix;
 		  
 			if(move_uploaded_file($_FILES["file"]['tmp_name'],$filename)){
 			
@@ -135,7 +178,7 @@ class CommonController extends Controller
 					}
 					
 				}
-				$data['url'] = $filename;
+				$data['url'] = '/'.$filename;
 				$data['code'] = 0;
 				$filesize = round(filesize(APP_PATH.$filename)/1024,2);
 				M('pictures')->add(['litpic'=>'/'.$filename,'addtime'=>time(),'userid'=>$_SESSION['admin']['id'],'size'=>$filesize,'filetype'=>strtolower($pix),'tid'=>$this->frparam('tid',0,0),'molds'=>$this->frparam('molds',1,null)]);

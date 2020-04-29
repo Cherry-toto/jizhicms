@@ -8,7 +8,7 @@
       <ul class="user-login">
         <li class="user-message"><a href="{fun U('user/notify')}" title="消息"><i class="iconfont iconxinxi"></i> <span>{fun has_no_read_msg()}</span></a></li>
         <li class="user-icon">
-          <a href="{fun U('user/userinfo')}" title="我的"><img src="{if(!$member['litpic'])}{$common}user/images/login.png{else}{$member['litpic']}{/if}" alt=""></a>
+          <a title="我的"><img src="{if(!$member['litpic'])}{$common}user/images/login.png{else}{$member['litpic']}{/if}" alt=""></a>
           <ul class="user-menu">
             <li class="bt1"><a href="{fun U('user/userinfo')}" title="资料与账户">资料与账户</a></li>
             <li class="bt1"><a href="{fun U('user/follow')}" title="我的关注">我的关注</a></li>

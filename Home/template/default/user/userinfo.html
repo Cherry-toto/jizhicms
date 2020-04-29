@@ -43,7 +43,18 @@
             <label for="">性别：</label>
             <div class="check-box"><input type="radio" name="sex" value="1" {if($member['sex']==1)}checked{/if}>男 <input type="radio" name="sex" value="2" {if($member['sex']==2)}checked{/if}>女 <input type="radio" name="sex" value="0" {if($member['sex']==0)}checked{/if}>不展示</div>
           </div>
-         
+          <div class="form-control">
+            <label for="">省份：</label>
+            <input type="text" value="{$member['province']}" name="province" name="t_province" placeholder="可不填">
+          </div>
+		  <div class="form-control">
+            <label for="">城市：</label>
+            <input type="text" value="{$member['city']}" name="city" name="t_city" placeholder="可不填">
+          </div>
+		  <div class="form-control">
+            <label for="">详细地址：</label>
+            <input type="text" value="{$member['address']}" name="address" name="t_address" placeholder="可不填">
+          </div>
           <div class="form-control">
             <label for="password">新密码：</label>
             <div class="form-password">
@@ -127,11 +138,11 @@ $(document).ready(function(){
         if(response.code==0){
           
           var result = '';
-          result +='<img src="/' + response['url'] + '" height="100"  />';
+          result +='<img src="' + response['url'] + '" height="100"  />';
           //$("#fileid").hide();
          // $("#upload_ok").show();
           $('.view_img').html(result);
-          $("#fileurl").val('/'+response['url']);
+          $("#fileurl").val(response['url']);
         }else{
           alert(response.error);
         }

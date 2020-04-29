@@ -817,10 +817,10 @@ class IndexController extends CommonController
 
 
 					}else{
-						
+						$data = curl_http($value['url']);
 						$f = @fopen($value['html'],'w');
 						//$r = @fwrite($f,file_get_contents($value['url'],false,$context));
-						$r = @fwrite($f,curl_http($value['url']));
+						$r = @fwrite($f,$data);
 						@fclose($f);
 						//$r = file_put_contents($value['html'],file_get_contents($value['url'],false,$context));
 						if(!$r){

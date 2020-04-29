@@ -724,7 +724,7 @@ class PluginsController extends CommonController
 						}
 						$path = APP_PATH.'A/exts/';
 						$zip = new \ZipArchive;
-						$tmp_path = str_replace('/','\\',$tmp_path);
+						//$tmp_path = str_replace('/','\\',$tmp_path);
 						$res = $zip->open($tmp_path);
 						if ($res === TRUE) {
 							

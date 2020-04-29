@@ -94,7 +94,7 @@ class OrderController extends Controller
 				if($group['discount_type']==1){
 					$discount = $group['discount'];
 				}else if($group['discount_type']==2){
-					$discount = round($group['discount']*$price,2);
+					$discount = round((1-$group['discount'])*$price,2);
 				}
 				$w['body'] = '||'.implode('||',$new).'||';
 				$w['yunfei'] = $yunfei;

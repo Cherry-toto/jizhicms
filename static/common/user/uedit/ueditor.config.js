@@ -19,7 +19,6 @@
      * 因此，UEditor提供了针对不同页面的编辑器可单独配置的根路径，具体来说，在需要实例化编辑器的页面最顶部写上如下代码即可。当然，需要令此处的URL等于对应的配置。
      * window.UEDITOR_HOME_URL = "/xxxx/xxxx/";
      */
-
     var URL = window.UEDITOR_HOME_URL || getUEBasePath();
 
     /**
@@ -33,23 +32,19 @@
         // 服务器统一请求接口路径
         , serverUrl: URL + "php/controller.php"
 
-        //工具栏上的所有的功能按钮和下拉框，可以在new编辑器的实例时选择自己需要的从新定义
+        //工具栏上的所有的功能按钮和下拉框，可以在new编辑器的实例时选择自己需要的重新定义
         , toolbars: [[
-            'fullscreen'/*全屏*/, 'source'/*源码*/, '|', 
-			'undo'/*撤销*/, 'redo'/*重做*/, '|',
-			'bold'/*加粗*/, 'italic'/*斜体*/, 'underline'/*下划线*/, 'fontborder'/*字符边框*/, 'strikethrough'/*删除线*/, 'superscript'/*上标*/, 'subscript'/*下标*/, 'removeformat'/*清除格式*/, 'formatmatch'/*格式刷*/, 'autotypeset'/*自动排版*/, 'blockquote'/*引用*/, 'pasteplain'/*纯文本粘贴*/, '|', 
-			'forecolor'/*字体颜色*/, 'backcolor'/*背景色*/, 'insertorderedlist'/*有序列表*/, 'insertunorderedlist'/*无序列表*/, 'selectall'/*全选*/, 'cleardoc'/*清空文件*/, '|',
-			'rowspacingtop'/*段前距*/, 'rowspacingbottom'/*段后距*/, 'lineheight'/*行间距*/, '|',
-			'customstyle'/*自定义标题格式*/, 'paragraph'/*段落格式*/, 'fontfamily'/*字体*/, 'fontsize'/*字体大小*/, '|',
-			'directionalityltr'/*从左向右输入*/, 'directionalityrtl'/*从右向左输入*/, 'indent'/*段前缩进*/, '|',
-			'justifyleft'/*向左对齐*/, 'justifycenter'/*居中对齐*/, 'justifyright'/*向右对齐*/, 'justifyjustify'/*两端对齐*/, '|', 
-			'touppercase'/*字母大写*/, 'tolowercase'/*字母小写*/, '|',
-			'link'/*超链接*/, 'unlink'/*取消链接*/, 'anchor'/*锚点*/, '|', 
-			'imagenone'/*图片默认排序*/, 'imageleft'/*图片向左浮动*/, 'imageright'/*图片向右浮动*/, 'imagecenter'/*图片居中浮动*/, '|',
-			'simpleupload'/*单张图片上传*/, 'insertimage'/*多图上传*/, 'emotion'/*表情*/, 'scrawl'/*涂鸦*/, 'insertvideo'/*插入视频*/, 'music'/*插入音乐*/, 'attachment'/*附件*/, 'map'/*百度地图*/, 'gmap'/*谷歌地图*/, 'insertframe'/*插入iframe*/, 'insertcode'/*插入代码*/, 'webapp'/*插入百度应用*/, 'pagebreak'/*分页*/, 'template'/*模板*/, 'background'/*设置背景*/, '|',
-			'horizontal'/*分隔线*/, 'date'/*日期*/, 'time'/*时间*/, 'spechars'/*特殊字符*/, 'snapscreen'/*截屏*/, 'wordimage'/*图片转存*/, '|',
-			'inserttable'/*插入表格*/, 'deletetable'/*删除表格*/, 'insertparagraphbeforetable'/*表格前插入行*/, 'insertrow'/*前插入行*/, 'deleterow'/*删除行*/, 'insertcol'/*插入列*/, 'deletecol'/*删除列*/, 'mergecells'/*合并多个单元格*/, 'mergeright'/*右合并单元格*/, 'mergedown'/*下合并单元格*/, 'splittocells'/*拆分单元格*/, 'splittorows'/*拆分成行*/, 'splittocols'/*拆分成列*/, 'charts'/*图表*/, '|',
-			'print'/*打印*/, 'preview'/*预览*/, 'searchreplace'/*查找替换*/, 'help'/*帮助*/, 'drafts'/*草稿*/
+            'fullscreen', 'source', '|', 'undo', 'redo', '|',
+            'bold', 'italic', 'underline', 'fontborder', 'strikethrough', 'superscript', 'subscript', 'removeformat', 'formatmatch', 'autotypeset', 'blockquote', 'pasteplain', '|', 'forecolor', 'backcolor', 'insertorderedlist', 'insertunorderedlist', 'selectall', 'cleardoc', '|',
+            'rowspacingtop', 'rowspacingbottom', 'lineheight', '|',
+            'customstyle', 'paragraph', 'fontfamily', 'fontsize', '|',
+            'directionalityltr', 'directionalityrtl', 'indent', '|',
+            'justifyleft', 'justifycenter', 'justifyright', 'justifyjustify', '|', 'touppercase', 'tolowercase', '|',
+            'link', 'unlink', 'anchor', '|', 'imagenone', 'imageleft', 'imageright', 'imagecenter', '|',
+            'simpleupload', 'insertimage', 'emotion', 'scrawl', 'insertvideo', 'music', 'attachment', 'map', 'gmap', 'insertframe', 'insertcode', 'webapp', 'pagebreak', 'template', 'background', '|',
+            'horizontal', 'date', 'time', 'spechars', 'snapscreen', 'wordimage', '|',
+            'inserttable', 'deletetable', 'insertparagraphbeforetable', 'insertrow', 'deleterow', 'insertcol', 'deletecol', 'mergecells', 'mergeright', 'mergedown', 'splittocells', 'splittorows', 'splittocols', 'charts', '|',
+            'print', 'preview', 'searchreplace', 'drafts', 'help'
         ]]
         //当鼠标放在工具栏上时显示的tooltip提示,留空支持自动多语言配置，否则以配置值为准
         //,labelMap:{
@@ -88,7 +83,7 @@
         //如果自定义，最好给p标签如下的行高，要不输入中文时，会有跳动感
         //,initialStyle:'p{line-height:1em}'//编辑器层级的基数,可以用来改变字体等
 
-        //,iframeCssUrl: URL + '/themes/iframe.css' //给编辑器内部引入一个css文件
+        //,iframeCssUrl: URL + '/themes/iframe.css' //给编辑区域的iframe引入一个css文件
 
         //indentValue
         //首行缩进距离,默认是2em
@@ -233,9 +228,7 @@
         //]
 
         //打开右键菜单功能
-        ,enableContextMenu: true
-		//关闭div转换功能
-		,allowDivTransToP: false
+        //,enableContextMenu: true
         //右键菜单的内容，可以参考plugins/contextmenu.js里边的默认菜单的例子，label留空支持国际化，否则以此配置为准
         //,contextMenu:[
         //    {
@@ -300,6 +293,9 @@
         //编辑器底部距离工具栏高度(如果参数大于等于编辑器高度，则设置无效)
         //,toolbarTopOffset:400
 
+        //设置远程图片是否抓取到本地保存
+        //,catchRemoteImageEnable: true //设置是否抓取远程图片
+
         //pageBreakTag
         //分页标识符,默认是_ueditor_page_break_tag_
         //,pageBreakTag:'_ueditor_page_break_tag_'
@@ -328,7 +324,7 @@
         //表格是否可以拖拽
         //,tableDragable: true
 
-        //,disabledTableInTable:true  //禁止表格嵌套
+
 
         //sourceEditor
         //源码的查看方式,codemirror 是代码高亮，textarea是文本框,默认是codemirror
@@ -348,9 +344,89 @@
         //    'anchor':'~/dialogs/anchor/anchor.html',
         //}
 
+        //allowLinkProtocol 允许的链接地址，有这些前缀的链接地址不会自动添加http
+        //, allowLinkProtocols: ['http:', 'https:', '#', '/', 'ftp:', 'mailto:', 'tel:', 'git:', 'svn:']
+
         //webAppKey 百度应用的APIkey，每个站长必须首先去百度官网注册一个key后方能正常使用app功能，注册介绍，http://app.baidu.com/static/cms/getapikey.html
-        , webAppKey: "m2KYs1ivfLDMYChGE8ccFrDf"
-		
+        //, webAppKey: ""
+
+        //默认过滤规则相关配置项目
+        //,disabledTableInTable:true  //禁止表格嵌套
+        //,allowDivTransToP:true      //允许进入编辑器的div标签自动变成p标签
+        //,rgb2Hex:true               //默认产出的数据中的color自动从rgb格式变成16进制格式
+
+		// xss 过滤是否开启,inserthtml等操作
+		,xssFilterRules: true
+		//input xss过滤
+		,inputXssFilter: true
+		//output xss过滤
+		,outputXssFilter: true
+		// xss过滤白名单 名单来源: https://raw.githubusercontent.com/leizongmin/js-xss/master/lib/default.js
+		,whitList: {
+			a:      ['target', 'href', 'title', 'class', 'style'],
+			abbr:   ['title', 'class', 'style'],
+			address: ['class', 'style'],
+			area:   ['shape', 'coords', 'href', 'alt'],
+			article: [],
+			aside:  [],
+			audio:  ['autoplay', 'controls', 'loop', 'preload', 'src', 'class', 'style'],
+			b:      ['class', 'style'],
+			bdi:    ['dir'],
+			bdo:    ['dir'],
+			big:    [],
+			blockquote: ['cite', 'class', 'style'],
+			br:     [],
+			caption: ['class', 'style'],
+			center: [],
+			cite:   [],
+			code:   ['class', 'style'],
+			col:    ['align', 'valign', 'span', 'width', 'class', 'style'],
+			colgroup: ['align', 'valign', 'span', 'width', 'class', 'style'],
+			dd:     ['class', 'style'],
+			del:    ['datetime'],
+			details: ['open'],
+			div:    ['class', 'style'],
+			dl:     ['class', 'style'],
+			dt:     ['class', 'style'],
+			em:     ['class', 'style'],
+			font:   ['color', 'size', 'face'],
+			footer: [],
+			h1:     ['class', 'style'],
+			h2:     ['class', 'style'],
+			h3:     ['class', 'style'],
+			h4:     ['class', 'style'],
+			h5:     ['class', 'style'],
+			h6:     ['class', 'style'],
+			header: [],
+			hr:     [],
+			i:      ['class', 'style'],
+			img:    ['src', 'alt', 'title', 'width', 'height', 'id', '_src', 'loadingclass', 'class', 'data-latex'],
+			ins:    ['datetime'],
+			li:     ['class', 'style'],
+			mark:   [],
+			nav:    [],
+			ol:     ['class', 'style'],
+			p:      ['class', 'style'],
+			pre:    ['class', 'style'],
+			s:      [],
+			section:[],
+			small:  [],
+			span:   ['class', 'style'],
+			sub:    ['class', 'style'],
+			sup:    ['class', 'style'],
+			strong: ['class', 'style'],
+			table:  ['width', 'border', 'align', 'valign', 'class', 'style'],
+			tbody:  ['align', 'valign', 'class', 'style'],
+			td:     ['width', 'rowspan', 'colspan', 'align', 'valign', 'class', 'style'],
+			tfoot:  ['align', 'valign', 'class', 'style'],
+			th:     ['width', 'rowspan', 'colspan', 'align', 'valign', 'class', 'style'],
+			thead:  ['align', 'valign', 'class', 'style'],
+			tr:     ['rowspan', 'align', 'valign', 'class', 'style'],
+			tt:     [],
+			u:      [],
+			ul:     ['class', 'style'],
+			video:  ['autoplay', 'controls', 'loop', 'preload', 'src', 'height', 'width', 'class', 'style']
+		}
     };
 
     function getUEBasePath(docUrl, confUrl) {

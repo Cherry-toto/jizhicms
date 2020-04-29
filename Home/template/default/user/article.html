@@ -19,6 +19,9 @@
       <div class="user-tips">
         <p><i class="iconfont iconxiaoxi3"></i> 欢迎注册本站会员，注册会员后您将享受专属会员服务!包括但不限于专属文章浏览权限，会员投稿权限，在线购物权限，下载会员可见附件等实用功能，欢迎注册体验！</p>
       </div>
+	  <div class="common-tab">
+        <h2><a href="{fun U('user/posts',['molds'=>'article'])}" {if($molds=='article')}class="active"{/if}>文章投稿</a><a href="{fun U('user/posts',['molds'=>'product'])}" {if($molds=='product')}class="active"{/if}>商品投稿</a></h2>
+      </div>
       <div class="common-tab">
         <h2><a href="{fun U('user/posts',['molds'=>$molds])}" {if(!$type)}class="active"{/if}>全部投稿</a><a href="{fun U('user/posts',['type'=>1,'molds'=>$molds])}" {if($type==1)}class="active"{/if}>已退回</a><a href="{fun U('user/posts',['type'=>2,'molds'=>$molds])}" {if($type==2)}class="active"{/if}>待审核</a><a href="{fun U('user/posts',['type'=>3,'molds'=>$molds])}" {if($type==3)}class="active"{/if}>已发布</a><a href="{fun U('user/release',['molds'=>$molds])}" class="btn-info btn-release">发布{$moldsname}</a></h2>
       </div>

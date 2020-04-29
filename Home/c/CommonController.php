@@ -23,13 +23,16 @@ class CommonController extends Controller
 		$template = get_template();
 		$this->webconf = $webconf;
 		$this->template = $template;
+		
+		if($this->webconf['closeweb']){
+			$this->close();
+		}
+		
 		if(isset($_SESSION['terminal'])){
 			$classtypedata = $_SESSION['terminal']=='mobile' ? classTypeDataMobile() : classTypeData();
 		}else{
 			$classtypedata = (isMobile() && $webconf['iswap']==1)?classTypeDataMobile():classTypeData();
 		}
-		
-		
 		$this->classtypetree = $classtypedata;
 		foreach($classtypedata as $k=>$v){
 			$classtypedata[$k]['children'] = get_children($v,$classtypedata);
@@ -66,8 +69,18 @@ class CommonController extends Controller
 			$this->islogin = false;
 		}
 		
+		
     
     }
+	
+	function close(){
+		if(file_exists(APP_PATH.'static/common/close.html')){
+			$this->display('@'.APP_PATH.'static/common/close.html');
+			exit;
+		}else{
+			echo $this->webconf['closetip'];exit;
+		}
+	}
 	
 	
 	function vercode(){
@@ -109,13 +122,59 @@ class CommonController extends Controller
 				JsonReturn($data);
 			}
 			$fileSize = (int)webConf('fileSize');
-			if($fileSize!=0 && $_FILES[$file]["size"][$k]/(1024*1024)>$fileSize){
+			if($fileSize!=0 && ($_FILES[$file]["size"][$k]/1024)>$fileSize){
 				$data['error'] =  "Error: 文件大小超过网站内部限制！";
 				$data['code'] = 1003;
 				JsonReturn($data);
 			}
 		 
-			$filename[]='Public/Home/'.date('Ymd').rand(1000,9999).'.'.$pix; //定义文件名 
+			 if(isset($this->webconf['home_save_path'])){
+			  //替换日期事件
+				$t = time();
+				$d = explode('-', date("Y-y-m-d-H-i-s"));
+				$format = $this->webconf['home_save_path'];
+				$format = str_replace("{yyyy}", $d[0], $format);
+				$format = str_replace("{yy}", $d[1], $format);
+				$format = str_replace("{mm}", $d[2], $format);
+				$format = str_replace("{dd}", $d[3], $format);
+				$format = str_replace("{hh}", $d[4], $format);
+				$format = str_replace("{ii}", $d[5], $format);
+				$format = str_replace("{ss}", $d[6], $format);
+				$format = str_replace("{time}", $t, $format);
+				if($format!=''){
+					//检查文件是否存在
+					if(strpos($format,'/')!==false && !file_exists(APP_PATH.$format)){
+						$path = explode('/',$format);
+						$path1 = APP_PATH;
+						foreach($path as $v){
+							if($path1==APP_PATH){
+								if(!file_exists($path1.$v)){
+									mkdir($path1.$v,0777);
+								}
+								$path1.=$v;
+							}else{
+								if(!file_exists($path1.'/'.$v)){
+									mkdir($path1.'/'.$v,0777);
+								}
+								$path1.='/'.$v;
+							}
+						}
+					}else if(!file_exists(APP_PATH.$format)){
+						mkdir(APP_PATH.$format,0777);
+					}
+					$home_save_path = $format;
+					
+				}else{
+					$home_save_path = 'Public/Home';
+				}
+				
+				
+		  }else{
+			 $home_save_path = 'Public/Home';
+		  }
+		 
+		 
+			$filename[]=$home_save_path.'/'.date('Ymd').rand(1000,9999).'.'.$pix; //定义文件名 
 		}
 
 		$response = array();
@@ -128,8 +187,8 @@ class CommonController extends Controller
 					$userid = 0;
 				}
 				$filesize = round(filesize(APP_PATH.$filename[$k])/1024,2);
-				M('pictures')->add(['litpic'=>'/'.$filename[$k],'addtime'=>time(),'userid'=>$userid,'size'=>$filesize,'tid'=>$this->frparam('tid',0,0),'molds'=>$this->frparam('molds',1,null),'path'=>'Home']);
-				$response[] = $filename[$k];
+				M('pictures')->add(['litpic'=>'/'.$filename[$k],'addtime'=>time(),'userid'=>$userid,'size'=>$filesize,'tid'=>$this->frparam('tid',0,0),'filetype'=>strtolower($pix),'molds'=>$this->frparam('molds',1,null),'path'=>'Home']);
+				$response[] = '/'.$filename[$k];
 
 			}else{  
 				$data['error'] =  "Error: 请检查目录[Public/Home]写入权限";
@@ -173,17 +232,61 @@ class CommonController extends Controller
 				JsonReturn($data);
 			}
 			$fileSize = (int)webConf('fileSize');
-			if($fileSize!=0 && $_FILES[$file]["size"]/(1024*1024)>$fileSize){
+			if($fileSize!=0 && ($_FILES[$file]["size"]/1024)>$fileSize){
 				$data['error'] =  "Error: 文件大小超过网站内部限制！";
 				$data['code'] = 1003;
 				JsonReturn($data);
 			}
-		  	
+		  	if(isset($this->webconf['home_save_path'])){
+			  //替换日期事件
+				$t = time();
+				$d = explode('-', date("Y-y-m-d-H-i-s"));
+				$format = $this->webconf['home_save_path'];
+				$format = str_replace("{yyyy}", $d[0], $format);
+				$format = str_replace("{yy}", $d[1], $format);
+				$format = str_replace("{mm}", $d[2], $format);
+				$format = str_replace("{dd}", $d[3], $format);
+				$format = str_replace("{hh}", $d[4], $format);
+				$format = str_replace("{ii}", $d[5], $format);
+				$format = str_replace("{ss}", $d[6], $format);
+				$format = str_replace("{time}", $t, $format);
+				if($format!=''){
+					//检查文件是否存在
+					if(strpos($format,'/')!==false && !file_exists(APP_PATH.$format)){
+						$path = explode('/',$format);
+						$path1 = APP_PATH;
+						foreach($path as $v){
+							if($path1==APP_PATH){
+								if(!file_exists($path1.$v)){
+									mkdir($path1.$v,0777);
+								}
+								$path1.=$v;
+							}else{
+								if(!file_exists($path1.'/'.$v)){
+									mkdir($path1.'/'.$v,0777);
+								}
+								$path1.='/'.$v;
+							}
+						}
+					}else if(!file_exists(APP_PATH.$format)){
+						mkdir(APP_PATH.$format,0777);
+					}
+					$home_save_path = $format;
+					
+				}else{
+					$home_save_path = 'Public/Home';
+				}
+				
+				
+			  }else{
+				 $home_save_path = 'Public/Home';
+			  }
+			 
 		  
-		    $filename =  'Public/Home/'.date('Ymd').rand(1000,9999).'.'.$pix;
+		    $filename =  $home_save_path.'/'.date('Ymd').rand(1000,9999).'.'.$pix;
 		  
 			if(move_uploaded_file($_FILES[$file]['tmp_name'],$filename)){
-				$data['url'] = $filename;
+				$data['url'] = '/'.$filename;
 				$data['code'] = 0;
 				if(isset($_SESSION['member'])){
 					$userid = $_SESSION['member']['id'];
@@ -191,7 +294,7 @@ class CommonController extends Controller
 					$userid = 0;
 				}
 				$filesize = round(filesize(APP_PATH.$filename)/1024,2);
-				M('pictures')->add(['litpic'=>'/'.$filename,'addtime'=>time(),'userid'=>$userid,'size'=>$filesize,'tid'=>$this->frparam('tid',0,0),'molds'=>$this->frparam('molds',1,null),'path'=>'Home']);
+				M('pictures')->add(['litpic'=>'/'.$filename,'addtime'=>time(),'userid'=>$userid,'size'=>$filesize,'tid'=>$this->frparam('tid',0,0),'filetype'=>strtolower($pix),'molds'=>$this->frparam('molds',1,null),'path'=>'Home']);
 				
 			}else{
 				$data['error'] =  "Error: 请检查目录[Public/Home]写入权限";
@@ -288,9 +391,9 @@ class CommonController extends Controller
 			       success: function(response){
 			        if(response.code==0){
 			          var result = "";
-			          result +=\'<img src="/\' + response["url"] + \'" height="100"  />\';
+			          result +=\'<img src="\' + response["url"] + \'" height="100"  />\';
 			          $(".view_img_litpic").html(result);
-			          $("#file_url_litpic").val("/"+response["url"]);
+			          $("#file_url_litpic").val(response["url"]);
 			        }else{
 			          alert(response.error);
 			        }
@@ -356,9 +459,9 @@ class CommonController extends Controller
 			       success: function(response){
 			        if(response.code==0){
 			          var result = "";
-			          result +=\'<img src="/\' + response["url"] + \'" height="100"  />\';
+			          result +=\'<img src="\' + response["url"] + \'" height="100"  />\';
 			          $(".view_img_litpic").html(result);
-			          $("#file_url_litpic").val("/"+response["url"]);
+			          $("#file_url_litpic").val(response["url"]);
 			        }else{
 			          alert(response.error);
 			        }
@@ -399,7 +502,7 @@ class CommonController extends Controller
 			        if(response.code==0){
 			          var result = "";
 			          for(var i=0;i<response["urls"].length;i++){
-			          	 result +=\'<span><img src="/\' + response["urls"][i] + \'" height="100"  /><input name="pictures_urls[]" type="text" value="/\' + response["urls"][i] + \'" ><span onclick="deleteImage_auto(this)">删除</span></span>\';
+			          	 result +=\'<span><img src="\' + response["urls"][i] + \'" height="100"  /><input name="pictures_urls[]" type="text" value="\' + response["urls"][i] + \'" ><span onclick="deleteImage_auto(this)">删除</span></span>\';
 			             	
 			          }
 			          $(".view_img_pictures").append(result);
@@ -524,9 +627,9 @@ class CommonController extends Controller
 				       success: function(response){
 				        if(response.code==0){
 				          var result = "";
-				          result +=\'<img src="/\' + response["url"] + \'" height="100"  />\';
+				          result +=\'<img src="\' + response["url"] + \'" height="100"  />\';
 				          $(".view_img_'.$v['field'].'").html(result);
-				          $("#file_url_'.$v['field'].'").val("/"+response["url"]);
+				          $("#file_url_'.$v['field'].'").val(response["url"]);
 				        }else{
 				          alert(response.error);
 				        }
@@ -569,7 +672,7 @@ class CommonController extends Controller
 					        if(response.code==0){
 					          var result = "";
 					          for(var i=0;i<response["urls"].length;i++){
-					          	result +=\'<span><img src="/\' + response["urls"][i] + \'" height="100"  /><input name="'.$v['field'].'_urls[]" type="text" value="/\' + response["urls"][i] + \'" ><span onclick="deleteImage_auto(this)">删除</span></span>\';
+					          	result +=\'<span><img src="\' + response["urls"][i] + \'" height="100"  /><input name="'.$v['field'].'_urls[]" type="text" value="\' + response["urls"][i] + \'" ><span onclick="deleteImage_auto(this)">删除</span></span>\';
 					          	
 					          }
 					          $(".view_img_'.$v['field'].'").append(result);	
@@ -652,7 +755,7 @@ class CommonController extends Controller
 					       contentType: false,   // 告诉jQuery不要去设置Content-Type请求头
 					       success: function(response){
 					        if(response.code==0){
-					          $("#file_url_'.$v['field'].'").val("/"+response["url"]);
+					          $("#file_url_'.$v['field'].'").val(response["url"]);
 					        }else{
 					          alert(response.error);
 					        }
@@ -694,7 +797,7 @@ class CommonController extends Controller
 					        if(response.code==0){
 					          var result = "";
 					          for(var i=0;i<response["urls"].length;i++){
-					          	result +=\'<span><input name="'.$v['field'].'_urls[]" type="text" value="/\' + response["urls"][i] + \'" ><span onclick="deleteImage_auto(this)">删除</span></span>\';
+					          	result +=\'<span><input name="'.$v['field'].'_urls[]" type="text" value="\' + response["urls"][i] + \'" ><span onclick="deleteImage_auto(this)">删除</span></span>\';
 					          }
 					          $(".view_img_'.$v['field'].'").append(result);
 					          

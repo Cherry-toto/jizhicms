@@ -4,13 +4,9 @@
     <head>
        <meta charset="UTF-8">
         {include="style"}
-		<!--新增编辑器-->
-		<script type="text/javascript" charset="utf-8" src="{__Tpl_style__}/uedit/ueditor.config.js"></script>
-		<script type="text/javascript" charset="utf-8" src="{__Tpl_style__}/uedit/editor_api.js?v=333"> </script>
-		<!--建议手动加在语言，避免在ie下有时因为加载语言失败导致编辑器加载失败-->
-		<!--这里加载的语言文件会覆盖你在配置项目里添加的语言类型，比如你在配置项目里配置的是英文，这里加载的中文，那最后就是中文-->
-		<script type="text/javascript" charset="utf-8" src="{__Tpl_style__}/uedit/lang/zh-cn/zh-cn.js"></script>
-		
+		<script type="text/javascript" charset="utf-8" src="/static/common/user/uedit/ueditor.config.js?v=1"></script>
+		<script type="text/javascript" charset="utf-8" src="/static/common/user/uedit/ueditor.all.min.js?v=1"> </script>
+		<script type="text/javascript" charset="utf-8" src="/static/common/user/uedit/lang/zh-cn/zh-cn.js"></script>
     </head>
     
     <body>
@@ -33,28 +29,37 @@
 			  </ul>
 			  <div class="layui-tab-content">
 				<div class="layui-tab-item layui-show">
-				
+				{if($molds['isclasstype']==1)}
 				<div class="layui-form-item">
                     <label for="tid" class="layui-form-label">
                         <span class="x-red">*</span>所属栏目
                     </label>
                     <div class="layui-input-inline">
-						<select name="tid" lay-search="" lay-filter="tid" id="tid" >
+						<select name="tid" lay-search="" {if($molds['ismust']==1)}lay-verify="required"{/if} lay-filter="tid" id="tid" >
+						{if($molds['ismust']==1)}
+						<option value="">选择栏目</option>
+						{else}
 						<option value="0">不限栏目</option>
+						{/if}
 					   {foreach $classtypes as $v}
 					   {if($v['molds']==$molds['biaoshi'])}
-					   {if($admin['isadmin']==1 || strpos($tids,','.$v['id'].',')!==false)}
+					   {if($admin['classcontrol']==0 || $admin['isadmin']==1 || strpos($tids,','.$v['id'].',')!==false || $molds['iscontrol']==0)}
 					   <option {if($tid==$v['id'])}selected{/if} value="{$v['id']}">{fun str_repeat('--', $v['level']), $v['classname']}</option>
 					   {/if}
 					   {/if}
 					   {/foreach}
+					   
 					   </select>
                     </div>
 					
                 </div>
-				
+				{else}
+				<input type="hidden" name="tid" value="0" />
+				{/if}
 				
 				 <span id="ext_fields"></span>
+				
+				
 				
 				 <div class="layui-form-item" pane>
                     <label for="isshow" class="layui-form-label">
@@ -76,7 +81,7 @@
 						
                
                 
-                <div class="layui-form-item" style="text-align:center;">
+                <div class="layui-form-item" id="jizhitj"  style="text-align:center;">
                     
                      <button  class="layui-btn" lay-filter="save" lay-submit="">
                         保存

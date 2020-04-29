@@ -26,6 +26,18 @@ class UserController extends Controller
 		$this->webconf = $webconf;
 		$this->webcustom = $webcustom;
 		$this->template = $template;
+		
+		if($this->webconf['closeweb']){
+			$this->close();
+		}
+		if(!M('molds')->find(['biaoshi'=>'member','isopen'=>1])){
+			if($this->frparam('ajax')){
+				JsonReturn(['code'=>1,'msg'=>'会员中心已关闭！']);
+			}
+			Error('会员中心已关闭！');
+			exit;
+		}
+		
 		if(isset($_SESSION['terminal'])){
 			$classtypedata = $_SESSION['terminal']=='mobile' ? classTypeDataMobile() : classTypeData();
 		}else{
@@ -65,6 +77,15 @@ class UserController extends Controller
 		}else{
 			$this->islogin = false;
 			
+		}
+	}
+	
+	function close(){
+		if(file_exists(APP_PATH.'static/common/close.html')){
+			$this->display('@'.APP_PATH.'static/common/close.html');
+			exit;
+		}else{
+			echo $this->webconf['closetip'];exit;
 		}
 	}
 	
@@ -946,14 +967,67 @@ class UserController extends Controller
 
     	if($_POST){
     		$data = $this->frparam();
+			//违禁词检测
+			if(isset($this->webconf['mingan']) && $this->webconf['mingan']!=''){
+				$mingan = explode(',',$this->webconf['mingan']);
+				foreach($data as $v){
+					foreach($mingan as $s){
+						if(strpos($s,'{xxx}')!==false){
+							$pattern = '/'.str_replace('{xxx}','(.*)',$s).'/';
+							if(preg_match($pattern, $v)){
+								JsonReturn(array('code'=>1,'msg'=>'添加失败，存在敏感词 [ '.$s.' ]'));
+							}
+							
+						}else{
+							if(strpos($v,$s)!==false){
+								JsonReturn(array('code'=>1,'msg'=>'添加失败，存在敏感词 [ '.$s.' ]'));
+							}
+							
+						}
+					}
+				}
+				
+			}
+			
+			
 			$w['tid'] = $this->frparam('tid');
 			if(!$w['tid']){
-				Error('请选择分类！');
+				if($this->frparam('ajax')){
+					JsonReturn(['code'=>1,'msg'=>'请选择分类！']);
+				}else{
+					Error('请选择分类！');
+				}
+				
 			}
 			if(!isset($this->classtypedata[$w['tid']])){
-				Error('分类错误！');
+				if($this->frparam('ajax')){
+					JsonReturn(['code'=>1,'msg'=>'分类错误！']);
+				}else{
+					Error('分类错误！');
+				}
+				
 			}
+			if($this->classtypedata[$w['tid']]['ishome']!=1){
+				if($this->frparam('ajax')){
+					JsonReturn(['code'=>1,'msg'=>'该分类不允许发布！']);
+				}else{
+					Error('该分类不允许发布！');
+				}
+			}
+			//检查权限
+			if($this->classtypedata[$w['tid']]['gid']!=0){
+				if($this->classtypedata[$w['tid']]['gid']>$this->member['gid']){
+					if($this->frparam('ajax')){
+						JsonReturn(['code'=>1,'msg'=>'您没有权限在该分类发布内容！']);
+					}else{
+						Error('您没有权限在该分类发布内容！');
+					}
+				}
+				
+			}
+			
 			$w['molds'] = $this->classtypedata[$w['tid']]['molds'];
+			$w = get_fields_data($data,$w['molds']);
 			$w['htmlurl'] = $this->classtypedata[$w['tid']]['htmlurl'];
 			$sql = array();
 			if($w['tid']!=0){
@@ -968,10 +1042,19 @@ class UserController extends Controller
 						if($data[$v['field']]==''){
 							if(in_array($v['fieldtype'],array(6,10))){
 								if($data[$v['field'].'_urls']==''){
-									Error($v['fieldname'].'不能为空！');
+									
+									if($this->frparam('ajax')){
+										JsonReturn(['code'=>1,'msg'=>$v['fieldname'].'不能为空！']);
+									}else{
+										Error($v['fieldname'].'不能为空！');
+									}
 								}
 							}else{
-								Error($v['fieldname'].'不能为空！');
+								if($this->frparam('ajax')){
+									JsonReturn(['code'=>1,'msg'=>$v['fieldname'].'不能为空！']);
+								}else{
+									Error($v['fieldname'].'不能为空！');
+								}
 							}
 							
 						}
@@ -983,10 +1066,19 @@ class UserController extends Controller
 			switch($w['molds']){
 				case 'article':
 					if(!$data['body']){
-						Error('内容不能为空！');
+						
+						if($this->frparam('ajax')){
+							JsonReturn(['code'=>1,'msg'=>'内容不能为空！']);
+						}else{
+							Error('内容不能为空！');
+						}
 					}
 					if(!$data['title']){
-						Error('标题不能为空！');
+						if($this->frparam('ajax')){
+							JsonReturn(['code'=>1,'msg'=>'标题不能为空！']);
+						}else{
+							Error('标题不能为空！');
+						}
 					}
 					$data['body'] = $this->frparam('body',4);
 					$w['title'] = $this->frparam('title',1);
@@ -1000,10 +1092,18 @@ class UserController extends Controller
 				break;
 				case 'product':
 					if(!$data['body']){
-						Error('内容不能为空！');
+						if($this->frparam('ajax')){
+							JsonReturn(['code'=>1,'msg'=>'内容不能为空！']);
+						}else{
+							Error('内容不能为空！');
+						}
 					}
 					if(!$data['title']){
-						Error('标题不能为空！');
+						if($this->frparam('ajax')){
+							JsonReturn(['code'=>1,'msg'=>'标题不能为空！']);
+						}else{
+							Error('标题不能为空！');
+						}
 					}
 					$w['title'] = $this->frparam('title',1);
 					$w['seo_title'] = $w['title'];
@@ -1028,18 +1128,39 @@ class UserController extends Controller
 			}
 			$w['isshow'] = 0;//修改后的文章一律为未审核
 			$w['member_id'] = $this->member['id'];
-			$data = get_fields_data($data,$w['molds']);
 			
 			$w['addtime'] = time();
 			
 			if($this->frparam('id')){
 				$a = M($w['molds'])->update(['id'=>$this->frparam('id')],$w);
-				if(!$a){ Error('修改失败，请重试！');}
-				Success('修改成功！',U('user/posts'));
+				if(!$a){ 
+					if($this->frparam('ajax')){
+						JsonReturn(['code'=>1,'msg'=>'未修改内容，不能提交！']);
+					}else{
+						Error('未修改内容，不能提交！');
+					}
+				}
+				if($this->frparam('ajax')){
+					JsonReturn(['code'=>0,'msg'=>'修改成功！','url'=>U('user/posts',['molds'=>$w['molds']])]);
+				}else{
+					Success('修改成功！',U('user/posts',['molds'=>$w['molds']]));
+				}
+				
 			}else{
 				$a = M($w['molds'])->add($w);
-				if(!$a){ Error('发布失败，请重试！');}
-				Success('发布成功！',U('user/posts'));
+				if(!$a){
+					if($this->frparam('ajax')){
+						JsonReturn(['code'=>1,'msg'=>'发布失败，请重试！']);
+					}else{
+						Error('发布失败，请重试！');
+					}
+				}
+				if($this->frparam('ajax')){
+					JsonReturn(['code'=>0,'msg'=>'发布成功！','url'=>U('user/posts',['molds'=>$w['molds']])]);
+				}else{
+					Success('发布成功！',U('user/posts',['molds'=>$w['molds']]));
+				}
+				
 			}
 
     	}
@@ -1048,6 +1169,7 @@ class UserController extends Controller
     	if($this->frparam('id')){
     		$this->data = M($molds)->find(['id'=>$this->frparam('id'),'member_id'=>$this->member['id']]);
     		$molds = $this->data['molds'];
+			$this->moldsdata = M('molds')->find(['biaoshi'=>$molds]);
     		$tid = $this->data['tid'];
     	}else{
     		$this->data = false;
@@ -1083,10 +1205,7 @@ class UserController extends Controller
 		  $data['error'] =  "Error: " . $_FILES[$file]["error"];
 		  $data['code'] = 1000;
 		}else{
-		  // echo "Upload: " . $_FILES["file"]["name"] . "<br />";
-		  // echo "Type: " . $_FILES["file"]["type"] . "<br />";
-		  // echo "Size: " . ($_FILES["file"]["size"] / 1024) . " Kb<br />";
-		  // echo "Stored in: " . $_FILES["file"]["tmp_name"];
+		 
 		  $pix = explode('.',$_FILES[$file]['name']);
 		  $pix = end($pix);
 		  //检测是否允许前台上传文件
@@ -1103,13 +1222,58 @@ class UserController extends Controller
 				JsonReturn($data);
 			}
 			$fileSize = (int)webConf('fileSize');
-			if($fileSize!=0 && $_FILES[$file]["size"]/(1024*1024)>$fileSize){
+			if($fileSize!=0 && ($_FILES[$file]["size"]/1024)>$fileSize){
 				$data['error'] =  "Error: 文件大小超过网站内部限制！";
 				$data['code'] = 1003;
 				JsonReturn($data);
 			}
+		  if(isset($this->webconf['home_save_path'])){
+			  //替换日期事件
+				$t = time();
+				$d = explode('-', date("Y-y-m-d-H-i-s"));
+				$format = $this->webconf['home_save_path'];
+				$format = str_replace("{yyyy}", $d[0], $format);
+				$format = str_replace("{yy}", $d[1], $format);
+				$format = str_replace("{mm}", $d[2], $format);
+				$format = str_replace("{dd}", $d[3], $format);
+				$format = str_replace("{hh}", $d[4], $format);
+				$format = str_replace("{ii}", $d[5], $format);
+				$format = str_replace("{ss}", $d[6], $format);
+				$format = str_replace("{time}", $t, $format);
+				if($format!=''){
+					//检查文件是否存在
+					if(strpos($format,'/')!==false && !file_exists(APP_PATH.$format)){
+						$path = explode('/',$format);
+						$path1 = APP_PATH;
+						foreach($path as $v){
+							if($path1==APP_PATH){
+								if(!file_exists($path1.$v)){
+									mkdir($path1.$v,0777);
+								}
+								$path1.=$v;
+							}else{
+								if(!file_exists($path1.'/'.$v)){
+									mkdir($path1.'/'.$v,0777);
+								}
+								$path1.='/'.$v;
+							}
+						}
+					}else if(!file_exists(APP_PATH.$format)){
+						mkdir(APP_PATH.$format,0777);
+					}
+					$home_save_path = $format;
+					
+				}else{
+					$home_save_path = 'Public/Home';
+				}
+				
+				
+			  }else{
+				 $home_save_path = 'Public/Home';
+			  }
+			 
 		  
-		    $filename =  'Public/Home/'.date('Ymd').rand(1000,9999).'.'.$pix;
+		    $filename =  $home_save_path.'/'.date('Ymd').rand(1000,9999).'.'.$pix;
 		  
 			if(move_uploaded_file($_FILES[$file]['tmp_name'],$filename)){
 				$data['url'] = $filename;
@@ -1120,7 +1284,7 @@ class UserController extends Controller
 					$userid = 0;
 				}
 				$filesize = round(filesize(APP_PATH.$filename)/1024,2);
-				M('pictures')->add(['litpic'=>'/'.$filename,'addtime'=>time(),'userid'=>$userid,'size'=>$filesize,'path'=>'Home','molds'=>'member']);
+				M('pictures')->add(['litpic'=>'/'.$filename,'addtime'=>time(),'userid'=>$userid,'size'=>$filesize,'path'=>'Home','filetype'=>strtolower($pix),'molds'=>'member']);
 				
 			}else{
 				$data['error'] =  "Error: 请检查目录[Public/Home]写入权限";
@@ -1697,6 +1861,7 @@ class UserController extends Controller
     	if(!$data){
     		$data = [];
     	}
+		$data = getTree($data);
     	JsonReturn(['code'=>0,'data'=>$data]);
     }
 
@@ -1761,13 +1926,13 @@ class UserController extends Controller
     	$page1 = new Page('buylog');
 		$this->type = $this->frparam('type',0,1);
 		if($this->type==1){
-			$sql =" buytype='money' and type=2 ";
+			$sql ="  type=2 ";
 		}else if($this->type==2){
-			$sql =" buytype='jifen' and type=1 ";
+			$sql ="  type=1 ";
 		}else{
 			$sql = " type=3 ";
 		}
-		
+		$sql.=" and userid=".$this->member['id'];
 		$data1 = $page1->where($sql)->orderby('addtime desc')->page($this->frparam('p',0,1))->go();
 		$page1->file_ext = '';
 		$pages1 = $page1->pageList(5,'?p=');
@@ -1790,7 +1955,7 @@ class UserController extends Controller
 		}else{
 			$sql =" ptype=2 ";
 		}
-		$sql.="  and isshow!=0  ";
+		$sql.="  and isshow!=0 and userid=".$this->member['id'];
 		$data = $page->where($sql)->orderby('addtime desc')->page($this->frparam('page',0,1))->go();
 		$page->file_ext = '';
 		$pages = $page->pageList(5,'?page=');

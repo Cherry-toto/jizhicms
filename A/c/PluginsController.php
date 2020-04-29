@@ -19,26 +19,6 @@ class PluginsController extends CommonController
 {
 	
 	public function index(){
-		
-		$dir = APP_PATH.APP_HOME.'/exts';
-		$fileArray=array();
-		if (false != ($handle = opendir ( $dir ))) {
-			while ( false !== ($file = readdir ( $handle )) ) {
-				//去掉"“.”、“..”以及带“.xxx”后缀的文件
-				if ($file != "." && $file != "..") {
-					$fileArray[]=$file;
-					
-				}
-			}
-			//关闭句柄
-			closedir ( $handle );
-		}
-		$pls = M('plugins')->findAll();
-		$plugins = [];
-		foreach($pls as $k=>$v){
-			$plugins[$v['filepath']] = $v;
-		}
-		$lists = [];
 		//检查更新链接是否可以访问
 		$api = 'http://api.jizhicms.cn/plugins.php';
 		$ch = curl_init();
@@ -62,6 +42,181 @@ class PluginsController extends CommonController
 		}else{
 			$isok = false;
 		}
+		if($this->frparam('isdown')){
+			$isdown = $this->frparam('isdown');
+			switch($isdown){
+				case 1:
+					
+					//已安装
+					$page = new Page('plugins');
+					$sql = '1=1';
+					$data = $page->where($sql)->orderby('addtime desc')->limit($this->frparam('limit',0,10))->page($this->frparam('page',0,1))->go();
+					$pages = $page->pageList();
+					$dir = APP_PATH.APP_HOME.'/exts';
+					foreach($data as $k=>$v){
+						//已下载该插件
+						$config = require_once($dir.'/'.$v['filepath'].'/config.php');
+						$data[$k]['isinstall'] = true;
+						if($isok && version_compare($config['version'],$allplugins[$v['filepath']]['version'],'<')){
+							//有更新
+							$data[$k]['isupdate'] = true;
+						}else{
+							//无更新
+							$data[$k]['isupdate'] = false;
+						}
+						$data[$k]['exists'] = true;
+					
+						
+					}
+					
+					
+					$this->pages = $pages;
+					$this->lists = $data;
+					$this->sum = $page->sum;
+					$this->listpage = $page->listpage;//分页数组-自定义分页可用
+					$this->prevpage = $page->listpage['prev'];//上一页
+					$this->nextpage = $page->listpage['next'];//下一页
+					$this->allpage = $page->listpage['allpage'];//总页数
+					$this->display('plugins-list');
+					exit;
+				break;
+				case 2:
+				//未安装
+					$dir = APP_PATH.APP_HOME.'/exts';
+					$fileArray=array();
+					if (false != ($handle = opendir ( $dir ))) {
+						while ( false !== ($file = readdir ( $handle )) ) {
+							//去掉"“.”、“..”以及带“.xxx”后缀的文件
+							if ($file != "." && $file != ".."  && strpos($file,'.')===false) {
+								//检查是否安装
+								if(!M('plugins')->find(['filepath'=>$file])){
+									$fileArray[]=$file;
+								}
+								
+								
+							}
+						}
+						//关闭句柄
+						closedir ( $handle );
+					}
+					$arraypage = new \ArrayPage($fileArray);
+					$data = $arraypage->setPage(['limit'=>$this->frparam('limit',0,10)])->go();
+					
+					foreach($data as $k=>$v){
+						//已下载该插件
+						$config = require_once($dir.'/'.$v.'/config.php');
+						$data[$k] = ['name'=>$config['name'],'filepath'=>$v,'description'=>$config['desc'],'version'=>$config['version'],'author'=>$config['author'],'update_time'=>strtotime($config['update_time']),'module'=>$config['module'],'isopen'=>0,'config'=>'','isinstall'=>false];
+						
+						if($isok && version_compare($config['version'],$allplugins[$v]['version'],'<')){
+							//有更新
+							$data[$k]['isupdate'] = true;
+						}else{
+							//无更新
+							$data[$k]['isupdate'] = false;
+						}
+						$data[$k]['exists'] = true;
+					
+						
+					}
+					
+					//var_dump($data);
+					
+					$this->pages = $arraypage->pageList();
+					$this->sum = $arraypage->sum;//总数据
+					$this->listpage = $arraypage->listpage;//分页数组-自定义分页可用
+					$this->prevpage = $arraypage->prevpage;//上一页
+					$this->nextpage = $arraypage->nextpage;//下一页
+					$this->allpage = $arraypage->allpage;//总页数
+					$this->lists = $data;
+					$this->display('plugins-list');
+					exit;
+					
+					
+				break;
+				case 3:
+				//未下载
+					$dir = APP_PATH.APP_HOME.'/exts';
+					$fileArray=array();
+					if (false != ($handle = opendir ( $dir ))) {
+						while ( false !== ($file = readdir ( $handle )) ) {
+							//去掉"“.”、“..”以及带“.xxx”后缀的文件
+							if ($file != "." && $file != ".."  && strpos($file,'.')===false) {
+								$fileArray[]=$file;
+								
+							}
+						}
+						//关闭句柄
+						closedir ( $handle );
+					}
+					
+					$lists = [];
+					
+					if($isok){
+						foreach($allplugins as $k=>$v){
+							if(!in_array($k,$fileArray)){
+								
+								$lists[$k] = $v;
+								$lists[$k]['exists'] = false;
+								$lists[$k]['description'] = $v['desc'];
+								$lists[$k]['isinstall'] = false;
+								$lists[$k]['isupdate'] = false;
+								
+							}
+							
+				
+						}
+						
+						$arraypage = new \ArrayPage($lists);
+						$data = $arraypage->setPage(['limit'=>$this->frparam('limit',0,10)])->go();
+						$this->pages = $arraypage->pageList();
+						$this->sum = $arraypage->sum;//总数据
+						$this->listpage = $arraypage->listpage;//分页数组-自定义分页可用
+						$this->prevpage = $arraypage->prevpage;//上一页
+						$this->nextpage = $arraypage->nextpage;//下一页
+						$this->allpage = $arraypage->allpage;//总页数
+						$this->lists = $data;
+						
+						
+					}else{
+						$this->pages = '';
+						$this->sum = 0;//总数据
+						$this->listpage = false;//分页数组-自定义分页可用
+						$this->prevpage = false;//上一页
+						$this->nextpage = false;//下一页
+						$this->allpage = 0;//总页数
+						$this->lists = [];
+						
+					}
+					$this->display('plugins-list');
+					exit;
+				
+				break;
+			}
+		
+		
+		}
+		
+		
+		$dir = APP_PATH.'A/exts';
+		$fileArray=array();
+		if (false !== ($handle = opendir ( $dir ))) {
+			while ( false !== ($file = readdir ( $handle )) ) {
+				//去掉"“.”、“..”以及带“.xxx”后缀的文件
+				if ($file != "." && $file != ".."  && strpos($file,'.')===false) {
+					$fileArray[]=$file;
+					
+				}
+			}
+			//关闭句柄
+			closedir ( $handle );
+		}
+		$pls = M('plugins')->findAll();
+		$plugins = [];
+		foreach($pls as $k=>$v){
+			$plugins[$v['filepath']] = $v;
+		}
+		$lists = [];
+		
 		if($isok){
 			foreach($allplugins as $k=>$v){
 				if(in_array($k,$fileArray)){
@@ -73,7 +228,7 @@ class PluginsController extends CommonController
 					}else{
 						$lists[$k] = ['name'=>$config['name'],'filepath'=>$k,'description'=>$config['desc'],'version'=>$config['version'],'author'=>$config['author'],'update_time'=>strtotime($config['update_time']),'module'=>$config['module'],'isopen'=>0,'config'=>'','isinstall'=>false];
 					}
-					if(!version_compare($config['version'],$v['version'],'==')){
+					if(version_compare($config['version'],$v['version'],'<')){
 						//有更新
 						$lists[$k]['isupdate'] = true;
 					}else{
@@ -135,9 +290,15 @@ class PluginsController extends CommonController
 			}
 			
 		}
-		
-		
-		$this->lists = $lists;
+		$arraypage = new \ArrayPage($lists);
+		$data = $arraypage->setPage(['limit'=>$this->frparam('limit',0,10),'page'=>$this->frparam('page',0,1)])->go();
+		$this->pages = $arraypage->pageList();
+		$this->sum = $arraypage->sum;//总数据
+		$this->listpage = $arraypage->listpage;//分页数组-自定义分页可用
+		$this->prevpage = $arraypage->prevpage;//上一页
+		$this->nextpage = $arraypage->nextpage;//下一页
+		$this->allpage = $arraypage->allpage;//总页数
+		$this->lists = $data;
 		
 		$this->display('plugins-list');
 		
@@ -168,13 +329,79 @@ class PluginsController extends CommonController
 		
 	}
 	
+	//打包下载
+	function output(){
+		$filepath = $this->frparam('filepath',1);
+		if(!$filepath){
+			Error('链接错误！');
+		}
+		$zip = new \ZipArchive();
+
+		if ($zip->open($filepath.'.zip', \ZipArchive::CREATE|\ZipArchive::OVERWRITE) === TRUE) {
+			$this->addFileToZip(APP_PATH.'A/exts/'.$filepath.'/', $zip); //调用方法，对要打包的根目录进行操作，并将ZipArchive的对象传递给方法
+			$zip->close(); //关闭处理的zip文件
+			
+			$zip = $filepath.'.zip';
+			$zipname = date('YmdHis');
+			//打开文件
+			$file = fopen($zip,"r");
+			//返回的文件类型
+			Header("Content-type: application/octet-stream");
+			//按照字节大小返回
+			Header("Accept-Ranges: bytes");
+			//返回文件的大小
+			Header("Accept-Length: ".filesize($zip));
+			//这里对客户端的弹出对话框，对应的文件名
+			Header("Content-Disposition: attachment; filename=".$zip);
+			//修改之前，一次性将数据传输给客户端
+			echo fread($file, filesize($zip));
+			//修改之后，一次只传输1024个字节的数据给客户端
+			//向客户端回送数据
+			$buffer=1024;//
+			//判断文件是否读完
+			while (!feof($file)) {
+				//将文件读入内存
+				$file_data=fread($file,$buffer);
+				//每次向客户端回送1024个字节的数据
+				echo $file_data;
+			}
+			
+			fclose($file);
+			
+		}else{
+			exit('无法打开文件，或者文件创建失败');
+		}
+	}
+	
+	function addFileToZip($path, $zip) {
+		$handler = opendir($path); //打开当前文件夹由$path指定。
+		/*
+		循环的读取文件夹下的所有文件和文件夹
+		其中$filename = readdir($handler)是每次循环的时候将读取的文件名赋值给$filename，
+		为了不陷于死循环，所以还要让$filename !== false。
+		一定要用!==，因为如果某个文件名如果叫'0'，或者某些被系统认为是代表false，用!=就会停止循环
+		*/
+		while (($filename = readdir($handler)) !== false) {
+			if ($filename != "." && $filename != "..") {//文件夹文件名字为'.'和‘..’，不要对他们进行操作
+				if (is_dir($path . "/" . $filename)) {// 如果读取的某个对象是文件夹，则递归
+					$this->addFileToZip($path . "/" . $filename, $zip);
+				} else { //将文件加入zip对象
+					$zip->addFile($path . "/" . $filename);
+				}
+
+			}
+		}
+		@closedir($path);
+	}
+
+	
 	//安装下载
 	function action_do(){
 		$filepath = $this->frparam('path',1);
 		$type = $this->frparam('type');
 		$dir = APP_PATH.APP_HOME.'/exts';
 		if($filepath){
-			if($type){
+			if($type==1){
 				//安装
 				//执行插件控制器安装程序
 				require_once($dir.'/'.$filepath.'/PluginsController.php');
@@ -246,7 +473,6 @@ class PluginsController extends CommonController
 					$this->recurse_copy($src,$dst);
 				}
 				
-				
 				$res = M('plugins')->add($w);
 				
 				setCache('hook',null);
@@ -259,6 +485,15 @@ class PluginsController extends CommonController
 				$w = ['filepath'=>$filepath];
 				$plugins = M('plugins')->find($w);
 				if(!$plugins){
+					if($type==2){
+						//批量删除文件
+						if(is_dir(APP_PATH.'A/exts/'.$filepath)){
+							deldir(APP_PATH.'A/exts/'.$filepath);
+						}
+						JsonReturn(array('code'=>0,'msg'=>'删除成功！'));
+				
+					}
+					
 					JsonReturn(array('code'=>1,'msg'=>'插件已移除，请勿重复操作！'));
 				}
 				//移除文件夹
@@ -321,6 +556,16 @@ class PluginsController extends CommonController
 				$res = M('plugins')->delete(['id'=>$plugins['id']]);
 				
 				setCache('hook',null);
+				if($type==2){
+					//批量删除文件
+					if(is_dir(APP_PATH.'A/exts/'.$filepath)){
+						deldir(APP_PATH.'A/exts/'.$filepath);
+					}
+					JsonReturn(array('code'=>0,'msg'=>'删除成功！'));
+			
+				}
+				
+				
 				
 				JsonReturn(array('code'=>0,'msg'=>'卸载成功！'));
 				
@@ -331,7 +576,6 @@ class PluginsController extends CommonController
 		}
 		JsonReturn(array('code'=>1,'msg'=>'参数错误！'));
 	}
-	
 
 	//复制图片  file2dir("01/5.jpg", "01/successImg/a.jpg");
 	function file2dir($sourcefile, $filename){
@@ -479,27 +723,19 @@ class PluginsController extends CommonController
 						   JsonReturn(['code'=>1,'msg'=>'下载缓存文件不存在！']);
 						}
 						$path = APP_PATH.'A/exts/';
-						$resource = zip_open($tmp_path);//打开压缩包
-						while($dir_resource = zip_read($resource)){//遍历读取压缩包里面的一个个文件  
-						if(zip_entry_open($resource,$dir_resource)){//如果能打开则继续
-						$file_name = $path.zip_entry_name($dir_resource);//获取当前项目的名称,即压缩包里面当前对应的文件名  
-						$file_path=substr($file_name,0,strrpos($file_name,"/"));
-						if (!is_dir($file_path)){//如果路径不存在，则创建一个目录，true表示可以创建多级目录  
-						mkdir($file_path, 0777, true);
+						$zip = new \ZipArchive;
+						$tmp_path = str_replace('/','\\',$tmp_path);
+						$res = $zip->open($tmp_path);
+						if ($res === TRUE) {
+							
+							//解压缩到test文件夹
+							$zip->extractTo(APP_PATH.'A/exts');
+							$zip->close();
+						} else {
+							
+							JsonReturn(['code'=>1,'msg'=>'解压失败：failed, code:' . $res]);
 						}
-						if(!is_dir($file_name)){//如果不是目录，则写入文件
-						$file_size=zip_entry_filesize($dir_resource);//读取这个文件
-						if($file_size<(1024*1024*200)){//最大读取200M，如果文件过大，跳过解压，继续下一个
-						$file_content = zip_entry_read($dir_resource, $file_size);
-						file_put_contents($file_name, $file_content);
-						}else{
-						return false;
-						}
-						}
-						zip_entry_close($dir_resource);//关闭当前
-						}
-						} 
-						zip_close($resource); //关闭压缩包
+					
 						if($filepath=='jizhicmsupdate'){
 							$isinstall = true;
 						}else{

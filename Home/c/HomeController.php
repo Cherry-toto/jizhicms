@@ -39,6 +39,9 @@ class HomeController extends CommonController
 		$url = ($position!==FALSE) ? substr($request_url,0,$position) : $request_url;
 		$url = substr($url,1,strlen($url)-1);
 		
+		if($this->webconf['isautositemap']){
+			$this->sitemap();
+		}
 	
 		if($url=='' || $url=='/' || $url=='index.php' || $url=='index'.File_TXT){
 			$this->index();exit;
@@ -52,6 +55,10 @@ class HomeController extends CommonController
 		}
 		//  news/123.html  news-123.html  news-list-123.html
 		$url = str_ireplace(File_TXT,'',$url);
+		//strripos
+		if(File_TXT_HIDE && !CLASS_HIDE_SLASH){
+			$url = (strripos($url,'/')+1 == strlen($url)) ? substr($url,0,strripos($url,'/')) : $url; 
+		}
 		
 		if(!$this->webconf['islevelurl']){
 			//没有开启URL层级
@@ -192,22 +199,40 @@ class HomeController extends CommonController
 			if($this->frparam('limit')){
 				$limit = $this->frparam('limit');
 			}
-			//只适合article和product
-			if($molds=='article' || $molds=='product'){
-				//$sql.=" or (istop=1 and isshow=1)";
-				$data = $page->where($sql)->orderby('istop desc,orders desc,addtime desc,id desc')->limit($limit)->page($this->frpage)->go();
-			}else{
-				$data = $page->where($sql)->orderby('orders desc,id desc')->limit($limit)->page($this->frpage)->go();
+			$orders = 'istop desc,orders desc,addtime desc,id desc';
+			$ot = $this->frparam('orders') ? $this->frparam('orders') : $res['orderstype'];
+			switch($ot){
+				case 1:
+					$orders = 'istop desc,orders desc,addtime desc,id desc';
+				break;
+				case 2:
+					$orders = 'istop desc,orders desc,id asc';
+				break;
+				case 3:
+					$orders = 'istop desc,orders asc';
+				break;
+				case 4:
+					$orders = 'istop desc,addtime desc';
+				break;
+				case 5:
+					$orders = 'istop desc,id asc';
+				break;
+				case 6:
+					$orders = 'istop desc,hits desc';
+				break;
+				case 7:
+					$orders = 'istop desc,addtime asc';
+				break;
 			}
 			
-			
+			$data = $page->where($sql)->orderby($orders)->limit($limit)->page($this->frpage)->go();
 			$pages = $page->pageList(3,'-');
 			
 			$this->pages = $pages;//组合分页
 			
 			foreach($data as $k=>$v){
 				if(isset($v['htmlurl']) && !isset($v['url'])){
-					$data[$k]['url'] = gourl($v['id'],$v['htmlurl']);
+					$data[$k]['url'] = gourl($v,$v['htmlurl']);
 				}
 				
 			}
@@ -223,12 +248,35 @@ class HomeController extends CommonController
 				$_SESSION['screen'] = null;
 			}
 			$this->filters = [];
-			
-			if($this->frparam('ajax')){
+			if($this->frparam('ajax') && $this->webconf['isajax']){
 				
 				if($this->frparam('ajax_tpl')){
 					$this->display($this->template.'/'.$res['molds'].'/ajax_list_'.$res['lists_html']);
 					exit;
+				}
+				$sql = [];
+				$sql[] = " tids like '%,".$res['id'].",%' "; 
+				$sql[] = " molds = '".$res['molds']."' and isshow=1 ";
+				$sql[] = " isajax=0 ";//查询出不允许访问的字段，进行限制
+				$sql = implode(' and ',$sql);
+				
+				$fields_list = M('Fields')->findAll($sql,'orders desc,id asc');
+				if($fields_list){
+					$noallow = [];
+					foreach($fields_list as $v){
+						$noallow[]=$v['field'];
+					}
+					$newdata = [];
+					foreach($data as $v){
+						foreach($v as $kk=>$vv){
+							if(in_array($kk,$noallow)){
+								unset($v[$kk]);
+							}
+						}
+						$newdata[]=$v;
+					}
+					
+					$data = $newdata;
 				}
 				
 				JsonReturn(['code'=>0,'data'=>$data,'type'=>$res,'sum'=>$this->sum,'allpage'=>$this->allpage]);
@@ -297,6 +345,13 @@ class HomeController extends CommonController
 			$filepath = APP_PATH.APP_HOME.'/'.HOME_VIEW.'/'.$this->template.'/page/'.$html.'.html';
 			if(file_exists($filepath)){
 				$this->display($this->template.'/page/'.$html);
+				exit;
+			}
+			$url = substr(REQUEST_URI,1);
+			$r = M('customurl')->find(['url'=>$url]);
+			if($r){
+				$this->type = $this->classtypedata[$r['tid']];
+				$this->jizhi_details($r['aid']);
 				exit;
 			}
 			
@@ -383,7 +438,7 @@ class HomeController extends CommonController
 			$this->pages = $pages;//组合分页
 			foreach($data as $k=>$v){
 				if(isset($v['htmlurl']) && !isset($v['url'])){
-					$data[$k]['url'] = gourl($v['id'],$v['htmlurl']);
+					$data[$k]['url'] = gourl($v,$v['htmlurl']);
 				}
 				
 			}
@@ -399,12 +454,38 @@ class HomeController extends CommonController
 			}
 			$this->filters = [];
 			
-			if($this->frparam('ajax')){
+			if($this->frparam('ajax') && $this->webconf['isajax']){
 				
 				if($this->frparam('ajax_tpl')){
 					$this->display($this->template.'/'.$res['molds'].'/ajax_list_'.$res['lists_html']);
 					exit;
 				}
+				
+				$sql = [];
+				$sql[] = " tids like '%,".$res['id'].",%' "; 
+				$sql[] = " molds = '".$res['molds']."' and isshow=1 ";
+				$sql[] = " isajax=0 ";//查询出不允许访问的字段，进行限制
+				$sql = implode(' and ',$sql);
+				
+				$fields_list = M('Fields')->findAll($sql,'orders desc,id asc');
+				if($fields_list){
+					$noallow = [];
+					foreach($fields_list as $v){
+						$noallow[]=$v['field'];
+					}
+					$newdata = [];
+					foreach($data as $v){
+						foreach($v as $kk=>$vv){
+							if(in_array($kk,$noallow)){
+								unset($v[$kk]);
+							}
+						}
+						$newdata[]=$v;
+					}
+					
+					$data = $newdata;
+				}
+				
 				
 				JsonReturn(['code'=>0,'data'=>$data,'type'=>$res,'sum'=>$this->sum,'allpage'=>$this->allpage]);
 				
@@ -487,7 +568,7 @@ class HomeController extends CommonController
 			exit;
 		}
 		if(!isset($details['url'])){
-			$details['url'] = gourl($details['id'],$details['htmlurl']);
+			$details['url'] = gourl($details,$details['htmlurl']);
 		}
 		
 		
@@ -537,10 +618,10 @@ class HomeController extends CommonController
 		$aprev = M($this->type['molds'])->find($aprev_sql,'id desc');
 		$anext = M($this->type['molds'])->find($anext_sql,'id asc');
 		if($aprev){
-			$aprev['url'] = gourl($aprev['id'],$aprev['htmlurl']);
+			$aprev['url'] = gourl($aprev,$aprev['htmlurl']);
 		}
 		if($anext){
-			$anext['url'] = gourl($anext['id'],$anext['htmlurl']);
+			$anext['url'] = gourl($anext,$anext['htmlurl']);
 		}
 		$this->aprev = $aprev;
 		$this->anext = $anext;
@@ -590,7 +671,32 @@ class HomeController extends CommonController
 		$this->positions_data = $newarray2;
 		$this->positions = $positions;
 		
-		if($this->frparam('ajax')){
+		if($this->frparam('ajax') && $this->webconf['isajax'] ){
+			
+			$sql = [];
+			$sql[] = " tids like '%,".$details['tid'].",%' "; 
+			$sql[] = " molds = '".$this->type['molds']."' and isshow=1 ";
+			$sql[] = " isajax=0 ";//查询出不允许访问的字段，进行限制
+			$sql = implode(' and ',$sql);
+			
+			$fields_list = M('Fields')->findAll($sql,'orders desc,id asc');
+			if($fields_list){
+				$noallow = [];
+				foreach($fields_list as $v){
+					$noallow[]=$v['field'];
+				}
+
+				foreach($details as $kk=>$vv){
+					if(in_array($kk,$noallow)){
+						unset($details[$kk]);
+						unset($aprev[$kk]);
+						unset($anext[$kk]);
+					}
+				}
+				
+
+			}
+			
 			JsonReturn(['code'=>0,'jz'=>$details,'prev'=>$aprev,'next'=>$anext]);
 		}
 		
@@ -621,14 +727,14 @@ class HomeController extends CommonController
 			
 			$page = new Page($molds);
 			$page->typeurl = 'search';
-			$data = $page->where($sql)->orderby('id desc')->limit(15)->page($this->frparam('page',0,1))->go();
+			$data = $page->where($sql)->orderby('id desc')->limit($this->frparam('limit',0,15))->page($this->frparam('page',0,1))->go();
 			$pages = $page->pageList(3,'&page=');
 			
 			$this->pages = $pages;//组合分页
 			
 			foreach($data as $k=>$v){
 				if(isset($v['htmlurl']) && !isset($v['url'])){
-					$data[$k]['url'] = gourl($v['id'],$v['htmlurl']);
+					$data[$k]['url'] = gourl($v,$v['htmlurl']);
 				}
 				
 				$data[$k]['title'] = str_replace($word,'<b style="color:#f00">'.$word.'</b>',$v['title']);
@@ -641,12 +747,36 @@ class HomeController extends CommonController
 			$this->nextpage = $page->nextpage;//下一页
 			$this->allpage = $page->allpage;//总页数
 		
-			if($this->frparam('ajax')){
+			if($this->frparam('ajax') && $this->webconf['isajax']){
 				if($this->frparam('ajax_tpl')){
 					$this->display($this->template.'/ajax_search_list');
 					exit;
 				}
-				JsonReturn(['code'=>0,'data'=>$data,'msg'=>'success']);
+				
+				$sql = [];
+				$sql[] = " molds = '".$molds."' and isshow=1 ";
+				$sql[] = " isajax=0 ";//查询出不允许访问的字段，进行限制
+				$sql = implode(' and ',$sql);
+				$fields_list = M('Fields')->findAll($sql,'orders desc,id asc');
+				if($fields_list){
+					$noallow = [];
+					foreach($fields_list as $v){
+						$noallow[]=$v['field'];
+					}
+					$newdata = [];
+					foreach($data as $v){
+						foreach($v as $kk=>$vv){
+							if(in_array($kk,$noallow)){
+								unset($v[$kk]);
+							}
+						}
+						$newdata[]=$v;
+					}
+					
+					$data = $newdata;
+				}
+				
+				JsonReturn(['code'=>0,'data'=>$data,'lists'=>$page->listpage,'sum'=>$page->sum,'allpage'=>$page->allpage,'msg'=>'success']);
 			}
 		
 			$this->display($this->template.'/search');
@@ -669,7 +799,7 @@ class HomeController extends CommonController
 			$allow_table = [];
 			foreach($molds as $v){
 				if(in_array($v,$tables)){
-					$allow_table[]=$v;
+					$allow_table[]=strtolower($v);
 				}
 			}
 			if(count($allow_table)==0){
@@ -687,25 +817,48 @@ class HomeController extends CommonController
 				Error('请输入关键词搜索！');
 			}
 			$this->word = $word;
-			$sql =  "  isshow=1 and title like '%".$word."%'  ";
+			$sqlx =  "  isshow=1 and title like '%".$word."%'  ";
 			if($tid){
-				$sql.=' and tid in('.$tid.') ';
+				$sqlx.=' and tid in('.$tid.') ';
 			}
 		
 			$lists = [];
 			foreach($allow_table as $v){
-				$list_a = M($v)->findAll($sql);
+				$list_a = M($v)->findAll($sqlx);
 				if($list_a){
+					$sql = [];
+					$sql[] = " molds = '".$v."' and isshow=1 ";
+					$sql[] = " isajax=0 ";//查询出不允许访问的字段，进行限制
+					$sql = implode(' and ',$sql);
+					$fields_list = M('Fields')->findAll($sql,'orders desc,id asc');
+					if($fields_list){
+						$noallow = [];
+						foreach($fields_list as $vv){
+							$noallow[]=$vv['field'];
+						}
+						$newdata = [];
+						foreach($list_a as $vs){
+							foreach($vs as $kk=>$vv){
+								if(in_array($kk,$noallow)){
+									unset($vs[$kk]);
+								}
+							}
+							$newdata[]=$vs;
+						}
+						
+						$list_a = $newdata;
+					}
+					
 					$lists = count($lists)>0 ? array_merge($lists,$list_a) : $list_a;
 				}
 			}
 			
 			$arraypage = new \ArrayPage($lists);
-			$data = $arraypage->setPage(['limit'=>10])->go();
+			$data = $arraypage->setPage(['limit'=>$this->frparam('limit',0,15)])->go();
 			
 			foreach($data as $k=>$v){
 				if(isset($v['htmlurl']) && !isset($v['url'])){
-					$data[$k]['url'] = gourl($v['id'],$v['htmlurl']);
+					$data[$k]['url'] = gourl($v,$v['htmlurl']);
 				}
 				
 				$data[$k]['classname'] = $this->classtypedata[$v['tid']]['classname'];
@@ -714,7 +867,7 @@ class HomeController extends CommonController
 			$this->lists = $data;
 			$this->pages = $arraypage->pageList();
 			$this->pagelist = $arraypage->listpage;
-			if($this->frparam('ajax')){
+			if($this->frparam('ajax') && $this->webconf['isajax']){
 				if($this->frparam('ajax_tpl')){
 					$this->display($this->template.'/ajax_searchall_list');
 					exit;
@@ -776,9 +929,9 @@ class HomeController extends CommonController
 		
 		//获取缓存
 		$content = ob_get_contents();
-		
 		if($this->webconf['isautohtml']==1){
 			$filepath = substr($_SERVER["REQUEST_URI"],1,strlen($_SERVER["REQUEST_URI"])-1);
+			
 			$file = APP_PATH.$filepath;
 			if(strpos($filepath,'/')!==false){
 				$filepath = explode('/',$filepath);
@@ -802,10 +955,9 @@ class HomeController extends CommonController
 			if(strpos($file,'.html')===false){
 				$file.='index.html';
 			}
-			
-			
-			file_put_contents($file,$content);
-			
+			$fp = fopen($file,'w');
+			fwrite($fp,$content);
+			fclose($fp);
 			
 		}
 		if($this->webconf['iscachepage']==1){
@@ -824,6 +976,160 @@ class HomeController extends CommonController
 	}
 	
 
+	//生成sitemap
+	function sitemap(){
+		//获取缓存文件时间戳
+		$last_time = filemtime(APP_PATH.'sitemap.xml');
+		$start = mktime(0, 0, 0, date('m'), date('d'), date('Y'));
+		$end = mktime(23, 59, 59, date('m'), date('d'), date('Y'));
+		if($last_time>=$start && $last_time<$end){
+			//当天
+		}else{
+			$www = ($this->webconf['domain']=='') ? get_domain() : $this->webconf['domain'];
+			$l = '<?xml version="1.0" encoding="UTF-8"?>
+			<urlset
+				  xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+				  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+				  xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9
+						http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">';
+						//首页
+						$l.='<url>
+			  <loc>'.$www.'/</loc>
+			  <lastmod>'.date('Y-m-d').'T08:00:00+00:00</lastmod>
+			  <changefreq>yearly</changefreq>
+			  <priority>1.00</priority>
+			</url>';
+			$molds = M('molds')->findAll(['sys'=>0,'ismust'=>1]);
+			$model = ['classtype','article','product'];
+			if($molds){
+				foreach($molds as $vv){
+					$model[]=$vv['biaoshi'];
+				}
+			}
+			foreach($model as $k=>$v){
+				$list = M($v)->findAll(['isshow'=>1]);
+				//栏目
+				if($v=='classtype' && $list){
+					foreach($list as $s){
+						$l.='<url>
+							  <loc>'.$this->classtypedata[$s['id']]['url'].'</loc>
+							  <lastmod>'.date('Y-m-d').'T08:00:00+00:00</lastmod>
+							  <changefreq>always</changefreq>
+							  <priority>0.80</priority>
+							</url>';
+						if($this->webconf['iswap']==1){
+							$l.='<url>
+							  <loc>'.$classtypedataMobile[$s['id']]['url'].'</loc>
+							  <lastmod>'.date('Y-m-d').'T08:00:00+00:00</lastmod>
+							  <changefreq>always</changefreq>
+							  <priority>0.80</priority>
+							</url>';
+						}	
+					}
+				}else if($list){
+					foreach($list as $s){
+						$s['addtime'] = isset($s['addtime']) ? $s['addtime'] : time();
+					//文章-商品
+						$l.='<url>
+						  <loc>'.gourl($s,$s['htmlurl']).'</loc>
+						  <lastmod>'.date('Y-m-d',$s['addtime']).'T08:00:00+00:00</lastmod>
+						   <changefreq>always</changefreq>
+							  <priority>0.80</priority>
+						</url>';
+						if($this->webconf['iswap']==1){
+							$l.='<url>
+							  <loc>'.gourl($s,$s['htmlurl']).'</loc>
+							  <lastmod>'.date('Y-m-d',$s['addtime']).'T08:00:00+00:00</lastmod>
+							   <changefreq>always</changefreq>
+							  <priority>0.80</priority>
+							</url>';
+						}	
+					
+					}
+				}
+				
+				
+			}
+			
+			$l.='</urlset>';
+			
+			$f = @fopen(APP_PATH.'sitemap.xml','w');
+			$n = @fwrite($f,$l);
+			@fclose($f);
+			
+			
+		}
+		
+	}
+	
+	//生成RSS
+	function rss(){
+		$item = '';
+		
+		//栏目item
+		foreach($this->classtypedata as $v){
+			if($v['isshow']==1){
+				$item .= '<item>
+						<title><![CDATA[ '.$v['classname'].' ]]></title>
+						<link>'.$v['url'].'</link>
+						<description><![CDATA[ '.$v['description'].' ]]></description>
+
+						<source>'.$this->webconf['web_name'].'</source>
+
+						<pubDate>'.date("D, d M Y H:i:s ", time()) . "GMT".'</pubDate> 
+					</item>';
+			}
+		}
+		//文章item
+		$article = M('article')->findAll(['isshow'=>1]);
+		foreach($article as $v){
+			$v['url'] = gourl($v,$v['htmlurl']);
+			$item .= '<item>
+						<title><![CDATA[ '.$v['title'].' ]]></title>
+						<link>'.$v['url'].'</link>
+						<description><![CDATA[ '.$v['description'].' ]]></description>
+
+						<source>'.$this->webconf['web_name'].'</source>
+
+						<pubDate>'.date("D, d M Y H:i:s ", time()) . "GMT".'</pubDate> 
+					</item>';
+		}
+		//商品item
+		$product = M('product')->findAll(['isshow'=>1]);
+		foreach($product as $v){
+			$v['url'] = gourl($v,$v['htmlurl']);
+			$item .= '<item>
+						<title><![CDATA[ '.$v['title'].' ]]></title>
+						<link>'.$v['url'].'</link>
+						<description><![CDATA[ '.$v['description'].' ]]></description>
+
+						<source>'.$this->webconf['web_name'].'</source>
+
+						<pubDate>'.date("D, d M Y H:i:s ", time()) . "GMT".'</pubDate> 
+					</item>';
+		}
+		
+		$xml = '<?xml version="1.0" encoding="utf-8"?>  
+				<rss version="2.0">
+				<channel>
+					<title>'.$this->webconf['web_name'].'</title>
+					<description>'.$this->webconf['web_desc'].'</description>
+					<link>'.get_domain().'</link>
+					<generator>Rss Powered By jizhicms</generator>
+					<image>
+						<url>'.get_domain().'/'.$this->webconf['web_logo'].'</url>
+						<title>'.$this->webconf['web_name'].'</title>
+						<link>'.get_domain().'</link>
+					</image>
+					
+					'.$item.'
+
+				</channel>
+
+				</rss>';
+		header("Content-type:application/xml");
+		echo $xml;
+	}
 	
 
 }

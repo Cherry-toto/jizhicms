@@ -148,7 +148,7 @@
 				  {field: 'id', title: 'ID', width:50, sort: true,fixed:'left'}
 				  ,{type:'checkbox'}
 				  ,{field: 'orders', title: '排序',width: 100, edit:'text',sort: true}
-				  {if($molds['isclasstype'])}
+				  {if($molds['isclasstype']==1)}
 				  ,{field: 'new_tid', title: '栏目',width:150, sort: true}
 				  {/if}
 				  {foreach $fields_list as $k=>$v}
@@ -156,11 +156,7 @@
 				  {/foreach}
 				  ,{field: 'new_isshow', title: '审核', width: 100,templet:'#isshow'}
 				  {if(checkAction('Extmolds/copymolds/molds/'.$molds['biaoshi']) || checkAction('Extmolds/deletemolds/molds/'.$molds['biaoshi']) || checkAction('Extmolds/editmolds/molds/'.$molds['biaoshi']))}
-					  {if(isset($k) && $k>2)}
-					   ,{field: '', title: '操作', toolbar: '#rightbar',width:260}
-					  {else}
-					   ,{field: '', title: '操作', toolbar: '#rightbar', fixed:'right'}
-					  {/if}
+				  ,{field: '', title: '操作', toolbar: '#rightbar',width:280, fixed:'right'}
 				  {/if}
 				 
 				 

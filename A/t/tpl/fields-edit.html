@@ -307,7 +307,19 @@
 					  仅用于后台列表显示该字段内容处理
 					</div>
                 </div>
-				
+				<div class="layui-form-item" pane>
+                    <label for="isajax" class="layui-form-label">
+                        <span class="x-red"></span>ajax可访问
+                    </label>
+                    <div class="layui-input-inline">
+                        <input type="radio" name="isajax" value="0" title="不能" {if($data['isajax']==0)}checked{/if}>
+						<input type="radio" name="isajax" value="1" title="能" {if($data['isajax']==1)}checked{/if}>
+                    </div>
+					<div class="layui-form-mid layui-word-aux">
+					  由于本系统对json数据封装，限制访问可以提高安全性
+					</div> 
+					
+                </div>
 				
 				</div>
 				<div class="layui-tab-item">

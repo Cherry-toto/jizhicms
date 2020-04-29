@@ -181,7 +181,7 @@ $(function () {
             var left_index  = $('.left-nav #nav li').length;
 			var top_index = $('a.top_nav').length;
 			var right_index = $('a.top_nav_right').length;
-			var own_index = $(this).index();
+			var own_index = $("dd.top-nav").index($(this).parent())+$(this).parent().parent().parent().index();
 			var all_index = left_index+own_index+top_index+right_index;
             for (var i = 0; i <$('.x-iframe').length; i++) {
                 if($('.x-iframe').eq(i).attr('tab-id')==(all_index+1)){

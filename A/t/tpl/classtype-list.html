@@ -64,7 +64,7 @@
 			  {$v['classname']}
             </td>
 			<td>{$moldslist[$v['molds']]['name']}</td>
-			{if($admin['isadmin'] || strpos($tids,','.$v['id'].',')!==false)}
+			{if($admin['classcontrol']==0 ||$admin['isadmin'] || strpos($tids,','.$v['id'].',')!==false)}
 			<td class="td-status" >
 			{if(checkAction('Classtype/change_status'))}	
 				<input type="checkbox" value="{$v['id']}" name="switch" lay-filter="status"   lay-text="显示|隐藏"  lay-skin="switch" {if($v['isshow']==1)}checked{/if}>

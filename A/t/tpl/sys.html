@@ -3,8 +3,16 @@
     <head>
     <meta charset="UTF-8">
    {include="style"}
+	<script type="text/javascript" charset="utf-8" src="/static/common/user/uedit/ueditor.config.js?v=1"></script>
+		<script type="text/javascript" charset="utf-8" src="/static/common/user/uedit/ueditor.all.min.js?v=1"> </script>
+		<script type="text/javascript" charset="utf-8" src="/static/common/user/uedit/lang/zh-cn/zh-cn.js"></script>
+	<style>
+	body .layui-layer-demo .layui-layer-title{background:#009688; color:#fff; border: none;}
+	body .layui-layer-demo .layui-layer-content{padding:20px;line-height: 24px;}
+
+	</style>
+	
   </head>
-    </head>
     <body>
         <div class="x-nav">
             <span class="layui-breadcrumb">
@@ -211,8 +219,8 @@
                                 ,done: function(res){
                                   
                                     if(res.code==0){
-                                         $("#'.$v['field'].'_img").attr("src","/"+res.url);
-                                         $("#'.$v['field'].'").val("/"+res.url);
+                                         $("#'.$v['field'].'_img").attr("src",res.url);
+                                         $("#'.$v['field'].'").val(res.url);
                                     }else{
                                          layer.alert(res.error, {icon: 5});
                                     }
@@ -259,6 +267,31 @@
                              }
                             echo '</div>';
                             break;
+							case 4:
+							$rd = time();
+                            echo '<div class="layui-form-item layui-form-text"  id="custom_'.$v['field'].'">
+                            <label class="layui-form-label">
+                                <span class=\'x-red\'>*</span>'.$v['title'].'
+                            </label>
+                            <div class="layui-input-block" style="width:100%;">
+							<script id="'.$v['field'].$rd.'" name="'.$v['field'].'" type="text/plain" style="width:100%;height:400px;">'.$v['data'].'</script>	
+							</div><script>
+							$(document).ready(function(){
+							var ue_'.$v['field'].$rd.' = UE.getEditor("'.$v['field'].$rd.'",{';
+							if($config['ueditor_config']!=''){
+								echo 'toolbars : [['.$config['ueditor_config'].']]';
+							}		
+							echo '}		
+							);	
+							});
+						</script>';
+                            if($admin['gid']==1){
+                            echo '<div class="layui-inline">
+                                <button type="button" lay-filter="del" data="custom_'.$v['field'].'"  lay-submit="" class="layui-btn layui-btn-danger">删除</button>
+                             </div>[  '.$v['field'].'  ]';
+                             }
+                            echo '</div>';
+                            break;
                             
                         }
                         
@@ -286,8 +319,9 @@
 									<select class="layui-btn layui-btn-normal" name="custom_type" id="custom_type" >
 									<option value="0">选择类型</option>
 									<option value="1">图片</option>
-									<option value="2">输入框</option>
-									<option value="3">简短文字</option>
+									<option value="2">单行文本</option>
+									<option value="3">多行文本</option>
+									<option value="4">编辑器</option>
 									
 									</select>
 									
@@ -311,6 +345,27 @@
                                 <textarea placeholder="将百度统计、cnzz等平台的流量统计JS代码放到这里"  name="web_js" class="layui-textarea">{$config['web_js']}</textarea>
                             </div>
                         </div>
+						<div  class="layui-form-item">
+                            <label style="width:150px"  class="layui-form-label">
+                                <span class='x-red'>*</span>关闭站点
+                            </label>
+                            <div  class="layui-input-inline">
+							<select name="closeweb" class="layui-btn layui-btn-normal">
+							<option value="1" {if($config['closeweb']==1)}selected{/if}>是</option>
+							<option value="0" {if($config['closeweb']==0)}selected{/if}>否</option>
+							</select>
+                               
+                            </div>
+                        </div>
+						<div class="layui-form-item layui-form-text">
+                            <label class="layui-form-label">
+                                <span class='x-red'>*</span>关闭提示
+                            </label>
+                            <div class="layui-input-block">
+                                <textarea placeholder="关闭站点后提示信息"  name="closetip" class="layui-textarea">{$config['closetip']}</textarea>
+                            </div>
+                        </div>
+						
                         <div class="layui-form-item">
                             <button class="layui-btn" lay-submit="" lay-filter="*">
                                 保存
@@ -326,9 +381,13 @@
                             <label style="width:150px"  class="layui-form-label">
                                 <span class='x-red'>*</span>PC网站模板
                             </label>
-                            <div  style="margin-left: 150px;" class="layui-input-block">
-                                <input type="text" name="pc_template" value="{$config['pc_template']}" autocomplete="off" placeholder="请把模板放到Home/template/目录下面"
-                                class="layui-input">
+                            <div  class="layui-input-inline">
+							<select name="pc_template" class="layui-btn layui-btn-normal">
+							{foreach $templatelist as $v}
+							<option value="{$v}" {if($config['pc_template']==$v)}selected{/if}>{$v}</option>
+							{/foreach}
+							</select>
+                               
                             </div>
                         </div>
                         <div class="layui-form-item" pane>
@@ -346,18 +405,30 @@
                             <label style="width:150px"  class="layui-form-label">
                                 WAP网站模板
                             </label>
-                            <div  style="margin-left: 150px;" class="layui-input-block">
-                                <input type="text" name="wap_template" value="{$config['wap_template']}" autocomplete="off" placeholder="请把模板放到Home/template/目录下面"
-                                class="layui-input">
+                             <div  class="layui-input-inline">
+							
+							<select name="wap_template" class="layui-btn layui-btn-normal">
+							{foreach $templatelist as $v}
+							<option value="{$v}" {if($config['wap_template']==$v)}selected{/if}>{$v}</option>
+							{/foreach}
+							</select>
+							
+                                
                             </div>
                         </div>
                         <div  class="layui-form-item">
                             <label style="width:150px"  class="layui-form-label">
                                 微信网站模板
                             </label>
-                            <div  style="margin-left: 150px;" class="layui-input-block">
-                                <input type="text" name="weixin_template" value="{$config['weixin_template']}" autocomplete="off" placeholder="请把模板放到Home/template/目录下面"
-                                class="layui-input">
+                            <div  class="layui-input-inline">
+							
+							<select name="weixin_template" class="layui-btn layui-btn-normal">
+							{foreach $templatelist as $v}
+							<option value="{$v}" {if($config['weixin_template']==$v)}selected{/if}>{$v}</option>
+							{/foreach}
+							</select>
+							
+                                
                             </div>
                         </div>
                         <div class="layui-form-item" >
@@ -504,11 +575,41 @@
                                 限制上传文件大小
                             </label>
                             <div  style="margin-left: 150px;"   class="layui-input-block">
-                                <input type="text" name="fileSize" value="{$config['fileSize']}" autocomplete="off" placeholder="0代表不限"
+                                <input type="text" name="fileSize" value="{$config['fileSize']}" autocomplete="off" placeholder="0代表不限，单位Kb"
                                 class="layui-input">
                             </div>
+							<div class="layui-form-mid layui-word-aux">
+                           0代表不限，单位Kb
+                            </div> 
                         </div>
                         
+						<div  class="layui-form-item">
+                            <label style="width:150px"  class="layui-form-label">
+                                <span class='x-red'></span>后台文件存储路径
+                            </label>
+                            <div  style="margin-left: 150px;" class="layui-input-block">
+                                <input type="text" name="admin_save_path" value="{$config['admin_save_path']}" autocomplete="off" placeholder=""
+                                class="layui-input">
+                            </div>
+                            <div class="layui-form-mid layui-word-aux">
+                            默认Public/Admin，存储路径相对于根目录，最后不能带斜杠[ / ]
+							<a 	class="layui-btn layui-btn-sm savepath">更多</a>
+                            </div> 
+                        </div>
+                         <div  class="layui-form-item">
+                            <label style="width:150px"  class="layui-form-label">
+                                <span class='x-red'></span>前台文件存储路径
+                            </label>
+                            <div  style="margin-left: 150px;" class="layui-input-block">
+                                <input type="text" name="home_save_path" value="{$config['home_save_path']}" autocomplete="off" placeholder=""
+                                class="layui-input">
+                            </div>
+                            <div class="layui-form-mid layui-word-aux">
+                            默认Public/Home，存储路径相对于根目录，最后不能带斜杠[ / ]
+							<a 	class="layui-btn layui-btn-sm savepath">更多</a>
+                            </div> 
+                        </div>
+						
                         <div  class="layui-form-item">
                             <label style="width:150px"  class="layui-form-label">
                                 上传图片压缩比例
@@ -683,7 +784,45 @@
                             
                             
                         </div>
-
+						<div class="layui-form-item" pane>
+                            <label for="isajax" style="width:150px" class="layui-form-label">
+                                <span class="x-red"></span>开启前台AJAX
+                            </label>
+                            <div  style="margin-left: 150px;" class="layui-input-inline">
+                                <input type="radio" name="isajax" value="0" title="关闭" {if($config['isajax']==0)}checked{/if}>
+                                <input type="radio" name="isajax" value="1" title="开启" {if($config['isajax']==1)}checked{/if}>
+                            </div>
+                            <div class="layui-form-mid layui-word-aux">
+                             开启后AJAX，前台可以通过栏目链接+ajax=1获取JSON数据
+                            </div> 
+                            
+                        </div>
+						<div class="layui-form-item" pane>
+                            <label for="isautositemap" style="width:150px" class="layui-form-label">
+                                <span class="x-red"></span>自动生成sitemap
+                            </label>
+                            <div  style="margin-left: 150px;" class="layui-input-inline">
+                                <input type="radio" name="isautositemap" value="0" title="关闭" {if($config['isautositemap']==0)}checked{/if}>
+                                <input type="radio" name="isautositemap" value="1" title="开启" {if($config['isautositemap']==1)}checked{/if}>
+                            </div>
+                            <div class="layui-form-mid layui-word-aux">
+                             开启后，前台访问每天会自动生成1次sitemap
+                            </div> 
+                            
+                        </div>
+						<div class="layui-form-item" pane>
+                            <label for="hideclasspath" style="width:150px" class="layui-form-label">
+                                <span class="x-red"></span>隐藏栏目.html
+                            </label>
+                            <div  style="margin-left: 150px;" class="layui-input-inline">
+                                <input type="radio" name="hideclasspath" value="0" title="关闭" {if(!File_TXT_HIDE)}checked{/if}>
+                                <input type="radio" name="hideclasspath" value="1" title="开启" {if(File_TXT_HIDE)}checked{/if}>
+                            </div>
+                            <div class="layui-form-mid layui-word-aux">
+                             开启后栏目链接形式如：/abc/
+                            </div> 
+                            
+                        </div>
                         <div class="layui-form-item" pane>
                             <label for="isdebug" style="width:150px" class="layui-form-label">
                                 <span class="x-red"></span>是否开启PHP调试
@@ -1384,7 +1523,20 @@
             var  form = layui.form;
              var upload = layui.upload;
             
-            
+            $('.savepath').click(function(){
+				layer.open({
+					  type: 1,
+					  title:'路径规则',
+					  skin: 'layui-layer-demo', //样式类名
+					  closeBtn: 0, //不显示关闭按钮
+					  anim: 2,
+					  shadeClose: true, //开启遮罩关闭
+					  content: ' [ 设置后请确保系统有权限创建文件夹 ]<br/>{time} 会替换成时间戳<br/> {yyyy} 会替换成四位年份 <br/>{yy} 会替换成两位年份 <br/>{mm} 会替换成两位月份 <br/>{dd} 会替换成两位日期 <br/>{hh} 会替换成两位小时 <br/>{ii} 会替换成两位分钟 <br/>{ss} 会替换成两位秒 <br/> 不可写字符 \\ : * ? " < > | <br/>例：Public/{yyyy}/{mm}/{dd}'
+					});
+				
+			
+			});
+			
              //图片上传接口
               upload.render({
                 elem: '#wx_client_cert_upload',
@@ -1425,8 +1577,8 @@
                 ,done: function(res){
                   
                     if(res.code==0){
-                         $("#watermark_file_img").attr("src","/"+res.url);
-                         $("#watermark_file").val("/"+res.url);
+                         $("#watermark_file_img").attr("src",res.url);
+                         $("#watermark_file").val(res.url);
                     }else{
                          layer.alert(res.error, {icon: 5});
                     }
@@ -1446,8 +1598,8 @@
                 ,done: function(res){
                   
                     if(res.code==0){
-                         $("#web_logo_img").attr("src","/"+res.url);
-                         $("#web_logo").val("/"+res.url);
+                         $("#web_logo_img").attr("src",res.url);
+                         $("#web_logo").val(res.url);
                     }else{
                          layer.alert(res.error, {icon: 5});
                     }

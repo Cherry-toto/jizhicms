@@ -67,18 +67,23 @@ class MoldsController extends CommonController
 				$sql = "CREATE TABLE IF NOT EXISTS `".DB_PREFIX.$data['biaoshi']."` (
 				`id` int(11) unsigned NOT NULL auto_increment,
 				`tid` int(11) DEFAULT 0,
+				`molds` varchar(50) DEFAULT '".$data['biaoshi']."',
 				`userid` int(11) DEFAULT 0,
 				`orders` int(11) DEFAULT 0,
 				`member_id` int(11) DEFAULT 0,
 				`comment_num` int(11) DEFAULT 0,
 				`htmlurl` varchar(100) DEFAULT NULL,
 				`isshow` tinyint(1) DEFAULT 1,
+				`target` varchar(255) DEFAULT NULL,
+				`ownurl` varchar(255) DEFAULT NULL,
+				`istop` tinyint(1) DEFAULT 0,
+				`hits` int(11) DEFAULT 0,
+				`addtime` int(11) DEFAULT 0,
 				PRIMARY 
 				KEY  (`id`)
 				) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1";
 				
 				$x = M()->runSql($sql);
-				//新增一个扩展字段信息
 				$w['field'] = 'member_id';
 				$w['molds'] = $data['biaoshi'];
 				$w['fieldname'] = '发布会员';
@@ -92,7 +97,76 @@ class MoldsController extends CommonController
 				$w['issearch'] = 0;
 				$w['islist'] = 0;
 				$w['vdata'] = '0';
-				M('field')->add($w);
+				M('fields')->add($w);
+				$w['field'] = 'target';
+				$w['molds'] = $data['biaoshi'];
+				$w['fieldname'] = '外链URL';
+				$w['tips'] = '默认为空，系统访问内容则直接跳转到此链接';
+				$w['fieldtype'] = 1;
+				$w['fieldlong'] = 255;
+				$w['ismust'] = 0;
+				$w['isshow'] = 0;
+				$w['isadmin'] = 0;
+				$w['issearch'] = 0;
+				$w['islist'] = 0;
+				$w['vdata'] = '';
+				M('fields')->add($w);
+				$w['field'] = 'ownurl';
+				$w['molds'] = $data['biaoshi'];
+				$w['fieldname'] = '自定义URL';
+				$w['tips'] = '默认为空，自定义URL';
+				$w['fieldtype'] = 1;
+				$w['fieldlong'] = 255;
+				$w['ismust'] = 0;
+				$w['isshow'] = 0;
+				$w['isadmin'] = 0;
+				$w['issearch'] = 0;
+				$w['islist'] = 0;
+				$w['vdata'] = '';
+				M('fields')->add($w);
+				$w['field'] = 'istop';
+				$w['molds'] = $data['biaoshi'];
+				$w['fieldname'] = '是否置顶';
+				$w['tips'] = '置顶';
+				$w['fieldtype'] = 12;
+				$w['fieldlong'] = 1;
+				$w['body'] = '否=0,是=1';
+				$w['ismust'] = 0;
+				$w['isshow'] = 0;
+				$w['isadmin'] = 0;
+				$w['issearch'] = 0;
+				$w['islist'] = 0;
+				$w['vdata'] = '0';
+				M('fields')->add($w);
+				$w['field'] = 'hits';
+				$w['molds'] = $data['biaoshi'];
+				$w['fieldname'] = '点击量';
+				$w['tips'] = '系统自动添加';
+				$w['fieldtype'] = 4;
+				$w['fieldlong'] = 11;
+				$w['body'] = '';
+				$w['ismust'] = 0;
+				$w['isshow'] = 0;
+				$w['isadmin'] = 0;
+				$w['issearch'] = 0;
+				$w['islist'] = 0;
+				$w['vdata'] = '0';
+				M('fields')->add($w);
+				$w['field'] = 'addtime';
+				$w['molds'] = $data['biaoshi'];
+				$w['fieldname'] = '添加时间';
+				$w['tips'] = '选择时间';
+				$w['fieldtype'] = 11;
+				$w['fieldlong'] = 11;
+				$w['format'] = 'date_2';
+				$w['body'] = '';
+				$w['ismust'] = 0;
+				$w['isshow'] = 1;
+				$w['isadmin'] = 1;
+				$w['issearch'] = 0;
+				$w['islist'] = 1;
+				$w['vdata'] = '0';
+				M('fields')->add($w);
 				
 				//if($x){
 					//添加权限管理
@@ -100,7 +174,7 @@ class MoldsController extends CommonController
 					$ruler['fc'] = 'Extmolds/index/molds/'.$data['biaoshi'];
 					$ruler['pid'] = 77;
 					$ruler['isdesktop'] = 1;
-					M('Ruler')->add($ruler);
+					$m_id = M('Ruler')->add($ruler);
 					$ruler['isdesktop'] = 0;
 					$ruler['name'] = '新增'.$data['name'];
 					$ruler['fc'] = 'Extmolds/addmolds/molds/'.$data['biaoshi'];
@@ -129,7 +203,23 @@ class MoldsController extends CommonController
 					$ruler['name'] = '批量审核'.$data['name'];
 					$ruler['fc'] = 'Extmolds/checkAll/molds/'.$data['biaoshi'];
 					M('Ruler')->add($ruler);
-					JsonReturn(array('code'=>0,'msg'=>'新增模块成功，快去设置表字段吧！','url'=>U('Fields/index',['molds'=>$data['biaoshi']])));
+					
+					//写入左侧导航栏
+					$dao = M('layout')->find(['id'=>1]);
+					$left_layout = json_decode($dao['left_layout'],1);
+					$left_layout[]=[
+						"name" => $data['name'].'模块',
+						"icon" => '&amp;#xe6cb;',
+						"nav" => array($m_id)
+					];
+					$left_layout = json_encode($left_layout,JSON_UNESCAPED_UNICODE);
+					M('layout')->update(['id'=>$dao['id']],['left_layout'=>$left_layout]);
+					if($data['ismust']==1 && $data['isshowclass']==1){
+						JsonReturn(array('code'=>0,'msg'=>'新增模块成功，快去创建对应的栏目吧！','url'=>U('Classtype/addclass',['biaoshi'=>$data['biaoshi']])));
+					}else{
+						JsonReturn(array('code'=>0,'msg'=>'新增模块成功，快去设置表字段吧！','url'=>U('Fields/index',['molds'=>$data['biaoshi']])));
+					}
+					
 				
 				// }else{
 					// JsonReturn(array('code'=>1,'msg'=>'新增表失败！请检查数据库配置！'));
@@ -163,6 +253,11 @@ class MoldsController extends CommonController
 					exit;
 				}
 				$molds = M('Molds')->find(array('id'=>$this->frparam('id')));
+				if($molds['sys']==1 && $data['biaoshi']!=$molds['biaoshi']){
+					JsonReturn(array('code'=>1,'msg'=>'系统模块标识不允许修改！'));
+					exit;
+				}
+				
 				$data['biaoshi'] = strtolower($this->frparam('biaoshi',1));
 				if(M('Molds')->update(array('id'=>$this->frparam('id')),$data)){
 					//检测是否表名改变
@@ -181,13 +276,7 @@ class MoldsController extends CommonController
 					
 				}
 			}else{
-				if(M('Molds')->add($data)){
-					JsonReturn(array('code'=>0,'msg'=>'添加成功！','url'=>U('index')));
-					
-				}else{
-					JsonReturn(array('code'=>1,'msg'=>'添加失败！'));
-					
-				}
+				JsonReturn(array('code'=>1,'msg'=>'页面有错误，缺少模块ID！'));
 			}
 			
 			

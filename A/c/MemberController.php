@@ -56,8 +56,7 @@ class MemberController extends CommonController
 			}
 			$get_sql = ($res['fields_search_check']!='') ? (' and '.$res['fields_search_check']) : '';
 			$sql .= $get_sql;
-		
-			$lists = $page->where($sql)->page($this->frparam('page',0,1))->go();
+			$lists = $page->where($sql)->orderby('id desc')->limit($this->frparam('limit',0,10))->page($this->frparam('page',0,1))->go();
 			$ajaxdata = [];
 			foreach($lists as $k=>$v){
 				
@@ -170,7 +169,12 @@ class MemberController extends CommonController
 		
 		$id = $this->frparam('id');
 		if($id){
-			M('member')->delete(array('id'=>$id));
+			if(M('member')->delete(array('id'=>$id))){
+				JsonReturn(array('code'=>0,'msg'=>'删除成功！'));
+			}else{
+				JsonReturn(array('code'=>1,'msg'=>'删除失败！'));
+			}
+			
 		}
 		
 		

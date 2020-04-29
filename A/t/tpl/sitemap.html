@@ -84,6 +84,26 @@
 						</td>
 					</tr>
 					
+					{loop table="molds" sys="0" ismust="1" as="v"}
+					<td>{$v['name']}模块<input name="model[]" value="{$v['biaoshi']}" type="hidden"></td>
+					<td><select name="freq[]"  >
+						<option value="always">经常(always)</option>
+						<option value="hourly">每时(hourly)</option>
+						<option value="daily">每天(daily)</option>
+						<option value="weekly">每周(weekly)</option>
+						<option value="monthly">每月(monthly)</option>
+						<option value="yearly">每年(yearly)</option>
+						
+						</select>
+						</td>
+					<td><input name="priority[]" type="number" class="layui-input" value="0.80"></td>
+					<td><select name="isshow[]"  >
+						<option value="1">显示的{$v['name']}</option>
+						<option value="2">所有的{$v['name']}</option>
+						</select>
+						</td>
+					</tr>
+					{/loop}
 					
 					
 					</table>

@@ -19,6 +19,13 @@ class LoginController extends Controller
 {
 	function _init(){
 
+		if(!M('molds')->find(['biaoshi'=>'member','isopen'=>1])){
+			if($this->frparam('ajax')){
+				JsonReturn(['code'=>1,'msg'=>'会员中心已关闭！']);
+			}
+			Error('会员中心已关闭！');
+			exit;
+		}
 		$webconf = webConf();
 		$template = get_template();
 		$this->webconf = $webconf;

@@ -40,7 +40,7 @@ class ArticleController extends CommonController
 		
 		if($this->frparam('ajax')){
 			$sql = ' 1=1 ';
-			if($this->admin['isadmin']!=1){
+			if($this->admin['classcontrol']==1 && $this->admin['isadmin']!=1 && $this->molds['iscontrol']!=0 && $this->molds['isclasstype']==1){
 				$a1 = explode(',',$this->tids);
 				$a2 = array_filter($a1);
 				$tids = implode(',',$a2);
@@ -82,7 +82,7 @@ class ArticleController extends CommonController
 				}
 				
 			}
-			$data = $page->where($sql)->orderby('istop desc,orders desc,addtime desc,id desc')->limit($this->frparam('limit',0,10))->page($this->frparam('page',0,1))->go();
+			$data = $page->where($sql)->orderby('istop desc,orders desc,id desc')->limit($this->frparam('limit',0,10))->page($this->frparam('page',0,1))->go();
 			$ajaxdata = [];
 			foreach($data as $k=>$v){
 				
@@ -135,21 +135,25 @@ class ArticleController extends CommonController
 			$data['addtime'] = strtotime($data['addtime']);
 			$data['body'] = $this->frparam('body',4);
 			$data['userid'] = $_SESSION['admin']['id'];
-			$data['description'] = ($this->frparam('description',1)=='') ? newstr(strip_tags($data['body']),200) : $this->frparam('description',1);
+			$data['description'] = ($this->frparam('description',1)=='') ? newstr(strip_tags($data['body']),160) : $this->frparam('description',1);
+			$data['description'] = str_replace(' ','',$data['description']);
+			if(strlen($data['description'])>255){
+				JsonReturn(array('code'=>1,'msg'=>'简介内容过多，请修改120字以内！'));
+			}
+			
 			if($this->frparam('litpic',1)==''){
-				$pattern='/<img.+src=\"?(.+\.(jpg|gif|bmp|bnp|PNG))\"?.+>/i';
+				$pattern='/<img.+src=[\"|\'](.*?)[\"|\']+.*?>/i';
 				if($this->frparam('body',1)!=''){
-					preg_match_all($pattern,$_POST['body'],$matchContent);
-				
-					if(isset($matchContent[1][0])){
-						$data['litpic'] = $matchContent[1][0];
+					$r = preg_match($pattern,$_POST['body'],$matchContent);
+					if($r){
+						$data['litpic'] = $matchContent[1];
 					}else{
 						$data['litpic'] = '';
 					}
+					
 				}else{
 					$data['litpic'] = '';
 				}
-				
 			}
 			$pclass = get_info_table('classtype',array('id'=>$data['tid']));
 			$data['molds'] = $pclass['molds'];
@@ -202,8 +206,18 @@ class ArticleController extends CommonController
 					}
 				}
 			}
-
-			if(M('Article')->add($data)){
+			//处理自定义URL
+			if($data['ownurl']){
+				if(M('customurl')->find(['url'=>$data['ownurl']])){
+					JsonReturn(array('code'=>1,'msg'=>'已存在相同的自定义URL！'));
+				}
+				
+			}
+			$r = M('Article')->add($data);
+			if($r){
+				if($data['ownurl']){
+					M('customurl')->add(['molds'=>'article','url'=>$data['ownurl'],'tid'=>$data['tid'],'addtime'=>time(),'aid'=>$r]);
+				}
 				//tags处理
 				if($data['tags']!=''){
 					$tags = explode(',',$data['tags']);
@@ -237,7 +251,7 @@ class ArticleController extends CommonController
 		//$classtype = M('classtype')->findAll(null,'orders desc');
 		//$classtype = getTree($classtype);
 		$this->tid = $this->frparam('tid');
-		$this->classtypes = $this->classtypetree;;
+		$this->classtypes = $this->classtypetree;
 		$this->display('article-add');
 	}
 	public function editarticle(){
@@ -248,17 +262,22 @@ class ArticleController extends CommonController
 			$data['addtime'] = strtotime($data['addtime']);
 			$data['body'] = $this->frparam('body',4);
 
-			$data['description'] = ($this->frparam('description',1)=='') ? newstr(strip_tags($data['body']),200) : $this->frparam('description',1);
+			$data['description'] = ($this->frparam('description',1)=='') ? newstr(strip_tags($data['body']),160) : $this->frparam('description',1);
+			$data['description'] = str_replace(' ','',$data['description']);
+			if(strlen($data['description'])>255){
+				JsonReturn(array('code'=>1,'msg'=>'简介内容过多，请修改120字以内！'));
+			}
+			
 			if($this->frparam('litpic',1)==''){
-				$pattern='/<img.+src=\"?(.+\.(jpg|gif|bmp|bnp|PNG))\"?.+>/i';
+				$pattern='/<img.+src=[\"|\'](.*?)[\"|\']+.*?>/i';
 				if($this->frparam('body',1)!=''){
-					preg_match_all($pattern,$_POST['body'],$matchContent);
-				
-					if(isset($matchContent[1][0])){
-						$data['litpic'] = $matchContent[1][0];
+					$r = preg_match($pattern,$_POST['body'],$matchContent);
+					if($r){
+						$data['litpic'] = $matchContent[1];
 					}else{
 						$data['litpic'] = '';
 					}
+					
 				}else{
 					$data['litpic'] = '';
 				}
@@ -319,6 +338,30 @@ class ArticleController extends CommonController
 
 			if($this->frparam('id')){
 				$old_tags = M('Article')->getField(['id'=>$this->frparam('id')],'tags');
+				//处理自定义URL
+				
+				if($data['ownurl']){
+					$customurl = M('customurl')->find(['url'=>$data['ownurl']]);
+					if($customurl){
+						if($customurl['aid']!=$this->frparam('id')){
+							JsonReturn(array('code'=>1,'msg'=>'已存在相同的自定义URL！'));
+						}else if($customurl['url']!=$data['ownurl']){
+							M('customurl')->update(['molds'=>'article','tid'=>$data['tid'],'aid'=>$this->frparam('id')],['url'=>$data['ownurl']]);
+						}
+						
+					}else{
+						if(M('customurl')->find(['aid'=>$this->frparam('id')])){
+							M('customurl')->update(['molds'=>'article','tid'=>$data['tid'],'aid'=>$this->frparam('id')],['url'=>$data['ownurl']]);
+						}else{
+							M('customurl')->add(['molds'=>'article','tid'=>$data['tid'],'url'=>$data['ownurl'],'addtime'=>time(),'aid'=>$this->frparam('id')]);
+						}
+						
+					}
+					
+				}else{
+					M('customurl')->delete(['molds'=>'article','aid'=>$this->frparam('id')]);
+				}
+				
 				if(M('Article')->update(array('id'=>$this->frparam('id')),$data)){
 					if($old_tags!=$data['tags']){
 						
@@ -395,7 +438,7 @@ class ArticleController extends CommonController
 					
 					JsonReturn(array('code'=>0,'msg'=>'修改成功！','url'=>U('index')));
 				}else{
-					JsonReturn(array('code'=>1,'msg'=>'修改失败！'));
+					JsonReturn(array('code'=>1,'msg'=>'您未做任何修改，不能提交！'));
 				}
 			}
 			
@@ -406,7 +449,7 @@ class ArticleController extends CommonController
 			$this->data = M('Article')->find(array('id'=>$this->frparam('id')));
 		}
 		$this->molds = M('molds')->find(['biaoshi'=>'article']);
-		$this->classtypes = $this->classtypetree;;
+		$this->classtypes = $this->classtypetree;
 		$this->display('article-edit');
 		
 	}

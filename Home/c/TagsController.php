@@ -37,6 +37,64 @@ class TagsController extends CommonController
 			}
 			$lists_1 = M('article')->findAll(" tags like '%,".$keywords.",%' and isshow=1");
 			$lists_2 = M('product')->findAll(" tags like '%,".$keywords.",%' and isshow=1");
+			if($lists_1){
+				
+				$sql = [];
+				$sql[] = " molds = 'article' and isshow=1 ";
+				$sql[] = " isajax=0 ";//查询出不允许访问的字段，进行限制
+				$sql = implode(' and ',$sql);
+				
+				$fields_list = M('Fields')->findAll($sql,'orders desc,id asc');
+				if($fields_list){
+					$noallow = [];
+					foreach($fields_list as $v){
+						$noallow[]=$v['field'];
+					}
+					$newdata = [];
+					foreach($lists_1 as $v){
+						foreach($v as $kk=>$vv){
+							if(in_array($kk,$noallow)){
+								unset($v[$kk]);
+							}
+						}
+						$newdata[]=$v;
+					}
+					
+					$lists_1 = $newdata;
+				}
+				
+				
+			}
+			if($lists_2){
+				
+				$sql = [];
+				$sql[] = " molds = 'product' and isshow=1 ";
+				$sql[] = " isajax=0 ";//查询出不允许访问的字段，进行限制
+				$sql = implode(' and ',$sql);
+				
+				$fields_list = M('Fields')->findAll($sql,'orders desc,id asc');
+				if($fields_list){
+					$noallow = [];
+					foreach($fields_list as $v){
+						$noallow[]=$v['field'];
+					}
+					$newdata = [];
+					foreach($lists_2 as $v){
+						foreach($v as $kk=>$vv){
+							if(in_array($kk,$noallow)){
+								unset($v[$kk]);
+							}
+						}
+						$newdata[]=$v;
+					}
+					
+					$lists_2 = $newdata;
+				}
+				
+				
+			}
+			
+			
 			
 			$lists = ($lists_1 && count($lists_1) > 0) ? array_merge($lists_1,$lists_2) : array_merge($lists_2,$lists_1);
 			if($lists){
@@ -66,6 +124,7 @@ class TagsController extends CommonController
 					$this->display($this->template.'/ajax_tags_list');
 					exit;
 				}
+				
 				JsonReturn(['code'=>0,'data'=>$data]);
 			}
 			

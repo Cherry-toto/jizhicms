@@ -39,7 +39,7 @@ class ProductController extends CommonController
 			
 			$page = new Page('product');
 			$sql = ' 1=1 ';
-			if($this->admin['isadmin']!=1){
+			if($this->admin['classcontrol']==1 && $this->admin['isadmin']!=1 && $this->molds['iscontrol']!=0 && $this->molds['isclasstype']==1){
 				$a1 = explode(',',$this->tids);
 				$a2 = array_filter($a1);
 				$tids = implode(',',$a2);
@@ -78,8 +78,7 @@ class ProductController extends CommonController
 				}
 				
 			}
-			
-			$data = $page->where($sql)->orderby('istop desc,orders desc,addtime desc,id desc')->page($this->frparam('page',0,1))->go();
+			$data = $page->where($sql)->orderby('istop desc,orders desc,id desc')->limit($this->frparam('limit',0,10))->page($this->frparam('page',0,1))->go();
 			
 			$ajaxdata = [];
 			foreach($data as $k=>$v){
@@ -133,21 +132,25 @@ class ProductController extends CommonController
 			$data['body'] = $this->frparam('body',4);
 			$data['price'] = $this->frparam('price',3);
 			$data['userid'] = $_SESSION['admin']['id'];
-			$data['description'] = ($this->frparam('description',1)=='') ? newstr(strip_tags($data['body']),200) : $this->frparam('description',1);
+			$data['description'] = ($this->frparam('description',1)=='') ? newstr(strip_tags($data['body']),160) : $this->frparam('description',1);
+			$data['description'] = str_replace(' ','',$data['description']);
+			if(strlen($data['description'])>255){
+				JsonReturn(array('code'=>1,'msg'=>'简介内容过多，请修改120字以内！'));
+			}
+			
 			if($this->frparam('litpic',1)==''){
-				$pattern='/<img.+src=\"?(.+\.(jpg|gif|bmp|bnp|PNG))\"?.+>/i';
+				$pattern='/<img.+src=[\"|\'](.*?)[\"|\']+.*?>/i';
 				if($this->frparam('body',1)!=''){
-					preg_match_all($pattern,$_POST['body'],$matchContent);
-				
-					if(isset($matchContent[1][0])){
-						$data['litpic'] = $matchContent[1][0];
+					$r = preg_match($pattern,$_POST['body'],$matchContent);
+					if($r){
+						$data['litpic'] = $matchContent[1];
 					}else{
 						$data['litpic'] = '';
 					}
+					
 				}else{
 					$data['litpic'] = '';
 				}
-				
 			}
 			if(array_key_exists('pictures_urls',$data) && $data['pictures_urls']!=''){
 				 $data['pictures'] = implode('||',format_param($data['pictures_urls'],2));
@@ -166,7 +169,18 @@ class ProductController extends CommonController
 			if($data['tags']!=''){
 				$data['tags'] = ','.$data['tags'].',';
 			}
-			if(M('product')->add($data)){
+			//处理自定义URL
+			if($data['ownurl']){
+				if(M('customurl')->find(['molds'=>'product','url'=>$data['ownurl']])){
+					JsonReturn(array('code'=>1,'msg'=>'已存在相同的自定义URL！'));
+				}
+				
+			}
+			$r = M('product')->add($data);
+			if($r){
+				if($data['ownurl']){
+					M('customurl')->add(['molds'=>'product','tid'=>$data['tid'],'url'=>$data['ownurl'],'addtime'=>time(),'aid'=>$r]);
+				}
 				//tags处理
 				if($data['tags']!=''){
 					$tags = explode(',',$data['tags']);
@@ -210,17 +224,22 @@ class ProductController extends CommonController
 			$data['addtime'] = strtotime($data['addtime']);
 			$data['body'] = $this->frparam('body',4);
 			$data['price'] = $this->frparam('price',3);
-			$data['description'] = ($this->frparam('description',1)=='') ? newstr(strip_tags($data['body']),200) : $this->frparam('description',1);
+			$data['description'] = ($this->frparam('description',1)=='') ? newstr(strip_tags($data['body']),160) : $this->frparam('description',1);
+			$data['description'] = str_replace(' ','',$data['description']);
+			if(strlen($data['description'])>255){
+				JsonReturn(array('code'=>1,'msg'=>'简介内容过多，请修改120字以内！'));
+			}
+			
 			if($this->frparam('litpic',1)==''){
-				$pattern='/<img.+src=\"?(.+\.(jpg|gif|bmp|bnp|PNG))\"?.+>/i';
+				$pattern='/<img.+src=[\"|\'](.*?)[\"|\']+.*?>/i';
 				if($this->frparam('body',1)!=''){
-					preg_match_all($pattern,$_POST['body'],$matchContent);
-				
-					if(isset($matchContent[1][0])){
-						$data['litpic'] = $matchContent[1][0];
+					$r = preg_match($pattern,$_POST['body'],$matchContent);
+					if($r){
+						$data['litpic'] = $matchContent[1];
 					}else{
 						$data['litpic'] = '';
 					}
+					
 				}else{
 					$data['litpic'] = '';
 				}
@@ -243,7 +262,28 @@ class ProductController extends CommonController
 			if($this->frparam('id')){
 				
 				$old_tags = M('product')->getField(['id'=>$this->frparam('id')],'tags');
+				//处理自定义URL
 				
+				if($data['ownurl']){
+					$customurl = M('customurl')->find(['url'=>$data['ownurl']]);
+					if($customurl){
+						if($customurl['aid']!=$this->frparam('id')){
+							JsonReturn(array('code'=>1,'msg'=>'已存在相同的自定义URL！'));
+						}else if($customurl['url']!=$data['ownurl']){
+							M('customurl')->update(['molds'=>'product','tid'=>$data['tid'],'aid'=>$this->frparam('id')],['url'=>$data['ownurl']]);
+						}
+						
+					}else{
+						if(M('customurl')->find(['aid'=>$this->frparam('id')])){
+							M('customurl')->update(['molds'=>'product','tid'=>$data['tid'],'aid'=>$this->frparam('id')],['url'=>$data['ownurl']]);
+						}else{
+							M('customurl')->add(['molds'=>'product','tid'=>$data['tid'],'url'=>$data['ownurl'],'addtime'=>time(),'aid'=>$this->frparam('id')]);
+						}
+					}
+					
+				}else{
+					M('customurl')->delete(['molds'=>'product','aid'=>$this->frparam('id')]);
+				}
 				if(M('product')->update(array('id'=>$this->frparam('id')),$data)){
 					//tags处理
 					if($old_tags!=$data['tags']){
@@ -322,7 +362,7 @@ class ProductController extends CommonController
 					exit;
 				}else{
 					
-					JsonReturn(array('code'=>1,'msg'=>'修改失败！'));
+					JsonReturn(array('code'=>1,'msg'=>'您未做任何修改，不能提交！'));
 					exit;
 				}
 			}

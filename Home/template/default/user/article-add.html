@@ -4,11 +4,17 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
-  {include="user/style"}
-  <script type="text/javascript" charset="utf-8" src="{$common}user/uedit/ueditor.config.js?v=1"></script>
-  <script type="text/javascript" charset="utf-8" src="{$common}user/uedit/editor_api.js?v=2"> </script>
-  <script type="text/javascript" charset="utf-8" src="{$common}user/uedit/lang/zh-cn/zh-cn.js"></script>
   <title>发布内容 - 个人中心</title>
+  {include="user/style"}
+  <style>
+ .user-form .form-control>input[type='button']:hover{color:#fff;background:#007bff;border:1px solid #007bff}.jzhide{display:none}.mu{position:fixed;width:100%;height:100%;background:#524e4e;padding:0;margin:0;top:0;opacity:40%;z-index:9999}.jizhitip.jzhide{text-align:center;background-color:#fff;border-radius:4px;width:300px;height:130px;margin:auto;position:fixed;top:0;left:0;right:0;bottom:0;z-index:9999}.jizhi_body{font-size:16px;line-height:22px;padding:25px}.jizhi_botton{margin-top:15px;    border-top: 1px solid #ccc;color: #3c61a5cc;
+    padding-top: 10px;cursor:pointer;}
+  </style>
+	<script type="text/javascript" charset="utf-8" src="/static/common/user/uedit/ueditor.config.js?v=1"></script>
+	<script type="text/javascript" charset="utf-8" src="/static/common/user/uedit/ueditor.all.min.js?v=1"> </script>
+	<script type="text/javascript" charset="utf-8" src="/static/common/user/uedit/lang/zh-cn/zh-cn.js"></script>
+
+  
 </head>
 <body>
 
@@ -23,16 +29,20 @@
       </div>
       <div class="user-content">
         <form action="" method="POST" id="jizhiform" class="user-form">
+          <input name="ajax" type="hidden" value="1">
           <input name="id" type="hidden" value="{$data['id']}">
           <input name="isshow" type="hidden" value="{$data['isshow']}">
           <div class="form-control">
+		    {if(!$data)}
             <label for="">选择专栏：</label>
-            <select id="molds" {if($data)}disabled{/if}  name="molds">
+            <select id="molds"   name="molds">
             <option value="article" {if($molds=='article')}selected{/if}>文章</option>
             <option value="product" {if($molds=='product')}selected{/if}>商品</option>
             </select>
-            {if($data)}
-            <label >不可修改</label>
+			{else}
+			<label for="">所属专栏：</label>
+			<span class="form-control" >{$moldsdata['name']}</span>
+			<input type="hidden" name="molds" id="molds" value="{$molds}" />
             {/if}
           </div>
           <div class="form-control">
@@ -44,14 +54,20 @@
           <span id="fields_ext"></span>
           <div class="form-control">
             <label for="submit"></label>
-            <input type="submit" name="submit" value="提交">
+            <input type="button" class="tj" onclick="submitform()" name="submit" value="提交">
           </div>
         </form>
       </div>
+	  
+	  
     </div>
   </div>
 </div>
-
+<div class="mu jzhide"></div>
+<div class="jizhitip jzhide">
+<div class="jizhi_body"></div>
+<div class="jizhi_botton" onclick="closetip()">确定</div>
+</div>
 {include="user/footer"}
 <script type="text/javascript">
 
@@ -87,10 +103,15 @@ function getclass(molds){
           var tid = {$tid};
           var html = '';
           for(var i=0;i<res['data'].length;i++){
+		    var classname = '';
+			for(var j=1;j<=res['data'][i]['level'];j++){
+				classname += '--';
+			}
+			classname += res['data'][i]['classname'];
             if(tid==res['data'][i]['id']){
-              html+='<option value="'+res['data'][i]['id']+'" selected>'+res['data'][i]['classname']+'</option>';
+              html+='<option value="'+res['data'][i]['id']+'" selected>'+classname+'</option>';
             }else{
-              html+='<option value="'+res['data'][i]['id']+'" >'+res['data'][i]['classname']+'</option>';
+              html+='<option value="'+res['data'][i]['id']+'" >'+classname+'</option>';
             }
           }
           $("#tid").html(html);
@@ -100,6 +121,40 @@ function getclass(molds){
         
       },'json');
 }  
+
+function submitform(){
+	$.post("{fun U('user/release')}", $('#jizhiform').serialize(),function(res){
+		if(res.code==0){
+			//alert('提交成功！');
+			$(".jizhi_body").html('提交成功！');
+			$(".jizhi_botton").hide();
+			$(".jizhitip").css({"color":"green","height":'80px'});
+			$(".mu").show();
+			$(".jizhitip").fadeIn();
+			setTimeout(function(){
+				$(".mu").hide();
+				$(".jizhitip").fadeOut();
+				window.location.href=res.url;
+			},3000)
+			
+		}else{
+			//alert(res.msg);
+			$(".jizhi_body").html(res.msg);
+			$(".jizhi_botton").show();
+			$(".jizhitip").css("color","#f00");
+			$(".mu").show();
+			$(".jizhitip").fadeIn();
+			return false;
+		}
+		
+	},'json');
+
+}
+function closetip(){
+	$(".mu").hide();
+	$(".jizhitip").fadeOut();
+}
+
   $(document).ready(function(){
      getclass($('#molds').val());
      $("#molds").change(function () {

@@ -534,6 +534,9 @@ CREATE TABLE `jz_page` (
   `orders` int(11) NOT NULL DEFAULT '0',
   `member_id` int(11) NOT NULL DEFAULT '0',
   `isshow` tinyint(1) DEFAULT '1',
+  `istop` tinyint(1) NOT NULL DEFAULT '0',
+  `hits` int(11) NOT NULL DEFAULT '0',
+  `addtime` int(11) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 -- ----------------------------

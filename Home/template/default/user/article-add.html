@@ -30,7 +30,9 @@
       <div class="user-content">
         <form action="" method="POST" id="jizhiform" class="user-form">
           <input name="ajax" type="hidden" value="1">
+		  {if($data)}
           <input name="id" type="hidden" value="{$data['id']}">
+		  {/if}
           <input name="isshow" type="hidden" value="{$data['isshow']}">
           <div class="form-control">
 		    {if(!$data)}

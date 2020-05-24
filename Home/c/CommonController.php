@@ -477,7 +477,7 @@ class CommonController extends Controller
             		if($v!=''){
 						if($this->webconf['ispicsdes']==1){
 							$pic = explode('|',$v);
-							$l .= '<span>img src="'.$pic[0].'" height="100"  /><input name="pictures_url[]" type="text" value="'.$pic[0].'"><br/><input name="pictures_des[]" placeholder="文字描述"  type="text" value="'.$pic[1].'"><button type="button" onclick="deleteImage_auto(this)">删除</button></span>';
+							$l .= '<span><img src="'.$pic[0].'" height="100"  /><input name="pictures_url[]" type="text" value="'.$pic[0].'"><input name="pictures_des[]" placeholder="文字描述"  type="text" value="'.$pic[1].'"><button type="button" onclick="deleteImage_auto(this)">删除</button></span>';
 						}else{
 							$l .= '<span><img src="'.$v.'" height="100"  /><input name="pictures_url[]" type="text" value="'.$v.'"><button type="button" onclick="deleteImage_auto(this)">删除</button></span>';
 						}
@@ -644,8 +644,7 @@ class CommonController extends Controller
 		            	}
 		           
 		            }
-		            $l .= '</span><br/>
-		              <input name="'.$v['field'].'" type="hidden" id="'.$v['field'].'" value="'.$data[$v['field']].'" /><br/>
+		            $l .= '</span>
 		        </div>
 				<div class="form-control">
 				<label ></label>
@@ -784,8 +783,7 @@ class CommonController extends Controller
 		            	}
 		           
 		            }
-		            $l .= '</span><br/>
-		              <input name="'.$v['field'].'" type="hidden" id="'.$v['field'].'" value="'.$data[$v['field']].'" /><br/>
+		            $l .= '</span>
 		        </div>
 				<div class="form-control">
 		            <label ></label>

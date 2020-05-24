@@ -114,7 +114,11 @@ function array_format(&$item, $key)
 {
 	$item=trim($item);
 	$item=htmlspecialchars($item, ENT_QUOTES);
-	if(!get_magic_quotes_gpc())$item = addslashes($item);
+	if(version_compare(PHP_VERSION,'7.4','>=')){
+		$item = addslashes($item);
+	}else{
+		if(!get_magic_quotes_gpc())$item = addslashes($item);
+	}
 }
 
 function unicodeEncode($str){

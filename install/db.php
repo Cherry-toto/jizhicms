@@ -934,16 +934,7 @@ INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`) VALUES ('1
 INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`) VALUES ('19','cache_time','缓存时间', NULL,'0','0');
 INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`) VALUES ('20','fileSize','限制上传文件大小', NULL,'0','0');
 INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`) VALUES ('21','fileType','允许上传文件类型', NULL,'0','pdf|jpg|jpeg|png|zip|rar|gzip|doc|docx|xlsx');
-INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`) VALUES ('22','ueditor_config','UEditor编辑器导航条配置', NULL,'0','&#039;undo&#039;, &#039;redo&#039;, &#039;|&#039;,
-&#039;paragraph&#039;,
-&#039;bold&#039;, &#039;italic&#039;, &#039;blockquote&#039;, &#039;insertparagraph&#039;, 
-&#039;justifyleft&#039;, &#039;justifycenter&#039;, &#039;justifyright&#039;,&#039;justifyjustify&#039;,&#039;|&#039;,
-&#039;indent&#039;, &#039;insertorderedlist&#039;, &#039;insertunorderedlist&#039;,&#039;|&#039;, 
-&#039;insertimage&#039;, &#039;insertframe&#039;,
-&#039;link&#039;,
-&#039;inserttable&#039;, &#039;deletetable&#039;, &#039;insertparagraphbeforetable&#039;, &#039;insertrow&#039;, &#039;deleterow&#039;, &#039;insertcol&#039;, &#039;deletecol&#039;,
-&#039;mergecells&#039;, &#039;mergeright&#039;, &#039;mergedown&#039;, &#039;splittocells&#039;, &#039;splittorows&#039;, &#039;splittocols&#039;, &#039;|&#039;,
-&#039;drafts&#039;, &#039;|&#039;,,&#039;source&#039;,&#039;fullscreen&#039;,');
+INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`) VALUES ('22','ueditor_config','UEditor编辑器导航条配置', NULL,'0','&quot;undo&quot;, &quot;redo&quot;, &quot;|&quot;,&quot;paragraph&quot;,&quot;bold&quot;,&quot;forecolor&quot;,&quot;fontfamily&quot;,&quot;fontsize&quot;, &quot;italic&quot;, &quot;blockquote&quot;, &quot;insertparagraph&quot;, &quot;justifyleft&quot;, &quot;justifycenter&quot;, &quot;justifyright&quot;,&quot;justifyjustify&quot;,&quot;|&quot;,&quot;indent&quot;, &quot;insertorderedlist&quot;, &quot;insertunorderedlist&quot;,&quot;|&quot;, &quot;insertimage&quot;, &quot;inserttable&quot;, &quot;deletetable&quot;, &quot;insertparagraphbeforetable&quot;, &quot;insertrow&quot;, &quot;deleterow&quot;, &quot;insertcol&quot;, &quot;deletecol&quot;,&quot;mergecells&quot;, &quot;mergeright&quot;, &quot;mergedown&quot;, &quot;splittocells&quot;, &quot;splittorows&quot;, &quot;splittocols&quot;, &quot;|&quot;,&quot;drafts&quot;, &quot;|&quot;,&quot;fullscreen&quot;');
 INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`) VALUES ('23','search_table','允许前台搜索的表', NULL,'0','article|product');
 INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`) VALUES ('24','imagequlity','上传图片压缩比例', NULL,'0','75');
 INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`) VALUES ('25','ispngcompress','PNG是否压缩', NULL,'0','0');

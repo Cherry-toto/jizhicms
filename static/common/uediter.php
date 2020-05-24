@@ -15,7 +15,7 @@ if(isset($model)){
         <script type="text/javascript">
 			$(document).ready(function(){
 			var ue_body'.$rd.' = UE.getEditor("body'.$rd.'",{
-				toolbars:[["undo", "redo", "|","paragraph","bold", "italic", "blockquote", "insertparagraph", "justifyleft", "justifycenter", "justifyright","justifyjustify","|","indent", "insertorderedlist", "insertunorderedlist","|", "insertimage", "inserttable", "deletetable", "insertparagraphbeforetable", "insertrow", "deleterow", "insertcol", "deletecol","mergecells", "mergeright", "mergedown", "splittocells", "splittorows", "splittocols", "|","drafts", "|","fullscreen"]]
+				toolbars:[["undo", "redo", "|","paragraph","bold","forecolor","fontfamily","fontsize", "italic", "blockquote", "insertparagraph", "justifyleft", "justifycenter", "justifyright","justifyjustify","|","indent", "insertorderedlist", "insertunorderedlist","|", "insertimage", "inserttable", "deletetable", "insertparagraphbeforetable", "insertrow", "deleterow", "insertcol", "deletecol","mergecells", "mergeright", "mergedown", "splittocells", "splittorows", "splittocols", "|","drafts", "|","fullscreen"]]
 				});
 			});
 		</script>';
@@ -32,7 +32,7 @@ if(isset($model)){
         <script type="text/javascript">
 			$(document).ready(function(){
 			var ue_body'.$rd.' = UE.getEditor("body'.$rd.'",{
-				toolbars:[["undo", "redo", "|","paragraph","bold", "italic", "blockquote", "insertparagraph", "justifyleft", "justifycenter", "justifyright","justifyjustify","|","indent", "insertorderedlist", "insertunorderedlist","|", "insertimage", "inserttable", "deletetable", "insertparagraphbeforetable", "insertrow", "deleterow", "insertcol", "deletecol","mergecells", "mergeright", "mergedown", "splittocells", "splittorows", "splittocols", "|","drafts", "|","fullscreen"]]
+				toolbars:[["undo", "redo", "|","paragraph","bold","forecolor","fontfamily","fontsize", "italic", "blockquote", "insertparagraph", "justifyleft", "justifycenter", "justifyright","justifyjustify","|","indent", "insertorderedlist", "insertunorderedlist","|", "insertimage", "inserttable", "deletetable", "insertparagraphbeforetable", "insertrow", "deleterow", "insertcol", "deletecol","mergecells", "mergeright", "mergedown", "splittocells", "splittorows", "splittocols", "|","drafts", "|","fullscreen"]]
 				});
 			});
 		</script>';

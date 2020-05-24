@@ -131,13 +131,12 @@ class TagsController extends CommonController
 			
 			$this->display($this->template.'/tags-details');
 		}else{
-			
-			//$this->lists = M('tags')->findAll(['isshow'=>1]);
+
 			$sql = 'isshow=1';
 			$page = new Page('tags');
 			
 			//手动设置分页条数
-			$limit = 10;
+			$limit = 50;
 			if($this->frparam('limit')){
 				$limit = $this->frparam('limit');
 			}
@@ -145,7 +144,7 @@ class TagsController extends CommonController
 			$data = $page->where($sql)->orderby('orders desc,id desc')->limit($limit)->page($this->frpage)->go();
 			
 			
-			$pages = $page->pageList(5,'?page=');
+			$pages = $page->pageList(5,'/page/');
 			
 			$this->pages = $pages;//组合分页
 			

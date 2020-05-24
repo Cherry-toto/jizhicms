@@ -38,7 +38,7 @@ class LoginController extends Controller
 				$xdata = array('code'=>1,'msg'=>'账户密码不能为空！');
 				JsonReturn($xdata);
 			}
-			if(md5(md5($this->frparam('vercode',1)))!=$_SESSION['frcode']){
+			if(md5(md5(strtolower($this->frparam('vercode',1))))!=$_SESSION['frcode']){
 				$xdata = array('code'=>1,'msg'=>'验证码错误！');
 				JsonReturn($xdata);
 			}

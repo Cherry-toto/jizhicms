@@ -237,9 +237,7 @@ switch($act){
 			echo '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8" /></head><body><script type=text/javascript>alert("数据库连接失败！");javascript:history.go(-1);</script></body></html>';
 		}
 		$db = $_POST['go_backup']==1 ? $_POST['backup_db'] : '';
-		//更改后台文件
-		$old_url = get_admin_url();
-		$admin_url = $_POST['adminpath'];
+	
 		$data = "<?php
 		// 应用目录为当前目录
 		define('APP_PATH', __DIR__ . '/');
@@ -280,20 +278,8 @@ switch($act){
 		// 就这么简单~
 				
 				";
-		if(strpos($admin_url,'.php')!==false && $admin_url!='index.php'){
-			$admin_url = $admin_url;
-		}else{
-			$admin_url = $admin_url.'.php';
-		}
-		$r = file_put_contents('../'.$admin_url,$data);
-		if($r && $old_url!=$admin_url){
-			if(file_exists('../'.$old_url)){
-				unlink('../'.$old_url);
-			}
-			
-		}
-		chmod('../'.$admin_url, 0777); 
-		
+		$admin_url = get_admin_url();
+	
 		
 		//传入管理员信息
 		$admin_name = $_POST['admin_name'];

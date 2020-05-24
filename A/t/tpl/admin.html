@@ -4,6 +4,7 @@
   <head>
     <meta charset="UTF-8">
    {include="style"}
+   {include="edit"}
   </head>
   
   <body>
@@ -60,7 +61,7 @@
               <label class="layui-form-label"><span class="x-red">*</span>角色</label>
               <div class="layui-input-inline">
 			  
-                <select class="layui-input" name="gid" lay-verify="required">
+                <select class="layui-input" name="gid"  lay-filter="gid" lay-verify="required">
 				{foreach $groups as $v}
 				<option value="{$v['id']}" {if($member['gid']==$v['id'])}selected{/if}>{$v['name']}</option>
 				{/foreach}
@@ -154,7 +155,15 @@
            
             return false;
           });
-           get_fields(0,{$member['id']});
+             get_fields({$member['gid']},{$member['id']});
+          form.on('select(gid)', function(data){
+			  /*
+			  console.log(data.elem); //得到select原始DOM对象
+			  console.log(data.value); //得到被选中的值
+			  console.log(data.othis); //得到美化后的DOM对象
+			  */
+			  get_fields(data.value,{$member['id']});
+			});
           
         });
     </script>

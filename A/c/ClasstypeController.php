@@ -369,10 +369,72 @@ class ClasstypeController extends CommonController
 			}
 		}
 		$m = M('molds')->find(['biaoshi'=>$molds]);
-		
+		$fileArray[] = ['html'=>$m['list_html'],'value'=>str_replace('.html','',$m['list_html'])];
+		$fileArray[] = ['html'=>$m['details_html'],'value'=>str_replace('.html','',$m['details_html'])];
 
 		JsonReturn(['code'=>0,'data'=>$fileArray,'path'=>$dir,'lists_html'=>str_replace('.html','',$m['list_html']),'details_html'=>str_replace('.html','',$m['details_html'])]);
 
+	}
+	
+		
+	function changeClass(){
+		$pid = $this->frparam('pid',0,0);
+		$tids = $this->frparam('tids',1);
+		$tids_arr = explode(',',$tids);
+		
+		foreach($tids_arr as $v){
+			//检测pid是否为该栏目下级
+			if(checkClass($pid,$v) || ($pid==$v)){
+				JsonReturn(array('code'=>1,'msg'=>'不能选择当前栏目及下级为顶级栏目'));
+			}
+		}
+		
+		//批量修改栏目url
+		if($this->webconf['islevelurl']==1){
+				//层级
+				$classtypetree = classTypeData();
+			foreach($tids_arr as $v){	
+				$children = get_children($classtypetree[$v],$classtypetree,5);
+				//计算当前url
+				//以前的url替换成当前的url
+				$old_htmlurl = $classtypetree[$v]['htmlurl'];
+				if(strpos($old_htmlurl,'/')!==false){
+					//获取最后一个
+					$htl = explode('/',$old_htmlurl);
+					$htl_new = end($htl);//最后一个名字
+					
+				}else{
+					$htl_new = $old_htmlurl;
+				}
+				
+				if($pid!=0){
+					$p_html = $classtypetree[$pid]['htmlurl'];
+					$new_htmlurl = $p_html.'/'.$htl_new;
+				}else{
+					$new_htmlurl = $htl_new;
+				}
+				//更新栏目及其内容HTML
+				M('classtype')->update(['id'=>$v],['htmlurl'=>$new_htmlurl]);
+				M($classtypetree[$v]['molds'])->update(array('tid'=>$v),array('htmlurl'=>$new_htmlurl,'pid'=>$pid));
+				
+				foreach($children as $vv){
+					$html = substr($vv['htmlurl'],strlen($old_htmlurl));
+					$htmlurl_s = $new_htmlurl.$html;
+					M('classtype')->update(['id'=>$vv['id']],['htmlurl'=>$htmlurl_s]);
+					M($vv['molds'])->update(['tid'=>$vv['id']],['htmlurl'=>$htmlurl_s]);
+				}
+
+			}
+
+
+		}else{
+			M('classtype')->update(' id in('.$tids.')',['pid'=>$pid]);
+			
+		}
+		setCache('classtypetree',null);
+		setCache('classtype',null);
+		setCache('mobileclasstype',null);
+		JsonReturn(array('code'=>0,'msg'=>'操作成功！'));
 	}
 	
 	

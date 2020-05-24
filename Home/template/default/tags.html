@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+    <title>标签汇集 - {$webconf['web_name']}</title>
+<meta name="keywords" content="{$webconf['web_keyword']}" />
+<meta name="description" content="{$webconf['web_desc']}" />
+
+{include="style"}
+<style>
+span.tagsname {
+    padding: 10px 20px;
+    border: 1px solid #ccc;
+    color: #31a97c;
+}
+span.tagsname a{
+	color: #31a97c;
+}
+</style>
+
+</head>
+
+<body>
+    {include="nav"}
+    <main class="page">
+        <section class="clean-block about-us">
+            <div class="container">
+                <div class="block-heading">
+                    <h2 class="text-info">TAG标签集合</h2>
+                    <p>展示所有的标签</p>
+                </div>
+                <div class="article-list">
+                   {foreach $lists as $v}
+				   <span class="tagsname"><a href="{$v['url']}">{$v['keywords']}</a></span>
+				   {/foreach}
+				   
+				   
+                </div>
+               {if($lists)}
+				<nav style="margin-top: 40px;}">
+					<ul class="pagination">
+					
+					{if($listpage['list'])}
+						<li class="page-item {if($listpage['prev'])}disabled{/if}"><a class="page-link" href="{$listpage['prev']}" aria-label="Previous"><span aria-hidden="true">«</span></a></li>
+						{foreach $listpage['list'] as $ss}
+						<li class="page-item {if($ss['num']==$listpage['current_num'])}active background{/if}"><a href="{$ss['url']}" class="page-link">{$ss['num']}</a></li>
+						{/foreach}
+						<li class="page-item {if($listpage['next'])}disabled{/if}"><a class="page-link" href="{$listpage['next']}" aria-label="Next"><span aria-hidden="true">»</span></a></li>
+					{/if}
+					</ul>
+				</nav>
+				{/if}
+            </div>
+        </section>
+    </main>
+   {include="footer"}
+</body>
+
+</html>

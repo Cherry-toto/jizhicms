@@ -40,18 +40,22 @@ class View
     // 渲染显示
     public function render($name)
     {
-        
+        if(defined('TPL_PATH')){
+			$path = TPL_PATH;
+		}else{
+			$path = APP_HOME;
+		}
 		if($name!=null){
 			//$name = strtolower($name);
 			
 			if(strpos($name,'@')!==false){
 				$controllerLayout =  str_replace('@','',$name);
 			}else{
-				$controllerLayout =  APP_HOME . '/'.HOME_VIEW.'/'.Tpl_template.'/' . $name . '.html';
+				$controllerLayout =  $path . '/'.HOME_VIEW.'/'.Tpl_template.'/' . $name . '.html';
 			}
 			
 		}else{
-			$controllerLayout =  APP_HOME .'/'.HOME_VIEW.'/'.Tpl_template.'/' . strtolower($this->_controller) . '/' . $this->_action . '.html';
+			$controllerLayout =  $path .'/'.HOME_VIEW.'/'.Tpl_template.'/' . strtolower($this->_controller) . '/' . $this->_action . '.html';
 
 		}
 		//去除可能没有的Tpl_template
@@ -235,7 +239,7 @@ class View
 			$a=array_merge($a,array(trim($t[0]) => trim($t[1])));
 		}
 		if(strpos($a['molds'],'$')!==FALSE){
-			$a['molds']='".'.$a['molds'].'."';
+			$a['molds']='\'".'.$a['molds'].'."\'';
 		}else{
 			$a['molds'] = " '".$a['molds']."' ";
 		}
@@ -301,8 +305,10 @@ class View
 		$ff = explode(' as ',$f);
 		if(strpos($ff[1],'=>')!==false){
 			$fff = explode('=>',$ff[1]);
+			$fff[1] = trim($fff[1]);
 			return '<?php '.$fff[1].'_n=0;foreach('.$f.'){ '.$fff[1].'_n++; ?>';
 		}else{
+			$ff[1] = trim($ff[1]);
 			return '<?php '.$ff[1].'_n=0;foreach('.$f.'){ '.$ff[1].'_n++;?>';
 		}
 	}
@@ -335,6 +341,7 @@ class View
 		if(isset($a['isall'])){$isall=trim($a['isall'],"'");}else{$isall=false;}
 		if(isset($a['as'])){$as=$a['as'];}else{$as='v';}
 		if(isset($a['day'])){$day=$a['day'];}else{$day=false;}
+		if(isset($a['sql'])){$sql=trim($a['sql'],"'");}else{$sql='';}
 		if(isset($a['orderby'])){
 			$order=$a['orderby'];
 			//$order=' '.str_replace('|',' ',$order).' ';
@@ -392,8 +399,10 @@ class View
 				
 			}
 		}
-		
-		unset($a['table']);unset($a['orderby']);unset($a['limit']);unset($a['as']);unset($a['like']);unset($a['fields']);unset($a['isall']);unset($a['notin']);unset($a['notempty']);unset($a['empty']);unset($a['day']);unset($a['in']);
+		if($sql){
+			$sql = " and '.".$sql.".'";
+		}
+		unset($a['table']);unset($a['orderby']);unset($a['limit']);unset($a['as']);unset($a['like']);unset($a['fields']);unset($a['isall']);unset($a['notin']);unset($a['notempty']);unset($a['empty']);unset($a['day']);unset($a['in']);unset($a['sql']);
 		$pages='';
 		$w = ' 1=1 ';
 		$ispage=false;
@@ -495,6 +504,7 @@ class View
 		
 		$w .= $notin_sql;
 		$w .= $in_sql;
+		$w .= $sql;
 		$w.= $lk;
 		$as = trim($as,"'");
 		$txt="<?php

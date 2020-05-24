@@ -27,7 +27,7 @@
           <li>
             <div class="record-item">
             <p><span>时间：{$v['date']}{if($v['isshow']==0)}【待审核】{/if}</span></p>
-              <p><span>您回复了： <a href="{$v['url']}">{fun newstr($v['body'],30)}</a></span></p>
+              <p><span>您回复了： <a href="{$v['url']}">{fun newstr(htmldecode($v['body']),30)}</a></span></p>
               <h4><span class="text-info">【{$classtypedata[$v['tid']]['classname']}】</span><span class="fr"><a href="javascript:;" onclick="javascript:if(confirm('您确定要删除吗?'))window.location.href='{$v['del']}'" class="change" title="删除">删除</a><a href="{$v['url']}" class="btn-more" title="查看详情">查看详情</a></span></h4>
             </div>
           </li>

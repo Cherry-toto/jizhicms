@@ -18,21 +18,47 @@
         <i class="iconfont" style="line-height:30px">&#xe6aa;</i></a>
     </div>
     <div class="x-body">
-     
+     <form class="layui-form" action="">
      
       <xblock>
+	  <div class="layui-form-item">
         {if(checkAction('Classtype/addclass'))}	
-		<button class="layui-btn"  onclick="x_admin_show('新增{$molds['name']}','{fun U('Classtype/addclass')}')" ><i class="layui-icon"></i>新增</button>
+		<div class="layui-input-inline">
+		<button type="button" class="layui-btn"  onclick="x_admin_show('新增{$molds['name']}','{fun U('Classtype/addclass')}')" ><i class="layui-icon"></i>新增</button>
+		</div>
 		{/if}
 		{if(checkAction('Classtype/addmany'))}	
-		<button class="layui-btn"  onclick="x_admin_show('批量新增{$molds['name']}','{fun U('Classtype/addmany')}')" ><i class="layui-icon"></i>批量新增</button>
+		<div class="layui-input-inline">
+		<button type="button" class="layui-btn"  onclick="x_admin_show('批量新增{$molds['name']}','{fun U('Classtype/addmany')}')" ><i class="layui-icon"></i>批量新增</button>
+		</div>
 		{/if}
+		{if(checkAction('Classtype/changeClass'))}
+		<div class="layui-input-inline">
+		  <select name="tid" lay-filter="tid" lay-search="" class="layui-inline autosubmit">
+		  <option value="">请选择栏目</option>
+		  <option value="0">顶级</option>
+		   {foreach $classtypes as $v}
+		   <option {if($tid==$v['id'])} selected="selected" {/if}value="{$v['id']}">{fun str_repeat('--', $v['level']), $v['classname']}</option>
+	
+		   {/foreach}
+		
+		  </select>
+		</div>
+		{/if}
+			<div class="layui-input-inline" >
+			  <input type="checkbox" value="1" name="switch" lay-filter="type"  lay-text="展开|折叠" checked lay-skin="switch">
+			</div>
+		</div>
+		
         <span class="x-right" style="line-height:40px"></span>
       </xblock>
        <div style="width:100%;  overflow:scroll;overflow-y: hidden">
         <table border="1" rules="all" style="width:100%; height:100px; white-space:nowrap" class="layui-table layui-form">
         <thead>
           <tr>
+			<th>
+			  <div class="layui-unselect header layui-form-checkbox" lay-skin="primary"><i class="layui-icon">&#xe605;</i></div>
+			</th>
            <th width="70">ID</th>
 			<th width="50">排序</th>
             
@@ -45,6 +71,9 @@
         <tbody class="x-cate">
 		{foreach $classtypes as $v}
           <tr cate-id="{$v['id']}" fid="{$v['pid']}" >
+		   <td>
+			<div class="layui-unselect layui-form-checkbox" lay-skin="primary" data-id="{$v['id']}"><i class="layui-icon">&#xe605;</i></div>
+			</td>
             <td>{$v['id']}</td>
 			<td>
 			{if(checkAction('Classtype/editClassOrders'))}	
@@ -79,20 +108,20 @@
 			
             <td class="td-manage">
 			{if(checkAction('Classtype/addclass'))}	
-			 <button class="layui-btn layui-btn-warm layui-btn-xs"  onclick="x_admin_show('添加子{$molds['name']}','{fun U('Classtype/addclass',array('pid'=>$v['id'],'biaoshi'=>$v['molds']))}')" ><i class="layui-icon">&#xe642;</i>添加子{$molds['name']}</button>
+			 <button type="button" class="layui-btn layui-btn-warm layui-btn-xs"  onclick="x_admin_show('添加子{$molds['name']}','{fun U('Classtype/addclass',array('pid'=>$v['id'],'biaoshi'=>$v['molds']))}')" ><i class="layui-icon">&#xe642;</i>添加子{$molds['name']}</button>
 			{/if}
 			  {if(checkAction('Fields/index'))}
-			  <button class="layui-btn layui-btn-normal layui-btn-xs"  onclick="x_admin_show('字段管理','{fun U('Fields/index',array('molds'=>$v['molds']))}')" ><i class="layui-icon">&#xe642;</i>字段管理</button>
+			  <button type="button" class="layui-btn layui-btn-normal layui-btn-xs"  onclick="x_admin_show('字段管理','{fun U('Fields/index',array('molds'=>$v['molds']))}')" ><i class="layui-icon">&#xe642;</i>字段管理</button>
                {/if}
 			</td>
             <td class="td-manage">
 			{if(checkAction('Classtype/editclass'))}
-              <button class="layui-btn layui-btn layui-btn-xs"  onclick="x_admin_show('编辑','{fun U('Classtype/editclass',array('id'=>$v['id']))}')" ><i class="layui-icon">&#xe642;</i>编辑</button>
+              <button type="button" class="layui-btn layui-btn layui-btn-xs"  onclick="x_admin_show('编辑','{fun U('Classtype/editclass',array('id'=>$v['id']))}')" ><i class="layui-icon">&#xe642;</i>编辑</button>
 			{/if}
 			
-			 <a href="/{$v['htmlurl']}{__File_TXT__}" target="_blank"><button class="layui-btn layui-btn-normal layui-btn layui-btn-xs"   ><i class="layui-icon">&#xe615;</i>预览</button></a>
+			 <a href="/{$v['htmlurl']}{__File_TXT__}" target="_blank"><button type="button" class="layui-btn layui-btn-normal layui-btn layui-btn-xs"   ><i class="layui-icon">&#xe615;</i>预览</button></a>
 			{if(checkAction('Classtype/deleteclass'))}
-              <button class="layui-btn-danger layui-btn layui-btn-xs"  onclick="member_del(this,'{$v['id']}')" href="javascript:;" ><i class="layui-icon">&#xe640;</i>删除</button>
+              <button type="button" class="layui-btn-danger layui-btn layui-btn-xs"  onclick="member_del(this,'{$v['id']}')" href="javascript:;" ><i class="layui-icon">&#xe640;</i>删除</button>
 			{/if}
             </td>
 			{else}
@@ -115,6 +144,7 @@
         </tbody>
       </table>
     </div>
+	</form>
     </div>
     <style type="text/css">
       
@@ -125,16 +155,59 @@
         form.on('switch(status)', function (data) {
 			$.post("{fun U('change_status')}",{id:data.elem.value},function(r){ });
 		});
+		form.on('switch(type)', function(data){
+			if(!data.elem.checked){
+				$(".x-cate tr").each(function(){
+					if($(this).attr('fid')!=0){
+						$(this).css('display','none');
+					}
+				});
+				$(".x-show").attr('status','false').html('&#xe623;');
+			}else{
+				
+				$(".x-cate tr").each(function(){
+					if($(this).attr('fid')!=0){
+						$(this).css('display','table-row');
+					}
+				});
+				$(".x-show").attr('status','true').html('&#xe625;');
+			}
+		});  
+		form.on('select(tid)',function(data){
+			if(data.value!=''){
+				var tids = tableCheck.getData().join(',');
+				if(tids==''){
+					layer.alert('请选择对象！');return false;
+				}
+				$.post('{fun U('Classtype/changeClass')}',{pid:data.value,tids:tids},function(r){
+				console.log(r);
+					if(r.code==0){
+						layer.msg('操作成功！', {
+						 time:1000,icon:6
+						},function(){
+							window.location.reload();
+						})
+					}else{
+						layer.alert(r.msg);
+					}
+				
+				
+				},'json');
+			
+				
+			}
+			return false;
+		})
+		
       });
 		
 	$(document).ready(function(){
 		$(".x-sort").change(function(){
-			//alert($(this).val());
 			var id = $(this).parent().parent().attr('cate-id');
 			var order = $(this).val();
 		
 			$.post('{fun U('Classtype/editClassOrders')}',{id:id,orders:order},function(r){
-				//console.log(r);
+				window.location.reload();
 			});
 		
 		})
@@ -146,7 +219,6 @@
           layer.confirm('确认要删除吗？',function(index){
               //发异步删除数据
 			  $.post('{fun U('Classtype/deleteclass')}',{id:id},function(r){
-					//console.log(r);
 					r = JSON.parse(r);
 
 					if(r.status==0){

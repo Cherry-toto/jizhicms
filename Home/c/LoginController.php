@@ -68,7 +68,8 @@ class LoginController extends Controller
 		if($_POST){
 			$data['username'] = str_replace("'",'',$this->frparam('tel',1));//进行二次过滤校验
 			$data['password'] = str_replace("'",'',$this->frparam('password',1));
-			if(!$this->frparam('vercode',1) || md5(md5($this->frparam('vercode',1)))!=$_SESSION['login_vercode']){
+			$vercode = strtolower($this->frparam('vercode',1));
+			if(!$vercode || md5(md5($vercode))!=$_SESSION['login_vercode']){
 				$xdata = array('code'=>1,'msg'=>'验证码错误！');
 				if($this->frparam('ajax')){
 					JsonReturn($xdata);
@@ -183,9 +184,23 @@ class LoginController extends Controller
 	}
 
   function register(){
-	  
+	  if($this->webconf['isregister']==0){
+		  Error('系统已关闭会员注册！');
+	  }
 	  if($_POST){
-		  if(!$this->frparam('vercode',1) || md5(md5($this->frparam('vercode',1)))!=$_SESSION['reg_vercode']){
+		  //检查邀请链接的合法性
+		  if($this->webconf['onlyinvite']==1){
+			  if(!M('member')->find('id'=>$this->frparam('pid'),'isshow'=>1)){
+				    $xdata = array('code'=>1,'msg'=>'您的邀请链接不合法！');
+				    if($this->frparam('ajax')){
+						JsonReturn($xdata);
+					}
+					Error('您的邀请链接不合法！');
+			  }
+			
+		  }
+		  $vercode = strtolower($this->frparam('vercode',1));
+		  if(!$vercode || md5(md5($vercode))!=$_SESSION['reg_vercode']){
 				$xdata = array('code'=>1,'msg'=>'验证码错误！');
 				if($this->frparam('ajax')){
 					JsonReturn($xdata);
@@ -238,10 +253,29 @@ class LoginController extends Controller
 			}
 			Error('您的手机号码已注册！');
 		}
-		$w['username'] = $w['tel'];
+		$w['username'] = getRandChar(6);
 		$w['pass'] =  md5(md5($w['password']).md5($w['password']));
+		$w['pid'] = $this->frparam('pid',0,0);
 		$r = M('member')->add($w);
 		if($r){
+			
+			//检查是否开启邀请奖励
+			if($this->webconf['invite_award_open']==1 && $this->frparam('pid') && $this->webconf['invite_award']){
+				$ww['userid'] = $this->frparam('pid');
+				$ww['buytype'] = $this->webconf['invite_type'];
+				$ww['type'] = 3;
+				$ww['msg'] = '邀请奖励';
+				$ww['addtime'] = time();
+				$ww['orderno'] = 'No'.date('YmdHis');
+				$ww['amount'] = $this->webconf['invite_award'];
+				if($ww['buytype']=='jifen'){
+					$ww['money'] = $ww['amount']/($this->webconf['jifen_exchange']);
+				}else{
+					$ww['money'] = $ww['amount']/($this->webconf['money_exchange']);
+				}
+				$r = M('buylog')->add($ww);
+			}
+			
 			$xdata = array('code'=>0,'msg'=>'注册成功！','url'=>U('login/index'));
 			if($this->frparam('ajax')){
 				JsonReturn($xdata);
@@ -256,7 +290,22 @@ class LoginController extends Controller
 		}
 		  
 	  }
-	  
+	  $invite = $this->frparam('invite',0,0);
+	  if(!$invite){
+		  if($this->webconf['onlyinvite']==1){
+			  Error('必须通过邀请链接进行注册！');
+		  }
+		  
+	  }else{
+		  //检查邀请链接的合法性
+		  if(!M('member')->find(['id'=>$invite,'isshow'=>1])){
+			  if($this->webconf['onlyinvite']==1){
+				  Error('您的邀请链接不合法！');
+			  }
+			  $invite = 0;
+		  }
+	  }
+	  $this->invite = $invite;
 	  $this->display($this->template.'/user/register');
   }
   
@@ -264,7 +313,7 @@ class LoginController extends Controller
 	  if($_POST && !isset($_POST['reset'])){
 		  $username = $this->frparam('username',1);
 		  $email = $this->frparam('email',1);
-		  $vercode = $this->frparam('vercode',1);
+		  $vercode = strtolower($this->frparam('vercode',1));
 		  if(!$username || !$email){
 			  Error('请输入账号和邮箱！');
 		  }
@@ -290,9 +339,10 @@ class LoginController extends Controller
 				
 				if(($_SESSION['forget_time']+10*60)<time()){
 					$_SESSION['forget_num'] = 0;
+					$_SESSION['forget_time'] = time();
 				}
 				$_SESSION['forget_num']++;
-				if($_SESSION['forget_num']>10 && ($_SESSION['forget_time']+10*60)<time()){
+				if($_SESSION['forget_num']>5 && ($_SESSION['forget_time']+10*60)>time()){
 					//$this->error('您操作过于频繁，请10分钟后再尝试！');
 					if($this->frparam('ajax')){
 						JsonReturn(['code'=>0,'msg'=>'您操作过于频繁，请10分钟后再尝试！']);

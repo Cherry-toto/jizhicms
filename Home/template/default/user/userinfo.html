@@ -69,6 +69,10 @@
               <i class="iconfont iconyanjing"></i><i class="iconfont iconyanjing-guan"></i>
             </div>
           </div>
+		  <div class="form-control">
+            <label for="">邀请链接：</label>
+            <input type="text" value="{fun U('login/register')}?invite={$member['id']}" readonly name="invite" id="t_invite" placeholder="邀请链接">
+          </div>
           <div class="form-control">
             <span><label for="">个性签名：</label></span>
             <textarea name="signature" id="signature" placeholder="请输入您的个性签名">{$member['signature']}</textarea>

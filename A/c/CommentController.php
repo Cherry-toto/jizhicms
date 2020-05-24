@@ -185,7 +185,26 @@ class CommentController extends CommonController
 			$data = get_fields_data($data,'comment');
 			if($this->frparam('id')){
 				if(M('Comment')->update(array('id'=>$this->frparam('id')),$data)){
-					//Success('修改成功！',U('index'));
+					if($this->frparam('ismsg') && $data['reply']){
+						$task['aid'] = $this->frparam('id');
+						$task['tid'] = $data['tid'];
+						$task['userid'] = $data['userid'];
+						$task['puserid'] = 0;
+						$task['molds'] = $this->classtypedata[$data['tid']]['molds'];
+						$task['type'] = 'comment';
+						$task['addtime'] = time();
+						$task['body'] = $data['reply'];
+						if(!$data['aid']){
+							$url = $this->classtypedata[$data['tid']]['url'];
+						}else{
+							//非栏目评论
+							$res=M($this->classtypedata[$data['tid']]['molds'])->find(['id'=>$data['aid']]);
+							$url = gourl($res,$res['htmlurl']);
+						}
+						$task['url'] = $url;
+						M('task')->add($task);
+				
+					}
 					JsonReturn(array('code'=>0,'msg'=>'修改成功！','url'=>U('index')));
 					exit;
 				}else{

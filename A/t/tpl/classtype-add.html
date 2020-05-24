@@ -3,19 +3,8 @@
   
   <head>
     <meta charset="UTF-8">
-  {include="style"}
-		<script type="text/javascript" charset="utf-8" src="/static/common/user/uedit/ueditor.config.js?v=1"></script>
-		<script type="text/javascript" charset="utf-8" src="/static/common/user/uedit/ueditor.all.min.js?v=1"> </script>
-		<script type="text/javascript" charset="utf-8" src="/static/common/user/uedit/lang/zh-cn/zh-cn.js"></script>
-		<script>
-		var ue = UE.getEditor('editor',{
-		{if($webconf['ueditor_config']!='')}
-		toolbars : [[
-				   {$webconf['ueditor_config']}
-					]]
-		{/if}			
-					});
-		</script>
+	{include="style"}
+	{include="edit"}
   </head>
   
   <body>
@@ -118,7 +107,7 @@
                         <span class="x-red">*</span>内容
                     </label>
                     <div class="layui-input-block" style="clear:both;" >
-					<script id="editor" name="body" type="text/plain" style="width:100%;height:400px;"></script>
+					   {include="content"}
                     </div>
                 </div>
 				 
@@ -363,7 +352,8 @@
 					});
                 return false;
           });
-		  
+		 
+		   get_fields({$pid});
 		   form.on('select(pid)', function(data){
 			  
 			  get_fields(data.value);
@@ -421,10 +411,7 @@
 									
 									
 								}
-								if(!isok){
-									t+='<option value="'+lists_html+'" selected>'+lists_html+'.html</option>';
-									isok = 1;
-								}
+								
 								for(var i=0;i<len;i++){
 									var isok = 0;
 									if(details_html==r.data[i].value){
@@ -436,10 +423,7 @@
 									
 									
 								}
-								if(!isok){
-									tt+='<option value="'+details_html+'" selected>'+details_html+'.html</option>';
-									isok = 1;
-								}
+								
 									
 								
 							}

@@ -345,21 +345,39 @@ class IndexController extends CommonController
 			$data['gid'] = $this->frparam('gid');
 			$data['isdefault'] = $this->frparam('isdefault');
 			$data['ext'] = $this->frparam('ext',1);
-			$n = M('Layout')->update(array('id'=>$id),$data);
-			if($n){
-				if($data['isdefault']==1){
-					M('Layout')->update('id!='.$id,array('isdefault'=>0));
+			$type = $this->frparam('type',1,'edit');
+			if($type=='copy'){
+				unset($data['id']);
+				$n = M('Layout')->add($data);
+				if($n){
+					if($data['isdefault']==1){
+						M('Layout')->update('id!='.$n,array('isdefault'=>0));
+					}
+					JsonReturn(array('code'=>0,'msg'=>'新增成功！'));
+					
+				}else{
+					JsonReturn(array('code'=>1,'msg'=>'新增失败！'));
+					
 				}
-				JsonReturn(array('code'=>0,'msg'=>'修改成功！'));
-				
 			}else{
-				JsonReturn(array('code'=>1,'msg'=>'修改失败！'));
-				
+				$n = M('Layout')->update(array('id'=>$id),$data);
+				if($n){
+					if($data['isdefault']==1){
+						M('Layout')->update('id!='.$id,array('isdefault'=>0));
+					}
+					JsonReturn(array('code'=>0,'msg'=>'修改成功！'));
+					
+				}else{
+					JsonReturn(array('code'=>1,'msg'=>'修改失败！'));
+					
+				}
 			}
-			exit;
+			
+			
 		}
 		$data = M('Layout')->find(array('id'=>$id));
 		$this->data = $data;
+		$this->type = $this->frparam('type',1,'edit');
 		$top_layout = json_decode($data['top_layout'],1);
 		$left_layout = json_decode($data['left_layout'],1);
 		$this->top_layout = $top_layout;

@@ -105,6 +105,23 @@ class OrderController extends Controller
 				}
 				$res = M('orders')->add($w);
 				if($res){
+					//减库存
+					$allproduct = $carts;
+					foreach($allproduct as $v){
+						if($v!=''){
+							$d = explode('-',$v);
+							//tid-id-num-price
+							if($d[0]!=''){
+								$type = $this->classtypedata[$d[0]];//栏目
+								$num = (int)$d[2];
+								$r = M($type['molds'])->goDec(['id'=>$d[1]],'stock_num',$num);
+								
+							}
+							
+							
+						}
+						
+					}
 					$_SESSION['cart'] = '';
 					$this->carts = $newcart;
 					$this->qianbao = $qianbao+$discount*($this->webconf['money_exchange'])-$yunfei*($this->webconf['money_exchange']);
@@ -218,158 +235,7 @@ class OrderController extends Controller
 				}
 			}
 			
-			
-			if($this->webconf['paytype']==0 && $order['ptype']==1){
-				
-				//更新订单状态，提示收到提交订单
-				M('orders')->update(['id'=>$order['id']],['isshow'=>4,'paytype'=>'线下支付']);
-				
-				//减库存
-				$allproduct = explode('||',$order['body']);
-				foreach($allproduct as $v){
-					if($v!=''){
-						$d = explode('-',$v);
-						//tid-id-num-price
-						if($d[0]!=''){
-							$type = $this->classtypedata[$d[0]];//栏目
-							$num = (int)$d[2];
-							$r = M($type['molds'])->goDec(['id'=>$d[1]],'stock_num',$num);
-							
-						}
-						
-						
-					}
-					
-				}
-				//交易提醒
-				$task['aid'] = $order['id'];
-				$task['tid'] = 0;
-				$task['userid'] = $this->member['id'];
-				$task['puserid'] = $this->member['id'];
-				$task['molds'] = 'orders';
-				$task['type'] = 'rechange';
-				$task['addtime'] = time();
-				$task['body'] = '您的订单-'.$order['orderno'].'已经提交，我们会尽快给您发货！';
-				$task['url'] = U('user/orderdetails',['orderno'=>$order['orderno']]);
-				M('task')->add($task);
-
-				if($this->frparam('ajax')){
-				
-					JsonReturn(['code'=>0,'msg'=>'我们已经收到您的订单，我们会尽快给你发货，请密切关注您的邮箱以获得订单的最新消息，谢谢合作！','url'=>U('user/orders')]);
-				}
-				
-				Success('我们已经收到您的订单，我们会尽快给你发货，请密切关注您的邮箱以获得订单的最新消息，谢谢合作！',U('User/orders'));
-			
-				
-				
-			}else if($paytype==3){
-				if($this->webconf['isopenqianbao']!=1){
-					if($this->frparam('ajax')){
-						JsonReturn(['code'=>1,'msg'=>'未开启钱包支付！','url'=>$return_url]);
-					}
-					Error('未开启钱包支付！',$return_url);
-				}
-				//钱包支付
-				$money = M('member')->getField(['id'=>$this->member['id']],'money');
-				
-				$allmoney = $order['qianbao'];
-				if($money<$allmoney){
-					if($this->frparam('ajax')){
-						JsonReturn(['code'=>1,'msg'=>'钱包金额不足，请充值！','url'=>$return_url]);
-					}
-					
-					Error('钱包金额不足，请充值！',$return_url);
-				}
-
-				$money_x = $money-$allmoney;
-				$paytime = time();
-				M('orders')->update(['id'=>$order['id']],['ispay'=>1,'isshow'=>2,'paytime'=>$paytime,'paytype'=>'钱包支付']);
-				 M('member')->goDec(['id'=>$order['userid']],'money',$allmoney);
-				$ww['userid'] = $order['userid'];
-				$ww['amount'] = $allmoney;
-				$ww['money'] = $order['price'];
-				$ww['type'] = 2;
-				$ww['msg'] = '钱包支付';
-				$ww['orderno'] = $order['orderno'];
-				$ww['buytype'] = 'money';
-				$ww['addtime'] = $paytime;
-				M('buylog')->add($ww);
-
-				$_SESSION['member']['money'] = $money_x;
-				$order['ispay'] = 1;
-				$order['isshow'] = 2;
-				$order['paytime'] = $paytime;
-				$order['paytype'] = '钱包支付';
-				$this->order = $order;
-				//交易提醒
-				$task['aid'] = $order['id'];
-				$task['tid'] = 0;
-				$task['userid'] = $this->member['id'];
-				$task['puserid'] = $this->member['id'];
-				$task['molds'] = 'orders';
-				$task['type'] = 'rechange';
-				$task['addtime'] = time();
-				$task['body'] = '您的订单-'.$order['orderno'].'已经提交，我们会尽快给您发货！';
-				$task['url'] = U('user/orderdetails',['orderno'=>$order['orderno']]);
-				M('task')->add($task);
-
-				$this->display($this->template.'/paytpl/overpay');
-				exit;
-
-			}else if($paytype==4){
-				if($this->webconf['isopenjifen']!=1){
-					if($this->frparam('ajax')){
-						JsonReturn(['code'=>1,'msg'=>'未开启积分支付！','url'=>$return_url]);
-					}
-					Error('未开启积分支付！',$return_url);
-					
-				}
-				//钱包支付
-				$jifen = M('member')->getField(['id'=>$this->member['id']],'jifen');
-				
-				$allmoney = $order['jifen'];
-				if($jifen<$order['jifen']){
-					if($this->frparam('ajax')){
-						JsonReturn(['code'=>1,'msg'=>'积分不足，请充值！','url'=>$return_url]);
-					}
-					
-					Error('积分不足，请充值！',$return_url);
-				}
-				$money_x = $jifen-$allmoney;
-				$paytime = time();
-				M('orders')->update(['id'=>$order['id']],['ispay'=>1,'isshow'=>2,'paytime'=>$paytime,'paytype'=>'积分兑换']);
-				 M('member')->goDec(['id'=>$order['userid']],'jifen',$allmoney);
-				$ww['userid'] = $order['userid'];
-				$ww['amount'] = $allmoney;
-				$ww['money'] = $order['price'];
-				$ww['type'] = 2;
-				$ww['msg'] = '积分兑换';
-				$ww['orderno'] = $order['orderno'];
-				$ww['buytype'] = 'jifen';
-				$ww['addtime'] = $paytime;
-				M('buylog')->add($ww);
-
-				$_SESSION['member']['jifen'] = $money_x;
-				$order['ispay'] = 1;
-				$order['isshow'] = 2;
-				$order['paytime'] = $paytime;
-				$order['paytype'] = '积分兑换';
-				$this->order = $order;
-				//交易提醒
-				$task['aid'] = $order['id'];
-				$task['tid'] = 0;
-				$task['userid'] = $this->member['id'];
-				$task['puserid'] = $this->member['id'];
-				$task['molds'] = 'orders';
-				$task['type'] = 'rechange';
-				$task['addtime'] = time();
-				$task['body'] = '您的订单-'.$order['orderno'].'已经提交，我们会尽快给您发货！';
-				$task['url'] = U('user/orderdetails',['orderno'=>$order['orderno']]);
-				M('task')->add($task);
-				$this->display($this->template.'/paytpl/overpay');
-				exit;
-
-			}else if($this->webconf['paytype']==1){
+			if($this->webconf['paytype']==1){
 				//检查极致平台配置
 				if(!$this->webconf['jizhi_mchid'] || !$this->webconf['jizhi_appid'] || !$this->webconf['jizhi_key'] || !$this->webconf['jizhi_pay_url']){
 					
@@ -442,8 +308,40 @@ class OrderController extends Controller
 				$this->order = $order;
 				$this->url = $url;
 				$this->display($this->template.'/paytpl/pay_form');
+				exit;
+			}
+			
+			
+			
+			if($this->webconf['paytype']==0 && $order['ptype']==1){
 				
-			}else if($this->webconf['paytype']==2){
+				//更新订单状态，提示收到提交订单
+				M('orders')->update(['id'=>$order['id']],['isshow'=>4,'paytype'=>'线下支付']);
+				
+				
+				//交易提醒
+				$task['aid'] = $order['id'];
+				$task['tid'] = 0;
+				$task['userid'] = $this->member['id'];
+				$task['puserid'] = $this->member['id'];
+				$task['molds'] = 'orders';
+				$task['type'] = 'rechange';
+				$task['addtime'] = time();
+				$task['body'] = '您的订单-'.$order['orderno'].'已经提交，我们会尽快给您发货！';
+				$task['url'] = U('user/orderdetails',['orderno'=>$order['orderno']]);
+				M('task')->add($task);
+
+				if($this->frparam('ajax')){
+				
+					JsonReturn(['code'=>0,'msg'=>'我们已经收到您的订单，我们会尽快给你发货，请密切关注您的邮箱以获得订单的最新消息，谢谢合作！','url'=>U('user/orders')]);
+				}
+				
+				Success('我们已经收到您的订单，我们会尽快给你发货，请密切关注您的邮箱以获得订单的最新消息，谢谢合作！',U('User/orders'));
+			
+				
+				
+			}else if($paytype==1){
+				//支付宝
 				//检查自主平台配置
 				if($order['ispay']==1){
 					if($this->frparam('ajax')){
@@ -452,8 +350,6 @@ class OrderController extends Controller
 					
 					Error('订单已支付！',$return_url);
 				}
-				
-				
 				
 				//交易提醒
 				$task['aid'] = $order['id'];
@@ -467,157 +363,30 @@ class OrderController extends Controller
 				$task['url'] = U('user/orderdetails',['orderno'=>$order['orderno']]);
 				M('task')->add($task);
 				if(isMobile()){
-					
 					//手机端
 					if(isWeixin()){
-						if($paytype==1){
-							
-							//微信内访问支付宝支付链接
-							//Error('支付宝支付请在手机浏览器提交订单~',$return_url);
-							$order['paytype'] = 'h5alipay';
-							extendFile('pay/alipay/AlipayService.php');
-							$appid = $this->webconf['alipay_partner'];  //https://open.alipay.com 账户中心->密钥管理->开放平台密钥，填写添加了电脑网站支付的应用的APPID
-							$returnUrl = U('Mypay/alipay_return_pay');     //付款成功后的同步回调地址
-							$notifyUrl = U('Mypay/alipay_notify_pay');     //付款成功后的异步回调地址
-							$outTradeNo = $order['orderno'];     //你自己的商品订单号
-							$payAmount = $order['price'];          //付款金额，单位:元
-							$orderName = '支付订单-'.$order['orderno'];    //订单标题
-							$signType = 'RSA2';       //签名算法类型，支持RSA2和RSA，推荐使用RSA2
-							//商户私钥，填写对应签名算法类型的私钥，如何生成密钥参考：https://docs.open.alipay.com/291/105971和https://docs.open.alipay.com/200/105310
-							$saPrivateKey=$this->webconf['alipay_private_key'];
-							$aliPay = new \AlipayService($appid,$returnUrl,$notifyUrl,$saPrivateKey);
-							$payConfigs = $aliPay->doPay($payAmount,$outTradeNo,$orderName,$returnUrl,$notifyUrl);
-							
-							$this->display($this->template.'/pay/alipay_in_weixin');
-							exit;
-							
-							
-						}else{
-							
-							//微信支付
-							$order['paytype'] = 'wxpay';
-							extendFile('pay/wechat/WxpayService.php');
-							$mchid = $this->webconf['wx_mchid'];   //微信支付商户号 PartnerID 通过微信支付商户资料审核后邮件发送
-							$appid =  $this->webconf['wx_appid'];  //微信支付申请对应的公众号的APPID
-							$appKey = $this->webconf['wx_appsecret'];   //微信支付申请对应的公众号的APP Key
-							$apiKey = $this->webconf['wx_key'];   //https://pay.weixin.qq.com 帐户设置-安全设置-API安全-API密钥-设置API密钥
-							//①、获取用户openid
-							$wxPay = new \WxpayService($mchid,$appid,$appKey,$apiKey);
-							$openId = $wxPay->GetOpenid();      //获取openid
-							
-							if(!$openId) exit('获取openid失败');
-							//②、统一下单
-							$outTradeNo = $order['orderno'];     //你自己的商品订单号
-							$payAmount = $order['price'];          //付款金额，单位:元
-							$orderName = '支付订单：'.$order['orderno'];    //订单标题
-							$notifyUrl = U('Mypay/wechat_notify_pay');     //付款成功后的回调地址(不要有问号)
-							$returnUrl = U('Mypay/check_wechat_order',['orderno'=>$order['orderno']]);     //付款成功后的回调地址(不要有问号)
-							$payTime = '支付订单-'.$order['orderno'];      //付款时间
-							$jsApiParameters = $wxPay->createJsBizPackage($openId,$payAmount,$outTradeNo,$orderName,$notifyUrl,$payTime);
-							$this->payAmount = $payAmount;
-							$this->returnUrl = $returnUrl;
-							$jsApiParameters = json_encode($jsApiParameters);
-							$this->jsApiParameters = $jsApiParameters;
-							$this->order = $order;
-							$this->display($this->template.'/paytpl/wechat_pay');
-							exit;
-							
-						}
-						
-						
-						
-					}else{
-						//手机浏览器内
-						if($paytype==1){
-							//支付宝H5支付
-							$order['paytype'] = 'h5alipay';
-							/*** 请填写以下配置信息 ***/
-							extendFile('pay/alipay/AlipayService.php');
-							$appid = $this->webconf['alipay_partner'];  //https://open.alipay.com 账户中心->密钥管理->开放平台密钥，填写添加了电脑网站支付的应用的APPID
-							$returnUrl = U('Mypay/alipay_return_pay');     //付款成功后的同步回调地址
-							$notifyUrl = U('Mypay/alipay_notify_pay');     //付款成功后的异步回调地址
-							$outTradeNo = $order['orderno'];     //你自己的商品订单号
-							$payAmount = $order['price'];          //付款金额，单位:元
-							$orderName = '支付订单-'.$order['orderno'];    //订单标题
-							$signType = 'RSA2';			//签名算法类型，支持RSA2和RSA，推荐使用RSA2
-							$rsaPrivateKey=$this->webconf['alipay_private_key'];		//商户私钥，填写对应签名算法类型的私钥，如何生成密钥参考：https://docs.open.alipay.com/291/105971和https://docs.open.alipay.com/200/105310
-							/*** 配置结束 ***/
-							$aliPay = new \AlipayService();
-							$aliPay->setAppid($appid);
-							$aliPay->setReturnUrl($returnUrl);
-							$aliPay->setNotifyUrl($notifyUrl);
-							$aliPay->setRsaPrivateKey($rsaPrivateKey);
-							$aliPay->setTotalFee($payAmount);
-							$aliPay->setOutTradeNo($outTradeNo);
-							$aliPay->setOrderName($orderName);
-							$sHtml = $aliPay->doPay();
-							echo $sHtml;
-						}else{
-							//微信H5支付
-							$order['paytype'] = 'h5wxpay';
-							M('orders')->update(['id'=>$order['id']],['paytype'=>'微信H5支付']);
-							extendFile('pay/wechat/WxpayH5Service.php');
-							/** 请填写以下配置信息 */
-							$mchid = $this->webconf['wx_mchid'];   //微信支付商户号 PartnerID 通过微信支付商户资料审核后邮件发送
-							$appid =  $this->webconf['wx_appid'];  //微信支付申请对应的公众号的APPID
-							$appKey = $this->webconf['wx_appsecret'];   //微信支付申请对应的公众号的APP Key
-							$apiKey = $this->webconf['wx_key'];   //https://pay.weixin.qq.com 
-							$outTradeNo = $order['orderno'];     //你自己的商品订单号
-							$payAmount = $order['price'];          //付款金额，单位:元
-							$orderName = '支付订单-'.$order['orderno'];    //订单标题
-							$notifyUrl = U('Mypay/wechat_notify_pay');     //付款成功后的回调地址(不要有问号)
-							$returnUrl = U('Mypay/wechat_return_pay').'?orderno='.$order['orderno'];     //付款成功后，页面跳转的地址
-							$wapUrl = $_SERVER['HTTP_HOST'];   //WAP网站URL地址
-							$wapName = $this->webconf['web_name']; //WAP 网站名
-							/** 配置结束 */
-
-							$wxPay = new \WxpayH5Service($mchid,$appid,$apiKey);
-							$wxPay->setTotalFee($payAmount);
-							$wxPay->setOutTradeNo($outTradeNo);
-							$wxPay->setOrderName($orderName);
-							$wxPay->setNotifyUrl($notifyUrl);
-							$wxPay->setReturnUrl($returnUrl);
-							$wxPay->setWapUrl($wapUrl);
-							$wxPay->setWapName($wapName);
-
-							$mwebUrl= $wxPay->createJsBizPackage($payAmount,$outTradeNo,$orderName,$notifyUrl);
-							//echo "<h1><a href='{$mwebUrl}'>点击跳转至支付页面</a></h1>";
-							header('Location:'.$mwebUrl);
-							exit;
-						}
-						
-						
-						
-					}
-				}else{
-					
-					if($paytype==2){
-						$order['paytype'] = 'scanwxpay';
-						extendFile('pay/wechat/WxpayScan.php');
-						//微信扫码支付
-						$mchid = $this->webconf['wx_mchid'];   //微信支付商户号 PartnerID 通过微信支付商户资料审核后邮件发送
-						$appid =  $this->webconf['wx_appid'];  //微信支付申请对应的公众号的APPID
-						$appKey = $this->webconf['wx_appsecret'];   //微信支付申请对应的公众号的APP Key
-						$apiKey = $this->webconf['wx_key'];   //https://pay.weixin.qq.com 帐户设置-安全设置-API安全-API密钥-设置API密钥
-						$wxPay = new \WxpayScan($mchid,$appid,$apiKey);
+						//微信内
+						$order['paytype'] = 'h5alipay';
+						M('orders')->update(['id'=>$order['id']],['paytype'=>'支付宝H5支付']);
+						extendFile('pay/alipay/AlipayService.php');
+						$appid = $this->webconf['alipay_partner'];  //https://open.alipay.com 账户中心->密钥管理->开放平台密钥，填写添加了电脑网站支付的应用的APPID
+						$returnUrl = U('Mypay/alipay_return_pay');     //付款成功后的同步回调地址
+						$notifyUrl = U('Mypay/alipay_notify_pay');     //付款成功后的异步回调地址
 						$outTradeNo = $order['orderno'];     //你自己的商品订单号
 						$payAmount = $order['price'];          //付款金额，单位:元
-						$orderName = '支付订单:'.$order['orderno'];    //订单标题
-						$notifyUrl = U('Mypay/wechat_notify_pay');    //付款成功后的回调地址(不要有问号)
-						$payTime = time();      //付款时间
-						$arr = $wxPay->createJsBizPackage($payAmount,$outTradeNo,$orderName,$notifyUrl,$payTime);
-						//生成二维码
-						$url = U('Common/qrcode').'?data='.$arr['code_url'];
-						$this->url = $url;
-						$this->data = $arr['code_url'];
-						$this->payAmount = $payAmount;
-						$this->orderno = $outTradeNo;
-						$this->display($this->template.'/paytpl/wechat_scan');
-						//echo "<img src='{$url}' style='width:300px;'><br>";
-						//echo '二维码内容：'.$arr['code_url'];
+						$orderName = '支付订单-'.$order['orderno'];    //订单标题
+						$signType = 'RSA2';       //签名算法类型，支持RSA2和RSA，推荐使用RSA2
+						//商户私钥，填写对应签名算法类型的私钥，如何生成密钥参考：https://docs.open.alipay.com/291/105971和https://docs.open.alipay.com/200/105310
+						$saPrivateKey=$this->webconf['alipay_private_key'];
+						$aliPay = new \AlipayService($appid,$returnUrl,$notifyUrl,$saPrivateKey);
+						$payConfigs = $aliPay->doPay($payAmount,$outTradeNo,$orderName,$returnUrl,$notifyUrl);
+						$this->queryStr = http_build_query($payConfigs);
+						$this->display($this->template.'/paytpl/alipay_in_weixin');
 						exit;
 					}else{
-						$order['paytype'] = 'alipay';
+						//支付宝H5支付
+						$order['paytype'] = 'h5alipay';
+						M('orders')->update(['id'=>$order['id']],['paytype'=>'支付宝H5支付']);
 						/*** 请填写以下配置信息 ***/
 						extendFile('pay/alipay/AlipayService.php');
 						$appid = $this->webconf['alipay_partner'];  //https://open.alipay.com 账户中心->密钥管理->开放平台密钥，填写添加了电脑网站支付的应用的APPID
@@ -627,7 +396,7 @@ class OrderController extends Controller
 						$payAmount = $order['price'];          //付款金额，单位:元
 						$orderName = '支付订单-'.$order['orderno'];    //订单标题
 						$signType = 'RSA2';			//签名算法类型，支持RSA2和RSA，推荐使用RSA2
-						$rsaPrivateKey = $this->webconf['alipay_private_key'];		//商户私钥，填写对应签名算法类型的私钥，如何生成密钥参考：https://docs.open.alipay.com/291/105971和https://docs.open.alipay.com/200/105310
+						$rsaPrivateKey=$this->webconf['alipay_private_key'];		//商户私钥，填写对应签名算法类型的私钥，如何生成密钥参考：https://docs.open.alipay.com/291/105971和https://docs.open.alipay.com/200/105310
 						/*** 配置结束 ***/
 						$aliPay = new \AlipayService();
 						$aliPay->setAppid($appid);
@@ -638,17 +407,269 @@ class OrderController extends Controller
 						$aliPay->setOutTradeNo($outTradeNo);
 						$aliPay->setOrderName($orderName);
 						$sHtml = $aliPay->doPay();
-						echo $sHtml;
-						exit;
-						
+						echo $sHtml;exit;
 					}
 					
+				}else{
+					//PC
+					$order['paytype'] = 'alipay';
+					M('orders')->update(['id'=>$order['id']],['paytype'=>'电脑支付宝支付']);
+					/*** 请填写以下配置信息 ***/
+					extendFile('pay/alipay/AlipayService.php');
+					$appid = $this->webconf['alipay_partner'];  //https://open.alipay.com 账户中心->密钥管理->开放平台密钥，填写添加了电脑网站支付的应用的APPID
+					$returnUrl = U('Mypay/alipay_return_pay');     //付款成功后的同步回调地址
+					$notifyUrl = U('Mypay/alipay_notify_pay');     //付款成功后的异步回调地址
+					$outTradeNo = $order['orderno'];     //你自己的商品订单号
+					$payAmount = $order['price'];          //付款金额，单位:元
+					$orderName = '支付订单-'.$order['orderno'];    //订单标题
+					$signType = 'RSA2';			//签名算法类型，支持RSA2和RSA，推荐使用RSA2
+					$rsaPrivateKey = $this->webconf['alipay_private_key'];		//商户私钥，填写对应签名算法类型的私钥，如何生成密钥参考：https://docs.open.alipay.com/291/105971和https://docs.open.alipay.com/200/105310
+					/*** 配置结束 ***/
+					$aliPay = new \AlipayService();
+					$aliPay->setAppid($appid);
+					$aliPay->setReturnUrl($returnUrl);
+					$aliPay->setNotifyUrl($notifyUrl);
+					$aliPay->setRsaPrivateKey($rsaPrivateKey);
+					$aliPay->setTotalFee($payAmount);
+					$aliPay->setOutTradeNo($outTradeNo);
+					$aliPay->setOrderName($orderName);
+					$sHtml = $aliPay->doPay();
+					echo $sHtml;
+					exit;
 					
 				}
 				
 				
+			}else if($paytype==2){
+				//微信
+				//检查自主平台配置
+				if($order['ispay']==1){
+					if($this->frparam('ajax')){
+						JsonReturn(['code'=>1,'msg'=>'订单已支付！','url'=>$return_url]);
+					}
+					
+					Error('订单已支付！',$return_url);
+				}
 				
+				//交易提醒
+				$task['aid'] = $order['id'];
+				$task['tid'] = 0;
+				$task['userid'] = $this->member['id'];
+				$task['puserid'] = $this->member['id'];
+				$task['molds'] = 'orders';
+				$task['type'] = 'rechange';
+				$task['addtime'] = time();
+				$task['body'] = '您的订单-'.$order['orderno'].'已经提交，请尽快支付！';
+				$task['url'] = U('user/orderdetails',['orderno'=>$order['orderno']]);
+				M('task')->add($task);
+				if(isMobile()){
+					//手机端
+					if(isWeixin()){
+						//微信内
+						$order['paytype'] = 'wxpay';
+						M('orders')->update(['id'=>$order['id']],['paytype'=>'微信内支付']);
+						$url = U('order/wxpay').'?'.http_build_query($order);
+						Redirect($url);
+						
+						exit;
+					}else{
+						//微信H5支付
+						$order['paytype'] = 'h5wxpay';
+						M('orders')->update(['id'=>$order['id']],['paytype'=>'微信H5支付']);
+						extendFile('pay/wechat/WxpayH5Service.php');
+						/** 请填写以下配置信息 */
+						$mchid = $this->webconf['wx_mchid'];   //微信支付商户号 PartnerID 通过微信支付商户资料审核后邮件发送
+						$appid =  $this->webconf['wx_appid'];  //微信支付申请对应的公众号的APPID
+						$appKey = $this->webconf['wx_appsecret'];   //微信支付申请对应的公众号的APP Key
+						$apiKey = $this->webconf['wx_key'];   //https://pay.weixin.qq.com 
+						$outTradeNo = $order['orderno'];     //你自己的商品订单号
+						$payAmount = $order['price'];          //付款金额，单位:元
+						$orderName = '支付订单-'.$order['orderno'];    //订单标题
+						$notifyUrl = U('Mypay/wechat_notify_pay');     //付款成功后的回调地址(不要有问号)
+						$returnUrl = U('Mypay/wechat_return_pay').'?orderno='.$order['orderno'];     //付款成功后，页面跳转的地址
+						$wapUrl = $_SERVER['HTTP_HOST'];   //WAP网站URL地址
+						$wapName = $this->webconf['web_name']; //WAP 网站名
+						/** 配置结束 */
+
+						$wxPay = new \WxpayH5Service($mchid,$appid,$apiKey);
+						$wxPay->setTotalFee($payAmount);
+						$wxPay->setOutTradeNo($outTradeNo);
+						$wxPay->setOrderName($orderName);
+						$wxPay->setNotifyUrl($notifyUrl);
+						$wxPay->setReturnUrl($returnUrl);
+						$wxPay->setWapUrl($wapUrl);
+						$wxPay->setWapName($wapName);
+
+						$mwebUrl= $wxPay->createJsBizPackage($payAmount,$outTradeNo,$orderName,$notifyUrl);
+						//echo "<h1><a href='{$mwebUrl}'>点击跳转至支付页面</a></h1>";
+						header('Location:'.$mwebUrl);
+						exit;
+						
+					}
+				}else{
+					//PC
+					$order['paytype'] = 'scanwxpay';
+					M('orders')->update(['id'=>$order['id']],['paytype'=>'微信扫码支付']);
+					extendFile('pay/wechat/WxpayScan.php');
+					//微信扫码支付
+					$mchid = $this->webconf['wx_mchid'];   //微信支付商户号 PartnerID 通过微信支付商户资料审核后邮件发送
+					$appid =  $this->webconf['wx_appid'];  //微信支付申请对应的公众号的APPID
+					$appKey = $this->webconf['wx_appsecret'];   //微信支付申请对应的公众号的APP Key
+					$apiKey = $this->webconf['wx_key'];   //https://pay.weixin.qq.com 帐户设置-安全设置-API安全-API密钥-设置API密钥
+					$wxPay = new \WxpayScan($mchid,$appid,$apiKey);
+					$outTradeNo = $order['orderno'];     //你自己的商品订单号
+					$payAmount = $order['price'];          //付款金额，单位:元
+					$orderName = '支付订单:'.$order['orderno'];    //订单标题
+					$notifyUrl = U('Mypay/wechat_notify_pay');    //付款成功后的回调地址(不要有问号)
+					$payTime = time();      //付款时间
+					$arr = $wxPay->createJsBizPackage($payAmount,$outTradeNo,$orderName,$notifyUrl,$payTime);
+					//生成二维码
+					$url = U('Common/qrcode').'?data='.$arr['code_url'];
+					$this->url = $url;
+					$this->data = $arr['code_url'];
+					$this->payAmount = $payAmount;
+					$this->orderno = $outTradeNo;
+					$this->display($this->template.'/paytpl/wechat_scan');
+					//echo "<img src='{$url}' style='width:300px;'><br>";
+					//echo '二维码内容：'.$arr['code_url'];
+					exit;
+				}
 				
+			}else if($paytype==3){
+				if($this->webconf['isopenqianbao']!=1){
+					if($this->frparam('ajax')){
+						JsonReturn(['code'=>1,'msg'=>'未开启钱包支付！','url'=>$return_url]);
+					}
+					Error('未开启钱包支付！',$return_url);
+				}
+				//钱包支付
+				$money = M('member')->getField(['id'=>$this->member['id']],'money');
+				
+				$allmoney = $order['qianbao'];
+				if($money<$allmoney){
+					if($this->frparam('ajax')){
+						JsonReturn(['code'=>1,'msg'=>'钱包金额不足，请充值！','url'=>$return_url]);
+					}
+					
+					Error('钱包金额不足，请充值！',$return_url);
+				}
+
+				$money_x = $money-$allmoney;
+				$paytime = time();
+				M('orders')->update(['id'=>$order['id']],['ispay'=>1,'isshow'=>2,'paytime'=>$paytime,'paytype'=>'钱包支付']);
+				 M('member')->goDec(['id'=>$order['userid']],'money',$allmoney);
+				$ww['userid'] = $order['userid'];
+				$ww['amount'] = $allmoney;
+				$ww['money'] = $order['price'];
+				$ww['type'] = 2;
+				$ww['msg'] = '钱包支付';
+				$ww['orderno'] = $order['orderno'];
+				$ww['buytype'] = 'money';
+				$ww['addtime'] = $paytime;
+				M('buylog')->add($ww);
+
+				$_SESSION['member']['money'] = $money_x;
+				$order['ispay'] = 1;
+				$order['isshow'] = 2;
+				$order['paytime'] = $paytime;
+				$order['paytype'] = '钱包支付';
+				$this->order = $order;
+				//交易提醒
+				$task['aid'] = $order['id'];
+				$task['tid'] = 0;
+				$task['userid'] = $this->member['id'];
+				$task['puserid'] = $this->member['id'];
+				$task['molds'] = 'orders';
+				$task['type'] = 'rechange';
+				$task['addtime'] = time();
+				$task['body'] = '您的订单-'.$order['orderno'].'已经提交，我们会尽快给您发货！';
+				$task['url'] = U('user/orderdetails',['orderno'=>$order['orderno']]);
+				M('task')->add($task);
+
+				$this->display($this->template.'/paytpl/overpay');
+				exit;
+
+			}else if($paytype==4){
+				if($this->webconf['isopenjifen']!=1){
+					if($this->frparam('ajax')){
+						JsonReturn(['code'=>1,'msg'=>'未开启积分支付！','url'=>$return_url]);
+					}
+					Error('未开启积分支付！',$return_url);
+					
+				}
+				//积分支付
+				$jifen = M('member')->getField(['id'=>$this->member['id']],'jifen');
+				
+				$allmoney = $order['jifen'];
+				if($jifen<$order['jifen']){
+					if($this->frparam('ajax')){
+						JsonReturn(['code'=>1,'msg'=>'积分不足，请充值！','url'=>$return_url]);
+					}
+					
+					Error('积分不足，请充值！',$return_url);
+				}
+				$money_x = $jifen-$allmoney;
+				$paytime = time();
+				M('orders')->update(['id'=>$order['id']],['ispay'=>1,'isshow'=>2,'paytime'=>$paytime,'paytype'=>'积分兑换']);
+				 M('member')->goDec(['id'=>$order['userid']],'jifen',$allmoney);
+				$ww['userid'] = $order['userid'];
+				$ww['amount'] = $allmoney;
+				$ww['money'] = $order['price'];
+				$ww['type'] = 2;
+				$ww['msg'] = '积分兑换';
+				$ww['orderno'] = $order['orderno'];
+				$ww['buytype'] = 'jifen';
+				$ww['addtime'] = $paytime;
+				M('buylog')->add($ww);
+
+				$_SESSION['member']['jifen'] = $money_x;
+				$order['ispay'] = 1;
+				$order['isshow'] = 2;
+				$order['paytime'] = $paytime;
+				$order['paytype'] = '积分兑换';
+				$this->order = $order;
+				//交易提醒
+				$task['aid'] = $order['id'];
+				$task['tid'] = 0;
+				$task['userid'] = $this->member['id'];
+				$task['puserid'] = $this->member['id'];
+				$task['molds'] = 'orders';
+				$task['type'] = 'rechange';
+				$task['addtime'] = time();
+				$task['body'] = '您的订单-'.$order['orderno'].'已经提交，我们会尽快给您发货！';
+				$task['url'] = U('user/orderdetails',['orderno'=>$order['orderno']]);
+				M('task')->add($task);
+				$this->display($this->template.'/paytpl/overpay');
+				exit;
+
+			}else {
+				
+				//额外支付插件处理
+				if($this->webconf['isopenjifen']!=1){
+					if($this->frparam('ajax')){
+						JsonReturn(['code'=>1,'msg'=>'未开启积分支付！','url'=>$return_url]);
+					}
+					Error('未开启积分支付！',$return_url);
+					
+				}
+				//交易提醒
+				$task['aid'] = $order['id'];
+				$task['tid'] = 0;
+				$task['userid'] = $this->member['id'];
+				$task['puserid'] = $this->member['id'];
+				$task['molds'] = 'orders';
+				$task['type'] = 'rechange';
+				$task['addtime'] = time();
+				$task['body'] = '您的订单-'.$order['orderno'].'已经提交，请尽快支付！';
+				$task['url'] = U('user/orderdetails',['orderno'=>$order['orderno']]);
+				M('task')->add($task);
+				
+				//进入第三方支付内
+				$order['paytype'] = $this->frparam('payname',1,'其他平台支付');
+				M('orders')->update(['id'=>$order['id']],['paytype'=>$order['paytype']]);
+				$controller = $this->frparam('c',1);
+				$url = U($controller.'/pay').'?'.http_build_query($order);
+				Redirect($url);
 				
 			}
 			
@@ -660,6 +681,40 @@ class OrderController extends Controller
 		
 		
 		
+	}
+	
+	//jsapi
+	function wxpay(){
+			
+			//微信支付
+			
+			extendFile('pay/wechat/WxpayService.php');
+			$mchid = $this->webconf['wx_mchid'];   //微信支付商户号 PartnerID 通过微信支付商户资料审核后邮件发送
+			$appid =  $this->webconf['wx_appid'];  //微信支付申请对应的公众号的APPID
+			$appKey = $this->webconf['wx_appsecret'];   //微信支付申请对应的公众号的APP Key
+			$apiKey = $this->webconf['wx_key'];   //https://pay.weixin.qq.com 帐户设置-安全设置-API安全-API密钥-设置API密钥
+			//①、获取用户openid
+			$wxPay = new \WxpayService($mchid,$appid,$appKey,$apiKey);
+			$openId = $wxPay->GetOpenid();      //获取openid
+			
+			if(!$openId) exit('获取openid失败');
+			//②、统一下单
+			$outTradeNo = $this->frparam('orderno',1);     //你自己的商品订单号
+			$payAmount = $this->frparam('price',3);          //付款金额，单位:元
+			$orderName = '支付订单：'.$outTradeNo;    //订单标题
+			$notifyUrl = U('Mypay/wechat_notify_pay');     //付款成功后的回调地址(不要有问号)
+			$returnUrl = U('Mypay/check_wechat_order',['orderno'=>$outTradeNo]);     //付款成功后的回调地址(不要有问号)
+			$payTime = '支付订单-'.$outTradeNo;      //付款时间
+			$jsApiParameters = $wxPay->createJsBizPackage($openId,$payAmount,$outTradeNo,$orderName,$notifyUrl,$payTime);
+			
+			$this->payAmount = $payAmount;
+			$this->returnUrl = $returnUrl;
+			$jsApiParameters = json_encode($jsApiParameters);
+			$this->jsApiParameters = $jsApiParameters;
+			$this->order = $order;
+			$this->display($this->template.'/paytpl/wechat_pay');
+			exit;
+
 	}
 
 	

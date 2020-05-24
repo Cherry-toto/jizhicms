@@ -40,9 +40,10 @@ class CommentController extends CommonController
 				
 				if(($_SESSION['message_time']+10*60)<time()){
 					$_SESSION['message_num'] = 0;
+					$_SESSION['message_time'] = time();
 				}
 				$_SESSION['message_num']++;
-				if($_SESSION['message_num']>5 && ($_SESSION['message_time']+10*60)<time()){
+				if($_SESSION['message_num']>10 && ($_SESSION['message_time']+10*60)>time()){
 					if($this->frparam('ajax')){
 						JsonReturn(array('code'=>1,'msg'=>'您的操作过于频繁，请十分钟后再试~'));
 					}

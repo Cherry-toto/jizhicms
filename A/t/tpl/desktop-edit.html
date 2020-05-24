@@ -20,6 +20,7 @@
         <div class="x-body">
             <form  class="layui-form layui-form-pane" >
 			<input type="hidden" name="go" value="1" />
+			<input type="hidden" name="type" value="{$type}" />
 			<input type="hidden" name="id" value="{$data['id']}" />
 			<input type="hidden" name="left_num" id="left_num" value="{if($left_num==0)}1{else}{$left_num}{/if}" />
 			<input type="hidden" name="top_num" id="top_num" value="{if($top_num==0)}1{else}{$top_num}{/if}" />
@@ -30,7 +31,7 @@
                         <span class="x-red">*</span>配置名称
                     </label>
                     <div class="layui-input-inline">
-                        <input type="text" id="name" value="{$data['name']}" required="" lay-verify="required"   name="name" 
+                        <input type="text" id="name" value="{if($type=='edit')}{$data['name']}{/if}" required="" lay-verify="required"   name="name" 
                         autocomplete="off" class="layui-input">
                     </div>
                 </div>

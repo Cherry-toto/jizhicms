@@ -6,19 +6,7 @@
         {include="style"}
 		<link rel="stylesheet" type="text/css" href="{__Tpl_style__}/style/tags/jquery.tagsinput.css" />
 		<script type="text/javascript" charset="utf-8" src="{__Tpl_style__}/style/tags/jquery.tagsinput.js"></script>
-		<script type="text/javascript" charset="utf-8" src="/static/common/user/uedit/ueditor.config.js?v=1"></script>
-		<script type="text/javascript" charset="utf-8" src="/static/common/user/uedit/ueditor.all.min.js?v=1"> </script>
-		<script type="text/javascript" charset="utf-8" src="/static/common/user/uedit/lang/zh-cn/zh-cn.js"></script>
-
-		<script>
-		var ue = UE.getEditor('editor',{
-		{if($webconf['ueditor_config']!='')}
-		toolbars : [[
-				   {$webconf['ueditor_config']}
-					]]
-		{/if}			
-					});
-		</script>
+		{include="edit"}
     </head>
     
     <body>
@@ -139,7 +127,7 @@
                         内容
                     </label>
                     <div class="layui-input-block" style="clear:both;" >
-					<script id="editor" name="body" type="text/plain" style="width:100%;height:400px;"></script>
+					{include="content"}
                     </div>
                 </div>
 				{if($webconf['isrelative']==1)}

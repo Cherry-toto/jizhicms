@@ -62,35 +62,34 @@
                 </div>
                 <div class="layui-card-body">
                   <div class="layui-row layui-col-space10">
-                  {loop table="article" orderby="addtime desc" limit="6" as="v"}
-                    <div class="layui-col-xs12 layui-col-sm4">
-                      <div class="cmdlist-container">
-                        <a href="{$v['url']}" target="_blank">
-                           <img src="{$v['litpic']}" onerror="javascipt:this.src='{__Tpl_style__}/style/images/nopic.jpg'; this.title='图片未找到';this.onerror=''">
-                        </a>
-                        <a href="{$v['url']}">
-                          <div class="cmdlist-text">
-                            <p class="info">{$v['title']}</p>
-                            <div class="txteax">
-                                <b>{fun formatTime($v['addtime'],'Y-m-d')}</b>
-                                <p>
-                                 <i class="layui-icon layui-icon-star"></i>
-                                 {fun jz_collect($v['tid'],$v['id'])}
-                                </p>
-                                <span class="flow">
-                                  <i class="layui-icon layui-icon-user"></i>
-                                  {$v['hits']}
-                                </span>
-                            </div>
-                          </div>
-                        </a>
-                    </div>
-                    </div>
-
-
-                    
-
-                  {/loop}
+					<table class="layui-table">
+					  <colgroup>
+						<col >
+						<col width="150">
+						<col width="200">
+						<col width="100">
+					  </colgroup>
+					  <thead>
+						<tr>
+						  <th>标题</th>
+						  <th>缩略图</th>
+						  <th>更新时间</th>
+						  <th>阅读量</th>
+						</tr> 
+					  </thead>
+					  <tbody>
+					    {loop table="article" orderby="addtime desc" limit="10" as="v"}
+						<tr>
+						  <td><a href="{$v['url']}" target="_blank">{fun newstr($v['title'],30)}</a></td>
+						  <td>{if($v['litpic'])}<a href="{$v['url']}" target="_blank"><img src="{$v['litpic']}" width="150px" height="50px"></a>{else}无{/if}</td>
+						  <td>{fun formatTime($v['addtime'],'Y-m-d')}</td>
+						  <td>{$v['hits']}</td>
+						</tr>
+					    {/loop}
+						
+					  </tbody>
+					</table>
+				  
                   </div>
                 </div>
               </div>

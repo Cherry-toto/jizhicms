@@ -61,10 +61,10 @@ class MypayController extends Controller
 		extendFile('pay/alipay/AlipayServiceCheck.php');
 		//支付宝公钥，账户中心->密钥管理->开放平台密钥，找到添加了支付功能的应用，根据你的加密类型，查看支付宝公钥
 		$alipayPublicKey=$this->webconf['alipay_public_key'];
-
 		$aliPay = new \AlipayServiceCheck($alipayPublicKey);
 		//验证签名
-		$result = $aliPay->rsaCheck($_GET,$_GET['sign_type']);
+		$result = $aliPay->rsaCheck($_GET);
+
 		if($result===true){
 			//同步回调一般不处理业务逻辑，显示一个付款成功的页面，或者跳转到用户的财务记录页面即可。
 			//echo '<h1>付款成功</h1>';
@@ -72,7 +72,7 @@ class MypayController extends Controller
 			$orderno = $out_trade_no;
 			$paytime = time();
 			$order = M('orders')->find(['orderno'=>$orderno]);
-			if(!$order){
+			if(!$order || $_GET['total_amount']!=$order['price']){
 				Error('支付成功，但是系统内没有找到相应的订单！'.$orderno,get_domain());
 			}
 			if($order['ispay']==1){
@@ -125,7 +125,7 @@ class MypayController extends Controller
 	function alipay_notify_pay(){
 		extendFile('pay/alipay/AlipayServiceCheck.php');
 		$alipayPublicKey=$this->webconf['alipay_public_key'];
-
+		
 		$aliPay = new \AlipayServiceCheck($alipayPublicKey);
 		//验证签名
 		$result = $aliPay->rsaCheck($_POST,$_POST['sign_type']);
@@ -337,6 +337,9 @@ class MypayController extends Controller
 		$order = M('orders')->find(['orderno'=>$outTradeNo]);
 		if($outTradeNo && $order){
 			if($order['ispay']==1){
+                if($this->frparam('ajax')){
+                    JsonReturn(['code'=>0,'msg'=>'success']);
+                }
 				$this->overpay($outTradeNo);exit;
 			}
 			/** 配置结束 */

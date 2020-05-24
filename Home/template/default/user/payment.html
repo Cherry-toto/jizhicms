@@ -29,6 +29,7 @@ select#paytype {
         <h2><a href="" class="active">支付订单</a></h2>
       </div>
       <div class="order-details">
+	   <form action="{fun U('order/pay')}"  id="myform"  method="POST">
         <h4 class="head-title">订单详情</h4>
         {if($carts)}
         <div class="display-flex-order">
@@ -99,7 +100,7 @@ select#paytype {
             
             <li>
             <div class="information">
-           <form action="{fun U('order/pay')}"  id="myform"  method="POST">
+          
             <input name="go" value="1" type="hidden" />
             <input name="orderno" value="{$order['orderno']}" type="hidden" />
             <input name="paytype" value="0" id="paytypeinput" type="hidden" />
@@ -108,10 +109,8 @@ select#paytype {
               <h4><label>*联系手机</label><input class="form-control" name="tel" id="tel" value="{$member['tel']}" type="text" placeholder="填写收货人手机号"></h4>
               <h4><label>收件邮箱</label><input class="form-control" name="email" id="email" value="{$member['email']}" type="text" placeholder="方便接收发货邮件"></h4>
               <h4><label>*收货地址</label><input class="form-control" id="address" name="address" value="{$member['address']}" type="text" placeholder="填写收货地址"></h4>
-             {if($webconf['paytype']==0)}
-              <button class="btn" onclick="checkpay()" type="submit">立即支付</button>
-             {/if}
-            </form>
+            
+       
             </div>
             </li>
             
@@ -149,16 +148,17 @@ select#paytype {
             
              </div>
            
-             <button class="btn" onclick="checkpay()" type="button">立即支付</button>
             
             {/if}
+			 <button class="btn" onclick="checkpay()" type="button">立即支付</button>
+            
             </div>
           </div>
         </div>
         {else}
         暂无商品~
         {/if}
-         
+       </form>  
       </div>
     </div>
   </div>

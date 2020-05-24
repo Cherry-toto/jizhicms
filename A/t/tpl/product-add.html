@@ -6,18 +6,7 @@
         {include="style"}
 		<link rel="stylesheet" type="text/css" href="{__Tpl_style__}/style/tags/jquery.tagsinput.css" />
 		<script type="text/javascript" charset="utf-8" src="{__Tpl_style__}/style/tags/jquery.tagsinput.js"></script>
-		<script type="text/javascript" charset="utf-8" src="/static/common/user/uedit/ueditor.config.js?v=1"></script>
-		<script type="text/javascript" charset="utf-8" src="/static/common/user/uedit/ueditor.all.min.js?v=1"> </script>
-		<script type="text/javascript" charset="utf-8" src="/static/common/user/uedit/lang/zh-cn/zh-cn.js"></script>
-		<script>
-		var ue = UE.getEditor('editor',{
-		{if($webconf['ueditor_config']!='')}
-		toolbars : [[
-				   {$webconf['ueditor_config']}
-					]]
-		{/if}			
-					});
-		</script>
+		{include="edit"}
     </head>
     
     <body>
@@ -179,7 +168,7 @@
                         <span class="x-red"></span>内容
                     </label>
                     <div class="layui-input-block" style="clear:both;" >
-					<script id="editor" name="body" type="text/plain" style="width:100%;height:400px;"> </script>
+					{include="content"}
                     </div>
                 </div>
 				{if($webconf['isrelative']==1)}
@@ -364,7 +353,11 @@
 					layer.closeAll("loading"); //关闭loading
 					if(res.code==0){
 						var fileurl = $("#pictures").val();
+						{if($webconf['ispicsdes']==1)}
+						$(".preview_pictures").append('<div class="upload-icon-img layui-input-inline" ><div class="upload-pre-item"><img src="' + res.url + '" class="img" width="200px" height="200px" ><input name="pictures_urls[]" type="text" class="layui-input"  value="' + res.url + '" /><input name="pictures_des[]" type="text" class="layui-input"  placeholder="文字描述" value="" /><i  class="layui-icon delete_file" ></i></div></div>');
+						{else}
 						$(".preview_pictures").append('<div class="upload-icon-img layui-input-inline" ><div class="upload-pre-item"><img src="' + res.url + '" class="img" width="200px" height="200px" ><input name="pictures_urls[]" type="text" class="layui-input"  value="' + res.url + '" /><i  class="layui-icon delete_file" ></i></div></div>');
+						{/if}
 					}else{
 						 layer.alert(res.error, {icon: 5});
 					}

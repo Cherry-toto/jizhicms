@@ -30,7 +30,7 @@
           <li>
             <div class="record-item">
             <p><span>时间：{$v['date']}</span>{if(!$v['isread'])}<span class="fr btn-sm btn-warning">未读</span>{else}<span class="fr btn-sm btn-success">已读</span>{/if}</p>
-              <p><span>{fun memberInfo($v['puserid'],'username')} 回复了： <a href="{$v['turl']}">{fun newstr($v['body'],30)}</a></span></p>
+              <p><span>{if($v['puserid'])}{fun memberInfo($v['puserid'],'username')}{else}管理员{/if} 回复了： <a href="{$v['turl']}">{fun newstr(htmldecode($v['body']),30)}</a></span></p>
               <h4><span class="text-info">【{$classtypedata[$v['tid']]['classname']}】</span><span class="fr"><a href="javascript:;" onclick="javascript:if(confirm('您确定要删除吗?'))window.location.href='{$v['del']}'" class="change" title="删除">删除</a><a href="{$v['turl']}" class="btn-more" title="回复">回复</a></span></h4>
             </div>
           </li>

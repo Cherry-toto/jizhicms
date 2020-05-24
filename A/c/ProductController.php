@@ -58,7 +58,7 @@ class ProductController extends CommonController
 				$sql .= ' and isshow='.$isshow;
 			}
 			if($this->frparam('tid')){
-				$sql .= ' and tid='.$this->frparam('tid');
+				$sql .= ' and tid in('.implode(",",$classtypedata[$this->frparam('tid')]["children"]["ids"]).')';
 			}
 			$get_sql = ($res['fields_search_check']!='') ? (' and '.$res['fields_search_check']) : '';
 			$sql .= $get_sql;

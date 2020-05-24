@@ -190,7 +190,7 @@ class LoginController extends Controller
 	  if($_POST){
 		  //检查邀请链接的合法性
 		  if($this->webconf['onlyinvite']==1){
-			  if(!M('member')->find('id'=>$this->frparam('pid'),'isshow'=>1)){
+			  if(!M('member')->find(['id'=>$this->frparam('pid'),'isshow'=>1])){
 				    $xdata = array('code'=>1,'msg'=>'您的邀请链接不合法！');
 				    if($this->frparam('ajax')){
 						JsonReturn($xdata);

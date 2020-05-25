@@ -28,7 +28,11 @@
 			<div class="layui-tab">
 			  <ul class="layui-tab-title">
 				<li class="layui-this">基本信息</li>
+				{if($data['molds']=='level')}
+				<li>角色绑定</li>
+				{else}
 				<li>栏目绑定</li>
+				{/if}
 				
 			  </ul>
 			  <div class="layui-tab-content">
@@ -323,6 +327,53 @@
 				
 				</div>
 				<div class="layui-tab-item">
+				 {if($data['molds']=='level')}
+				<table class="layui-table layui-form">
+					<thead>
+					  <tr>
+						<th width="20">
+						  <div class="layui-unselect header layui-form-checkbox" lay-skin="primary"><i class="layui-icon">&#xe605;</i></div>
+						</th>
+						
+						<th>角色名</th>
+						
+					</thead>
+					<tbody class="x-cate">
+					{php 
+					
+					if($admin['gid']!=1){
+					$levelgroup = M('level_group')->findAll('id!=1');
+					}else{
+					$levelgroup = M('level_group')->findAll();
+					}
+					$levelgroup = set_class_haschild($levelgroup);
+					$levelgroup = getTree($levelgroup);
+					
+					
+					/}
+					 {foreach $levelgroup as $v}
+					  <tr cate-id="{$v['id']}" fid="{$v['pid']}" >
+						<td>
+						  <div class="layui-unselect layui-form-checkbox {if(strpos($data['tids'],','.$v['id'].',')!==false)} layui-form-checked {/if}" lay-skin="primary" data-id='{$v['id']}'><i class="layui-icon">&#xe605;</i></div>
+						</td>
+						
+						<td>
+						  {fun str_repeat('&nbsp;&nbsp;&nbsp;',$v['level'])}
+						  {if($v['haschild'])}
+						  <i class="layui-icon x-show" status='false'>&#xe625;</i>
+						  {else}
+						  {if($v['level'])}|——{/if}
+						  {/if}
+						  {$v['name']}
+						</td>
+						
+					  </tr>
+					 {/foreach}
+					 
+					 
+					</tbody>
+				  </table>
+				{else}
 				 <table class="layui-table layui-form">
 					<thead>
 					  <tr>
@@ -358,6 +409,10 @@
 					 
 					</tbody>
 				  </table>
+				
+				</div>
+				
+				{/if}
 				
 				</div>
 				

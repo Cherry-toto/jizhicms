@@ -2,10 +2,8 @@
 <html>
     <head>
     <meta charset="UTF-8">
-   {include="style"}
-	<script type="text/javascript" charset="utf-8" src="/static/common/user/uedit/ueditor.config.js?v=1"></script>
-		<script type="text/javascript" charset="utf-8" src="/static/common/user/uedit/ueditor.all.min.js?v=1"> </script>
-		<script type="text/javascript" charset="utf-8" src="/static/common/user/uedit/lang/zh-cn/zh-cn.js"></script>
+    {include="style"}
+	{include="edit"}
 	<style>
 	body .layui-layer-demo .layui-layer-title{background:#009688; color:#fff; border: none;}
 	body .layui-layer-demo .layui-layer-content{padding:20px;line-height: 24px;}
@@ -62,7 +60,7 @@
                                 <span class='x-red'>*</span>网站SEO网址
                             </label>
                             <div style="margin-left:150px" class="layui-input-block">
-                                <input type="text" name="domain" value="{$config['domain']}" autocomplete="off" placeholder="全局网址,最后不带/"
+                                <input type="text" name="domain" value="{$config['domain']}" autocomplete="off" placeholder="全局网址,最后不带/,如：http://www.xxx.com"
                                 class="layui-input">
                             </div>
                         </div>
@@ -126,6 +124,15 @@
                             </label>
                             <div style="margin-left:150px" class="layui-input-block">
                                 <input type="text" name="web_tel" value="{$config['web_tel']}" autocomplete="off" placeholder=""
+                                class="layui-input">
+                            </div>
+                        </div>
+						<div class="layui-form-item">
+                            <label style="width:150px" class="layui-form-label">
+                                <span class='x-red'>*</span>联系手机
+                            </label>
+                            <div style="margin-left:150px" class="layui-input-block">
+                                <input type="text" name="web_phone" value="{$config['web_phone']}" autocomplete="off" placeholder=""
                                 class="layui-input">
                             </div>
                         </div>
@@ -268,23 +275,8 @@
                             echo '</div>';
                             break;
 							case 4:
-							$rd = time();
-                            echo '<div class="layui-form-item layui-form-text"  id="custom_'.$v['field'].'">
-                            <label class="layui-form-label">
-                                <span class=\'x-red\'>*</span>'.$v['title'].'
-                            </label>
-                            <div class="layui-input-block" style="width:100%;">
-							<script id="'.$v['field'].$rd.'" name="'.$v['field'].'" type="text/plain" style="width:100%;height:400px;">'.$v['data'].'</script>	
-							</div><script>
-							$(document).ready(function(){
-							var ue_'.$v['field'].$rd.' = UE.getEditor("'.$v['field'].$rd.'",{';
-							if($config['ueditor_config']!=''){
-								echo 'toolbars : [['.$config['ueditor_config'].']]';
-							}		
-							echo '}		
-							);	
-							});
-						</script>';
+							$edit = include(APP_PATH.'A/t/tpl/common/uediter.php');
+							echo $edit;
                             if($admin['gid']==1){
                             echo '<div class="layui-inline">
                                 <button type="button" lay-filter="del" data="custom_'.$v['field'].'"  lay-submit="" class="layui-btn layui-btn-danger">删除</button>
@@ -823,6 +815,45 @@
                             </div> 
                             
                         </div>
+						<div class="layui-form-item" pane>
+                            <label for="ispicsdes" style="width:150px" class="layui-form-label">
+                                <span class="x-red"></span>多图加描述
+                            </label>
+                            <div  style="margin-left: 150px;" class="layui-input-inline">
+                                <input type="radio" name="ispicsdes" value="0" title="关闭" {if($config['ispicsdes']==0)}checked{/if}>
+                                <input type="radio" name="ispicsdes" value="1" title="开启" {if($config['ispicsdes']==1)}checked{/if}>
+                            </div>
+                            <div class="layui-form-mid layui-word-aux">
+                             开启后图集每张图可以添加描述，注意模板输出需要更改输出方式！(附件同理)
+                            </div> 
+                            
+                        </div>
+						<div class="layui-form-item" pane>
+                            <label for="isregister" style="width:150px" class="layui-form-label">
+                                <span class="x-red"></span>前台用户注册
+                            </label>
+                            <div  style="margin-left: 150px;" class="layui-input-inline">
+                                <input type="radio" name="isregister" value="0" title="关闭" {if($config['isregister']==0)}checked{/if}>
+                                <input type="radio" name="isregister" value="1" title="开启" {if($config['isregister']==1)}checked{/if}>
+                            </div>
+                            <div class="layui-form-mid layui-word-aux">
+                             关闭前台注册后，前台无法进入注册页面
+                            </div> 
+                            
+                        </div>
+						<div class="layui-form-item" pane>
+                            <label for="onlyinvite" style="width:150px" class="layui-form-label">
+                                <span class="x-red"></span>仅邀请码注册
+                            </label>
+                            <div  style="margin-left: 150px;" class="layui-input-inline">
+                                <input type="radio" name="onlyinvite" value="0" title="关闭" {if($config['onlyinvite']==0)}checked{/if}>
+                                <input type="radio" name="onlyinvite" value="1" title="开启" {if($config['onlyinvite']==1)}checked{/if}>
+                            </div>
+                            <div class="layui-form-mid layui-word-aux">
+                             开启后，必须通过邀请链接才能注册！
+                            </div> 
+                            
+                        </div>
                         <div class="layui-form-item" pane>
                             <label for="isdebug" style="width:150px" class="layui-form-label">
                                 <span class="x-red"></span>是否开启PHP调试
@@ -1093,14 +1124,14 @@
                             
                             <div class="layui-form-item">
                                   <label style="width:150px" for="alipay_partner" class="layui-form-label">
-                                      <span class="x-red">*</span>支付宝合作者
+                                      <span class="x-red">*</span>支付宝APPID
                                   </label>
                                   <div  class="layui-input-inline">
                                     
                                        <input type="text" id="alipay_partner" value="{$config['alipay_partner']}" name="alipay_partner"  style="width:400px;"  autocomplete="off" class="layui-input">
                                   </div>
                                   <div class="layui-form-mid layui-word-aux">
-                                        <span class="x-red">*</span>合作身份者ID，签约账号，以2088开头由16位纯数字组成的字符串
+                                        <span class="x-red">*</span>账户中心->密钥管理->开放平台密钥，填写添加了电脑网站支付的应用的APPID
                                     </div>
                                   
                               </div>
@@ -1322,6 +1353,42 @@
                         <div class="layui-form-mid layui-word-aux">
                               每天登录奖励积分数，最小为0，每天登录只奖励一次
                         </div> 
+                        
+                    </div>
+					<div class="layui-form-item" >
+                    <fieldset class="layui-elem-field">
+                      <legend>邀请奖励</legend>
+                      <div class="layui-field-box">
+                        <label style="width:150px" class="layui-form-label">
+                            <span class='x-red'>*</span>每次奖励
+                        </label>
+                        <div class="layui-input-inline">
+                            <input type="number" name="invite_award"  autocomplete="off" value="{$config['invite_award']}"  placeholder=""
+                            class="layui-input">
+                        </div>
+                        <label style="width:150px" class="layui-form-label">
+                            <span class='x-red'>*</span>奖励类型
+                        </label>
+                        <div class="layui-input-inline">
+                            <select name="invite_type" class="layui-btn layui-btn-normal">
+							
+							<option value="jifen" {if($config['invite_type']=='jifen')}selected{/if}>积分</option>
+							<option value="money" {if($config['invite_type']=='money')}selected{/if}>钱包</option>
+							
+							</select>
+                        </div>
+                     
+						
+						<div  class="layui-input-inline">
+								<input type="radio" name="invite_award_open" value="0" title="关闭" {if($config['invite_award_open']==0)}checked{/if}>
+								<input type="radio" name="invite_award_open" value="1" title="开启" {if($config['invite_award_open']==1)}checked{/if}>
+							</div>
+							<div class="layui-form-mid layui-word-aux">
+								  是否开启邀请奖励，访问邀请链接（个人中心用户信息），注册成功则会奖励
+							</div> 
+                      </div>
+                    </fieldset>
+                       
                         
                     </div>
                     <div class="layui-form-item" >

@@ -77,7 +77,7 @@ function get_template(){
 	
 		//检测是否安装插件
 		$res = M('plugins')->find(['filepath'=>'website','isopen'=>1]);
-		if($res){ 
+		if($res  && $res['config']){ 
 			$website = $_SERVER['HTTP_HOST'];
 			$config = json_decode($res['config'],1);
 			$pc = $webconf['pc_template'];
@@ -575,7 +575,20 @@ function classTypeDataMobile(){
 		     switch($v['fieldtype']){
 		         case 6:
 				 case 10:
-				 $data[$v['field']] = implode('||',format_param($data[$v['field'].'_urls'],2));
+				 if(array_key_exists($v['field'].'_des',$data)){
+					 $pics = format_param($data[$v['field'].'_urls'],2);
+					 $pics_des = format_param($data[$v['field'].'_des'],2);
+					 foreach($pics as $k=>$vv){
+						 if($pics_des[$k]){
+							 $pics[$k] = $vv.'|'.$pics_des[$k];
+						 }
+					 }
+					$data[$v['field']] = implode('||',$pics);
+					
+				 }else{
+					$data[$v['field']] = implode('||',format_param($data[$v['field'].'_urls'],2)); 
+				 }
+				 
 				 break;
 		     }
 		 }else{
@@ -679,13 +692,14 @@ function classTypeDataMobile(){
 			 break;
 			 case 11:
 			 $laydate = ($data[$v['field']]=='' || $data[$v['field']]==0)?'':date('Y-m-d',strtotime($data[$v['field']]));
+			 $laytime = ($data[$v['field']]=='' || $data[$v['field']]==0)?0:strtotime($laydate);
 			 $fields_search .= '<input name="'.$v['field'].'" value="'.$laydate.'" placeholder="请选择'.$v['fieldname'].'" id="laydate_'.$v['field'].'" autocomplete="off" class="layui-input"><script>
 layui.use("laydate", function(){
   var laydate = layui.laydate;
   laydate.render({elem: "#laydate_'.$v['field'].'" });});</script>';
 			 if(array_key_exists($v['field'],$data)){
 				 if(format_param($data[$v['field']])!=0){
-					 $fields_search_check[] ="  (".$v['field']." >= ".format_param($data[$v['field']])." and ".$v['field']." < ".(format_param($data[$v['field']])+86400).") ";
+					$fields_search_check[] ="  (".$v['field']." >= ".$laytime." and ".$v['field']." < ".($laytime+86400).") ";
 				 }
 				
 			 }

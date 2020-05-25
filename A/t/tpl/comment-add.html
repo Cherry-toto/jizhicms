@@ -4,18 +4,7 @@
     <head>
        <meta charset="UTF-8">
         {include="style"}
-		<script type="text/javascript" charset="utf-8" src="/static/common/user/uedit/ueditor.config.js?v=1"></script>
-		<script type="text/javascript" charset="utf-8" src="/static/common/user/uedit/ueditor.all.min.js?v=1"> </script>
-		<script type="text/javascript" charset="utf-8" src="/static/common/user/uedit/lang/zh-cn/zh-cn.js"></script>
-		<script>
-		var ue = UE.getEditor('editor',{
-		{if($webconf['ueditor_config']!='')}
-		toolbars : [[
-				   {$webconf['ueditor_config']}
-					]]
-		{/if}			
-					});
-		</script>
+		{include="edit"}
 		<style>
 		.layui-form-select.layui-form-selected {
 			z-index: 9999;
@@ -108,7 +97,7 @@
                         <span class="x-red">*</span>评论内容
                     </label>
                     <div class="layui-input-block" style="clear:both;" >
-					<script id="editor" name="body" type="text/plain" style="width:100%;height:400px;"></script>
+					{include="content"}
                     </div>
                 </div>
 				
@@ -117,10 +106,20 @@
                         <span class="x-red">*</span>管理员回复
                     </label>
                     <div class="layui-input-block" style="clear:both;" >
-					<script id="editor" name="reply" type="text/plain" style="width:100%;height:400px;"> </script>
+					<textarea  name="reply" class="layui-textarea"></textarea>
                     </div>
                 </div>
-				
+				<div class="layui-form-item" pane>
+                    <label for="ismsg" class="layui-form-label">
+                        <span class="x-red"></span>是否提醒回复
+                    </label>
+                    <div class="layui-input-inline">
+                        <input type="radio" name="ismsg" value="1" title="提醒" >
+						<input type="radio" name="ismsg" value="0" title="不提醒" checked>
+                    </div>
+					
+					
+                </div>
 				<div class="layui-form-item">
                     <label for="likes" class="layui-form-label">
                         <span class="x-red"></span>喜欢/点赞

@@ -46,11 +46,7 @@
 									  <td>网站网址:</td>
 									  <td>http://<?php echo $_SERVER['HTTP_HOST'];?></td>
 									</tr>
-									<tr>
-									  <td>后台网址:</td>
-									  <td><input type="text" class="text" name="adminpath" id="adminpath" maxlength="20" value="<?php echo $admin_url;?>" />
-										<label class="normal">为了安全，建议您修改文件名，但是不要把.php去掉了</label></td>
-									</tr>
+									
 									<tr>
 										<td>选择数据库类型:</td>
 										<td><span id="dbType">

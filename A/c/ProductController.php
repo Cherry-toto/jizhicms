@@ -58,7 +58,7 @@ class ProductController extends CommonController
 				$sql .= ' and isshow='.$isshow;
 			}
 			if($this->frparam('tid')){
-				$sql .= ' and tid='.$this->frparam('tid');
+				$sql .= ' and tid in('.implode(",",$classtypedata[$this->frparam('tid')]["children"]["ids"]).')';
 			}
 			$get_sql = ($res['fields_search_check']!='') ? (' and '.$res['fields_search_check']) : '';
 			$sql .= $get_sql;
@@ -152,12 +152,29 @@ class ProductController extends CommonController
 					$data['litpic'] = '';
 				}
 			}
-			if(array_key_exists('pictures_urls',$data) && $data['pictures_urls']!=''){
-				 $data['pictures'] = implode('||',format_param($data['pictures_urls'],2));
-			}else{
-				$data['pictures'] = '';
-			}
 			
+			if($this->webconf['ispicsdes']==1){
+				if(array_key_exists('pictures_urls',$data) && $data['pictures_urls']!=''){
+					
+					$pics =  $this->frparam('pictures_urls',2);
+					$pics_des = $this->frparam('pictures_des',2);
+					foreach($pics as $k=>$v){
+						if($pics_des[$k]){
+							$pics[$k] = $v.'|'.$pics_des[$k];
+						}
+					}
+					$data['pictures'] = implode('||',$pics);
+					 
+				}else{
+					$data['pictures'] = '';
+				}
+			}else{
+				if(array_key_exists('pictures_urls',$data) && $data['pictures_urls']!=''){
+					 $data['pictures'] = implode('||',format_param($data['pictures_urls'],2));
+				}else{
+					$data['pictures'] = '';
+				}
+			}
 			
 			$pclass = get_info_table('classtype',array('id'=>$data['tid']));
 			$data['molds'] = $pclass['molds'];
@@ -244,11 +261,29 @@ class ProductController extends CommonController
 					$data['litpic'] = '';
 				}
 			}
-			if(array_key_exists('pictures_urls',$data) && $data['pictures_urls']!=''){
-				 $data['pictures'] = implode('||',format_param($data['pictures_urls'],2));
+			if($this->webconf['ispicsdes']==1){
+				if(array_key_exists('pictures_urls',$data) && $data['pictures_urls']!=''){
+					
+					$pics =  $this->frparam('pictures_urls',2);
+					$pics_des = $this->frparam('pictures_des',2);
+					foreach($pics as $k=>$v){
+						if($pics_des[$k]){
+							$pics[$k] = $v.'|'.$pics_des[$k];
+						}
+					}
+					$data['pictures'] = implode('||',$pics);
+					 
+				}else{
+					$data['pictures'] = '';
+				}
 			}else{
-				$data['pictures'] = '';
+				if(array_key_exists('pictures_urls',$data) && $data['pictures_urls']!=''){
+					 $data['pictures'] = implode('||',format_param($data['pictures_urls'],2));
+				}else{
+					$data['pictures'] = '';
+				}
 			}
+			
 			$pclass = get_info_table('classtype',array('id'=>$data['tid']));
 			$data['molds'] = $pclass['molds'];
 			$data['htmlurl'] = $pclass['htmlurl'];

@@ -425,26 +425,7 @@ class FieldsController extends CommonController
                 </div>';
 				break;
 				case 3:
-				$rd = time();
-				$l .= '<div class="layui-form-item layui-form-text">
-							<label for="'.$v['field'].'" class="layui-form-label">
-								<span class="x-red">*</span>'.$v['fieldname'].'
-							</label>
-							<div class="layui-input-block" style="width:100%;">
-							<script id="'.$v['field'].$rd.'" name="'.$v['field'].'" type="text/plain" style="width:100%;height:400px;">'.$data[$v['field']].'</script>
-								
-							</div>
-						</div>
-						<script>
-						$(document).ready(function(){
-						var ue_'.$v['field'].$rd.' = UE.getEditor("'.$v['field'].$rd.'",{';
-					if($this->webconf['ueditor_config']!=''){
-						$l.= 'toolbars : [['.$this->webconf['ueditor_config'].']]';
-					}		
-						$l.='}		
-						);	
-						});
-						</script>';
+				$l .= include(APP_PATH.'A/t/tpl/common/uediter.php');
 				
 				break;
 				case 4:
@@ -502,7 +483,7 @@ class FieldsController extends CommonController
                 </div><script>
 layui.use("laydate", function(){
   var laydate = layui.laydate;
-  laydate.render({elem: "#laydate_'.$v['field'].'",type:"datetime" });});</script>';
+  laydate.render({elem: "#laydate_'.$v['field'].'",type:"datetime",trigger: "click" });});</script>';
 				break;
 				case 5:
 				$l .= '<div class="layui-form-item">
@@ -578,7 +559,13 @@ layui.use("laydate", function(){
 					  <span class="preview_'.$v['field'].'" >';
 					if($data[$v['field']]!=''){
 						foreach(explode('||',$data[$v['field']]) as $vv){
-							$l.='<div class="upload-icon-img layui-input-inline" ><div class="upload-pre-item"><img src="'.$vv.'" class="img" width="200px" height="200px" ><input name="'.$v['field'].'_urls[]" type="text" class="layui-input"  value="'.$vv.'" /><i  class="layui-icon delete_file" >&#xe640;</i></div></div>';
+							if($this->webconf['ispicsdes']==1){
+								$pic = explode('|',$vv);
+								$l.='<div class="upload-icon-img layui-input-inline" ><div class="upload-pre-item"><img src="'.$pic[0].'" class="img" width="200px" height="200px" ><input name="'.$v['field'].'_urls[]" type="text" class="layui-input"  value="'.$pic[0].'" /><input name="'.$v['field'].'_des[]" type="text" class="layui-input" placeholder="文字描述"  value="'.$pic[1].'" /><i  class="layui-icon delete_file" >&#xe640;</i></div></div>';
+							}else{
+								$l.='<div class="upload-icon-img layui-input-inline" ><div class="upload-pre-item"><img src="'.$vv.'" class="img" width="200px" height="200px" ><input name="'.$v['field'].'_urls[]" type="text" class="layui-input"  value="'.$vv.'" /><i  class="layui-icon delete_file" >&#xe640;</i></div></div>';
+							}
+							
 						}
 					}	 
 					$l .= '</span>
@@ -603,10 +590,15 @@ layui.use("laydate", function(){
 						  }
 						,done: function(res){
 							layer.closeAll("loading"); //关闭loading
-							if(res.code==0){
+							if(res.code==0){';
+							if($this->webconf['ispicsdes']==1){
+								$l.='$(".preview_'.$v['field'].'").append(\'<div class="upload-icon-img layui-input-inline" ><div class="upload-pre-item"><img src="\' + res.url + \'" class="img" width="200px" height="200px" ><input name="'.$v['field'].'_urls[]" type="text" class="layui-input"  value="\' + res.url + \'" /><input name="'.$v['field'].'_des[]" type="text" class="layui-input"  placeholder="文字描述" value="" /><i  class="layui-icon delete_file" >&#xe640;</i></div></div>\');';
+							}else{
+								$l.='$(".preview_'.$v['field'].'").append(\'<div class="upload-icon-img layui-input-inline" ><div class="upload-pre-item"><img src="\' + res.url + \'" class="img" width="200px" height="200px" ><input name="'.$v['field'].'_urls[]" type="text" class="layui-input"  value="\' + res.url + \'" /><i  class="layui-icon delete_file" >&#xe640;</i></div></div>\');';
+							}
 							
-							$(".preview_'.$v['field'].'").append(\'<div class="upload-icon-img layui-input-inline" ><div class="upload-pre-item"><img src="\' + res.url + \'" class="img" width="200px" height="200px" ><input name="'.$v['field'].'_urls[]" type="text" class="layui-input"  value="\' + res.url + \'" /><i  class="layui-icon delete_file" >&#xe640;</i></div></div>\');
-								
+							
+							$l.='	
 								
 							}else{
 								 layer.alert(res.error, {icon: 5});
@@ -772,7 +764,13 @@ layui.use("laydate", function(){
 					  <span class="preview_'.$v['field'].'" >';
 					if($data[$v['field']]!=''){
 						foreach(explode('||',$data[$v['field']]) as $vv){
-							$l.='<div class="upload-icon-img layui-input-inline" ><div class="upload-pre-item"><input name="'.$v['field'].'_urls[]" type="text" class="layui-input"  value="'.$vv.'" /><i  class="layui-icon delete_file" >&#xe640;</i></div></div>';
+							if($this->webconf['ispicsdes']==1){
+								$pic = explode('|',$vv);
+								$l.='<div class="upload-icon-img layui-input-inline" ><div class="upload-pre-item"><input name="'.$v['field'].'_urls[]" type="text" class="layui-input"  value="'.$pic[0].'" /><input name="'.$v['field'].'_des[]" type="text" class="layui-input" placeholder="文字描述"  value="'.$pic[1].'" /><i  class="layui-icon delete_file" >&#xe640;</i></div></div>';
+							}else{
+								$l.='<div class="upload-icon-img layui-input-inline" ><div class="upload-pre-item"><input name="'.$v['field'].'_urls[]" type="text" class="layui-input"  value="'.$vv.'" /><i  class="layui-icon delete_file" >&#xe640;</i></div></div>';
+							}
+							
 						}
 					}	 
 					$l .= '</span>
@@ -797,11 +795,15 @@ layui.use("laydate", function(){
 						  }
 						,done: function(res){
 							layer.closeAll("loading"); //关闭loading
-							if(res.code==0){
+							if(res.code==0){';
+							if($this->webconf['ispicsdes']==1){
+								$l.='$(".preview_'.$v['field'].'").append(\'<div class="upload-icon-img layui-input-inline" ><div class="upload-pre-item"><input name="'.$v['field'].'_urls[]" type="text" class="layui-input"  value="\' + res.url + \'" /><input name="'.$v['field'].'_des[]" type="text" class="layui-input" placeholder="文字描述"  value="" /><i  class="layui-icon delete_file" >&#xe640;</i></div></div>\');';
+							}else{
+								$l.='$(".preview_'.$v['field'].'").append(\'<div class="upload-icon-img layui-input-inline" ><div class="upload-pre-item"><input name="'.$v['field'].'_urls[]" type="text" class="layui-input"  value="\' + res.url + \'" /><i  class="layui-icon delete_file" >&#xe640;</i></div></div>\');';
+							}
 							
-							$(".preview_'.$v['field'].'").append(\'<div class="upload-icon-img layui-input-inline" ><div class="upload-pre-item"><input name="'.$v['field'].'_urls[]" type="text" class="layui-input"  value="\' + res.url + \'" /><i  class="layui-icon delete_file" >&#xe640;</i></div></div>\');
-								
-								
+							$l.='
+							
 							}else{
 								 layer.alert(res.error, {icon: 5});
 							}
@@ -881,7 +883,16 @@ layui.use("laydate", function(){
 	
 	
 	
-	
+	//修改排序
+	function changeOrders(){
+		
+		$w['orders'] = $this->frparam('orders',0,0);
+		$r = M('fields')->update(array('id'=>$this->frparam('id')),$w);
+		if(!$r){
+			JsonReturn(array('code'=>1,'info'=>'修改失败！'));
+		}
+		JsonReturn(array('code'=>0,'info'=>'修改成功！'));
+	}
 	
 	
 	

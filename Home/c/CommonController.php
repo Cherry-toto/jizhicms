@@ -323,10 +323,10 @@ class CommonController extends Controller
 		
 		\QRcode::png($data, false, $errorCorrectionLevel, $matrixPointSize, 2);
 	}
-	
+
 	function get_fields(){
 		
-		error_reporting(E_ALL^E_NOTICE);
+		
 		$molds = strtolower($this->frparam('molds',1,'message'));
 		if($molds!='message'){
 			$this->checklogin();
@@ -371,13 +371,14 @@ class CommonController extends Controller
             if($data['litpic']){
             $l .= '<img src="'.$data['litpic'].'" height="100"  />';
             }
+			$rand = rand(1000,9999);
             $l .= '</span><br/>
               <input name="litpic" type="hidden" id="file_url_litpic" value="'.$data['litpic'].'" /><br/>
-              <input type="file" class="upload_input_litpic" name="file_litpic" id="upload_input_litpic">
+              <input type="file" class="upload_input_litpic" name="file_litpic" id="upload_input_litpic_'.$rand.'">
         </div>
 		<script type="text/javascript">
 			$(document).ready(function(){
-			  $("#upload_input_litpic").change(function(){
+			  $("#upload_input_litpic_'.$rand.'").change(function(){
 			    var form=document.getElementById("jizhiform");
 			    var data = new FormData(form);
 			    data.append("filename",$(this).attr("name"));
@@ -407,26 +408,23 @@ class CommonController extends Controller
             <label for="">文章简介：</label>
             <textarea name="description" id="description" placeholder="请输入简介">'.$data['description'].'</textarea>
             <label>150字以内</label>
-        </div>
-        <div class="form-control">
-            <label for="">文章内容：</label>
-            <div class="layui-input-block" style="width:100%;">
-			<script id="body'.$rd.'" name="body" type="text/plain" style="width:100%;height:400px;">'.$data['body'].'</script>
-				
-			</div>
-            <label>1500字以内</label>
-        </div>
-        <script type="text/javascript">
-			$(document).ready(function(){
-			var ue_body'.$rd.' = UE.getEditor("body'.$rd.'",{
-				toolbars:[["undo", "redo", "|","paragraph","bold", "italic", "blockquote", "insertparagraph", "justifyleft", "justifycenter", "justifyright","justifyjustify","|","indent", "insertorderedlist", "insertunorderedlist","|", "insertimage", "inserttable", "deletetable", "insertparagraphbeforetable", "insertrow", "deleterow", "insertcol", "deletecol","mergecells", "mergeright", "mergedown", "splittocells", "splittorows", "splittocols", "|","drafts", "|","fullscreen"]]
-				});
-			});
-		</script>';
+        </div>';
+		$model = 'article_zdy';
+		$l .=  include(APP_PATH.'static/common/uediter.php');
 		}else if($molds=='product'){
 			$l .= '<div class="form-control">
             <label for="">商品名称：</label>
             <input type="text" name="title" id="title" value="'.$data['title'].'" placeholder="请输入商品名称">
+            <label>[必填]</label>
+        </div>
+		<div class="form-control">
+            <label for="">商品价格：</label>
+            <input type="number" name="price" id="price" value="'.$data['price'].'" placeholder="请输入商品价格">
+            <label>[必填]</label>
+        </div>
+		<div class="form-control">
+            <label for="">商品库存：</label>
+            <input type="number" name="stock_num" id="stock_num" value="'.$data['stock_num'].'" placeholder="请输入商品库存">
             <label>[必填]</label>
         </div>
 		<div class="form-control">
@@ -440,12 +438,13 @@ class CommonController extends Controller
             if($data['litpic']){
             $l .= '<img src="'.$data['litpic'].'" height="100"  />';
             }
+			$rand = rand(1000,9999);
             $l .= '</span><br/>
               <input name="litpic" type="hidden" id="file_url_litpic" value="'.$data['litpic'].'" /><br/>
-              <input type="file" class="upload_input_litpic" name="file_litpic" id="upload_input_litpic">
+              <input type="file" class="upload_input_litpic" name="file_litpic" id="upload_input_litpic_'.$rand.'">
         </div>
 		<script type="text/javascript">
-			$(document).on("change","#upload_input_litpic",function(){
+			$(document).on("change","#upload_input_litpic_'.$rand.'",function(){
 			    var form=document.getElementById("jizhiform");
 			    var data =new FormData(form);
 			    data.append("filename",$(this).attr("name"));
@@ -476,17 +475,27 @@ class CommonController extends Controller
             if($data['pictures']){
             	foreach(explode('||',$data['pictures']) as $v){
             		if($v!=''){
-            			 $l .= '<span><img src="'.$v.'" height="100"  /><input name="pictures_url[]" type="text" value="'.$v.'"><span onclick="deleteImage_auto(this)">删除</span></span>';
+						if($this->webconf['ispicsdes']==1){
+							$pic = explode('|',$v);
+							$l .= '<span><img src="'.$pic[0].'" height="100"  /><input name="pictures_url[]" type="text" value="'.$pic[0].'"><input name="pictures_des[]" placeholder="文字描述"  type="text" value="'.$pic[1].'"><button type="button" onclick="deleteImage_auto(this)">删除</button></span>';
+						}else{
+							$l .= '<span><img src="'.$v.'" height="100"  /><input name="pictures_url[]" type="text" value="'.$v.'"><button type="button" onclick="deleteImage_auto(this)">删除</button></span>';
+						}
+            			 
             		}
             	}
            
             }
+			$rand = rand(1000,9999);
             $l .= '</span><br/>
-              <input name="pictures" type="hidden" id="pictures" value="'.$data['pictures'].'" /><br/>
-              <input type="file" class="upload_input_pictures" file-name="file_pictures" name="file_pictures[]" multiple="multiple" id="upload_input_pictures">
+              <input name="pictures" type="hidden" id="pictures" value="'.$data['pictures'].'" />
+        </div>
+		<div class="form-control">
+		<label for=""></label>
+		<input type="file" class="upload_input_pictures" file-name="file_pictures" name="file_pictures[]" multiple="multiple" id="upload_input_pictures_'.$rand.'">
         </div>
 		<script type="text/javascript">
-			 $(document).on("change","#upload_input_pictures",function(){
+			 $(document).on("change","#upload_input_pictures_'.$rand.'",function(){
 			    var form=document.getElementById("jizhiform");
 			    var data =new FormData(form);
 			    data.append("filename",$(this).attr("file-name"));
@@ -501,9 +510,15 @@ class CommonController extends Controller
 			       	console.log(response);
 			        if(response.code==0){
 			          var result = "";
-			          for(var i=0;i<response["urls"].length;i++){
-			          	 result +=\'<span><img src="\' + response["urls"][i] + \'" height="100"  /><input name="pictures_urls[]" type="text" value="\' + response["urls"][i] + \'" ><span onclick="deleteImage_auto(this)">删除</span></span>\';
-			             	
+			          for(var i=0;i<response["urls"].length;i++){';
+					  if($this->webconf['ispicsdes']==1){
+						  $l.=' result +=\'<span><img src="\' + response["urls"][i] + \'" height="100"  /><input name="pictures_urls[]" type="text" value="\' + response["urls"][i] + \'" ><input name="pictures_des[]" type="text" placeholder="文字描述"  value="" ><button type="button" onclick="deleteImage_auto(this)">删除</button></span>\';';
+					  }else{
+						  $l.=' result +=\'<span><img src="\' + response["urls"][i] + \'" height="100"  /><input name="pictures_urls[]" type="text" value="\' + response["urls"][i] + \'" ><button type="button" onclick="deleteImage_auto(this)">删除</button></span>\';';
+					  }
+			          
+					  
+			          $l.='   	
 			          }
 			          $(".view_img_pictures").append(result);
 			         
@@ -519,22 +534,9 @@ class CommonController extends Controller
             <label for="">商品简介：</label>
             <textarea name="description" id="description" placeholder="请输入简介">'.$data['description'].'</textarea>
             <label>150字以内</label>
-        </div>
-        <div class="form-control">
-            <label for="">商品详情：</label>
-            <div class="layui-input-block" style="width:100%;">
-			<script id="body'.$rd.'" name="body" type="text/plain" style="width:100%;height:400px;">'.$data['body'].'</script>
-			</div>
-            <label>1500字以内</label>
-        </div>
-        <script type="text/javascript">
-			$(document).ready(function(){
-			var ue_body'.$rd.' = UE.getEditor("body'.$rd.'",{
-				toolbars:[["undo", "redo", "|","paragraph","bold", "italic", "blockquote", "insertparagraph", "justifyleft", "justifycenter", "justifyright","justifyjustify","|","indent", "insertorderedlist", "insertunorderedlist","|", "insertimage", "inserttable", "deletetable", "insertparagraphbeforetable", "insertrow", "deleterow", "insertcol", "deletecol","mergecells", "mergeright", "mergedown", "splittocells", "splittorows", "splittocols", "|","drafts", "|","fullscreen"]]
-				});
-			});
-		</script>
-          ';
+        </div>';
+		$model = 'product_zdy';
+		$l .=  include(APP_PATH.'static/common/uediter.php');
 		}
 
 		foreach($fields_list as $k=>$v){
@@ -564,26 +566,8 @@ class CommonController extends Controller
 		        </div>';
 				break;
 				case 3:
-				$rd = time();
-				$l .= '<div class="form-control">
-		            <label for="'.$v['field'].'">'.$v['fieldname'].'：</label>
-		            <div class="layui-input-block" style="width:100%;">
-					<script id="body'.$rd.'" name="body" type="text/plain" style="width:100%;height:400px;">'.$data[$v['field']].'</script>
-						
-					</div>
-		            <label>'.$must.$v['tips'].'</label>
-		        </div>
-						<script>
-						$(document).ready(function(){
-						var ue_'.$v['field'].$rd.' = UE.getEditor("'.$v['field'].$rd.'",{';
-					if($this->webconf['ueditor_config']!=''){
-						$l.= 'toolbars : [['.$this->webconf['ueditor_config'].']]';
-					}		
-						$l.='}		
-						);	
-						});
-						</script>';
-				
+				$model = $molds;
+				$l .=  include(APP_PATH.'static/common/uediter.php');
 				break;
 				case 4:
 				$l .= '<div class="form-control">
@@ -601,6 +585,7 @@ class CommonController extends Controller
 		        </div>';
 				break;
 				case 5:
+				$rd = rand(1000,9999);
 				$l .= '<div class="form-control">
 		              <label for="'.$v['field'].'">'.$v['fieldname'].'：</label>
 		              <span class="view_img_'.$v['field'].'">';
@@ -609,11 +594,11 @@ class CommonController extends Controller
 		            }
 		            $l .= '</span><br/>
 		              <input name="'.$v['field'].'" type="hidden" id="file_url_'.$v['field'].'" value="'.$data[$v['field']].'" /><br/>
-		              <input type="file" class="upload_input_'.$v['field'].'" name="file_'.$v['field'].'" id="upload_input_'.$v['field'].'">
+		              <input type="file" class="upload_input_'.$v['field'].'" name="file_'.$v['field'].'" id="upload_input_'.$v['field'].$rd.'">
 		        </div>
 				<script type="text/javascript">
 					
-				  $(document).on("change","#upload_input_'.$v['field'].'",function(){
+				  $(document).on("change","#upload_input_'.$v['field'].$rd.'",function(){
 				    var form=document.getElementById("jizhiform");
 				    var data =new FormData(form);
 				    data.append("filename",$(this).attr("name"));
@@ -641,23 +626,32 @@ class CommonController extends Controller
 				</script>';
 				break;
 				case 6:
+				$rd = rand(1000,9999);
 				$l .= '<div class="form-control">
 		            <label for="'.$v['field'].'">'.$v['fieldname'].'：</label>
 		            <span class="view_img_'.$v['field'].'">';
 		            if($data[$v['field']]){
 		            	foreach(explode('||',$data[$v['field']]) as $v){
 		            		if($v!=''){
-		            			 $l .= '<span><img src="'.$v.'" height="100"  /><input name="'.$v['field'].'_url[]" type="text" value="'.$v.'"><span onclick="deleteImage_auto(this)">删除</span></span>';
+								if($this->webconf['ispicsdes']==1){
+									$pic = explode('|',$v);
+									$l .= '<span><img src="'.$pic[0].'" height="100"  /><input name="'.$v['field'].'_url[]" type="text" value="'.$pic[0].'"><input name="'.$v['field'].'_des[]" type="text" placeholder="文字描述"  value="'.$pic[1].'" ><button type="button" onclick="deleteImage_auto(this)">删除</button></span>';
+								}else{
+									$l .= '<span><img src="'.$v.'" height="100"  /><input name="'.$v['field'].'_url[]" type="text" value="'.$v.'"><button type="button" onclick="deleteImage_auto(this)">删除</button></span>';
+								}
+		            			 
 		            		}
 		            	}
 		           
 		            }
-		            $l .= '</span><br/>
-		              <input name="'.$v['field'].'" type="hidden" id="'.$v['field'].'" value="'.$data[$v['field']].'" /><br/>
-		              <input type="file" class="upload_input_'.$v['field'].'" file-name="file_'.$v['field'].'" name="file_'.$v['field'].'[]" multiple="multiple" id="upload_input_'.$v['field'].'">
+		            $l .= '</span>
+		        </div>
+				<div class="form-control">
+				<label ></label>
+				<input type="file" class="upload_input_'.$v['field'].'" file-name="file_'.$v['field'].'" name="file_'.$v['field'].'[]" multiple="multiple" id="upload_input_'.$v['field'].$rd.'">
 		        </div>
 				<script type="text/javascript">
-					$(document).on("change","#upload_input_'.$v['field'].'",function(){
+					$(document).on("change","#upload_input_'.$v['field'].$rd.'",function(){
 					    var form=document.getElementById("jizhiform");
 					    var data =new FormData(form);
 					    data.append("filename",$(this).attr("file-name"));
@@ -671,10 +665,14 @@ class CommonController extends Controller
 					       success: function(response){
 					        if(response.code==0){
 					          var result = "";
-					          for(var i=0;i<response["urls"].length;i++){
-					          	result +=\'<span><img src="\' + response["urls"][i] + \'" height="100"  /><input name="'.$v['field'].'_urls[]" type="text" value="\' + response["urls"][i] + \'" ><span onclick="deleteImage_auto(this)">删除</span></span>\';
-					          	
-					          }
+					          for(var i=0;i<response["urls"].length;i++){';
+							  
+					 if($this->webconf['ispicsdes']==1){
+						  $l.=' result +=\'<span><img src="\' + response["urls"][i] + \'" height="100"  /><input name="'.$v['field'].'_urls[]" type="text" value="\' + response["urls"][i] + \'" ><input name="'.$v['field'].'_des[]" type="text" placeholder="文字描述"  value="" ><button type="button" onclick="deleteImage_auto(this)">删除</button></span>\';';
+					  }else{
+						  $l.=' result +=\'<span><img src="\' + response["urls"][i] + \'" height="100"  /><input name="pictures_urls[]" type="text" value="\' + response["urls"][i] + \'" ><button type="button" onclick="deleteImage_auto(this)">删除</button></span>\';';
+					  }
+						$l.='}
 					          $(".view_img_'.$v['field'].'").append(result);	
 					         
 					        }else{
@@ -734,15 +732,16 @@ class CommonController extends Controller
 					</div>';
 				break;
 				case 9:
+				$rd = rand(1000,9999);
 				$l .= '<div class="form-control">
 		              <label for="'.$v['field'].'">'.$v['fieldname'].'：</label>
 		              <span class="view_img_'.$v['field'].'">';
 		            $l .= '</span><br/>
 		              <input name="'.$v['field'].'" type="hidden" id="file_url_'.$v['field'].'" value="'.$data[$v['field']].'" /><br/>
-		              <input type="file" class="upload_input_'.$v['field'].'" name="file_'.$v['field'].'" id="upload_input_'.$v['field'].'">
+		              <input type="file" class="upload_input_'.$v['field'].'" name="file_'.$v['field'].'" id="upload_input_'.$v['field'].$rd.'">
 		        </div>
 				<script type="text/javascript">
-					$(document).on("change","#upload_input_'.$v['field'].'",function(){
+					$(document).on("change","#upload_input_'.$v['field'].$rd.'",function(){
 					    var form=document.getElementById("jizhiform");
 					    var data =new FormData(form);
 					    data.append("filename",$(this).attr("name"));
@@ -766,23 +765,32 @@ class CommonController extends Controller
 				</script>';
 				break;
 				case 10:
+				$rd = rand(1000,9999);
 				$l .= '<div class="form-control">
 		            <label for="'.$v['field'].'">'.$v['fieldname'].'：</label>
 		            <span class="view_img_'.$v['field'].'">';
 		            if($data[$v['field']]){
 		            	foreach(explode('||',$data[$v['field']]) as $v){
 		            		if($v!=''){
-		            			 $l .= '<span><input name="'.$v['field'].'_url[]" type="text" value="'.$v.'"><span onclick="deleteImage_auto(this)">删除</span></span>';
+								if($this->webconf['ispicsdes']==1){
+									$pic = explode('|',$v);
+									$l .= '<span><input name="'.$v['field'].'_url[]" type="text" value="'.$pic[0].'"><input name="'.$v['field'].'_des[]" type="text" placeholder="文字描述"  value="'.$pic[1].'" ><button type="button" onclick="deleteImage_auto(this)">删除</button></span>';
+								}else{
+									$l .= '<span><input name="'.$v['field'].'_url[]" type="text" value="'.$v.'"><button type="button" onclick="deleteImage_auto(this)">删除</button></span>';
+								}
+		            			 
 		            		}
 		            	}
 		           
 		            }
-		            $l .= '</span><br/>
-		              <input name="'.$v['field'].'" type="hidden" id="'.$v['field'].'" value="'.$data[$v['field']].'" /><br/>
-		              <input type="file" class="upload_input_'.$v['field'].'" file-name="file_'.$v['field'].'" name="file_'.$v['field'].'[]" multiple="multiple" id="upload_input_'.$v['field'].'">
+		            $l .= '</span>
+		        </div>
+				<div class="form-control">
+		            <label ></label>
+					<input type="file" class="upload_input_'.$v['field'].'" file-name="file_'.$v['field'].'" name="file_'.$v['field'].'[]" multiple="multiple" id="upload_input_'.$v['field'].$rd.'">
 		        </div>
 				<script type="text/javascript">
-					$(document).on("change","#upload_input_'.$v['field'].'",function(){
+					$(document).on("change","#upload_input_'.$v['field'].$rd.'",function(){
 					    var form=document.getElementById("jizhiform");
 					    var data =new FormData(form);
 					    data.append("filename",$(this).attr("file-name"));
@@ -796,9 +804,14 @@ class CommonController extends Controller
 					       success: function(response){
 					        if(response.code==0){
 					          var result = "";
-					          for(var i=0;i<response["urls"].length;i++){
-					          	result +=\'<span><input name="'.$v['field'].'_urls[]" type="text" value="\' + response["urls"][i] + \'" ><span onclick="deleteImage_auto(this)">删除</span></span>\';
-					          }
+					          for(var i=0;i<response["urls"].length;i++){';
+							  if($this->webconf['ispicsdes']==1){
+								$l.=' result +=\'<span><input name="'.$v['field'].'_urls[]" type="text" value="\' + response["urls"][i] + \'" ><input name="'.$v['field'].'_des[]" type="text" placeholder="文字描述"  value="" ><button type="button" onclick="deleteImage_auto(this)">删除</button></span>\';';
+							  }else{
+								 $l.=' result +=\'<span><input name="'.$v['field'].'_urls[]" type="text" value="\' + response["urls"][i] + \'" ><button type="button" onclick="deleteImage_auto(this)">删除</button></span>\';';
+							  }
+							  
+					        $l.='}
 					          $(".view_img_'.$v['field'].'").append(result);
 					          
 					         
@@ -850,6 +863,7 @@ class CommonController extends Controller
 		//echo $l;
 		JsonReturn(['code'=>0,'fields_list'=>$fields_list,'tpl'=>$l]);
 	}
+		
 	
 	function jizhi(){
 		$this->display($this->template.'/404');

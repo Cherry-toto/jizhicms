@@ -963,27 +963,52 @@ class UserController extends Controller
     //文章发布和修改
     function release(){
     	$this->checklogin();
-    	error_reporting(E_ALL^E_NOTICE);
-
+    	
     	if($_POST){
     		$data = $this->frparam();
 			//违禁词检测
 			if(isset($this->webconf['mingan']) && $this->webconf['mingan']!=''){
 				$mingan = explode(',',$this->webconf['mingan']);
 				foreach($data as $v){
-					foreach($mingan as $s){
-						if(strpos($s,'{xxx}')!==false){
-							$pattern = '/'.str_replace('{xxx}','(.*)',$s).'/';
-							if(preg_match($pattern, $v)){
-								JsonReturn(array('code'=>1,'msg'=>'添加失败，存在敏感词 [ '.$s.' ]'));
+					if($v){
+						if(is_array($v)){
+							foreach($v as $vv){
+								if($vv){
+									
+									foreach($mingan as $s){
+										if(strpos($s,'{xxx}')!==false){
+											$pattern = '/'.str_replace('{xxx}','(.*)',$s).'/';
+											if(preg_match($pattern, $vv)){
+												JsonReturn(array('code'=>1,'msg'=>'添加失败，存在敏感词 [ '.$s.' ]'));
+											}
+											
+										}else{
+											if(strpos($vv,$s)!==false){
+												JsonReturn(array('code'=>1,'msg'=>'添加失败，存在敏感词 [ '.$s.' ]'));
+											}
+											
+										}
+									}
+								}
 							}
 							
 						}else{
-							if(strpos($v,$s)!==false){
-								JsonReturn(array('code'=>1,'msg'=>'添加失败，存在敏感词 [ '.$s.' ]'));
+							foreach($mingan as $s){
+								if(strpos($s,'{xxx}')!==false){
+									$pattern = '/'.str_replace('{xxx}','(.*)',$s).'/';
+									if(preg_match($pattern, $v)){
+										JsonReturn(array('code'=>1,'msg'=>'添加失败，存在敏感词 [ '.$s.' ]'));
+									}
+									
+								}else{
+									if(strpos($v,$s)!==false){
+										JsonReturn(array('code'=>1,'msg'=>'添加失败，存在敏感词 [ '.$s.' ]'));
+									}
+									
+								}
 							}
-							
 						}
+						
 					}
 				}
 				
@@ -1105,13 +1130,35 @@ class UserController extends Controller
 							Error('标题不能为空！');
 						}
 					}
+					
+					if(!$data['stock_num']){
+						if($this->frparam('ajax')){
+							JsonReturn(['code'=>1,'msg'=>'库存不能为0！']);
+						}else{
+							Error('库存不能为0！');
+						}
+					}
 					$w['title'] = $this->frparam('title',1);
+					$w['stock_num'] = $this->frparam('stock_num',0,0);
+					$w['price'] = $this->frparam('price',3,0);
 					$w['seo_title'] = $w['title'];
 					$w['litpic'] = $this->frparam('litpic',1);
 					$w['keywords'] = $this->frparam('keywords',1);
 					$w['pictures'] = $this->frparam('pictures',1);
 					if($this->frparam('pictures_urls',2)){
-						$w['pictures'] = implode('||',$this->frparam('pictures_urls',2));
+						if($this->webconf['ispicsdes']==1){
+							 $pic_des = $this->frparam('pictures_des',2);
+							 $pics = $this->frparam('pictures_urls',2);
+							 foreach($pics as $k=>$v){
+								 if($pic_des[$k]){
+									 $pics[$k] = $v.'|'.$pic_des[$k];
+								 }
+							 }
+							 $w['pictures'] = implode('||',$pics);
+						}else{
+							$w['pictures'] = implode('||',$this->frparam('pictures_urls',2));
+						}
+						
 					}
 					$data['body'] = $this->frparam('body',4);
 					$w['body'] = $data['body'];

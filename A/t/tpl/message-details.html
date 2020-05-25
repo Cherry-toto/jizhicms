@@ -4,9 +4,7 @@
     <head>
        <meta charset="UTF-8">
         {include="style"}
-		<script type="text/javascript" charset="utf-8" src="/static/common/user/uedit/ueditor.config.js?v=1"></script>
-		<script type="text/javascript" charset="utf-8" src="/static/common/user/uedit/ueditor.all.min.js?v=1"> </script>
-		<script type="text/javascript" charset="utf-8" src="/static/common/user/uedit/lang/zh-cn/zh-cn.js"></script>
+		{include="edit"}
 		
     </head>
     
@@ -99,8 +97,8 @@
 					<label  class="layui-form-label">
 						<span class='x-red'>*</span>留言内容
 					</label>
-					<div class="layui-input-block">
-						<textarea  name="body" class="layui-textarea">{$data['body']}</textarea>
+					<div class="layui-input-block" style="clear:both;">
+						{include="content"}
 					</div>
 				</div>
 				<div class="layui-form-item" pane>

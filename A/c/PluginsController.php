@@ -42,6 +42,7 @@ class PluginsController extends CommonController
 		}else{
 			$isok = false;
 		}
+		$this->title = $this->frparam('title',1);
 		if($this->frparam('isdown')){
 			$isdown = $this->frparam('isdown');
 			switch($isdown){
@@ -57,12 +58,14 @@ class PluginsController extends CommonController
 						//已下载该插件
 						$config = require_once($dir.'/'.$v['filepath'].'/config.php');
 						$data[$k]['isinstall'] = true;
-						if($isok && version_compare($config['version'],$allplugins[$v['filepath']]['version'],'<')){
+						if($isok && array_key_exists($v['filepath'],$allplugins) && version_compare($config['version'],$allplugins[$v['filepath']]['version'],'<')){
 							//有更新
 							$data[$k]['isupdate'] = true;
+							$data[$k]['official'] = $allplugins[$v['filepath']]['official'];
 						}else{
 							//无更新
 							$data[$k]['isupdate'] = false;
+							$data[$k]['official'] =  array_key_exists($v['filepath'],$allplugins) ? $allplugins[$v['filepath']]['official'] : 0;
 						}
 						$data[$k]['exists'] = true;
 					
@@ -107,12 +110,14 @@ class PluginsController extends CommonController
 						$config = require_once($dir.'/'.$v.'/config.php');
 						$data[$k] = ['name'=>$config['name'],'filepath'=>$v,'description'=>$config['desc'],'version'=>$config['version'],'author'=>$config['author'],'update_time'=>strtotime($config['update_time']),'module'=>$config['module'],'isopen'=>0,'config'=>'','isinstall'=>false];
 						
-						if($isok && version_compare($config['version'],$allplugins[$v]['version'],'<')){
+						if($isok && array_key_exists($v,$allplugins) && version_compare($config['version'],$allplugins[$v]['version'],'<')){
 							//有更新
 							$data[$k]['isupdate'] = true;
+							$data[$k]['official'] = $allplugins[$v]['official'];
 						}else{
 							//无更新
 							$data[$k]['isupdate'] = false;
+							$data[$k]['official'] =  array_key_exists($v,$allplugins) ? $allplugins[$v]['official'] : 0;
 						}
 						$data[$k]['exists'] = true;
 					
@@ -160,6 +165,7 @@ class PluginsController extends CommonController
 								$lists[$k]['description'] = $v['desc'];
 								$lists[$k]['isinstall'] = false;
 								$lists[$k]['isupdate'] = false;
+								$lists[$k]['official'] = 1;
 								
 							}
 							
@@ -225,6 +231,7 @@ class PluginsController extends CommonController
 					if(isset($plugins[$k])){
 						$lists[$k] = $plugins[$k];
 						$lists[$k]['isinstall'] = true;
+						
 					}else{
 						$lists[$k] = ['name'=>$config['name'],'filepath'=>$k,'description'=>$config['desc'],'version'=>$config['version'],'author'=>$config['author'],'update_time'=>strtotime($config['update_time']),'module'=>$config['module'],'isopen'=>0,'config'=>'','isinstall'=>false];
 					}
@@ -236,7 +243,7 @@ class PluginsController extends CommonController
 						$lists[$k]['isupdate'] = false;
 					}
 					$lists[$k]['exists'] = true;
-					
+					$lists[$k]['official'] = $v['official'];
 					
 				}else{
 					$lists[$k] = $v;
@@ -244,6 +251,7 @@ class PluginsController extends CommonController
 					$lists[$k]['description'] = $v['desc'];
 					$lists[$k]['isinstall'] = false;
 					$lists[$k]['isupdate'] = false;
+					$lists[$k]['official'] = $v['official'];
 					
 				}
 				
@@ -263,6 +271,7 @@ class PluginsController extends CommonController
 					}
 					$lists[$v]['isupdate'] = false;
 					$lists[$v]['exists'] = true;
+					$lists[$v]['official'] = 0;
 				}
 			}
 			
@@ -282,6 +291,7 @@ class PluginsController extends CommonController
 					}
 					$lists[$k]['isupdate'] = false;
 					$lists[$k]['exists'] = true;
+					$lists[$k]['official'] = 2;//本地
 					
 				}
 				
@@ -290,6 +300,17 @@ class PluginsController extends CommonController
 			}
 			
 		}
+		if($this->title){
+			$newlist = [];
+			foreach($lists as $v){
+				if(strpos($v['name'],$this->title)!==false){
+					$newlist[]=$v;
+				}
+				
+			}
+			$lists  = $newlist;
+		}
+		
 		$arraypage = new \ArrayPage($lists);
 		$data = $arraypage->setPage(['limit'=>$this->frparam('limit',0,10),'page'=>$this->frparam('page',0,1)])->go();
 		$this->pages = $arraypage->pageList();

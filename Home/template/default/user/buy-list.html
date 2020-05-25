@@ -169,7 +169,7 @@
             {foreach $lists as $v}
               <tr>
                 <td>{$v['orderno']}</td>
-                <td><span class="price">{if($v['buytype']!=2)}+{else}-{/if}{$v['price']}</span></th>
+                <td><span class="price">{$v['price']}</span></th>
                 <td>{if($v['isshow']==1)}
               <span class="fr btn-sm btn-info">待支付</span>
               {else if($v['isshow']==2)}

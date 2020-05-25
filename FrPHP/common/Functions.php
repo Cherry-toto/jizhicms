@@ -56,7 +56,12 @@ function format_param($value=null,$int=0){
 			return (int)$value;
 		case 1://字符串
 			$value=htmlspecialchars(trim($value), ENT_QUOTES);
-			if(!get_magic_quotes_gpc())$value = addslashes($value);
+			if(version_compare(PHP_VERSION,'7.4','>=')){
+				$value = addslashes($value);
+			}else{
+				if(!get_magic_quotes_gpc())$value = addslashes($value);
+			}
+			
 			return $value;
 		case 2://数组
 			if($value=='')return '';
@@ -65,7 +70,11 @@ function format_param($value=null,$int=0){
 		case 3://浮点
 			return (float)$value;
 		case 4:
-			if(!get_magic_quotes_gpc())$value = addslashes($value);
+			if(version_compare(PHP_VERSION,'7.4','>=')){
+				$value = addslashes($value);
+			}else{
+				if(!get_magic_quotes_gpc())$value = addslashes($value);
+			}
 			return trim($value);
 	}
 }
@@ -84,11 +93,14 @@ function SafeFilter(&$arr)
      {
         if (!is_array($value))
         {
-          if (!get_magic_quotes_gpc())  //不对magic_quotes_gpc转义过的字符使用addslashes(),避免双重转义。
-          {
-             $value  = addslashes($value); //给单引号（'）、双引号（"）、反斜线（\）与 NUL（NULL 字符）  加上反斜线转义
-          }
-          $value       = preg_replace($ra,'',$value);     //删除非打印字符，粗暴式过滤xss可疑字符串
+            if(version_compare(PHP_VERSION,'7.4','>=')){
+				$value  = addslashes($value); 
+			}else{
+				if (!get_magic_quotes_gpc()){
+					$value  = addslashes($value); 
+				}
+			}
+          $value = preg_replace($ra,'',$value);     //删除非打印字符，粗暴式过滤xss可疑字符串
           $arr[$key]     = htmlentities(strip_tags($value)); //去除 HTML 和 PHP 标记并转换为 HTML 实体
         }
         else
@@ -102,7 +114,11 @@ function array_format(&$item, $key)
 {
 	$item=trim($item);
 	$item=htmlspecialchars($item, ENT_QUOTES);
-	if(!get_magic_quotes_gpc())$item = addslashes($item);
+	if(version_compare(PHP_VERSION,'7.4','>=')){
+		$item = addslashes($item);
+	}else{
+		if(!get_magic_quotes_gpc())$item = addslashes($item);
+	}
 }
 
 function unicodeEncode($str){

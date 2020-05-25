@@ -79,7 +79,8 @@ class WechatController extends Controller
 					header('location:'.$url);
 				
 			}else{
-				$openid = $this->getpenid();
+				$res = $this->getopenid();
+				$openid = $res['openid'];
 				if(!$openid){
 					$_GET['code']=null;
 					//授权失败重新登录
@@ -128,7 +129,8 @@ class WechatController extends Controller
 				header('location:'.$url);
 			
 		}else{
-			$openid = $this->getpenid();
+			$res = $this->getopenid();
+			$openid = $res['openid'];
 			if(!$openid){
 				$_GET['code']=null;
 				//Error('授权失败，重新登录~',U('bindinguser'));
@@ -284,7 +286,7 @@ class WechatController extends Controller
 		return  $obj->access_token; 
 	}
 	//获取用户的详情
-	public	function getpenid(){
+	public	function getopenid(){
 			
 		$code = $_GET['code'];
 		$url = "https://api.weixin.qq.com/sns/oauth2/access_token?appid=".$this->webconf['wx_login_appid']."&secret=".$this->webconf['wx_login_appsecret']."&code=".$code."&grant_type=authorization_code ";
@@ -300,7 +302,7 @@ class WechatController extends Controller
 			$access_token = $json_obj['access_token'];
 		
 			$openid = $json_obj['openid'];
-			return $openid;
+			return array('openid'=>$openid,'access_token'=>$access_token);
 		}else{
 			//return false;
 			exit($res);
@@ -321,7 +323,8 @@ class WechatController extends Controller
 			$url = "https://open.weixin.qq.com/connect/oauth2/authorize?appid=".$appid."&redirect_uri=".$redirect_uri."&response_type=code&scope=snsapi_userinfo&state=STATE#wechat_redirect";
 			header('location:'.$url);
 		}else{
-			$openid = $this->getpenid();
+			$res = $this->getopenid();
+			$openid = $res['openid'];
 			if(!$openid){
 				$_GET['code']=null;
 				//Error('登录失败，重新登录~',U('register'));
@@ -331,8 +334,8 @@ class WechatController extends Controller
 			$islive = M('member')->find(array('openid'=>$openid));
 			//查询是否已存在
             if(!$islive){
-				$access_token = $this->getAccessToken();
-				$url = 'https://api.weixin.qq.com/cgi-bin/user/info?access_token='.$access_token.'&openid='.$openid.'&lang=zh_CN';
+				$access_token  =  $res['access_token']; 
+				$url = 'https://api.weixin.qq.com/sns/userinfo?access_token='.$access_token.'&openid='.$openid.'&lang=zh_CN';
 				$user = file_get_contents($url);
 				$user = json_decode($user,true);
 			    $time = time();

@@ -33,8 +33,7 @@ class SysController extends CommonController
 				}
 
 			}
-		   setCache('webconfig',null);
-		   $web_config = webConf();
+		   
 		   
 		   //检测扩展参数
 		   $new_custom = array();
@@ -90,7 +89,7 @@ class SysController extends CommonController
 		   setCache('customconfig',null);
 		   setCache('classtype',null);
 		   setCache('mobileclasstype',null);
-		   
+		   setCache('webconfig',null);
 		   JsonReturn(['code'=>0,'msg'=>'提交成功！']);
 		   
 		}

@@ -347,13 +347,7 @@ class HomeController extends CommonController
 				$this->display($this->template.'/page/'.$html);
 				exit;
 			}
-			$url = substr(REQUEST_URI,1);
-			$r = M('customurl')->find(['url'=>$url]);
-			if($r){
-				$this->type = $this->classtypedata[$r['tid']];
-				$this->jizhi_details($r['aid']);
-				exit;
-			}
+			
 			
 			//错误页面->404
 			$this->error('输入url错误！');
@@ -891,7 +885,13 @@ class HomeController extends CommonController
 	
 	//错误页面
 	function error($msg){
-		//echo $msg;
+		$url = substr(REQUEST_URI,1);
+		$r = M('customurl')->find(['url'=>$url]);
+		if($r){
+			$this->type = $this->classtypedata[$r['tid']];
+			$this->jizhi_details($r['aid']);
+			exit;
+		}
 		$this->display($this->template.'/404');
 		exit;
 	}

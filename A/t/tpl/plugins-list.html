@@ -8,6 +8,9 @@
 	.btn-jz{
 		margin-left:0px !important;
 	}
+	span.jzspan {
+		width: 45px;
+	}
 
    </style>
   </head>
@@ -23,14 +26,19 @@
         <i class="iconfont" style="line-height:30px">&#xe6aa;</i></a>
     </div>
     <div class="x-body">
-      <div class="layui-row">
-        
-      </div>
-      
-		<a href="{fun U('plugins/index')}" class="layui-btn layui-btn-primary">全部</a>
+       <div class="layui-row">
+	  <form class="layui-form layui-col-md12 x-so" method="get" id="myform">
+	    <a href="{fun U('plugins/index')}" class="layui-btn layui-btn-primary">全部</a>
 		<a href="{fun U('plugins/index',['isdown'=>1])}" class="layui-btn">已安装</a>
 		<a href="{fun U('plugins/index',['isdown'=>2])}" class="layui-btn layui-btn-normal">未安装</a>
 		<a href="{fun U('plugins/index',['isdown'=>3])}" class="layui-btn layui-btn-warm">云插件</a>
+		<input type="text" name="title" value="{$title}" placeholder="请输入插件名字" autocomplete="off" class="layui-input">
+		  <button class="layui-btn"  lay-submit="" lay-filter="sreach"><i class="layui-icon">&#xe615;</i></button>
+		</form>
+      </div>
+		
+      
+		
         <table border="1" rules="all"  class="layui-table layui-form">
         <thead>
           <tr>
@@ -38,8 +46,8 @@
             <th>插件名</th>
             <th>版本</th>
             <th >作者</th>
+			<th >平台</th>
             <th style="width:200px;">简介</th>
-			<th>应用模块</th>
             <th>插件文件</th>
             <th>开关</th>
             <th>安装说明</th>
@@ -51,8 +59,9 @@
             <td>{$v['name']}</td>
             <td>v{$v['version']}{if($v['isupdate'])}<span style="cursor:pointer;" title="点击查看" onclick="x_all_show('更新说明','{fun U('Plugins/update',array('filepath'=>$v['filepath']))}')" class="layui-badge">新</span>{/if}</td>
             <td>{$v['author']}</td>
+			<td>{if($v['official']==1)}<span class="layui-badge layui-bg-green jzspan">官方</span>{else if($v['official']==2)}<span class="layui-badge layui-bg-orange jzspan">本地</span>{else}<span class="layui-badge layui-bg-orange jzspan">第三方</span>{/if}</td>
             <td >{$v['description']}</td>
-			<td>{if($v['module']=='Home')}前台{else}后台{/if}</td>
+			
             <td>{$v['filepath']}</td>
            
             <td class="td-status">

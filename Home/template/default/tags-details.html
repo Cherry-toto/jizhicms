@@ -4,9 +4,9 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
-	<title>{$type['classname']}-{$webconf['web_name']}</title>
-<meta name="keywords" content="{$type['keywords']}" />
-<meta name="description" content="{$type['description']}" />
+    <title>{$tags['keywords']} - {$webconf['web_name']}</title>
+<meta name="keywords" content="{$webconf['web_keyword']}" />
+<meta name="description" content="{$webconf['web_desc']}" />
 {include="style"}
 <style>
 a.tags{border: 1px solid #ccc;
@@ -22,9 +22,8 @@ a.tags{border: 1px solid #ccc;
         <section class="clean-block clean-blog-list dark">
             <div class="container">
                 <div class="block-heading">
-                    <h2 class="text-info">文章列表展示</h2>
-                    <p>经典Foreach模板标签使用，手机端兼容，下拉加载等</p>
-                    <p>当前位置：{$positions}</p>
+                    <h2 class="text-info">标签文章列表</h2>
+                   
                 </div>
                 <div class="block-content article-list">
 				{if($lists)}
@@ -34,6 +33,7 @@ a.tags{border: 1px solid #ccc;
                             <div class="col-lg-5"><img class="rounded img-fluid" src="{if($v['litpic']=='')}{$tpl}assets/img/tech/image4.jpg{else}{$v['litpic']}{/if}"></div>
                             <div class="col-lg-7">
                                 <h3>【{$v['id']}】{$v['title']}</h3>
+								
 								{foreach explode(',',$v['tags']) as $s}
 								{if($s)}
 								<a class="tags" href="{fun U('tags/index',['tagname'=>$s])}">{$s}</a>
@@ -68,58 +68,7 @@ a.tags{border: 1px solid #ccc;
         </section>
     </main>
    {include="footer"}
-   <script>
-<!--判断端口，手机端下拉加载-->
-{if(isMobile())}
-var p={$frpage};
-var istrue = true;
-$(window).scroll(function () {
-	//判断是否滑动到页面底部
-	
-	if ($(window).scrollTop() === ($(document).height() - $(window).height()) ) {
-		//防止过度加载
-		if(!istrue){
-			return false;
-		}
-		p+=1;
-		var tid = {$type['id']};
-		var molds = "{$type['molds']}";
-		//Screen/index/molds/$1/tid/$2/jz_screen/$3
-		$.ajax({
-			url:window.location.href,//请求的url地址
-			// dataType:"json",//返回格式为json
-			async:true,//请求是否异步，默认为异步，这也是ajax重要特性
-			data:{tid:tid,molds:molds,ajax:1,ajax_tpl:1,page:p},//参数值
-			type:"GET",//请求方式
-			beforeSend:function(){
-				//请求前的处理
-				istrue = false;
-				
-			},
-			 success:function(r){
-				if(r==1){
-					alert('没有了~');return false;
-				}
-				$(".article-list").append(r);
-					
-			},
-			complete:function(){
-			//请求完成的处理
-				istrue = true;
-			},
-			 error:function(){
-			//请求出错处理
-				alert('网络错误');
-			}
-
-					
-			
-		})
-	}
-})
-
-{/if}
-   </script>
+  
 </body>
 
 </html>

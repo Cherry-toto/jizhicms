@@ -3,19 +3,8 @@
   
   <head>
     <meta charset="UTF-8">
-  {include="style"}
-    <script type="text/javascript" charset="utf-8" src="/static/common/user/uedit/ueditor.config.js?v=1"></script>
-		<script type="text/javascript" charset="utf-8" src="/static/common/user/uedit/ueditor.all.min.js?v=1"> </script>
-		<script type="text/javascript" charset="utf-8" src="/static/common/user/uedit/lang/zh-cn/zh-cn.js"></script>
-		<script>
-		var ue = UE.getEditor('editor',{
-		{if($webconf['ueditor_config']!='')}
-		toolbars : [[
-				   {$webconf['ueditor_config']}
-					]]
-		{/if}			
-					});
-		</script>
+	{include="style"}
+    {include="edit"}
   </head>
   
   <body>
@@ -115,7 +104,7 @@
                         <span class="x-red">*</span>内容
                     </label>
                     <div class="layui-input-block" style="clear:both;" >
-					<script id="editor" name="body" type="text/plain" style="width:100%;height:400px;">{$data['body']}</script>
+					   {include="content"}
                     </div>
                 </div>
 				 
@@ -338,17 +327,23 @@
 					  icon:5
 					});
 				}else{
-					layer.msg('修改成功！', {
-					 time:1000,icon:6
-					},function(){
-						
+				
+					layer.confirm('修改成功！', {
+					  btn: ['返回列表','取消'] //按钮
+					}, function(){
+					  // 获得frame索引
 					  {if($webconf['admintpl']=='tpl')}
 					   window.location.href="{fun U('Classtype/index')}";
 					  {else}
 					   parent.location.reload();
-					   parent.layer.close(index);
+					    parent.layer.close(index);
 					  {/if}
+					  
+					}, function(){
+					  
 					});
+				
+				
 					
 				}
 			});

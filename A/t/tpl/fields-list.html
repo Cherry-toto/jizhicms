@@ -64,7 +64,7 @@
                             {$v['id']}
                         </td>
                         <td>
-                            {$v['orders']}
+                            <input data-id="{$v['id']}" class="layui-input orderchange" type="number" name="orders" value="{$v['orders']}">
                         </td>
                         <td>
                             {$v['fieldname']}
@@ -161,7 +161,25 @@
                 });
             }
 			
+			$(document).ready(function(){
+			$(".orderchange").bind('input propertychange',function(){
+				if($(this).val()!=''){
+					var orders = $(this).val();
+					var id = $(this).attr('data-id');
+					$.get("{fun U('changeOrders')}",{id:id,orders:orders},function(r){
+							if(r.code==0){
+								window.location.reload();
+							}else{
+								
+								layer.msg(r.msg,{icon: 5,time:1000});
+							}
+					},'json')
+					
+				}
 			
+			})
+		
+		})	
 			
 			
        </script>

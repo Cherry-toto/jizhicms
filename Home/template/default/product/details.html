@@ -28,9 +28,10 @@
                                     <div class="sp-wrap">
 									{php $pictures = explode('||',$jz['pictures'])/}
 									{foreach $pictures as $v}
-									{if($v!='')}
-									<a href="{$v}"><img class="img-fluid d-block mx-auto" src="{$v}"></a>
-									{/if}
+									{php $pic = explode('|',$v);/}
+								
+									<a href="{$pic[0]}"><img class="img-fluid d-block mx-auto" alt="{$pic[1]}" src="{$pic[0]}"></a>
+									
 									{/foreach}
 									</div>
                                 </div>
@@ -147,6 +148,11 @@
 											{/if}
 												<span class="text-muted"><a id="comment_level_{$v['id']}" href="#">{$v['userinfo']['username']}</a>, {fun date('Y-m-d H:i:s',$v['addtime'])}</span>
 												<p>{$v['body']}</p>
+												{if($v['reply'])}
+												<div class="review-item">
+												<span>管理员：{$v['reply']}</span>
+												</div>
+												{/if}
 												<!--登录后才可以显示回复-->
 												{if($islogin)}<p style="text-align:right;"><a href="javascript:;" onclick="comment({$v['id']},{$v['id']})"><i style="font-size:15px;" class="icon-bubbles">回复</i></a></p>
 												{/if}
@@ -160,6 +166,11 @@
 													<!--楼中楼回复带@回复主题用户-->
 													<p>{if($vv['pid']!=$v['id'])}<b style="color:green;cursor:pointer;">@{fun get_comment_user($vv['pid'])}  </b>{/if}
 													{$vv['body']}</p>
+													{if($vv['reply'])}
+													<div class="review-item">
+													<span>管理员：{$vv['reply']}</span>
+													</div>
+													{/if}
 													{if($islogin)}
 													<p style="text-align:right;"><a onclick="comment({$v['id']},{$vv['id']})" href="javascript:;"><i style="font-size:15px;" class="icon-bubbles">回复</i></a></p>
 													{/if}

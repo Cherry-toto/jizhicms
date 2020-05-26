@@ -1,7 +1,7 @@
 <?php
 
-if(APP_CONTROLLER=='Sys'){
 $rd = getRandChar(6);	
+if(APP_CONTROLLER=='Sys'){
 	return '<div class="layui-form-item layui-form-text"  id="custom_'.$v['field'].'">
 			<label class="layui-form-label">
 				<span class=\'x-red\'>*</span>'.$v['title'].'

@@ -234,7 +234,7 @@ CREATE TABLE `jz_links` (
   `title` varchar(255) DEFAULT NULL,
   `url` varchar(255) DEFAULT NULL,
   `isshow` tinyint(1) DEFAULT '1',
-  `userid` int(11) NOT NULL DEFAULT '0j
+  `userid` int(11) NOT NULL DEFAULT '0',
   `tid` int(11) NOT NULL DEFAULT '0',
   `htmlurl` varchar(50) DEFAULT NULL,
   `orders` int(11) NOT NULL DEFAULT '0',

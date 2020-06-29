@@ -18970,7 +18970,8 @@ UE.plugins['video'] = function (){
                     html.push('</tr>')
                 }
                 //禁止指定table-width
-                return '<table><tbody>' + html.join('') + '</tbody></table>'
+                //return '<table><tbody>' + html.join('') + '</tbody></table>'
+				return '<table style="border-collapse:collapse;"><tbody>' + html.join('') + '</tbody></table>'
             }
 
             if (!opt) {
@@ -21903,10 +21904,12 @@ UE.plugins['tablesort'] = function () {
             }
 
             return !table ? -1: cmd=='enablesort' ^ table.getAttribute('data-sort')!='sortEnabled' ? -1:0;
+			
         },
         execCommand: function (cmd) {
             var table = getTableItemsByRange(this).table;
             table.setAttribute("data-sort", cmd == "enablesort" ? "sortEnabled" : "sortDisabled");
+			table.setAttribute("style", "border-collapse:collapse;");
             cmd == "enablesort" ? domUtils.addClass(table,"sortEnabled"):domUtils.removeClasses(table,"sortEnabled");
         }
     };

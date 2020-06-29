@@ -130,6 +130,28 @@ class UserController extends Controller
 		$this->checklogin();
 		if($_POST){
 			$w = $this->frparam();
+			$w = get_fields_data($w,'member',0);
+			unset($w['jifen']);
+			unset($w['money']);
+			unset($w['openid']);
+			unset($w['gid']);
+			unset($w['likes']);
+			unset($w['collection']);
+			unset($w['regtime']);
+			unset($w['logintime']);
+			unset($w['isshow']);
+			unset($w['fans']);
+			unset($w['follow']);
+			unset($w['ismsg']);
+			unset($w['iscomment']);
+			unset($w['iscollect']);
+			unset($w['islikes']);
+			unset($w['isat']);
+			unset($w['isrechange']);
+			unset($w['pid']);
+			foreach($w as $k=>$v){
+				$w[$k] = format_param($v,1);
+			}
 			$w['tel'] = $this->frparam('tel',1);
 			$w['pass'] = $this->frparam('password',1);
 			$w['sex'] = $this->frparam('sex',0,0);
@@ -138,7 +160,7 @@ class UserController extends Controller
 			$w['email'] = $this->frparam('email',1);
 			$w['litpic'] = $this->frparam('litpic',1);
 			$w['signature'] = $this->frparam('signature',1);
-			$w = get_fields_data($w,'member',0);
+			
 			if($w['tel']!=''){
 				if(preg_match("/^(13[0-9]|14[579]|15[0-3,5-9]|16[6]|17[0135678]|18[0-9]|19[89])\\d{8}$/",$w['tel'])){  
 				
@@ -427,13 +449,13 @@ class UserController extends Controller
 		foreach($data as $k=>$v){
 			if(isset($this->classtypedata[$v['tid']])){
 				$xmolds = M($this->classtypedata[$v['tid']]['molds'])->find(['id'=>$v['aid']]);
+				$data[$k]['date'] = date('Y/m/d H:i:s',$v['addtime']);
+				$data[$k]['body'] = newstr($v['body'],60);
+				$data[$k]['comment_num'] =  get_comment_num($v['tid'],$v['aid']);
+				$data[$k]['del'] =  U('user/commentdel',['id'=>$v['id']]);
 				if($xmolds){
 					$data[$k]['title'] = $xmolds['title'];
-					$data[$k]['date'] = date('Y/m/d H:i:s',$v['addtime']);
 					$data[$k]['url'] =  gourl($xmolds['id'],$xmolds['htmlurl']);
-					$data[$k]['body'] = newstr($v['body'],60);
-					$data[$k]['comment_num'] =  get_comment_num($v['tid'],$v['aid']);
-					$data[$k]['del'] =  U('user/commentdel',['id'=>$v['id']]);
 				}
 			}
 			
@@ -514,23 +536,34 @@ class UserController extends Controller
 		$molds = $this->classtypedata[$tid]['molds'];
 		$data = M($molds)->find(['id'=>$id]);
 		if(isset($data['member_id']) && $data['member_id']!=0 && $data['member_id']!=$this->member['id']){
-			$task['aid'] = $id;
-			$task['tid'] = $tid;
-			$task['userid'] = $data['member_id'];
-			$task['puserid'] = $this->member['id'];
-			$task['molds'] = $molds;
-			$task['type'] = 'likes';
-			$task['addtime'] = time();
-			$task['body'] = $data['title'];
-			$task['url'] = gourl($data['id'],$data['htmlurl']);
-			M('task')->add($task);
+			if($isadd){
+				$task['aid'] = $id;
+				$task['tid'] = $tid;
+				$task['userid'] = $data['member_id'];
+				$task['puserid'] = $this->member['id'];
+				$task['molds'] = $molds;
+				$task['type'] = 'likes';
+				$task['addtime'] = time();
+				$task['body'] = $data['title'];
+				$task['url'] = gourl($data['id'],$data['htmlurl']);
+				M('task')->add($task);
+			}else{
+				$task['aid'] = $id;
+				$task['tid'] = $tid;
+				$task['userid'] = $data['member_id'];
+				$task['puserid'] = $this->member['id'];
+				$task['molds'] = $molds;
+				$task['type'] = 'likes';
+				M('task')->delete($task);
+			}
+			
 		}
-		if($this->webconf['likes_award_open']==1  && $isadd && $tid!=0){
+		if($this->webconf['likes_award_open']==1 && $tid!=0){
+			
 			$award = round($this->webconf['likes_award'],2);
 			$max_award = round($this->webconf['likes_max_award'],2);
 			$molds = $this->classtypedata[$tid]['molds'];
 			$member_id = M($molds)->getField(['id'=>$id],'member_id');
-			
 			if($member_id!=0 && $award>0){
 				$rr = M('buylog')->find(['userid'=>$member_id,'type'=>3,'molds'=>$molds,'aid'=>$id,'msg'=>'点赞奖励']);
 				if(!$rr){
@@ -545,24 +578,45 @@ class UserController extends Controller
 							$all_jifen+=$v['amount'];
 						}
 					}
-					
-					if($max_award==0 || ($all_jifen<$max_award && $max_award!=0)){
+					if($isadd){
+						//奖励
+						if($max_award==0 || ($all_jifen<$max_award && $max_award!=0)){
+							$w['userid'] = $member_id;
+							$w['buytype'] = 'jifen';
+							$w['type'] = 3;
+							$w['molds'] = $molds;
+							$w['aid'] = $id;
+							$w['msg'] = '点赞奖励';
+							$w['addtime'] = time();
+							$w['orderno'] = 'No'.date('YmdHis');
+							$w['amount'] = $award;
+							$w['money'] = $w['amount']/($this->webconf['money_exchange']);
+							$r = M('buylog')->add($w);
+							M('member')->goInc(['id'=>$member_id],'jifen',$award);	
+						}
+						
+					}else{
+						//扣除
 						$w['userid'] = $member_id;
-	        			$w['buytype'] = 'jifen';
-			   	  		$w['type'] = 3;
-			   	  		$w['molds'] = $molds;
-			   	  		$w['aid'] = $id;
-			   	  		$w['msg'] = '点赞奖励';
-			   	  		$w['addtime'] = time();
-			   	  		$w['orderno'] = 'No'.date('YmdHis');
-			   	  		$w['amount'] = $award;
-			   	  		$w['money'] = $w['amount']/($this->webconf['money_exchange']);
-			   	  		$r = M('buylog')->add($w);
-			   	  		M('member')->goInc(['id'=>$member_id],'jifen',$award);
+						$w['buytype'] = 'jifen';
+						$w['type'] = 3;
+						$w['molds'] = $molds;
+						$w['aid'] = $id;
+						$w['msg'] = '取消点赞';
+						$w['addtime'] = time();
+						$w['orderno'] = 'No'.date('YmdHis');
+						$w['amount'] = -$award;
+						$w['money'] = $w['amount']/($this->webconf['money_exchange']);
+						$r = M('buylog')->add($w);
+						M('member')->goDec(['id'=>$member_id],'jifen',$award);
+						
 					}
+					
 				}
 				
 			}
+			
+			
 		}
 
 		$_SESSION['member']['likes'] = $xnew;
@@ -572,6 +626,7 @@ class UserController extends Controller
 		Success($msg,$_SESSION['return_url']);
 		
 	}
+	
 	function likes(){
 		$this->checklogin();
 		$lists = [];
@@ -681,18 +736,29 @@ class UserController extends Controller
 		$molds = $this->classtypedata[$tid]['molds'];
 		$data = M($molds)->find(['id'=>$id]);
 		if(isset($data['member_id']) && $data['member_id']!=0 && $data['member_id']!=$this->member['id']){
-			$task['aid'] = $id;
-			$task['tid'] = $tid;
-			$task['userid'] = $data['member_id'];
-			$task['puserid'] = $this->member['id'];
-			$task['molds'] = $molds;
-			$task['type'] = 'collect';
-			$task['addtime'] = time();
-			$task['body'] = $data['title'];
-			$task['url'] = gourl($data['id'],$data['htmlurl']);
-			M('task')->add($task);
+			if($isadd){
+				$task['aid'] = $id;
+				$task['tid'] = $tid;
+				$task['userid'] = $data['member_id'];
+				$task['puserid'] = $this->member['id'];
+				$task['molds'] = $molds;
+				$task['type'] = 'collect';
+				$task['addtime'] = time();
+				$task['body'] = $data['title'];
+				$task['url'] = gourl($data['id'],$data['htmlurl']);
+				M('task')->add($task);
+			}else{
+				$task['aid'] = $id;
+				$task['tid'] = $tid;
+				$task['userid'] = $data['member_id'];
+				$task['puserid'] = $this->member['id'];
+				$task['molds'] = $molds;
+				$task['type'] = 'collect';
+				M('task')->delete($task);
+			}
+			
 		}
-		if($this->webconf['collect_award_open']==1  && $isadd && $tid!=0){
+		if($this->webconf['collect_award_open']==1 && $tid!=0){
 			$award = round($this->webconf['collect_award'],2);
 			$max_award = round($this->webconf['collect_max_award'],2);
 			$molds = $this->classtypedata[$tid]['molds'];
@@ -712,21 +778,36 @@ class UserController extends Controller
 							$all_jifen+=$v['amount'];
 						}
 					}
-					
-					if($max_award==0 || ($all_jifen<$max_award && $max_award!=0)){
+					if($isadd){
+						if($max_award==0 || ($all_jifen<$max_award && $max_award!=0)){
+							$w['userid'] = $member_id;
+							$w['buytype'] = 'jifen';
+							$w['type'] = 3;
+							$w['molds'] = $molds;
+							$w['aid'] = $id;
+							$w['msg'] = '收藏奖励';
+							$w['addtime'] = time();
+							$w['orderno'] = 'No'.date('YmdHis');
+							$w['amount'] = $award;
+							$w['money'] = $w['amount']/($this->webconf['money_exchange']);
+							$r = M('buylog')->add($w);
+							M('member')->goInc(['id'=>$member_id],'jifen',$award);
+						}
+					}else{
 						$w['userid'] = $member_id;
-	        			$w['buytype'] = 'jifen';
-			   	  		$w['type'] = 3;
-			   	  		$w['molds'] = $molds;
-			   	  		$w['aid'] = $id;
-			   	  		$w['msg'] = '收藏奖励';
-			   	  		$w['addtime'] = time();
-			   	  		$w['orderno'] = 'No'.date('YmdHis');
-			   	  		$w['amount'] = $award;
-			   	  		$w['money'] = $w['amount']/($this->webconf['money_exchange']);
-			   	  		$r = M('buylog')->add($w);
-			   	  		M('member')->goInc(['id'=>$member_id],'jifen',$award);
+						$w['buytype'] = 'jifen';
+						$w['type'] = 3;
+						$w['molds'] = $molds;
+						$w['aid'] = $id;
+						$w['msg'] = '取消收藏';
+						$w['addtime'] = time();
+						$w['orderno'] = 'No'.date('YmdHis');
+						$w['amount'] = -$award;
+						$w['money'] = $w['amount']/($this->webconf['money_exchange']);
+						$r = M('buylog')->add($w);
+						M('member')->goDec(['id'=>$member_id],'jifen',$award);
 					}
+					
 				}
 				
 			}
@@ -966,6 +1047,29 @@ class UserController extends Controller
     	
     	if($_POST){
     		$data = $this->frparam();
+			$w = [];
+			$w['molds'] = $this->frparam('molds',1);
+			$release_table = explode('|',$this->webconf['release_table']);
+			if(!in_array($w['molds'],$release_table)){
+				JsonReturn(array('code'=>1,'msg'=>'该模块不允许发布！'));
+			}
+			
+			$w = get_fields_data($data,$w['molds']);
+			unset($w['userid']);
+			unset($w['ishot']);
+			unset($w['istuijian']);
+			unset($w['istop']);
+			unset($w['hits']);
+			unset($w['htmlurl']);
+			unset($w['orders']);
+			unset($w['comment_num']);
+			unset($w['tags']);
+			unset($w['target']);
+			unset($w['ownurl']);
+			foreach($w as $k=>$v){
+				$w[$k] = format_param($v,1);
+			}
+			$w['molds'] = $this->frparam('molds',1);
 			//违禁词检测
 			if(isset($this->webconf['mingan']) && $this->webconf['mingan']!=''){
 				$mingan = explode(',',$this->webconf['mingan']);
@@ -1051,8 +1155,7 @@ class UserController extends Controller
 				
 			}
 			
-			$w['molds'] = $this->classtypedata[$w['tid']]['molds'];
-			$w = get_fields_data($data,$w['molds']);
+			
 			$w['htmlurl'] = $this->classtypedata[$w['tid']]['htmlurl'];
 			$sql = array();
 			if($w['tid']!=0){
@@ -1179,6 +1282,7 @@ class UserController extends Controller
 			$w['addtime'] = time();
 			
 			if($this->frparam('id')){
+				$w['id'] = $this->frparam('id',1);
 				$a = M($w['molds'])->update(['id'=>$this->frparam('id')],$w);
 				if(!$a){ 
 					if($this->frparam('ajax')){
@@ -1238,7 +1342,7 @@ class UserController extends Controller
 		if(!$res){ Error('未找到您要的文章！');}
 		$r = M($molds)->delete(['id'=>$id]);
 		if($r){
-			Success('删除成功！',U('user/posts'));
+			Success('删除成功！',U('user/posts',['molds'=>$molds]));
 		}else{
 			Error('删除失败！');
 		}
@@ -1263,7 +1367,7 @@ class UserController extends Controller
 		  }
 		 
 			$fileType = webConf('fileType');
-			if(strpos($fileType,strtolower($pix))===false){
+			if(strpos($fileType,strtolower($pix))===false   || stripos($pix,'php')!==false){
 				$data['error'] =  "Error: 文件类型不允许上传！";
 				$data['code'] = 1002;
 				JsonReturn($data);

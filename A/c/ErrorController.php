@@ -11,7 +11,7 @@
 // +----------------------------------------------------------------------
 
 
-namespace Home\c;
+namespace A\c;
 
 use FrPHP\lib\Controller;
 

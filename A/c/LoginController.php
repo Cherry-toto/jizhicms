@@ -72,6 +72,7 @@ class LoginController extends Controller
 						unset($group['name']);
 						$_SESSION['admin'] = array_merge($res,$group);
 						M('level')->update(array('id'=>$res['id']),array('logintime'=>time()));
+						setCache(session_id(),GetIP());
 						//写入日志
 						if(!StopLog){
 							$log['user'] = $_SESSION['admin']['name'];

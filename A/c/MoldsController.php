@@ -78,6 +78,7 @@ class MoldsController extends CommonController
 				`ownurl` varchar(255) DEFAULT NULL,
 				`istop` tinyint(1) DEFAULT 0,
 				`hits` int(11) DEFAULT 0,
+				`zan` int(11) DEFAULT 0,
 				`addtime` int(11) DEFAULT 0,
 				PRIMARY 
 				KEY  (`id`)

@@ -31,6 +31,10 @@ class MessageController extends CommonController
 			$w['tel'] = $this->frparam('tel',1,'','POST');
 			$w['aid'] = $this->frparam('aid',0,0,'POST');
 			$w['tid'] = $this->frparam('tid',0,0,'POST');
+			$w['email'] = $this->frparam('email',1,'','POST');
+			$w['orders'] = 0;
+			$w['istop'] = 0;
+			$w['hits'] = 0;
 			
 			if($this->webconf['autocheckmessage']==1){
 				$w['isshow'] = 1;
@@ -42,6 +46,8 @@ class MessageController extends CommonController
 			$w['addtime'] = time();
 			if(isset($_SESSION['member'])){
 				$w['userid'] = $_SESSION['member']['id'];
+			}else{
+				$w['userid'] = 0;
 			}
 			
 			if($this->frparam('title',1,'','POST')==''){

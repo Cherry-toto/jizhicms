@@ -55,6 +55,7 @@ function format_param($value=null,$int=0){
 		case 0://整数
 			return (int)$value;
 		case 1://字符串
+			$value = SafeFilter($value);
 			$value=htmlspecialchars(trim($value), ENT_QUOTES);
 			if(version_compare(PHP_VERSION,'7.4','>=')){
 				$value = addslashes($value);
@@ -79,40 +80,16 @@ function format_param($value=null,$int=0){
 	}
 }
 //过滤XSS攻击
-function SafeFilter(&$arr) 
+function SafeFilter($arr) 
 {
-   $ra=Array('/([\x00-\x08,\x0b-\x0c,\x0e-\x19])/','/script/','/javascript/','/vbscript/','/expression/','/applet/'
-   ,'/meta/','/xml/','/blink/','/link/','/style/','/embed/','/object/','/frame/','/layer/','/title/','/bgsound/'
-   ,'/base/','/onload/','/onunload/','/onchange/','/onsubmit/','/onreset/','/onselect/','/onblur/','/onfocus/',
-   '/onabort/','/onkeydown/','/onkeypress/','/onkeyup/','/onclick/','/ondblclick/','/onmousedown/','/onmousemove/'
-   ,'/onmouseout/','/onmouseover/','/onmouseup/','/onunload/');
-     
-   if (is_array($arr))
-   {
-     foreach ($arr as $key => $value) 
-     {
-        if (!is_array($value))
-        {
-            if(version_compare(PHP_VERSION,'7.4','>=')){
-				$value  = addslashes($value); 
-			}else{
-				if (!get_magic_quotes_gpc()){
-					$value  = addslashes($value); 
-				}
-			}
-          $value = preg_replace($ra,'',$value);     //删除非打印字符，粗暴式过滤xss可疑字符串
-          $arr[$key]     = htmlentities(strip_tags($value)); //去除 HTML 和 PHP 标记并转换为 HTML 实体
-        }
-        else
-        {
-          SafeFilter($arr[$key]);
-        }
-     }
-   }
+   $ra=Array('/([\x00-\x08])/','/([\x0b-\x0c])/','/([\x0e-\x19])/','/script/','/javascript/');
+   $arr = preg_replace($ra,'',$arr);   
+   return $arr;
 }
 function array_format(&$item, $key)
 {
 	$item=trim($item);
+	$item = SafeFilter($item);
 	$item=htmlspecialchars($item, ENT_QUOTES);
 	if(version_compare(PHP_VERSION,'7.4','>=')){
 		$item = addslashes($item);
@@ -293,7 +270,7 @@ function GetIP(){
 function GetIP(){ 
   static $ip = '';
   $ip = $_SERVER['REMOTE_ADDR'];
-  if(isset($_SERVER['HTTP_CDN_SRC_IP'])) {
+  if(isset($_SERVER['HTTP_CDN_SRC_IP']) && preg_match('/^([0-9]{1,3}\.){3}[0-9]{1,3}$/', $_SERVER['HTTP_CDN_SRC_IP'])) {
     $ip = $_SERVER['HTTP_CDN_SRC_IP'];
   } elseif (isset($_SERVER['HTTP_CLIENT_IP']) && preg_match('/^([0-9]{1,3}\.){3}[0-9]{1,3}$/', $_SERVER['HTTP_CLIENT_IP'])) {
     $ip = $_SERVER['HTTP_CLIENT_IP'];
@@ -621,7 +598,7 @@ function setCache($str,$data,$timeout=-1){
 	//设置
 	$rdata['frcache_time'] = $timeout;
 	$rdata['frcache_data'] = $data;
-	
+	$str = get_domain().$str;
 	$s = md5($str).'frphp'.md5($str);
 	$cache_file_data = APP_PATH.'cache/data/'.$s.'.php';
 	if(!file_exists(APP_PATH.'cache/data')){
@@ -653,6 +630,7 @@ function getCache($str=false){
 	if(!$str){
 		return false;
 	}
+	$str = get_domain().$str;
 	//获取
 	$s = md5($str).'frphp'.md5($str);
 	$cache_file_data = APP_PATH.'cache/data/'.$s.'.php';

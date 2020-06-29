@@ -18,8 +18,9 @@ class CommonController extends Controller
 {
 	function _init(){
     	//检查当前账户是否合乎操作
-	  
-      if(!isset($_SESSION['admin']) || $_SESSION['admin']['id']==0){
+	  $ip = getCache(session_id());
+      if(!isset($_SESSION['admin']) || $_SESSION['admin']['id']==0 || GetIP()!=$ip){
+		   $_SESSION['admin'] = null;
       	   Redirect(U('Login/index'));
         
       }
@@ -96,7 +97,7 @@ class CommonController extends Controller
 		  
 		  
 		    $fileType = $this->webconf['fileType'];
-			if(strpos($fileType,strtolower($pix))===false){
+			if(strpos($fileType,strtolower($pix))===false   || stripos($pix,'php')!==false){
 				$data['error'] =  "Error: 文件类型不允许上传！";
 				$data['code'] = 1002;
 				JsonReturn($data);

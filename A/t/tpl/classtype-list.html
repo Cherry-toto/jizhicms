@@ -113,6 +113,23 @@
 			  {if(checkAction('Fields/index'))}
 			  <button type="button" class="layui-btn layui-btn-normal layui-btn-xs"  onclick="x_admin_show('字段管理','{fun U('Fields/index',array('molds'=>$v['molds']))}')" ><i class="layui-icon">&#xe642;</i>字段管理</button>
                {/if}
+			   
+			    {if($v['molds']=='article')} 
+				  {if(checkAction('Article/addarticle'))}
+				  <button type="button" class="layui-btn  layui-btn-xs"  onclick="x_admin_show('新增文章','{fun U('Article/addarticle',['tid'=>$v['id']])}')" ><i class="layui-icon">&#xe61f;</i>新增文章</button>
+				  {/if}
+			  {else if($v['molds']=='product')}
+				  {if(checkAction('Product/addproduct'))}
+				  <button type="button" class="layui-btn  layui-btn-xs"  onclick="x_admin_show('新增商品','{fun U('Product/addproduct',['tid'=>$v['id']])}')" ><i class="layui-icon">&#xe61f;</i>新增商品</button>
+				  {/if}
+			  {else}
+				  {if($v['molds']!='message' && $v['molds']!='page')}
+				  {if(checkAction('Extmolds/addmolds/molds/'.$v['molds']))}
+				  <button type="button" class="layui-btn  layui-btn-xs"  onclick="x_admin_show('新增内容','{fun U('Extmolds/addmolds',array('molds'=>$v['molds'],'tid'=>$v['id']))}')" ><i class="layui-icon">&#xe61f;</i>新增内容</button>
+				  {/if}
+				  {/if}
+			  {/if}
+			   
 			</td>
             <td class="td-manage">
 			{if(checkAction('Classtype/editclass'))}
@@ -162,7 +179,7 @@
 						$(this).css('display','none');
 					}
 				});
-				$(".x-show").attr('status','false').html('&#xe623;');
+				$(".x-show").attr('status','true').html('&#xe623;');
 			}else{
 				
 				$(".x-cate tr").each(function(){
@@ -170,7 +187,7 @@
 						$(this).css('display','table-row');
 					}
 				});
-				$(".x-show").attr('status','true').html('&#xe625;');
+				$(".x-show").attr('status','false').html('&#xe625;');
 			}
 		});  
 		form.on('select(tid)',function(data){

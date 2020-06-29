@@ -138,7 +138,12 @@ class Model {
          if($order!=null)$where .= " ORDER BY  ".$order;
       }
 		
-		if(!empty($limit))$where .= " LIMIT {$limit}";
+		if(!empty($limit)){
+			if(strpos($limit,',')===false){
+				$limit = ($limit<=0) ? 1 : $limit;
+			}
+			$where .= " LIMIT {$limit}";
+		}
 		$fields = empty($fields) ? "*" : $fields;
 		$table = self::$table;
 		$sql = "SELECT {$fields} FROM {$table} {$where}";

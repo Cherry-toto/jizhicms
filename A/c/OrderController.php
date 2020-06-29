@@ -137,7 +137,7 @@ class OrderController extends CommonController
 			$this->all = $all;
 			$this->overpay_num = $overpay_num;
 			$this->notpay_num = $notpay_num;
-			$this->allmoney = $allmoney;
+			$this->allmoney = round($allmoney,2);
 			JsonReturn(['code'=>0,'data'=>$ajaxdata,'count'=>$page->sum,'overpay_num'=>$this->overpay_num,'notpay_num'=>$this->notpay_num,'allmoney'=>$this->allmoney,'all'=>$this->all]);
 		}
 		

@@ -224,7 +224,7 @@ class HomeController extends CommonController
 					$orders = 'istop desc,addtime asc';
 				break;
 			}
-			
+			$limit = $limit<=0 ? 15 : $limit;
 			$data = $page->where($sql)->orderby($orders)->limit($limit)->page($this->frpage)->go();
 			$pages = $page->pageList(3,'-');
 			
@@ -324,6 +324,10 @@ class HomeController extends CommonController
 			
 			$this->positions_data = $newarray2;
 			$this->positions = $positions;
+			if(!$res['lists_html']){
+				$lists_html = M('molds')->getField(['biaoshi'=>$this->type['molds']],'list_html');
+				$res['lists_html'] = str_replace('.html','',$lists_html);
+			}
 			
 			$this->display($this->template.'/'.$res['molds'].'/'.$res['lists_html']);
 			if(!$this->frparam('ajax')){
@@ -526,7 +530,10 @@ class HomeController extends CommonController
 			
 			$this->positions_data = $newarray2;
 			$this->positions = $positions;
-			
+			if(!$res['lists_html']){
+				$lists_html = M('molds')->getField(['biaoshi'=>$this->type['molds']],'list_html');
+				$res['lists_html'] = str_replace('.html','',$lists_html);
+			}
 			$this->display($this->template.'/'.$res['molds'].'/'.$res['lists_html']);
 			if(!$this->frparam('ajax')){
 			$this->end_cache($this->cache_file);
@@ -693,7 +700,10 @@ class HomeController extends CommonController
 			
 			JsonReturn(['code'=>0,'jz'=>$details,'prev'=>$aprev,'next'=>$anext]);
 		}
-		
+		if(!$this->type['details_html']){
+			$details_html = M('molds')->getField(['biaoshi'=>$this->type['molds']],'details_html');
+			$this->type['details_html'] = str_replace('.html','',$details_html);
+		}
 		$this->display($this->template.'/'.$this->type['molds'].'/'.$this->type['details_html']);
 		
 	}
@@ -886,6 +896,8 @@ class HomeController extends CommonController
 	//错误页面
 	function error($msg){
 		$url = substr(REQUEST_URI,1);
+		$position = strpos($url, '?');
+        $url = $position === false ? $url : substr($url, 0, $position);
 		$r = M('customurl')->find(['url'=>$url]);
 		if($r){
 			$this->type = $this->classtypedata[$r['tid']];

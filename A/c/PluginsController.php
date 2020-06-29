@@ -443,6 +443,9 @@ class PluginsController extends CommonController
 				//移动前台插件控制器
 				$sourcefile = $dir.'/'.$filepath.'/controller/home';
 				$target = APP_PATH.'Home/plugins';
+				if(!is_dir($target)){
+					mkdir($target,0777);
+				}
 				if(is_dir($sourcefile) && is_dir($target)){
 					if (false != ($handle = opendir ( $sourcefile ))) {
 					
@@ -466,6 +469,9 @@ class PluginsController extends CommonController
 				//移动后台插件控制器
 				$sourcefile = $dir.'/'.$filepath.'/controller/admin';
 				$target = APP_PATH.'A/plugins';
+				if(!is_dir($target)){
+					mkdir($target,0777);
+				}
 				if(is_dir($sourcefile) && is_dir($target)){
 					if (false != ($handle = opendir ( $sourcefile ))) {
 						
@@ -502,6 +508,9 @@ class PluginsController extends CommonController
 				JsonReturn(array('code'=>0,'msg'=>'安装成功！'));
 			}else{
 				//卸载
+				if(stripos($filepath,'/')!==false){
+					JsonReturn(array('code'=>1,'msg'=>'非法操作！'));
+				}
 				$config = require_once($dir.'/'.$filepath.'/config.php');
 				$w = ['filepath'=>$filepath];
 				$plugins = M('plugins')->find($w);

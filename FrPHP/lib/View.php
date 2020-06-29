@@ -341,9 +341,11 @@ class View
 		if(isset($a['isall'])){$isall=trim($a['isall'],"'");}else{$isall=false;}
 		if(isset($a['as'])){$as=$a['as'];}else{$as='v';}
 		if(isset($a['day'])){$day=$a['day'];}else{$day=false;}
+		if(isset($a['jzpage'])){$jzpage=trim($a['jzpage'],"'");}else{$jzpage='page';}
 		if(isset($a['sql'])){$sql=trim($a['sql'],"'");}else{$sql='';}
 		if(isset($a['orderby'])){
 			$order=$a['orderby'];
+			if(strpos($a['orderby'],'$')!==FALSE){$order=trim($a['orderby'],"'");}
 			//$order=' '.str_replace('|',' ',$order).' ';
 		}else{$order="' id desc '";}
 		if(isset($a['like'])){
@@ -402,7 +404,7 @@ class View
 		if($sql){
 			$sql = " and '.".$sql.".'";
 		}
-		unset($a['table']);unset($a['orderby']);unset($a['limit']);unset($a['as']);unset($a['like']);unset($a['fields']);unset($a['isall']);unset($a['notin']);unset($a['notempty']);unset($a['empty']);unset($a['day']);unset($a['in']);unset($a['sql']);
+		unset($a['table']);unset($a['orderby']);unset($a['limit']);unset($a['as']);unset($a['like']);unset($a['fields']);unset($a['isall']);unset($a['notin']);unset($a['notempty']);unset($a['empty']);unset($a['day']);unset($a['in']);unset($a['sql']);unset($a['jzpage']);
 		$pages='';
 		$w = ' 1=1 ';
 		$ispage=false;
@@ -515,17 +517,18 @@ class View
 		\$".$as."_limit=$limit;";
 		
 		if($ispage){
+			
 			$txt .="
+			\$pagenum = (int)\$_REQUEST['".$jzpage."'] ? (int)\$_REQUEST['".$jzpage."']  : 1; 
 			\$".$as."_page = new FrPHP\Extend\Page(\$".$as."_table);
 			\$".$as."_page->typeurl = 'tpl';
-			\$".$as."_data = \$".$as."_page->where(\$".$as."_w)->fields(\$".$as."_fields)->orderby(\$".$as."_order)->limit(\$".$as."_limit)->page(\$frpage)->go();
-			\$".$as."_pages = \$".$as."_page->pageList(3,'?page=');
+			\$".$as."_data = \$".$as."_page->where(\$".$as."_w)->fields(\$".$as."_fields)->orderby(\$".$as."_order)->limit(\$".$as."_limit)->page(\$pagenum)->go();
+			\$".$as."_pages = \$".$as."_page->pageList(3,'?".$jzpage."=');
 			\$".$as."_sum = \$".$as."_page->sum;
 			\$".$as."_listpage = \$".$as."_page->listpage;
 			\$".$as."_prevpage = \$".$as."_page->prevpage;
 			\$".$as."_nextpage = \$".$as."_page->nextpage;
 			\$".$as."_allpage = \$".$as."_page->allpage;";
-			
 		}else{
 			
 			$txt .= "

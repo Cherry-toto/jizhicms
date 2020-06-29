@@ -96,6 +96,7 @@ class LoginController extends Controller
 			$where['email'] = $data['username'];
 			unset($where['tel']);
 			unset($where['token']);
+			$where['pass'] = md5(md5($data['password']).md5($data['password']));
 			$res2 = M('member')->find($where);
 
 			

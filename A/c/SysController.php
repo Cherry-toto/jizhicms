@@ -101,7 +101,13 @@ class SysController extends CommonController
 		}else{
 			$template = 'template';
 		}
-		$dir = APP_PATH.'Home/'.$template;
+		$rr = preg_match("/define\('TPL_PATH',[\'|\"](.*?)[\'|\"]\)/",$indexdata,$matches);
+		if($rr){
+			$tplpath = $matches[1];
+		}else{
+			$tplpath = 'Home';
+		}
+		$dir = APP_PATH.$tplpath.'/'.$template;
 		$fileArray=array();
 		if(is_dir($dir)){
 
@@ -246,12 +252,14 @@ class SysController extends CommonController
 				if(strpos($v['litpic'],'http')===false){
 					if(file_exists('.'.$v['litpic'])){
 						unlink('.'.$v['litpic']);
-						M('pictures')->delete(['id'=>$v['id']]);
 					}
+					
 				}else{
 					$isall = false;
 				}
+				M('pictures')->delete(['id'=>$v['id']]);
 			}
+			
 			if($isall){
 				JsonReturn(array('code'=>0,'msg'=>'批量删除成功！'));
 			}else{
@@ -277,7 +285,7 @@ class SysController extends CommonController
 			$pix = end($pix);
 			
 			$fileType = webConf('fileType');
-			if(strpos($fileType,strtolower($pix))===false){
+			if(strpos($fileType,strtolower($pix))===false  || stripos($pix,'php')!==false){
 				$data['error'] =  "Error: 文件类型不允许上传！";
 				$data['code'] = 1002;
 				JsonReturn($data);

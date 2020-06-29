@@ -201,7 +201,7 @@ class FrPHP
 		}
 		//去除二级目录
 		$url = str_replace(ROOT,'/',$url);
-		
+		$url = format_param($url,1);
 		define('REQUEST_URI',$url);
         $controllerName = DefaultController;
         $actionName = DefaultAction;
@@ -371,7 +371,7 @@ class FrPHP
 			error_reporting(E_ALL & ~E_NOTICE & ~E_WARNING);
             ini_set('display_errors','On');
         } else {
-            error_reporting(E_ALL);
+            error_reporting(0);
             ini_set('display_errors','Off');
             ini_set('log_errors', 'On');
         }

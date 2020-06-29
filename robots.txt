@@ -1,0 +1,9 @@
+User-agent: *
+Disallow: 
+Disallow: /A/
+Disallow: /Home/
+Disallow: /backup/
+Disallow: /cache/
+Disallow: /FrPHP/
+Disallow: /install/
+Disallow: /Conf/

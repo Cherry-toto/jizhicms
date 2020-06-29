@@ -59,6 +59,7 @@ class CommentController extends CommonController
 				$w['zid'] = $this->frparam('zid',0,0);
 				$w['pid'] = $this->frparam('pid',0,0);
 				$w['body'] = $this->frparam('body',1,null);
+				$w['reply'] = null;
 				if(!$w['body']){
 					if($this->frparam('ajax')){
 						JsonReturn(array('code'=>1,'msg'=>'评论内容不能为空！'));
@@ -109,6 +110,8 @@ class CommentController extends CommonController
 				
 				$w['userid'] = $_SESSION['member']['id'];
 				$w['likes'] = $this->frparam('star',1,0);
+				$w['isread'] = 0;
+				$w['zan'] = 0;
 				$w['addtime'] = time();
 				$n = M('comment')->add($w);
 				if($n){

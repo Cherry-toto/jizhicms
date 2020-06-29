@@ -60,6 +60,7 @@ DROP TABLE IF EXISTS `jz_classtype`;
 CREATE TABLE `jz_classtype` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `classname` varchar(50) DEFAULT NULL,
+  `seo_classname` varchar(50) DEFAULT NULL,
   `molds` varchar(50) DEFAULT NULL,
   `litpic` varchar(255) DEFAULT NULL,
   `description` varchar(255) DEFAULT NULL,
@@ -240,6 +241,16 @@ CREATE TABLE `jz_links` (
   `member_id` int(11) NOT NULL DEFAULT '0',
   `target` varchar(255)  DEFAULT NULL,
   `ownurl` varchar(255)  DEFAULT NULL,
+  `addtime` int(11) NOT NULL DEFAULT '0',
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+-- ----------------------------
+-- Table structure for jz_link_type
+-- ----------------------------
+DROP TABLE IF EXISTS `jz_link_type`;
+CREATE TABLE `jz_link_type` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `name` varchar(50) DEFAULT NULL,
   `addtime` int(11) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
@@ -605,8 +616,8 @@ INSERT INTO `jz_level` (`id`,`name`,`pass`,`tel`,`gid`,`email`,`regtime`,`logint
 -- ----------------------------
 INSERT INTO `jz_level_group` (`id`,`name`,`isadmin`,`paction`,`isagree`,`description`) VALUES ('1','超级管理员','1',',Fields,','1', NULL);
 INSERT INTO `jz_level_group` (`id`,`name`,`isadmin`,`paction`,`isagree`,`description`) VALUES ('2','网站管理员','0',',Member,Article,Comment,Message,Fields/get_fields,Index,Sys/index,Sys/loginlog,Sys/pictures,Sys/uploadcert,Sys/deletePic,Sys/deletePicAll,Sys/custom_del,Sys/email-order,Sys/payconfig,Sys/wechatbind,Classtype,Extmolds,Collect,Common,Product,Order,Wechat,','1','网站管理员，客户使用分组，权限仅次于超级管理员。');
-INSERT INTO `jz_level_group` (`id`,`name`,`isadmin`,`paction`,`isagree`,`description`) VALUES ('3','Blog','0',',Member,Article,Comment,Message,Fields/get_fields,Index/index,Index/welcome,Index/beifen,Index/backup,Index/huanyuan,Index/shanchu,Index/details,Index/desktop,Index/desktop_edit,Index/unicode,Index/update_session_maxlifetime,Index/cleanCache,Index/showlabel,Index/sitemap,Index/tohtml,Index/html_classtype,Index/html_molds,Sys/index,Sys/loginlog,Sys/pictures,Sys/uploadcert,Sys/deletePic,Sys/deletePicAll,Sys/custom_del,Classtype,Molds,Plugins,Extmolds/index/molds/links,Extmolds/addmolds/molds/links,Extmolds/editmolds/molds/links,Extmolds/copymolds/molds/links,Extmolds/deletemolds/molds/links,Extmolds/deleteAll/molds/links,Extmolds/editOrders,Extmolds/changeType/molds/links,Extmolds/copyAll/molds/links,Extmolds/editOrders/molds/links,Collect,Common,Common/uploads,Product,','1','Blog角色-主要用户blog用户使用，比较简洁');
-INSERT INTO `jz_level_group` (`id`,`name`,`isadmin`,`paction`,`isagree`,`description`) VALUES ('4','基础建站','0',',Article,Message,Fields/get_fields,Index/index,Index/welcome,Index/beifen,Index/backup,Index/huanyuan,Index/shanchu,Index/details,Index/update_session_maxlifetime,Index/cleanCache,Index/sitemap,Index/tohtml,Index/html_classtype,Index/html_molds,Sys/index,Sys/uploadcert,Classtype/index,Classtype/editclass,Classtype/editClassOrders,Classtype/change_status,Classtype/get_pinyin,Extmolds/index/molds/links,Extmolds/addmolds/molds/links,Extmolds/editmolds/molds/links,Extmolds/copymolds/molds/links,Extmolds/deletemolds/molds/links,Extmolds/deleteAll/molds/links,Extmolds/changeType/molds/links,Extmolds/copyAll/molds/links,Extmolds/editOrders/molds/links,Collect,Common,Common/uploads,Product,','1','基础建站，会员评论等功能模块去除');
+INSERT INTO `jz_level_group` (`id`,`name`,`isadmin`,`paction`,`isagree`,`description`) VALUES ('3','Blog','0',',Member,Article,Comment,Message,Fields/get_fields,Index/index,Index/welcome,Index/beifen,Index/backup,Index/huanyuan,Index/shanchu,Index/details,Index/desktop,Index/desktop_edit,Index/unicode,Index/update_session_maxlifetime,Index/cleanCache,Index/showlabel,Index/sitemap,Index/tohtml,Index/html_classtype,Index/html_molds,Sys/index,Sys/loginlog,Sys/pictures,Sys/uploadcert,Sys/deletePic,Sys/deletePicAll,Sys/custom_del,Classtype,Molds,Plugins,Links/index,Links/addlinks,Links/editlinks,Links/copylinks,Links/deletelinks,Links/deleteAll,Links/editOrders,Links/changeType,Links/copyAll,Links/editOrders,Links/linktype,Links/linktypeadd,Links/linktypeedit,Links/linktypedelete,Collect,Common,Common/uploads,Product,','1','Blog角色-主要用户blog用户使用，比较简洁');
+INSERT INTO `jz_level_group` (`id`,`name`,`isadmin`,`paction`,`isagree`,`description`) VALUES ('4','基础建站','0',',Article,Message,Fields/get_fields,Index/index,Index/welcome,Index/beifen,Index/backup,Index/huanyuan,Index/shanchu,Index/details,Index/update_session_maxlifetime,Index/cleanCache,Index/sitemap,Index/tohtml,Index/html_classtype,Index/html_molds,Sys/index,Sys/uploadcert,Classtype/index,Classtype/editclass,Classtype/editClassOrders,Classtype/change_status,Classtype/get_pinyin,Links/index,Links/addlinks,Links/editlinks,Links/copylinks,Links/deletelinks,Links/deleteAll,Links/editOrders,Links/changeType,Links/copyAll,Links/editOrders,Links/linktype,Links/linktypeadd,Links/linktypeedit,Links/linktypedelete,Collect,Common,Common/uploads,Product,','1','基础建站，会员评论等功能模块去除');
 -- ----------------------------
 -- Records of jz_links
 -- ----------------------------
@@ -623,19 +634,19 @@ INSERT INTO `jz_member_group` (`id`,`name`,`description`,`paction`,`pid`,`isagre
 -- ----------------------------
 -- Records of jz_molds
 -- ----------------------------
-INSERT INTO `jz_molds` (`id`,`name`,`biaoshi`,`sys`,`isopen`,`isclasstype`,`ismust` ,`iscontrol`,`isshowclass`) VALUES ('1','内容','article','1','1','1','1','1','1');
+INSERT INTO `jz_molds` (`id`,`name`,`biaoshi`,`sys`,`isopen`,`isclasstype`,`ismust` ,`iscontrol`,`isshowclass`,`list_html`,`details_html`) VALUES ('1','内容','article','1','1','1','1','1','1','article-list.html','article-details.html');
 INSERT INTO `jz_molds` (`id`,`name`,`biaoshi`,`sys`,`isopen`,`isclasstype`,`ismust` ,`iscontrol`,`isshowclass`) VALUES ('2','栏目','classtype','1','1','1','1','1','1');
 INSERT INTO `jz_molds` (`id`,`name`,`biaoshi`,`sys`,`isopen`,`isclasstype`,`ismust` ,`iscontrol`,`isshowclass`) VALUES ('3','会员','member','1','1','0','0','0','0');
 INSERT INTO `jz_molds` (`id`,`name`,`biaoshi`,`sys`,`isopen`,`isclasstype`,`ismust` ,`iscontrol`,`isshowclass`) VALUES ('4','订单','orders','1','1','0','0','0','0');
 INSERT INTO `jz_molds` (`id`,`name`,`biaoshi`,`sys`,`isopen`,`isclasstype`,`ismust` ,`iscontrol`,`isshowclass`) VALUES ('5','商品','product','1','1','1','1','1','1');
 INSERT INTO `jz_molds` (`id`,`name`,`biaoshi`,`sys`,`isopen`,`isclasstype`,`ismust` ,`iscontrol`,`isshowclass`) VALUES ('6','会员分组','member_group','1','1','1','0','0','0');
 INSERT INTO `jz_molds` (`id`,`name`,`biaoshi`,`sys`,`isopen`,`isclasstype`,`ismust` ,`iscontrol`,`isshowclass`) VALUES ('7','评论','comment','1','1','0','0','0','0');
-INSERT INTO `jz_molds` (`id`,`name`,`biaoshi`,`sys`,`isopen`,`isclasstype`,`ismust` ,`iscontrol`,`isshowclass`) VALUES ('8','留言','message','1','1','1','0','0','1');
+INSERT INTO `jz_molds` (`id`,`name`,`biaoshi`,`sys`,`isopen`,`isclasstype`,`ismust` ,`iscontrol`,`isshowclass`,`list_html`) VALUES ('8','留言','message','1','1','1','0','0','1','message.html');
 INSERT INTO `jz_molds` (`id`,`name`,`biaoshi`,`sys`,`isopen`,`isclasstype`,`ismust` ,`iscontrol`,`isshowclass`) VALUES ('9','轮播图','collect','1','1','0','0','0','0');
 INSERT INTO `jz_molds` (`id`,`name`,`biaoshi`,`sys`,`isopen`,`isclasstype`,`ismust` ,`iscontrol`,`isshowclass`) VALUES ('10','友情链接','links','1','1','0','0','0','0');
 INSERT INTO `jz_molds` (`id`,`name`,`biaoshi`,`sys`,`isopen`,`isclasstype`,`ismust` ,`iscontrol`,`isshowclass`) VALUES ('11','管理员','level','1','1','0','0','0','0');
 INSERT INTO `jz_molds` (`id`,`name`,`biaoshi`,`sys`,`isopen`,`isclasstype`,`ismust` ,`iscontrol`,`isshowclass`) VALUES ('12','TAG','tags','1','1','0','0','0','0');
-INSERT INTO `jz_molds` (`id`,`name`,`biaoshi`,`sys`,`isopen`,`isclasstype`,`ismust` ,`iscontrol`,`isshowclass`) VALUES ('13','单页','page','1','1','1','1','1','1');
+INSERT INTO `jz_molds` (`id`,`name`,`biaoshi`,`sys`,`isopen`,`isclasstype`,`ismust` ,`iscontrol`,`isshowclass`,`list_html`) VALUES ('13','单页','page','1','1','1','1','1','1','page.html');
 -- ----------------------------
 -- Records of jz_orders
 -- ----------------------------
@@ -820,12 +831,12 @@ INSERT INTO `jz_ruler` (`id`,`name`,`fc`,`pid`,`isdesktop`,`sys`) VALUES ('91','
 INSERT INTO `jz_ruler` (`id`,`name`,`fc`,`pid`,`isdesktop`,`sys`) VALUES ('92','删除轮播图分类','Collect/collectTypeDelete','82','0','1');
 INSERT INTO `jz_ruler` (`id`,`name`,`fc`,`pid`,`isdesktop`,`sys`) VALUES ('93','批量复制','Article/copyAll','8','0','1');
 INSERT INTO `jz_ruler` (`id`,`name`,`fc`,`pid`,`isdesktop`,`sys`) VALUES ('94','批量修改栏目','Article/changeType','8','0','1');
-INSERT INTO `jz_ruler` (`id`,`name`,`fc`,`pid`,`isdesktop`,`sys`) VALUES ('95','友情链接列表','Extmolds/index/molds/links','77','1','0');
-INSERT INTO `jz_ruler` (`id`,`name`,`fc`,`pid`,`isdesktop`,`sys`) VALUES ('96','新增友情链接','Extmolds/addmolds/molds/links','77','0','0');
-INSERT INTO `jz_ruler` (`id`,`name`,`fc`,`pid`,`isdesktop`,`sys`) VALUES ('97','修改友情链接','Extmolds/editmolds/molds/links','77','0','0');
-INSERT INTO `jz_ruler` (`id`,`name`,`fc`,`pid`,`isdesktop`,`sys`) VALUES ('98','复制友情链接','Extmolds/copymolds/molds/links','77','0','0');
-INSERT INTO `jz_ruler` (`id`,`name`,`fc`,`pid`,`isdesktop`,`sys`) VALUES ('99','删除友情链接','Extmolds/deletemolds/molds/links','77','0','0');
-INSERT INTO `jz_ruler` (`id`,`name`,`fc`,`pid`,`isdesktop`,`sys`) VALUES ('100','批量删除友情链接','Extmolds/deleteAll/molds/links','77','0','0');
+INSERT INTO `jz_ruler` (`id`,`name`,`fc`,`pid`,`isdesktop`,`sys`) VALUES ('95','友情链接列表','Links/index','77','1','0');
+INSERT INTO `jz_ruler` (`id`,`name`,`fc`,`pid`,`isdesktop`,`sys`) VALUES ('96','新增友情链接','Links/addlinks','77','0','0');
+INSERT INTO `jz_ruler` (`id`,`name`,`fc`,`pid`,`isdesktop`,`sys`) VALUES ('97','修改友情链接','Links/editlinks','77','0','0');
+INSERT INTO `jz_ruler` (`id`,`name`,`fc`,`pid`,`isdesktop`,`sys`) VALUES ('98','复制友情链接','Links/copylinks','77','0','0');
+INSERT INTO `jz_ruler` (`id`,`name`,`fc`,`pid`,`isdesktop`,`sys`) VALUES ('99','删除友情链接','Links/deletelinks','77','0','0');
+INSERT INTO `jz_ruler` (`id`,`name`,`fc`,`pid`,`isdesktop`,`sys`) VALUES ('100','批量删除友情链接','Links/deleteAll','77','0','0');
 INSERT INTO `jz_ruler` (`id`,`name`,`fc`,`pid`,`isdesktop`,`sys`) VALUES ('101','通用模块','Common','0','0','1');
 INSERT INTO `jz_ruler` (`id`,`name`,`fc`,`pid`,`isdesktop`,`sys`) VALUES ('102','上传文件','Common/uploads','101','0','1');
 INSERT INTO `jz_ruler` (`id`,`name`,`fc`,`pid`,`isdesktop`,`sys`) VALUES ('103','更新cookie','Index/update_session_maxlifetime','32','0','1');
@@ -884,11 +895,11 @@ INSERT INTO `jz_ruler` (`id`,`name`,`fc`,`pid`,`isdesktop`,`sys`) VALUES ('155',
 INSERT INTO `jz_ruler` (`id`,`name`,`fc`,`pid`,`isdesktop`,`sys`) VALUES ('156','更新模块HTML','Index/html_molds','32','0','1');
 INSERT INTO `jz_ruler` (`id`,`name`,`fc`,`pid`,`isdesktop`,`sys`) VALUES ('157','批量修改推荐属性','Article/changeAttribute','8','0','1');
 INSERT INTO `jz_ruler` (`id`,`name`,`fc`,`pid`,`isdesktop`,`sys`) VALUES ('158','批量修改推荐属性','Product/changeAttribute','104','0','1');
-INSERT INTO `jz_ruler` (`id`,`name`,`fc`,`pid`,`isdesktop`,`sys`) VALUES ('159','批量修改友情链接栏目','Extmolds/changeType/molds/links','77','0','0');
+INSERT INTO `jz_ruler` (`id`,`name`,`fc`,`pid`,`isdesktop`,`sys`) VALUES ('159','批量修改友情链接栏目','Links/changeType','77','0','0');
 INSERT INTO `jz_ruler` (`id`,`name`,`fc`,`pid`,`isdesktop`,`sys`) VALUES ('160','批量修改TAG栏目','Extmolds/changeType/molds/tags','77','0','0');
-INSERT INTO `jz_ruler` (`id`,`name`,`fc`,`pid`,`isdesktop`,`sys`) VALUES ('161','批量复制友情链接','Extmolds/copyAll/molds/links','77','0','0');
+INSERT INTO `jz_ruler` (`id`,`name`,`fc`,`pid`,`isdesktop`,`sys`) VALUES ('161','批量复制友情链接','Links/copyAll','77','0','0');
 INSERT INTO `jz_ruler` (`id`,`name`,`fc`,`pid`,`isdesktop`,`sys`) VALUES ('162','批量复制TAG','Extmolds/copyAll/molds/tags','77','0','0');
-INSERT INTO `jz_ruler` (`id`,`name`,`fc`,`pid`,`isdesktop`,`sys`) VALUES ('163','批量修改友情链接排序','Extmolds/editOrders/molds/links','77','0','0');
+INSERT INTO `jz_ruler` (`id`,`name`,`fc`,`pid`,`isdesktop`,`sys`) VALUES ('163','批量修改友情链接排序','Links/editOrders','77','0','0');
 INSERT INTO `jz_ruler` (`id`,`name`,`fc`,`pid`,`isdesktop`,`sys`) VALUES ('164','批量修改TAG排序','Extmolds/editOrders/molds/tags','77','0','0');
 INSERT INTO `jz_ruler` (`id`,`name`,`fc`,`pid`,`isdesktop`,`sys`) VALUES ('165','删除订单','Order/deleteorder','128','0','1');
 INSERT INTO `jz_ruler` (`id`,`name`,`fc`,`pid`,`isdesktop`,`sys`) VALUES ('166','批量删除','Admin/deleteAll','48','0','1');
@@ -900,7 +911,7 @@ INSERT INTO `jz_ruler` (`id`,`name`,`fc`,`pid`,`isdesktop`,`sys`) VALUES ('171',
 INSERT INTO `jz_ruler` (`id`,`name`,`fc`,`pid`,`isdesktop`,`sys`) VALUES ('172','批量审核','Product/checkAll','104','0','1');
 INSERT INTO `jz_ruler` (`id`,`name`,`fc`,`pid`,`isdesktop`,`sys`) VALUES ('173','批量审核','Message/checkAll','21','0','1');
 INSERT INTO `jz_ruler` (`id`,`name`,`fc`,`pid`,`isdesktop`,`sys`) VALUES ('174','批量审核','Comment/checkAll','15','0','1');
-INSERT INTO `jz_ruler` (`id`,`name`,`fc`,`pid`,`isdesktop`,`sys`) VALUES ('175','批量审核友情链接','Extmolds/checkAll/molds/links','77','0','0');
+INSERT INTO `jz_ruler` (`id`,`name`,`fc`,`pid`,`isdesktop`,`sys`) VALUES ('175','批量审核友情链接','Links/checkAll','77','0','0');
 INSERT INTO `jz_ruler` (`id`,`name`,`fc`,`pid`,`isdesktop`,`sys`) VALUES ('176','批量审核TAG','Extmolds/checkAll/molds/tags','77','0','0');
 INSERT INTO `jz_ruler` (`id`,`name`,`fc`,`pid`,`isdesktop`,`sys`) VALUES ('177','充值列表','Order/czlist','128','1','1');
 INSERT INTO `jz_ruler` (`id`,`name`,`fc`,`pid`,`isdesktop`,`sys`) VALUES ('178','手动充值','Order/chongzhi','128','0','1');
@@ -910,10 +921,14 @@ INSERT INTO `jz_ruler` (`id`,`name`,`fc`,`pid`,`isdesktop`,`sys`) VALUES ('181',
 INSERT INTO `jz_ruler` (`id`,`name`,`fc`,`pid`,`isdesktop`,`sys`) VALUES ('182','插件更新','Plugins/update','75','0','1');
 INSERT INTO `jz_ruler` (`id`,`name`,`fc`,`pid`,`isdesktop`,`sys`) VALUES ('183','获取栏目模板','Classtype/get_html','41','0','1');
 INSERT INTO `jz_ruler` (`id`,`name`,`fc`,`pid`,`isdesktop`,`sys`) VALUES ('184','批量修改栏目','Classtype/changeClass','41','0','1');
+INSERT INTO `jz_ruler` (`id`,`name`,`fc`,`pid`,`isdesktop`,`sys`) VALUES ('185','友情链接分类列表','Links/linktype','77','1','1');
+INSERT INTO `jz_ruler` (`id`,`name`,`fc`,`pid`,`isdesktop`,`sys`) VALUES ('186','新增友情链接分类','Links/linktypeadd','77','0','1');
+INSERT INTO `jz_ruler` (`id`,`name`,`fc`,`pid`,`isdesktop`,`sys`) VALUES ('187','修改友情链接分类','Links/linktypeedit','77','0','1');
+INSERT INTO `jz_ruler` (`id`,`name`,`fc`,`pid`,`isdesktop`,`sys`) VALUES ('188','删除友情链接分类','Links/linktypedelete','77','0','1');
 -- ----------------------------
 -- Records of jz_sysconfig
 -- ----------------------------
-INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`) VALUES ('1','web_version','系统版号', NULL,'0','1.7.1');
+INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`) VALUES ('1','web_version','系统版号', NULL,'0','1.8');
 INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`) VALUES ('2','web_name','网站SEO名称', NULL,'0','极致CMS建站系统');
 INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`) VALUES ('3','web_keyword','网站SEO关键词', NULL,'0','极致CMS');
 INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`) VALUES ('4','web_desc','网站SEO描述', NULL,'0','极致CMS');
@@ -1023,6 +1038,7 @@ INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`) VALUES ('1
 INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`) VALUES ('109','ispicsdes','开启多图描述', '开启后图集每张图可以添加描述，注意模板输出需要更改输出方式！(附件同理)','0','1');
 INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`) VALUES ('110','isregister','前台用户注册', '关闭前台注册后，前台无法进入注册页面','0','1');
 INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`) VALUES ('111','onlyinvite','仅邀请码注册', '开启后，必须通过邀请链接才能注册！','0','0');
+INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`) VALUES ('112','release_table','允许前台发布模块', '防止数据泄露,填写允许发布模块标识,留空表示不允许发布,多个表可用|分割','0','article|product');
 -- ----------------------------
 -- Records of jz_tags
 -- ----------------------------

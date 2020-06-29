@@ -13,6 +13,7 @@ class WxpayH5Service
     protected $returnUrl;
     protected $wapUrl;
     protected $wapName;
+    protected $webip;
 
     public function __construct($mchid, $appid, $key)
     {
@@ -49,6 +50,10 @@ class WxpayH5Service
     {
         $this->returnUrl = $returnUrl;
     }
+	public function setIp($webip)
+    {
+        $this->webip = $webip;
+    }
 
     /**
      * 发起订单
@@ -76,7 +81,7 @@ class WxpayH5Service
             'nonce_str' => self::createNonceStr(),
             'notify_url' => $this->notifyUrl,
             'out_trade_no' => $this->outTradeNo,
-            'spbill_create_ip' => $_SERVER['REMOTE_ADDR'],
+            'spbill_create_ip' => $this->webip,
             'total_fee' => intval($this->totalFee * 100),       //单位 转为分
             'trade_type' => 'MWEB',
             'scene_info'=>json_encode($scene_info)

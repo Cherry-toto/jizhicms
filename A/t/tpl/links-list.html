@@ -8,7 +8,7 @@
         <div class="x-nav">
             <span class="layui-breadcrumb">
               <a><cite>首页</cite></a>
-              <a><cite>{$molds['name']}管理</cite></a>
+              <a><cite>扩展模块管理</cite></a>
               <a><cite>{$molds['name']}列表</cite></a>
               
             </span>
@@ -23,35 +23,28 @@
 					<form class="layui-form layui-col-md12 x-so" method="get" id="myform">
 					<div class="layui-input-inline">
 					  <select name="isshow" lay-filter="isshow" class="layui-inline autosubmit">
-					  <option value="">是否审核</option>
+					  <option value="">是否显示</option>
 					   
-					   <option {if($isshow==1)} selected="selected" {/if}value="1">已审</option>
-					   <option {if($isshow==2)} selected="selected" {/if}value="2">未审</option>
-					   <option {if($isshow==3)} selected="selected" {/if}value="3">退回</option>
+					   <option {if($isshow==1)} selected="selected" {/if}value="1">显示</option>
+					   <option {if($isshow==2)} selected="selected" {/if}value="2">不显示</option>
+					   
 					   
 					
 					  </select>
 					</div>
-					<div class="layui-input-inline">
-					<select class="layui-inline" name="shuxing"   >
-					   <option value="">选择推荐属性</option>
-					   <option   value="1">置顶</option>
-					   <option   value="2">热点</option>
-					   <option   value="3">推荐</option>
-					   </select>
-					</div>
+					
 					<div class="layui-input-inline">
 					  <select name="tid" lay-filter="tid" lay-search class="layui-inline autosubmit">
-					  <option value="">请选择栏目</option>
-					   {foreach $classtypes as $v}
-					   {if($v['molds']=='product')}
-					   <option {if($tid==$v['id'])} selected="selected" {/if}value="{$v['id']}">{fun str_repeat('--', $v['level']), $v['classname']}</option>
-					   {/if}
-					   {/foreach}
+					  <option value="">请选择分类</option>
+					   {loop table="link_type"  as="v"}
+					 
+					   <option {if($tid==$v['id'])} selected="selected" {/if}value="{$v['id']}">{$v['name']}</option>
+					  
+					   {/loop}
 					
 					  </select>
 					</div>
-					  <input type="text" name="title" value="{$title}" placeholder="请输入标题" autocomplete="off" class="layui-input">
+					
 					  {$fields_search}
 					  <button class="layui-btn"  lay-submit="" lay-filter="search"><i class="layui-icon">&#xe615;</i></button>
 					</form>
@@ -63,94 +56,65 @@
 		<table class="layui-hide" lay-data="{id: 'jizhi_table'}" id="jizhi_table" lay-filter="jizhi_table"></table>
 		<input id="select_data" type="hidden" value="" />
 		<script type="text/html" id="rightbar">
-		{if(checkAction('Product/editproduct'))}
+		{if(checkAction('Links/editlinks'))}
 			<button class="layui-btn layui-btn-xs" lay-event="edit"><i class="layui-icon">&#xe642;</i>编辑</button>
 		{/if}
 		
-			<button class="layui-btn layui-btn-xs layui-btn-normal" lay-event="view"><i class="layui-icon">&#xe615;</i>预览</button>
-		{if(checkAction('Product/deleteproduct'))}
+		
+		{if(checkAction('Links/deletelinks'))}
 			<button class="layui-btn layui-btn-xs layui-btn-danger" lay-event="delete"><i class="layui-icon">&#xe640;</i>删除</button>
 		{/if}
-		{if(checkAction('Product/copyproduct'))}
+		{if(checkAction('Links/copylinks'))}
 			<button class="layui-btn layui-btn-xs layui-btn-warm" lay-event="copy"><i class="layui-icon">&#xe655;</i>复制</button>
-		{/if}
-			
+		{/if}	
 		</script>
 		<script type="text/html" id="toolbar">
 		 <div class="layui-btn-container" style="font-size:15px;">
-		 {if(checkAction('Product/deleteAll'))}
+		 {if(checkAction('Links/deleteAll'))}
 			   <button class="layui-btn layui-btn-danger" onclick="delAll()"><i class="layui-icon">&#xe640;</i>批量删除</button>
 		 {/if}
-		 {if(checkAction('Product/copyAll'))}
+		 {if(checkAction('Links/copyAll'))}
 			   <button class="layui-btn layui-btn-warm" onclick="copyAll()"><i class="layui-icon">&#xe655;</i>批量复制</button>
 		 {/if}
-		 {if(checkAction('Product/changeType'))}
+		 {if(checkAction('Links/changeType'))}
+			
 			   <div class="layui-input-inline" style="margin-right: 10px;margin-bottom: 10px;">
-			   <select class="layui-btn" id="change_tid" lay-search=""  lay-filter="change_tid" >
-			   <option value="0">批量修改栏目</option>
-			   {foreach $classtypes as $v}
-			   {if($v['molds']=='product')}
-			   <option   value="{$v['id']}">{fun str_repeat('--', $v['level']), $v['classname']}</option>
-			   {/if}
-			   {/foreach}
+			   <select class="layui-btn" id="change_tid"  lay-search="" lay-filter="change_tid" >
+			   <option value="0">批量修改分类</option>
+			   
+			   {loop table="link_type"  as="v"}
+			   <option value="{$v['id']}">{$v['name']}</option>
+			   {/loop}
 			   </select>
 			   </div>
+			  
 		 {/if}
-		  {if(checkAction('Product/changeAttribute'))}
-			   <div class="layui-input-inline" style="margin-right: 10px;margin-bottom: 10px;">
-			   <select class="layui-btn" id="change_tuijian"  lay-filter="change_tuijian" >
-			   <option value="0">修改推荐属性</option>
-			   <option   value="1">置顶</option>
-			   <option   value="2">热点</option>
-			   <option   value="3">推荐</option>
-			   </select>
-			   </div>
-		  {/if}
-		  {if(checkAction('Product/checkAll'))}	
+		 {if(checkAction('Links/checkAll'))}
 		  <div class="layui-input-inline" style="margin-right: 10px;margin-bottom: 10px;width:150px;">
 			   <select class="layui-btn" id="change_isshow"  lay-filter="change_isshow" >
-			   <option value="0">批量审核</option>
-			   <option   value="1">已审</option>
-			   <option   value="2">未审</option>
-			   <option   value="3">退回</option>
+			   <option value="0">批量处理</option>
+			   <option   value="1">显示</option>
+			   <option   value="2">不显示</option>
 			  
 			   </select>
-			   </div>
+		  </div>
 		 {/if}
-		    {if(checkAction('Product/addproduct'))}
-			   <button class="layui-btn" onclick="x_admin_show('新增{$molds['name']}','{fun U('Product/addproduct')}')"><i class="layui-icon">&#xe608;</i>新增</button>
-			{/if}  
+		 {if(checkAction('Links/addlinks'))}
+			   <button class="layui-btn" onclick="x_admin_show('新增{$molds['name']}','{fun U('Links/addlinks',array('molds'=>$molds['biaoshi']))}')"><i class="layui-icon">&#xe608;</i>新增</button>
+		 {/if}	  
+		 {if(checkAction('Links/linktype'))}
+		  <a href="{fun U('Links/linktype')}"><button class="layui-btn" >友情链接分类</button></a>
+		 {/if}	  
 			
 		 </div>
 		</script>
-		<script type="text/html" id="tuijian">
-			{{#  if(d.istop ==1){ }}
-			<span class="layui-badge layui-bg-black">顶</span>
-			{{#  } }}
-			{{#  if(d.ishot==1){ }}
-		        <span class="layui-badge">热</span>
-		    {{#  } }}
-		    {{#  if(d.istuijian==1){ }}
-		        <span class="layui-badge layui-bg-green">荐</span>
-		    {{#  } }}
-		</script>
 		<script type="text/html" id="isshow">
 			{{#  if(d.isshow ==1){ }}
-			<span class="layui-badge layui-bg-green">已审</span>
-			{{#  } else if(d.isshow ==2){ }}
-		    <span class="layui-badge layui-bg-black">退回</span>
+			<span class="layui-badge layui-bg-green">显示</span>
 		    {{#  } else{ }}
-		    <span class="layui-badge">未审</span>
+		    <span class="layui-badge">不显示</span>
 		    {{#  } }}
 		</script>
-	 	<script type="text/html" id="litpic">
-			{{#  if(!d.litpic){ }}
-			无
-		    {{#  } else{ }}
-		    <a href="{{d.litpic}}" target="_blank"><img src="{{d.litpic}}" width="100px" /></a>
-		    {{#  } }}
-		</script>
-
 	 
 		<script>
 	 
@@ -166,7 +130,6 @@
 			  table.render({
 				elem: '#jizhi_table'
 				,height: 650
-				,cellMinWidth: 80
 				,url: window.location.href+'?ajax=1' //数据接口
 				,page: true //开启分页
 				,size:'lg'
@@ -181,24 +144,21 @@
 				  ,last: true //显示尾页
 				  ,count:500
 				  ,limit:10
-				  ,first: '首页' //不显示首页
-				  ,last: '尾页' //不显示尾页
 				  
 				}
 				,cols: [[ //表头
-				  {field: 'id', title: 'ID', width:50, sort: true, fixed:'left'}
+				  {field: 'id', title: 'ID', width:50, sort: true,fixed:'left'}
 				  ,{type:'checkbox'}
 				  ,{field: 'orders', title: '排序',width: 100, edit:'text',sort: true}
-				  {if($molds['isclasstype']==1)}
-				  ,{field: 'new_tid', title: '栏目', sort: true}
+				  ,{field: 'new_tid', title: '分类',width:150, sort: true}
+				  {foreach $fields_list as $k=>$v}
+				  ,{field: '{$v['field']}',width:150, title: '{$v['fieldname']}'{if($v['fieldtype']==1 || $v['fieldtype']==2)},edit:'text'{/if}}
+				  {/foreach}
+				  ,{field: 'new_isshow', title: '审核', width: 100,templet:'#isshow'}
+				  {if(checkAction('Links/copylinks') || checkAction('Links/deletelinks') || checkAction('Links/editlinks'))}
+				  ,{field: '', title: '操作', toolbar: '#rightbar',width:280, fixed:'right'}
 				  {/if}
-				  ,{field: 'tuijian', title: '推荐', templet: '#tuijian'}
-				  ,{field: 'title', title: '标题', edit:'text', sort: true}
-				  ,{field: 'new_litpic', title: '缩略图',templet: '#litpic'} 
-				  {foreach $fields_list as $v},{field: '{$v['field']}', title: '{$v['fieldname']}'}{/foreach}
-				  ,{field: 'new_isshow', title: '审核', width: 100,templet: '#isshow'}
-				  ,{field: 'new_addtime', title: '时间'}
-				  ,{field: '', title: '操作',width:280, toolbar: '#rightbar', fixed:'right'}
+				 
 				 
 				]]
 			  });
@@ -222,7 +182,7 @@
 					  case 'delete':
 							layer.confirm('确认要删除吗？',function(index){
 				
-								$.post("{fun U('Product/deleteproduct')}",{id:data.id},function(r){
+								$.post("{fun U('Links/deletelinks')}",{molds:"{$molds['biaoshi']}",id:data.id},function(r){
 										var r = JSON.parse(r);
 										if(r.code==0){
 										 //发异步删除数据
@@ -250,7 +210,7 @@
 					  break;
 					  case 'copy':
 					  
-							$.post("{fun U('Product/copyproduct')}",{id:data.id},function(r){
+							$.post("{fun U('Links/copylinks')}",{molds:"{$molds['biaoshi']}",id:data.id},function(r){
 								var r = JSON.parse(r);
 								if(r.code==0){
 									layer.msg(r.msg,{icon: 1,time:1000},function(){
@@ -302,11 +262,11 @@
 				  console.log(obj.field); //当前编辑的字段名
 				  console.log(obj.data); //所在行的所有相关数据  
 				*/
-				
 				  var id = obj.data.id;
 				  var value = obj.value;
 				  var field = obj.field;
-				  $.post("{fun U('Product/editProductOrders')}",{'id':id,'value':value,'field':field},function(r){
+				
+					$.post("{fun U('Links/editOrders')}",{'id':id,'field':field,'value':value,'molds':'{$molds['biaoshi']}'},function(r){
 						var r = JSON.parse(r);
 						if(r.code==0){
 							$("#select_data").val('');
@@ -320,7 +280,6 @@
 						}
 						
 					});
-
 				  
 				  
 				});
@@ -349,7 +308,7 @@
 					}
 					layer.confirm('确认要批量修改['+datas+']内容为['+tid+']分类吗？',function(index){
 						
-						$.post("{fun U('Product/changeType')}",{data:datas,tid:tid},function(r){
+						$.post("{fun U('Links/changeType')}",{molds:"{$molds['biaoshi']}",data:datas,tid:tid},function(r){
 						
 								var r = JSON.parse(r);
 								if(r.code==0){
@@ -374,57 +333,8 @@
 					
 				
 			    });
-				
-				
-				form.on('select(change_tuijian)', function(data){
-					
-					
-					var datas =  $("#select_data").val();
-					var tj = parseInt(data.value);
-					if(tj==0){
-						alert('请选择修改属性！');return false;
-					}
-					if(datas==''){
-						alert('请选择修改对象！');return false;
-					}
-					if(tj==1){
-						var tuijian = '置顶';
-					}else if(tj==2){
-						var tuijian = '热点';
-					}else{
-						var tuijian = '推荐';
-					}
-					layer.confirm('确认要批量修改栏目ID为['+datas+']的属性为['+tuijian+']吗？<br/>【如果推荐属性相同，则取消该属性】',function(index){
-						
-						$.post("{fun U('Product/changeAttribute')}",{data:datas,tj:tj},function(r){
-								
-								var r = JSON.parse(r);
-								if(r.code==0){
-									$("#select_data").val('');
-									layer.msg('批量修改成功', {icon: 1,time:1000},function(){
-										table.reload('jizhi_table', {
-										  url: window.location.href+'?ajax=1'
-										  ,where: {} //设定异步数据接口的额外参数
-										 
-										});
-									});
-									
-								}else{
-									
-									layer.msg(r.msg,{icon: 5,time:1000});
-								}
-						})
-						
-						
-						
-					});
-					
-				
-			    });
-				
-				 form.on('select(change_isshow)', function(data){
-					
-					
+
+			    form.on('select(change_isshow)', function(data){
 					var datas =  $("#select_data").val();
 					var isshow = parseInt(data.value);
 					if(isshow==0){
@@ -434,20 +344,20 @@
 						alert('请选择审核对象！');return false;
 					}
 					if(isshow==1){
-						var tip = '显示';
+						var tip = '已审核';
 					}else if(isshow==2){
-						var tip = '不显示';
+						var tip = '未审核';
 					}else{
 						var tip = '退回';
 					}
 					layer.confirm('确认要批量处理['+datas+']的为['+tip+']吗？',function(index){
 						
-						$.post("{fun U('Product/checkAll')}",{data:datas,isshow:isshow},function(r){
+						$.post("{fun U('Links/checkAll')}",{molds:"{$molds['biaoshi']}",data:datas,isshow:isshow},function(r){
 								
 								var r = JSON.parse(r);
 								if(r.code==0){
 									$("#select_data").val('');
-									layer.msg('批量审核成功', {icon: 1,time:1000},function(){
+									layer.msg('批量处理成功', {icon: 1,time:1000},function(){
 										table.reload('jizhi_table', {
 										  url: window.location.href+'?ajax=1'
 										  ,where: {} //设定异步数据接口的额外参数
@@ -468,7 +378,8 @@
 				
 			    });
 				
-				
+
+			
 			 
               
             });
@@ -487,17 +398,13 @@
 				}
 				layer.confirm('确认要删除吗？'+data,function(index){
 					
-					$.post("{fun U('Product/deleteAll')}",{data:data},function(r){
-					
+					$.post("{fun U('Links/deleteAll')}",{molds:"{$molds['biaoshi']}",data:data},function(r){
 							var r = JSON.parse(r);
 							if(r.code==0){
-							  
 							  layer.msg('批量删除成功', {icon: 1,time:1000},function(){
 								window.location.reload();
 							  });
-							  
 							}else{
-								
 								layer.msg(r.msg,{icon: 5,time:1000});
 							}
 					})
@@ -514,7 +421,7 @@
 				}
 				layer.confirm('确认要复制吗？['+data+']',function(index){
 					
-					$.post("{fun U('Product/copyAll')}",{data:data},function(r){
+					$.post("{fun U('Links/copyAll')}",{molds:"{$molds['biaoshi']}",data:data},function(r){
 					
 							var r = JSON.parse(r);
 							if(r.code==0){

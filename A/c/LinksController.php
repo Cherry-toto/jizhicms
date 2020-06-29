@@ -13,73 +13,19 @@
 
 namespace A\c;
 
-use FrPHP\lib\Controller;
+use A\c\CommonController;
 use FrPHP\Extend\Page;
 
-class ExtmoldsController extends Controller
+class LinksController extends CommonController
 {
-	function _init(){
-		$ip = getCache(session_id());
-		if(!isset($_SESSION['admin']) || $_SESSION['admin']['id']==0 || GetIP()!=$ip){
-			Redirect(U('Login/index'));
-			
-		}
-			
-		if($_SESSION['admin']['isadmin']!=1){
-			if(strpos($_SESSION['admin']['paction'],','.APP_CONTROLLER.',')===false){
-				$molds = $this->frparam('molds',1);
-				$action = APP_CONTROLLER.'/'.APP_ACTION.'/molds/'.$molds;
-				
-				if(strpos($_SESSION['admin']['paction'],','.$action.',')===false){
-				   $ac = M('Ruler')->find(array('fc'=>$action));
-				   if($this->frparam('ajax')){
-					   
-					   JsonReturn(['code'=>1,'msg'=>'您没有【'.$ac['name'].'】的权限！','url'=>U('Index/index')]);
-				   }
-				   Error('您没有'.$ac['name'].'的权限！');
-				}
-			}
-		   
-		  
-		}
-		 $this->admin = $_SESSION['admin'];
-		
-		  $webconf = webConf();
-		  $template = get_template();
-		  $this->webconf = $webconf;
-		  $this->template = $template;
-		  $this->tpl = Tpl_style.$template.'/';
-		  $customconf = get_custom();
-		  $this->customconf = $customconf;
-		  $this->classtypetree =  get_classtype_tree();
-		  if($_SESSION['admin']['isadmin']!=1){
-			$tids = $_SESSION['admin']['tids'];
-			foreach ($this->classtypetree as $k => $v) {
-				if($v['pid']==0){
-					if(strpos($_SESSION['admin']['tids'],','.$v['id'].',')!==false){
-						$children = get_children($v,$this->classtypetree,5);
-						foreach($children as $vv){
-							if(strpos($_SESSION['admin']['tids'],','.$vv['id'].',')===false){
-								$tids .= ','.$vv['id'].',';
-							}
-						}
-					}
-				}
-				
-			}
-			
-		}else{
-			$tids = '0';
-		}
-		$this->tids = $tids;
-	}
+	
 	public function index(){
 		
 		$classtypedata = classTypeData();
 		foreach($classtypedata as $k=>$v){
 			$classtypedata[$k]['children'] = get_children($v,$classtypedata);
 		}
-		$molds = $this->frparam('molds',1);
+		$molds = 'links';
 		if($molds==''){
 			Error('模块为空，请选择模块！');
 		}
@@ -121,15 +67,10 @@ class ExtmoldsController extends Controller
 			$data = $page->where($sql)->orderby('orders desc,id desc')->limit($this->frparam('limit',0,10))->page($this->frparam('page',0,1))->go();
 			$ajaxdata = [];
 			foreach($data as $k=>$v){
-				if(isset($classtypedata[$v['tid']])){
-					$v['new_tid'] = $v['tid']!=0 ? $classtypedata[$v['tid']]['classname'] : '-';
-				}else{
-					$v['new_tid'] = '[未分类]';
-				}
-				
+				$v['new_tid'] = get_info_table('link_type',array('id'=>$v['tid']),'name');
 				$v['new_isshow'] = $v['isshow']==1 ? '已审' : ($v['isshow']==2 ? '退回' : '未审');
 				$v['view_url'] = $v['htmlurl']!='' ? get_domain().'/'.$v['htmlurl'].'/'.$v['id'] : '';
-				$v['edit_url'] = U('Extmolds/editmolds',array('id'=>$v['id'],'molds'=>$molds));
+				$v['edit_url'] = U('Links/editlinks',array('id'=>$v['id'],'molds'=>$molds));
 				
 				foreach($this->fields_list as $vv){
 					$v[$vv['field']] = format_fields($vv,$v[$vv['field']]);
@@ -150,12 +91,12 @@ class ExtmoldsController extends Controller
 		
 		
 		
-		$this->display('extmolds-list');
+		$this->display('links-list');
 		
 	}
 	
-	public function addmolds(){
-		$molds = $this->frparam('molds',1);
+	public function addlinks(){
+		$molds = 'links';
 		$this->fields_biaoshi = $molds;
 		if($this->frparam('go',1)==1){
 			
@@ -182,7 +123,7 @@ class ExtmoldsController extends Controller
 				if(isset($data['ownurl'])){
 					M('customurl')->add(['molds'=>$molds,'tid'=>$data['tid'],'url'=>$data['ownurl'],'addtime'=>time(),'aid'=>$r]);
 				}
-				JsonReturn(array('code'=>0,'msg'=>'添加成功,继续添加~','url'=>U('Extmolds/addmolds',['tid'=>$data['tid'],'molds'=>$molds])));
+				JsonReturn(array('code'=>0,'msg'=>'添加成功,继续添加~','url'=>U('Links/addlinks',['tid'=>$data['tid'],'molds'=>$molds])));
 				
 			}else{
 				
@@ -197,11 +138,11 @@ class ExtmoldsController extends Controller
 		$this->tid =  $this->frparam('tid',0,0);
 		$this->molds = M('Molds')->find(array('biaoshi'=>$molds));
 		
-		$this->display('extmolds-add');
+		$this->display('links-add');
 	}
 	
-	public function editmolds(){
-		$molds = $this->frparam('molds',1);
+	public function editlinks(){
+		$molds = 'links';
 		$this->fields_biaoshi = $molds;
 		if($this->frparam('go',1)==1){
 			
@@ -296,12 +237,12 @@ class ExtmoldsController extends Controller
 		$this->tid =  $this->data['tid'];
 		$this->classtypetree =  get_classtype_tree();
 		$this->classtypes = $this->classtypetree;
-		$this->display('extmolds-edit');
+		$this->display('links-edit');
 	}
 	
-	public function  copymolds(){
+	public function  copylinks(){
 		$id = $this->frparam('id');
-		$molds = $this->frparam('molds',1);
+		$molds = 'links';
 		if($id){
 			$data = M($molds)->find(['id'=>$id]);
 			unset($data['id']);
@@ -322,7 +263,7 @@ class ExtmoldsController extends Controller
 	//批量删除
 	function deleteAll(){
 		$data = $this->frparam('data',1);
-		$molds = $this->frparam('molds',1);
+		$molds = 'links';
 		if($data!=''){
 			if(M($molds)->delete('id in('.$data.')')){
 				JsonReturn(array('code'=>0,'msg'=>'批量删除成功！'));
@@ -333,9 +274,9 @@ class ExtmoldsController extends Controller
 		}
 	}
 	//单一删除
-	function deletemolds(){
+	function deletelinks(){
 		$id = $this->frparam('id');
-		$molds = $this->frparam('molds',1);
+		$molds = 'links';
 		if($id){
 			if(M($molds)->delete('id='.$id)){
 				
@@ -352,7 +293,7 @@ class ExtmoldsController extends Controller
 
 		$field = $this->frparam('field',1);
 		$w[$field] = $this->frparam('value',1);
-		$molds = $this->frparam('molds',1);
+		$molds = 'links';
 		$r = M($molds)->update(array('id'=>$this->frparam('id')),$w);
 		if(!$r){
 			JsonReturn(array('code'=>1,'info'=>'修改失败！'));
@@ -370,8 +311,6 @@ class ExtmoldsController extends Controller
 			$r = true;
 			foreach($list as $v){
 				$w['tid'] = $tid;
-				$type = M('classtype')->find(array('id'=>$tid));
-				$w['htmlurl'] = $type['htmlurl'];
 				M($molds)->update(array('id'=>$v['id']),$w);
 			}
 			JsonReturn(array('code'=>0,'msg'=>'批量修改成功！'));
@@ -380,7 +319,7 @@ class ExtmoldsController extends Controller
 	//批量复制
 	function copyAll(){
 		$data = $this->frparam('data',1);
-		$molds = $this->frparam('molds',1);
+		$molds = 'links';
 		if($data!=''){
 			$list = M($molds)->findAll('id in('.$data.')');
 			$r = true;
@@ -459,4 +398,62 @@ class ExtmoldsController extends Controller
 			JsonReturn(array('code'=>1,'msg'=>'批量审核失败！'));
 		}
 	}
+
+	function linktype(){
+		$lists = M("link_type")->findAll();
+		$this->lists = $lists;
+		$this->display('linktype-list');
+	}
+	
+	function linktypeadd(){
+		if($this->frparam('go')==1){
+			$data['name'] = $this->frparam('name',1);
+				$data['addtime'] = time();
+				if(M('link_type')->add($data)){
+					JsonReturn(array('code'=>0,'msg'=>'新增成功！'));
+				}else{
+					JsonReturn(array('code'=>1,'msg'=>'新增失败！'));
+				}
+		}
+		$this->display('linktype-add');
+	}
+
+	function linktypeedit(){
+		$id = $this->frparam('id');
+		if($id){
+			if($this->frparam('go')==1){
+				$data['name'] = $this->frparam('name',1);
+				$data['addtime'] = time();
+				if(M('link_type')->update(array('id'=>$id),$data)){
+					JsonReturn(array('code'=>0,'msg'=>'修改成功！'));
+				}else{
+					JsonReturn(array('code'=>1,'msg'=>'修改失败！'));
+				}
+			}
+			$data =  M("link_type")->find(array('id'=>$id));
+			$this->data = $data;
+			$this->display('linktype-edit');
+		}
+
+	}
+
+	function linktypedelete(){
+		$id = $this->frparam('id');
+		if($id){
+			//检测该分类下是否存在内容
+			$r = M('linktype')->getCount(array('tid'=>$id));
+			if($r){
+				JsonReturn(array('code'=>1,'msg'=>'该分类下存在内容，请先删除该分类下的内容！'));
+			}
+
+			if(M('link_type')->delete('id='.$id)){
+				JsonReturn(array('code'=>0,'msg'=>'删除成功！'));
+			}else{
+				JsonReturn(array('code'=>1,'msg'=>'删除失败！'));
+			}
+		}
+	}
+	
+	
+
 }

@@ -192,7 +192,7 @@ class OrderController extends Controller
 			//未设置在线支付
 			//提示接收信息邮箱
 			//检测是否已经配置邮件发送
-			if($this->webconf['isopenemail']==1){
+			if($this->webconf['isopenemail']==1 && $order['ptype']==1){
 				if($this->webconf['email_server'] && $this->webconf['email_port'] &&  $this->webconf['send_email'] &&  $this->webconf['send_pass']){
 					$title = '您的订单提交成功通知-'.$this->webconf['web_name'];
 					if($this->webconf['tj_msg']!=''){
@@ -486,9 +486,10 @@ class OrderController extends Controller
 						$payAmount = $order['price'];          //付款金额，单位:元
 						$orderName = '支付订单-'.$order['orderno'];    //订单标题
 						$notifyUrl = U('Mypay/wechat_notify_pay');     //付款成功后的回调地址(不要有问号)
-						$returnUrl = U('Mypay/wechat_return_pay').'?orderno='.$order['orderno'];     //付款成功后，页面跳转的地址
+						$returnUrl = U('Mypay/check_wechat_order').'?orderno='.$order['orderno'];     //付款成功后，页面跳转的地址
 						$wapUrl = $_SERVER['HTTP_HOST'];   //WAP网站URL地址
 						$wapName = $this->webconf['web_name']; //WAP 网站名
+						$webip = GetIP();
 						/** 配置结束 */
 
 						$wxPay = new \WxpayH5Service($mchid,$appid,$apiKey);
@@ -499,6 +500,7 @@ class OrderController extends Controller
 						$wxPay->setReturnUrl($returnUrl);
 						$wxPay->setWapUrl($wapUrl);
 						$wxPay->setWapName($wapName);
+						$wxPay->setIp($webip);
 
 						$mwebUrl= $wxPay->createJsBizPackage($payAmount,$outTradeNo,$orderName,$notifyUrl);
 						//echo "<h1><a href='{$mwebUrl}'>点击跳转至支付页面</a></h1>";
@@ -644,14 +646,6 @@ class OrderController extends Controller
 
 			}else {
 				
-				//额外支付插件处理
-				if($this->webconf['isopenjifen']!=1){
-					if($this->frparam('ajax')){
-						JsonReturn(['code'=>1,'msg'=>'未开启积分支付！','url'=>$return_url]);
-					}
-					Error('未开启积分支付！',$return_url);
-					
-				}
 				//交易提醒
 				$task['aid'] = $order['id'];
 				$task['tid'] = 0;

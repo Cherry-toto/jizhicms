@@ -56,6 +56,9 @@ class ClasstypeController extends CommonController
 				$htmlurl = $classtypetree[$this->frparam('pid')]['htmlurl'].'/'.$htmlurl;
 			}
 			
+			if(in_array(strtolower($htmlurl),array('message','user','comment','home','common','order','tags','wechat','login'))){
+				JsonReturn(array('status'=>0,'info'=>'URL链接命名不能是：message,user,comment,home,common,order,tags,wechat,login,jzpay'));
+			}
 			
 
 			$w['pid'] = $this->frparam('pid');
@@ -126,7 +129,9 @@ class ClasstypeController extends CommonController
 				$htmlurl = str_replace(' ','',pinyin($this->frparam('classname',1)));
 			}
 			
-			
+			if(in_array(strtolower($htmlurl),array('message','user','comment','home','common','order','tags','wechat','login'))){
+				JsonReturn(array('status'=>0,'info'=>'URL链接命名不能是：message,user,comment,home,common,order,tags,wechat,login,jzpay'));
+			}
 			$w['pid'] = $this->frparam('pid');
 			$w['orders'] = $this->frparam('orders');
 			$w['classname'] = $this->frparam('classname',1);
@@ -349,8 +354,13 @@ class ClasstypeController extends CommonController
 		}else{
 			$template = 'template';
 		}
-		
-		$dir = APP_PATH.'Home/'.$template.'/'.$this->webconf['pc_template'].'/'.strtolower($molds);
+		$rr = preg_match("/define\('TPL_PATH',[\'|\"](.*?)[\'|\"]\)/",$indexdata,$matches2);
+		if($rr){
+			$tplpath = $matches2[1];
+		}else{
+			$tplpath = 'Home';
+		}
+		$dir = APP_PATH.$tplpath.'/'.$template.'/'.$this->webconf['pc_template'].'/'.strtolower($molds);
 		$fileArray=array();
 		if(is_dir($dir)){
 

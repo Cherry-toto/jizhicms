@@ -138,11 +138,11 @@ class ArticleController extends CommonController
 			$data['description'] = ($this->frparam('description',1)=='') ? newstr(strip_tags($data['body']),160) : $this->frparam('description',1);
 			$data['description'] = str_replace(' ','',$data['description']);
 			if(strlen($data['description'])>255){
-				JsonReturn(array('code'=>1,'msg'=>'简介内容过多，请修改120字以内！'));
+				$data['description'] = newstr($data['description'],160);
 			}
 			
 			if($this->frparam('litpic',1)==''){
-				$pattern='/<img.+src=[\"|\'](.*?)[\"|\']+.*?>/i';
+				$pattern='/<img.*?src="(.*?)".*?>/is';
 				if($this->frparam('body',1)!=''){
 					$r = preg_match($pattern,$_POST['body'],$matchContent);
 					if($r){
@@ -265,11 +265,11 @@ class ArticleController extends CommonController
 			$data['description'] = ($this->frparam('description',1)=='') ? newstr(strip_tags($data['body']),160) : $this->frparam('description',1);
 			$data['description'] = str_replace(' ','',$data['description']);
 			if(strlen($data['description'])>255){
-				JsonReturn(array('code'=>1,'msg'=>'简介内容过多，请修改120字以内！'));
+				$data['description'] = newstr($data['description'],160);
 			}
 			
 			if($this->frparam('litpic',1)==''){
-				$pattern='/<img.+src=[\"|\'](.*?)[\"|\']+.*?>/i';
+				$pattern='/<img.*?src="(.*?)".*?>/is';
 				if($this->frparam('body',1)!=''){
 					$r = preg_match($pattern,$_POST['body'],$matchContent);
 					if($r){

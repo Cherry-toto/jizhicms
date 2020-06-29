@@ -116,7 +116,7 @@ class CommonController extends Controller
 			$pix = explode('.',$v);
 		    $pix = end($pix);
 		    $fileType = webConf('fileType');
-			if(strpos($fileType,strtolower($pix))===false){
+			if(strpos($fileType,strtolower($pix))===false || stripos($pix,'php')!==false){
 				$data['error'] =  "Error: 文件类型不允许上传！";
 				$data['code'] = 1002;
 				JsonReturn($data);
@@ -226,7 +226,7 @@ class CommonController extends Controller
 		  }
 		 
 			$fileType = webConf('fileType');
-			if(strpos($fileType,strtolower($pix))===false){
+			if(strpos($fileType,strtolower($pix))===false  || stripos($pix,'php')!==false){
 				$data['error'] =  "Error: 文件类型不允许上传！";
 				$data['code'] = 1002;
 				JsonReturn($data);
@@ -477,9 +477,9 @@ class CommonController extends Controller
             		if($v!=''){
 						if($this->webconf['ispicsdes']==1){
 							$pic = explode('|',$v);
-							$l .= '<span><img src="'.$pic[0].'" height="100"  /><input name="pictures_url[]" type="text" value="'.$pic[0].'"><input name="pictures_des[]" placeholder="文字描述"  type="text" value="'.$pic[1].'"><button type="button" onclick="deleteImage_auto(this)">删除</button></span>';
+							$l .= '<span><img src="'.$pic[0].'" height="100"  /><input name="pictures_urls[]" type="text" value="'.$pic[0].'"><input name="pictures_des[]" placeholder="文字描述"  type="text" value="'.$pic[1].'"><button type="button" onclick="deleteImage_auto(this)">删除</button></span>';
 						}else{
-							$l .= '<span><img src="'.$v.'" height="100"  /><input name="pictures_url[]" type="text" value="'.$v.'"><button type="button" onclick="deleteImage_auto(this)">删除</button></span>';
+							$l .= '<span><img src="'.$v.'" height="100"  /><input name="pictures_urls[]" type="text" value="'.$v.'"><button type="button" onclick="deleteImage_auto(this)">删除</button></span>';
 						}
             			 
             		}
@@ -635,9 +635,9 @@ class CommonController extends Controller
 		            		if($v!=''){
 								if($this->webconf['ispicsdes']==1){
 									$pic = explode('|',$v);
-									$l .= '<span><img src="'.$pic[0].'" height="100"  /><input name="'.$v['field'].'_url[]" type="text" value="'.$pic[0].'"><input name="'.$v['field'].'_des[]" type="text" placeholder="文字描述"  value="'.$pic[1].'" ><button type="button" onclick="deleteImage_auto(this)">删除</button></span>';
+									$l .= '<span><img src="'.$pic[0].'" height="100"  /><input name="'.$v['field'].'_urls[]" type="text" value="'.$pic[0].'"><input name="'.$v['field'].'_des[]" type="text" placeholder="文字描述"  value="'.$pic[1].'" ><button type="button" onclick="deleteImage_auto(this)">删除</button></span>';
 								}else{
-									$l .= '<span><img src="'.$v.'" height="100"  /><input name="'.$v['field'].'_url[]" type="text" value="'.$v.'"><button type="button" onclick="deleteImage_auto(this)">删除</button></span>';
+									$l .= '<span><img src="'.$v.'" height="100"  /><input name="'.$v['field'].'_urls[]" type="text" value="'.$v.'"><button type="button" onclick="deleteImage_auto(this)">删除</button></span>';
 								}
 		            			 
 		            		}
@@ -670,7 +670,7 @@ class CommonController extends Controller
 					 if($this->webconf['ispicsdes']==1){
 						  $l.=' result +=\'<span><img src="\' + response["urls"][i] + \'" height="100"  /><input name="'.$v['field'].'_urls[]" type="text" value="\' + response["urls"][i] + \'" ><input name="'.$v['field'].'_des[]" type="text" placeholder="文字描述"  value="" ><button type="button" onclick="deleteImage_auto(this)">删除</button></span>\';';
 					  }else{
-						  $l.=' result +=\'<span><img src="\' + response["urls"][i] + \'" height="100"  /><input name="pictures_urls[]" type="text" value="\' + response["urls"][i] + \'" ><button type="button" onclick="deleteImage_auto(this)">删除</button></span>\';';
+						  $l.=' result +=\'<span><img src="\' + response["urls"][i] + \'" height="100"  /><input name="'.$v['field'].'_urls[]" type="text" value="\' + response["urls"][i] + \'" ><button type="button" onclick="deleteImage_auto(this)">删除</button></span>\';';
 					  }
 						$l.='}
 					          $(".view_img_'.$v['field'].'").append(result);	
@@ -774,9 +774,9 @@ class CommonController extends Controller
 		            		if($v!=''){
 								if($this->webconf['ispicsdes']==1){
 									$pic = explode('|',$v);
-									$l .= '<span><input name="'.$v['field'].'_url[]" type="text" value="'.$pic[0].'"><input name="'.$v['field'].'_des[]" type="text" placeholder="文字描述"  value="'.$pic[1].'" ><button type="button" onclick="deleteImage_auto(this)">删除</button></span>';
+									$l .= '<span><input name="'.$v['field'].'_urls[]" type="text" value="'.$pic[0].'"><input name="'.$v['field'].'_des[]" type="text" placeholder="文字描述"  value="'.$pic[1].'" ><button type="button" onclick="deleteImage_auto(this)">删除</button></span>';
 								}else{
-									$l .= '<span><input name="'.$v['field'].'_url[]" type="text" value="'.$v.'"><button type="button" onclick="deleteImage_auto(this)">删除</button></span>';
+									$l .= '<span><input name="'.$v['field'].'_urls[]" type="text" value="'.$v.'"><button type="button" onclick="deleteImage_auto(this)">删除</button></span>';
 								}
 		            			 
 		            		}

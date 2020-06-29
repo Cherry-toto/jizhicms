@@ -20,7 +20,7 @@
       </div>
       <div class="user-content">
         <h2>资料与账号</h2>
-        <form action="" method="POST" onsubmit="checkform()" id="myupload" class="user-form">
+        <form action="" method="POST" onsubmit="checkform()" id="jizhiform" class="user-form">
           <div class="form-control">
             <label for="">头像：</label>
               <span class="view_img">{if($member['litpic'])}<img src="{$member['litpic']}" height="100" style="border-radius: 50%;" />{/if}</span><br/>
@@ -128,7 +128,7 @@ function checkform(){
 }
 $(document).ready(function(){
   $("#fileid").change(function(){
-    var form=document.getElementById("myupload");
+    var form=document.getElementById("jizhiform");
     var data =new FormData(form);
     $.ajax({
        url: "{fun U('common/uploads')}",//处理图片的文件路径

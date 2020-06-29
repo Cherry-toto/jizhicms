@@ -733,6 +733,16 @@
                             </div>
                         </div>
                         
+						<div  class="layui-form-item">
+                            <label  style="width:150px"  class="layui-form-label">
+                                允许前台发布模块
+                            </label>
+                            <div  style="margin-left: 150px;"   class="layui-input-block">
+                                <input type="text" name="search_table" value="{$config['release_table']}" autocomplete="off" placeholder="防止数据泄露,填写允许发布模块标识,留空表示不允许发布,多个表可用|分割,如：article|product "
+                                class="layui-input">
+                            </div>
+                        </div>
+						
                          <div class="layui-form-item" pane>
                             <label for="isopenhomepower" style="width:150px" class="layui-form-label">
                                 <span class="x-red"></span>是否开启前台权限

@@ -467,6 +467,7 @@ class IndexController extends CommonController
 					}
 					break;
 					case 'data':
+					$ip = getCache(session_id());
 					if(is_dir(APP_PATH.'cache/data')){
 						if($handle = opendir(APP_PATH.'cache/data')){
 			
@@ -479,6 +480,7 @@ class IndexController extends CommonController
 						  closedir($handle);
 						}
 					}
+					setCache(session_id(),$ip);
 					break;
 					case 'pc_html':
 					

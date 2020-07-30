@@ -419,7 +419,7 @@ class ProductController extends CommonController
 		$id = $this->frparam('id');
 		if($id){
 			if(M('product')->delete('id='.$id)){
-				//Success('删除成功！',U('index'));
+				M('customurl')->delete(['molds'=>'product','aid'=>$id]);
 				JsonReturn(array('code'=>0,'msg'=>'删除成功！'));
 			}else{
 				//Error('删除失败！');
@@ -453,6 +453,7 @@ class ProductController extends CommonController
 		$data = $this->frparam('data',1);
 		if($data!=''){
 			if(M('product')->delete('id in('.$data.')')){
+				M('customurl')->delete(" aid in(".$data.") and molds='product' ");
 				JsonReturn(array('code'=>0,'msg'=>'批量删除成功！'));
 				
 			}else{

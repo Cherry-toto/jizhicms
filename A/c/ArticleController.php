@@ -457,6 +457,7 @@ class ArticleController extends CommonController
 		$id = $this->frparam('id');
 		if($id){
 			if(M('Article')->delete('id='.$id)){
+				M('customurl')->delete(['molds'=>'article','aid'=>$id]);
 				JsonReturn(array('code'=>0,'msg'=>'删除成功！'));
 			}else{
 				JsonReturn(array('code'=>1,'msg'=>'删除失败！'));
@@ -483,6 +484,7 @@ class ArticleController extends CommonController
 		$data = $this->frparam('data',1);
 		if($data!=''){
 			if(M('article')->delete('id in('.$data.')')){
+				M('customurl')->delete(" aid in(".$data.") and molds='article' ");
 				JsonReturn(array('code'=>0,'msg'=>'批量删除成功！'));
 				
 			}else{

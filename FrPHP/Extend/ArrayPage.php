@@ -41,6 +41,8 @@
 		public $datalist = array();
 		//当前分页数组
 		public $listpage = array();
+		//分页标识
+		public $pagetype = 'page';
 		
 		
 		
@@ -51,29 +53,25 @@
 				exit('不是数组！');
 			}
 			
-			$this->currentPage = !isset($_GET['page']) ? 1 : $_GET['page'];
-			$param = $_REQUEST;
-			if(isset($param['page'])){
-				unset($param['page']);
+			
+			
+		}
+		
+		public function query($param){
+			$this->currentPage = !isset($_GET[$this->pagetype]) ? 1 : $_GET[$this->pagetype];
+			if(is_array($param)){
+				if(isset($param[$this->pagetype])){
+					unset($param[$this->pagetype]);
+				}
+				$url = http_build_query($param);
+			}else{
+				$url = '';
 			}
-			$this->url = http_build_query($param);
 			
-			
+			$this->url = $url;
+			return $this;
 		}
-		
 	
-		
-		/**
-	
-		格式化数组为pathinfo格式
-
-		**/
-
-		function array_pathInfo($url){
-			$url = http_build_query(array_filter($url));
-			$url = str_ireplace(array('&','='),'/',$url);
-			return $url;
-		}
 		/*
 		
 		<div class="pagination">
@@ -136,9 +134,9 @@
 			$listpage['allpage'] = $this->allpage;	
 
 			if($this->url==''){
-				$this->url.='?page=';
+				$this->url.='?'.$this->pagetype.'=';
 			}else{
-				$this->url = '?'.$this->url.'&page=';
+				$this->url = '?'.$this->url.'&'.$this->pagetype.'=';
 			}
 			$listpage['current'] = $this->url.$this->currentPage;	
 			for($i=1;$i<=$this->allpage;$i++){

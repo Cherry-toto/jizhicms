@@ -67,7 +67,7 @@ class HomeController extends CommonController
 				//内容详情页
 				$html = $urls[0];
 				$id = (int)$urls[1];
-				$res = M('classtype')->find(array('htmlurl'=>$html));
+				$res = M('classtype')->find(array('htmlurl'=>$html,'isclose'=>0));
 			}else{
 				
 				
@@ -75,7 +75,7 @@ class HomeController extends CommonController
 				$this->frpage = $this->frparam('page',0,1);
 				if(strpos($url,'-')!==false){
 					//检测是否为分页
-					$res = M('classtype')->find(array('htmlurl'=>$url));
+					$res = M('classtype')->find(array('htmlurl'=>$url,'isclose'=>0));
 					if(!$res){
 						//存在分页,取最后一个字符串
 						$html_x = explode('-',$url);
@@ -84,7 +84,7 @@ class HomeController extends CommonController
 							$this->error('链接错误！');exit;
 						}
 						$html = implode('-',$html_x);//再次拼接
-						$res = M('classtype')->find(array('htmlurl'=>$html));
+						$res = M('classtype')->find(array('htmlurl'=>$html,'isclose'=>0));
 						
 					}else{
 						//不是分页
@@ -93,7 +93,7 @@ class HomeController extends CommonController
 					
 				}else{
 					$html = $url;
-					$res = M('classtype')->find(array('htmlurl'=>$html));
+					$res = M('classtype')->find(array('htmlurl'=>$html,'isclose'=>0));
 					
 				}
 			}
@@ -102,7 +102,7 @@ class HomeController extends CommonController
 			//开启URL层级
 			//判断是否为栏目
 			$html=$url;
-			$res = M('classtype')->find(array('htmlurl'=>$html));
+			$res = M('classtype')->find(array('htmlurl'=>$html,'isclose'=>0));
 			if(!$res){
 				
 				if(strpos($url,'/')!==false){
@@ -118,7 +118,7 @@ class HomeController extends CommonController
 						}
 						$urls[] = implode('-',$html_x);//再次拼接
 						$html = implode('/',$urls);
-						$res = M('classtype')->find(array('htmlurl'=>$html));
+						$res = M('classtype')->find(array('htmlurl'=>$html,'isclose'=>0));
 						
 					}else{
 						//可能是数字？
@@ -127,7 +127,7 @@ class HomeController extends CommonController
 						if($id<0){
 							$this->error('链接错误！');exit;
 						}
-						$res = M('classtype')->find(array('htmlurl'=>$html));
+						$res = M('classtype')->find(array('htmlurl'=>$html,'isclose'=>0));
 					}
 					
 					
@@ -146,11 +146,11 @@ class HomeController extends CommonController
 							$this->error('链接错误！');exit;
 						}
 						$html = implode('-',$html_x);//再次拼接
-						$res = M('classtype')->find(array('htmlurl'=>$html));
+						$res = M('classtype')->find(array('htmlurl'=>$html,'isclose'=>0));
 						
 					}else{
 						$html = $url;
-						$res = M('classtype')->find(array('htmlurl'=>$html));
+						$res = M('classtype')->find(array('htmlurl'=>$html,'isclose'=>0));
 						
 					}
 				}
@@ -377,22 +377,22 @@ class HomeController extends CommonController
 		}
 		if($id && $html){
 			//详情页+html
-			$res = M('classtype')->find(array('htmlurl'=>$html));
+			$res = M('classtype')->find(array('htmlurl'=>$html,'isclose'=>0));
 			if(!$res){ $this->error('链接错误！');}
 			$isclass = false;
 		}else if($id && $tid){
 			//详情页
-			$res = M('classtype')->find(array('id'=>$tid));
+			$res = M('classtype')->find(array('id'=>$tid,'isclose'=>0));
 			if(!$res){ $this->error('链接错误！');}
 			$isclass = false;
 		}else if($tid){
 			//栏目页
-			$res = M('classtype')->find(array('id'=>$tid));
+			$res = M('classtype')->find(array('id'=>$tid,'isclose'=>0));
 			if(!$res){ $this->error('链接错误！');}
 			
 		}else{
 			//html只有栏目页
-			$res = M('classtype')->find(array('htmlurl'=>$html));
+			$res = M('classtype')->find(array('htmlurl'=>$html,'isclose'=>0));
 			if(!$res){ $this->error('链接错误！');}
 			
 		}
@@ -858,7 +858,7 @@ class HomeController extends CommonController
 			}
 			
 			$arraypage = new \ArrayPage($lists);
-			$data = $arraypage->setPage(['limit'=>$this->frparam('limit',0,15)])->go();
+			$data = $arraypage->query(['page'=>$this->frparam('page',0,1),'word'=>$word,'molds'=>$molds,'tid'=>$tid])->setPage(['limit'=>$this->frparam('limit',0,15)])->go();
 			
 			foreach($data as $k=>$v){
 				if(isset($v['htmlurl']) && !isset($v['url'])){

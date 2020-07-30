@@ -103,7 +103,7 @@ class PluginsController extends CommonController
 						closedir ( $handle );
 					}
 					$arraypage = new \ArrayPage($fileArray);
-					$data = $arraypage->setPage(['limit'=>$this->frparam('limit',0,10)])->go();
+					$data = $arraypage->query(['page'=>$this->frparam('page',0,1),'title'=>$this->title,'isdown'=>$this->frparam('isdown')])->setPage(['limit'=>$this->frparam('limit',0,10)])->go();
 					
 					foreach($data as $k=>$v){
 						//已下载该插件
@@ -173,7 +173,7 @@ class PluginsController extends CommonController
 						}
 						
 						$arraypage = new \ArrayPage($lists);
-						$data = $arraypage->setPage(['limit'=>$this->frparam('limit',0,10)])->go();
+						$data = $arraypage->query(['page'=>$this->frparam('page',0,1),'title'=>$this->title,'isdown'=>$this->frparam('isdown')])->setPage(['limit'=>$this->frparam('limit',0,10)])->go();
 						$this->pages = $arraypage->pageList();
 						$this->sum = $arraypage->sum;//总数据
 						$this->listpage = $arraypage->listpage;//分页数组-自定义分页可用
@@ -312,7 +312,7 @@ class PluginsController extends CommonController
 		}
 		
 		$arraypage = new \ArrayPage($lists);
-		$data = $arraypage->setPage(['limit'=>$this->frparam('limit',0,10),'page'=>$this->frparam('page',0,1)])->go();
+		$data = $arraypage->query(['page'=>$this->frparam('page',0,1),'title'=>$this->title,'isdown'=>$this->frparam('isdown')])->setPage(['limit'=>$this->frparam('limit',0,10),'page'=>$this->frparam('page',0,1)])->go();
 		$this->pages = $arraypage->pageList();
 		$this->sum = $arraypage->sum;//总数据
 		$this->listpage = $arraypage->listpage;//分页数组-自定义分页可用

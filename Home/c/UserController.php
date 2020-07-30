@@ -649,7 +649,7 @@ class UserController extends Controller
 		}
 		
 		$arraypage = new \ArrayPage($lists);
-		$data = $arraypage->setPage(['limit'=>10])->go();
+		$data = $arraypage->query(['page'=>$this->frparam('page',0,1)])->setPage(['limit'=>10])->go();
 		foreach($data as $k=>$v){
 			$data[$k]['url'] = gourl($v['id'],$v['htmlurl']);
 			if(isset($this->classtypedata[$v['tid']])){
@@ -843,7 +843,7 @@ class UserController extends Controller
 		}
 		
 		$arraypage = new \ArrayPage($lists);
-		$data = $arraypage->setPage(['limit'=>10])->go();
+		$data = $arraypage->query(['page'=>$this->frparam('page',0,1)])->setPage(['limit'=>10])->go();
 		foreach($data as $k=>$v){
 			$data[$k]['url'] = gourl($v['id'],$v['htmlurl']);
 			if(isset($this->classtypedata[$v['tid']])){
@@ -1874,7 +1874,7 @@ class UserController extends Controller
 					}
 					
 					$arraypage = new \ArrayPage($lists);
-					$data = $arraypage->setPage(['limit'=>10])->go();
+					$data = $arraypage->query(['page'=>$this->frparam('page',0,1),'uname'=>$username,'type'=>$this->frparam('type',0,1)])->setPage(['limit'=>10])->go();
 					foreach($data as $k=>$v){
 						$data[$k]['url'] = gourl($v['id'],$v['htmlurl']);
 						if(isset($this->classtypedata[$v['tid']])){
@@ -1953,7 +1953,7 @@ class UserController extends Controller
 					}
 					
 					$arraypage = new \ArrayPage($lists);
-					$data = $arraypage->setPage(['limit'=>10])->go();
+					$data = $arraypage->query(['page'=>$this->frparam('page',0,1),'uname'=>$username,'type'=>$this->frparam('type',0,1)])->setPage(['limit'=>10])->go();
 					foreach($data as $k=>$v){
 						$data[$k]['url'] = gourl($v['id'],$v['htmlurl']);
 						if(isset($this->classtypedata[$v['tid']])){

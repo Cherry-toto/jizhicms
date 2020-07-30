@@ -209,7 +209,14 @@ class OrderController extends CommonController
 				}
 				$paytime = $this->frparam('paytime',1)=='-' ? '-' : strtotime($this->frparam('paytime',1));
 				$addtime = strtotime($this->frparam('addtime',1));
-				
+					$ww = $this->frparam();
+					$ww['paytime'] = $ww['paytime']!='-' ? strtotime($ww['paytime']) : 0;
+					$ww['addtime'] = strtotime($ww['addtime']);
+					$ww['send_time'] = strtotime($ww['send_time']);
+					$w = get_fields_data($ww,'orders');
+					$w['ispay'] = $this->frparam('ispay',0,0);
+					$w['isshow'] = $isshow;
+					
 					M('orders')->update(['id'=>$data['id']],['isshow'=>$isshow,'ispay'=>$this->frparam('ispay',0,0)]);
 					JsonReturn(['code'=>0,'msg'=>'操作成功！','paytime'=>$paytime,'addtime'=>$addtime]);
 					

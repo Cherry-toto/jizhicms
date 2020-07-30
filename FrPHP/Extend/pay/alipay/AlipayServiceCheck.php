@@ -21,7 +21,7 @@ class AlipayServiceCheck
         unset($params['sign_type']);
         unset($params['sign']);
 		if(array_key_exists('s',$params)){
-			unset($param['s']);
+			unset($params['s']);
 		}
         return $this->verify($this->getSignContent($params), $sign, $signType);
     }

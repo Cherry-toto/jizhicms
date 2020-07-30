@@ -325,6 +325,7 @@ class ExtmoldsController extends Controller
 		$molds = $this->frparam('molds',1);
 		if($data!=''){
 			if(M($molds)->delete('id in('.$data.')')){
+				M('customurl')->delete(" aid in(".$data.") and molds='".$molds."' ");
 				JsonReturn(array('code'=>0,'msg'=>'批量删除成功！'));
 				
 			}else{
@@ -338,7 +339,7 @@ class ExtmoldsController extends Controller
 		$molds = $this->frparam('molds',1);
 		if($id){
 			if(M($molds)->delete('id='.$id)){
-				
+				M('customurl')->delete(['molds'=>$molds,'aid'=>$id]);
 				JsonReturn(array('code'=>0,'msg'=>'删除成功！'));
 			}else{
 				

@@ -188,6 +188,7 @@ class LoginController extends Controller
 	  if($this->webconf['isregister']==0){
 		  Error('系统已关闭会员注册！');
 	  }
+	  $_SESSION['return_url'] = U('user/index');
 	  if($_POST){
 		  //检查邀请链接的合法性
 		  if($this->webconf['onlyinvite']==1){

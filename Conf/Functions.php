@@ -341,7 +341,7 @@ function get_classtype_tree(){
 	$classtypetree = getCache('classtypetree');
 	if(!$classtypetree){
 		
-		$classtype = M('classtype')->findAll(null,'orders desc');
+		$classtype = M('classtype')->findAll(['isclose'=>0],'orders desc');
 		$classtype = set_class_haschild($classtype);
 		$classtypetree = getTree($classtype);
 		setCache('classtypetree',$classtypetree);	

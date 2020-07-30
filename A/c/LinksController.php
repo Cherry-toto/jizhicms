@@ -441,7 +441,7 @@ class LinksController extends CommonController
 		$id = $this->frparam('id');
 		if($id){
 			//检测该分类下是否存在内容
-			$r = M('linktype')->getCount(array('tid'=>$id));
+			$r = M('links')->getCount(array('tid'=>$id));
 			if($r){
 				JsonReturn(array('code'=>1,'msg'=>'该分类下存在内容，请先删除该分类下的内容！'));
 			}

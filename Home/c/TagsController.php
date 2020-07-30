@@ -99,7 +99,13 @@ class TagsController extends CommonController
 			$lists = ($lists_1 && count($lists_1) > 0) ? array_merge($lists_1,$lists_2) : array_merge($lists_2,$lists_1);
 			if($lists){
 				$arraypage = new \ArrayPage($lists);
-				$data = $arraypage->setPage(['limit'=>100])->go();
+				if($keywords){
+					$param = ['page'=>$this->frparam('page',0,1),'tagname'=>$keywords];
+				}else{
+					$param = ['page'=>$this->frparam('page',0,1),'id'=>$id];
+				}
+				$limit = $this->frparam('limit',0,10);
+				$data = $arraypage->query($param)->setPage(['limit'=>$limit])->go();
 				
 				foreach($data as $k=>$v){
 					$data[$k]['url'] = gourl($v['id'],$v['htmlurl']);

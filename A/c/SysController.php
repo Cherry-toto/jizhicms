@@ -29,7 +29,19 @@ class SysController extends CommonController
 			$data = $this->frparam();
 			foreach($web_config as $k=>$v){
 				if (array_key_exists($k,$data)) {
-					M('sysconfig')->update(['field'=>$k,'type'=>0],['data'=>$this->frparam($k,1)]);
+					if($k=='web_js'){
+						$value = $_POST['web_js'];
+						$value=htmlspecialchars(trim($value), ENT_QUOTES);
+						if(version_compare(PHP_VERSION,'7.4','>=')){
+							$value = addslashes($value);
+						}else{
+							if(!get_magic_quotes_gpc())$value = addslashes($value);
+						} 
+						M('sysconfig')->update(['field'=>'web_js','type'=>0],['data'=>$value]);
+					}else{
+						M('sysconfig')->update(['field'=>$k,'type'=>0],['data'=>$this->frparam($k,1)]);
+					}
+					
 				}
 
 			}
@@ -165,7 +177,7 @@ class SysController extends CommonController
 			}
 			$count = count($res);
 			
-			$lists = $page->setPage(['limit'=>$limit])->go();
+			$lists = $page->query(['page'=>$this->frparam('page',0,1)])->setPage(['limit'=>$limit])->go();
 			foreach($lists as $k=>$v){
 				$lists[$k]['id'] = $v['data']['id'];
 				$lists[$k]['username'] = $v['data']['name'];

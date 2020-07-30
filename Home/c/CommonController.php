@@ -580,7 +580,7 @@ class CommonController extends Controller
 				$laydate = ($data[$v['field']]=='' || $data[$v['field']]==0)?time():$data[$v['field']];
 				$l .= '<div class="form-control">
 		            <label for="'.$v['field'].'">'.$v['fieldname'].'：</label>
-		            <input type="date" id="'.$v['field'].'" value="'.date('Y-m-d H:i:s',$laydate).'" name="'.$v['field'].'">
+		            <input type="date" id="'.$v['field'].'" value="'.date('Y-m-d',$laydate).'" name="'.$v['field'].'">
 		            <label>'.$must.$v['tips'].'</label>
 		        </div>';
 				break;

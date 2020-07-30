@@ -787,9 +787,9 @@ layui.use("laydate", function(){
 						elem: "#LAY_'.$v['field'].'_upload" //绑定元素
 						,url: "'.U('Common/uploads').'" //上传接口
 						,data:{tid:function(){ return $("#tid").val();},molds:"'.$molds.'"}
-						,accept:"images"
 						,multiple: true
-						,acceptMime:"image/*"
+						,accept:"file"
+						,exts: "'.$this->webconf['fileType'].'"
 						,before: function(obj){ 		
 							layer.load(); //上传loading
 						  }

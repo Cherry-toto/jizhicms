@@ -92,6 +92,7 @@ class FrSession implements SessionHandlerInterface
      */
     public function write($session_id, $session_data)
     {
+		$session_id = (int)$session_id == 0 ? getRandChar(26) : $session_id;
         if(!is_dir($this->save_path)){
 			$this->checkmkdirs($this->save_path);
 		}

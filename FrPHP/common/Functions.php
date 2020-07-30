@@ -82,14 +82,14 @@ function format_param($value=null,$int=0){
 //过滤XSS攻击
 function SafeFilter($arr) 
 {
-   $ra=Array('/([\x00-\x08])/','/([\x0b-\x0c])/','/([\x0e-\x19])/','/script/','/javascript/');
+   $ra=Array('/([\x00-\x08])/','/([\x0b-\x0c])/','/([\x0e-\x19])/','/script(.*)script/','/javascript(.*)javascript/');
    $arr = preg_replace($ra,'',$arr);   
    return $arr;
 }
 function array_format(&$item, $key)
 {
 	$item=trim($item);
-	$item = SafeFilter($item);
+	//$item = SafeFilter($item);
 	$item=htmlspecialchars($item, ENT_QUOTES);
 	if(version_compare(PHP_VERSION,'7.4','>=')){
 		$item = addslashes($item);

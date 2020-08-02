@@ -28,6 +28,7 @@ class ClasstypeController extends CommonController
 		// $sql = ($res['fields_search_check']!='')?$res['fields_search_check']:null;
 		// $this->fields_search = $res['fields_search'];
 		$classtype = M('classtype')->findAll(NULL,'orders desc');
+		$classtype = set_class_haschild($classtype);
 		$classtype = getTree($classtype);
 		$this->classtypes = $classtype;
 		//$this->classtypes = $this->classtypetree;

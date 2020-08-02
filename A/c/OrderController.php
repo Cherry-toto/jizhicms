@@ -217,7 +217,7 @@ class OrderController extends CommonController
 					$w['ispay'] = $this->frparam('ispay',0,0);
 					$w['isshow'] = $isshow;
 					
-					M('orders')->update(['id'=>$data['id']],['isshow'=>$isshow,'ispay'=>$this->frparam('ispay',0,0)]);
+					M('orders')->update(['id'=>$data['id']],$w);
 					JsonReturn(['code'=>0,'msg'=>'操作成功！','paytime'=>$paytime,'addtime'=>$addtime]);
 					
 				

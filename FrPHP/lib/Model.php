@@ -42,12 +42,16 @@ class Model {
 	public function getCount($conditions=null){
 		$where = '';
 		if(is_array($conditions)){
+			$conditions = $this->__prepera_format($conditions);
 			$join = array();
 			foreach( $conditions as $key => $value ){
 				$value =  '\''.$value.'\'';
 				$join[] = "{$key} = {$value}";
 			}
-			$where = "WHERE ".join(" AND ",$join);
+			if(count($join)){
+				$where = "WHERE ".join(" AND ",$join);
+			}
+			
 		}else{
 			if(null != $conditions) $where = "WHERE ".$conditions;
 		}
@@ -62,12 +66,15 @@ class Model {
 	public function goInc($conditions,$field,$vp=1){
 		$where = "";
 		if(is_array($conditions)){
+			$conditions = $this->__prepera_format($conditions);
 			$join = array();
 			foreach( $conditions as $key => $value ){
 				$value = '\''.$value.'\'';
 				$join[] = "{$key} = {$value}";
 			}
-			$where = "WHERE ".join(" AND ",$join);
+			if(count($join)){
+				$where = "WHERE ".join(" AND ",$join);
+			}
 		}else{
 			if(null != $conditions)$where = "WHERE ".$conditions;
 		}
@@ -90,12 +97,15 @@ class Model {
 		$row = $this->__prepera_format($row);
 		if(empty($row))return FALSE;
 		if(is_array($conditions)){
+			$conditions = $this->__prepera_format($conditions);
 			$join = array();
 			foreach( $conditions as $key => $condition ){
 				$condition = '\''.$condition.'\'';
 				$join[] = "{$key} = {$condition}";
 			}
-			$where = "WHERE ".join(" AND ",$join);
+			if(count($join)){
+				$where = "WHERE ".join(" AND ",$join);
+			}
 		}else{
 			if(null != $conditions)$where = "WHERE ".$conditions;
 		}
@@ -122,12 +132,15 @@ class Model {
     {
 		$where = '';
 		if(is_array($conditions)){
+			$conditions = $this->__prepera_format($conditions);
 			$join = array();
 			foreach( $conditions as $key => $value ){
 				$value =  '\''.$value.'\'';
 				$join[] = "{$key} = {$value}";
 			}
-			$where = "WHERE ".join(" AND ",$join);
+			if(count($join)){
+				$where = "WHERE ".join(" AND ",$join);
+			}
 		}else{
 			if(null != $conditions)$where = "WHERE ".$conditions;
 		}
@@ -194,12 +207,15 @@ class Model {
     {
        $where = "";
 		if(is_array($conditions)){
+			$conditions = $this->__prepera_format($conditions);
 			$join = array();
 			foreach( $conditions as $key => $condition ){
 				$condition = '\''.$condition.'\'';
 				$join[] = "{$key} = {$condition}";
 			}
-			$where = "WHERE ( ".join(" AND ",$join). ")";
+			if(count($join)){
+				$where = "WHERE ".join(" AND ",$join);
+			}
 		}else{
 			if(null != $conditions)$where = "WHERE ( ".$conditions. ")";
 		}

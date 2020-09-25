@@ -293,28 +293,28 @@ class HomeController extends CommonController
 					$isgo = true;
 					$res['level'] = $v['level'];
 					$newarray[]=$v;
-				}
-				if($v['id']==$res['id'] && $v['level']==0){
-					break;
-				}
-				if($v['level']==0 && $v['id']!=$res['id'] && $v['id']!=$res['pid']){
-					if(!$istop && $isgo && $parent['level']!=0){
-						$newarray[]=$v;
-						$istop = true;
+					if($v['level']==0){
+						break;
 					}
-					$isgo = false;
+					$parent = $this->classtypedata[$v['pid']];
+					continue;
 				}
-				if($isgo &&  $v['id']!=$res['id'] && $res['level']>$v['level']){
-					if(isset($parent['pid'])){
-						if($parent['level']!=$v['level']){
-							$newarray[]=$v;
+				
+				if($isgo){
+					if($parent['id']==$v['id']){
+						$res['level'] = $v['level'];
+						$newarray[]=$v;
+						if($parent['level']==0){
+							break;
 						}
-						
-					}else{
-						$newarray[]=$v;
+						$parent = $this->classtypedata[$v['pid']];
+						continue;
 					}
-					$parent = $v;
+					
+					
+					
 				}
+	
 			}
 			$newarray2 = array_reverse($newarray);
 			$positions='<a href="'.get_domain().'">首页</a>';
@@ -346,7 +346,14 @@ class HomeController extends CommonController
 			$url = ($position!==FALSE) ? substr($request_url,0,$position) : $request_url;
 			$url = substr($url,1,strlen($url)-1);
 			$html = str_ireplace(File_TXT,'',$url);
-			$filepath = APP_PATH.APP_HOME.'/'.HOME_VIEW.'/'.$this->template.'/page/'.$html.'.html';
+			$indexdata = file_get_contents(APP_PATH.'index.php');
+			$rr = preg_match("/define\('TPL_PATH',[\'|\"](.*?)[\'|\"]\)/",$indexdata,$matches);
+			if($rr){
+				$tplpath = $matches[1];
+			}else{
+				$tplpath = 'Home';
+			}
+			$filepath = APP_PATH.$tplpath.'/'.HOME_VIEW.'/'.$this->template.'/page/'.$html.'.html';
 			if(file_exists($filepath)){
 				$this->display($this->template.'/page/'.$html);
 				exit;
@@ -424,8 +431,7 @@ class HomeController extends CommonController
 			
 			//只适合article和product
 			if($molds=='article' || $molds=='product'){
-				$sql.=" or (istop=1 and isshow=1) ";
-			
+				
 				$data = $page->where($sql)->orderby('istop desc,orders desc,id desc')->limit($limit)->page($this->frpage)->go();
 			}else{
 				$data = $page->where($sql)->orderby('orders desc,id desc')->limit($limit)->page($this->frpage)->go();

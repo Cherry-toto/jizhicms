@@ -121,7 +121,7 @@ select#paytype {
             <div class="summary">
            
              <h3>总计</h3>
-              <h4><span>总金额</span><span class="price fr" id="allmoney">￥{$order['price']-$order['discount']+$order['yunfei']}</span></h4>
+              <h4><span>总金额</span><span class="price fr" id="allmoney">￥{$order['price']+$order['discount']-$order['yunfei']}</span></h4>
               <h4><span>折扣</span><span class="price fr" id="alldiscount">-￥{$order['discount']}</span></h4>
               <h4><span>邮费</span><span class="price fr" id="yunfei">+￥{$order['yunfei']}</span></h4>
               <h4><span>总计</span><span class="price fr" id="summary">￥{$order['price']}</span></h4>

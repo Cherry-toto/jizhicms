@@ -238,46 +238,7 @@ switch($act){
 		}
 		$db = $_POST['go_backup']==1 ? $_POST['backup_db'] : '';
 	
-		$data = "<?php
-		// 应用目录为当前目录
-		define('APP_PATH', __DIR__ . '/');
-
-		// 开启调试模式
-		//define('APP_DEBUG', true);
-
-		//定义项目目录
-		define('APP_HOME','A');
-
-		//定义项目模板文件目录
-		define('HOME_VIEW','t');
-
-		//定义项目模板文件目录
-		define('Tpl_template','tpl');
 		
-		//定义项目控制器文件目录
-		define('HOME_CONTROLLER','c');
-
-		//定义项目模型文件目录
-		define('HOME_MODEL','m');
-
-		//定义默认控制器
-		define('DefaultController','Index');
-
-		//定义默认方法
-		define('DefaultAction','Index');
-
-		//取消log
-		define('StopLog',false);
-
-		//定义静态文件路径
-		define('Tpl_style','/A/t/tpl');
-
-		// 加载框架文件
-		require(APP_PATH . 'FrPHP/Fr.php');
-
-		// 就这么简单~
-				
-				";
 		$admin_url = get_admin_url();
 	
 		
@@ -361,6 +322,11 @@ switch($act){
 			   }
 			   
 		    }
+			if($_POST['admin_pass']!='' && $_POST['admin_name']!=''){
+				$sql="UPDATE `jz_level` SET `name`='".$_POST['admin_name']."',`pass`='".md5(md5($_POST['admin_pass']).'YF')."' , `regtime` = '".time()."' , `logintime` = ".time()."   WHERE id=1";
+				$sql = str_replace('jz_',$config['db']['prefix'],$sql);
+				$db->exec($sql);
+			}
 
 		    echo json_encode(array('count'=>100,"start"=>0,"to"=>100,'code'=>0));
 			exit;

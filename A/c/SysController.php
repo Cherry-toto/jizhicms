@@ -97,11 +97,13 @@ class SysController extends CommonController
 		   }
 		   $ress = file_put_contents(APP_PATH.'Conf/config.php', '<?php return ' . var_export($config, true) . '; ?>');
 
-		   $custom = M('sysconfig')->findAll('type!=0');
-		   setCache('customconfig',null);
-		   setCache('classtype',null);
-		   setCache('mobileclasstype',null);
+		   if($this->webconf['pc_html']!=$this->frparam('pc_html') || $this->webconf['mobile_html']!=$this->frparam('mobile_html')){
+			   setCache('classtype',null);
+			   setCache('mobileclasstype',null);
+		   }
 		   setCache('webconfig',null);
+		   setCache('customconfig',null);
+		   
 		   JsonReturn(['code'=>0,'msg'=>'提交成功！']);
 		   
 		}

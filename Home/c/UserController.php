@@ -2053,7 +2053,8 @@ class UserController extends Controller
     		$paytype = $this->frparam('paytype',0,1);
     		$w['userid'] = $this->member['id'];
     		$w['paytype'] = $paytype;
-    		if($paytype==1){
+			$buytarget = $this->frparam('buytarget',0,1);
+    		if($buytarget==1){
     			$w['ptype'] = 2;
     		}else{
     			$w['ptype'] = 3;

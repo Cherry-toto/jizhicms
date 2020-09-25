@@ -284,6 +284,113 @@
                              }
                             echo '</div>';
                             break;
+							case 5:
+                            echo '<div class="layui-form-item" id="custom_'.$v['field'].'">
+                                    <label style="width:150px" class="layui-form-label">
+                                        <span class=\'x-red\'>*</span>'.$v['title'].'
+                                    </label>
+                                    <div  class="layui-inline">
+                                       
+                                      <input name="'.$v['field'].'" type="text" class="layui-input" id="'.$v['field'].'" value="'.$v['data'].'" />
+                                    </div>
+                                     <div class="layui-inline">
+                                         
+                                         
+                                          <button type="button" class="layui-btn" id="LAY_'.$v['field'].'_upload">
+                                              <i class="layui-icon">&#xe67c;</i>上传文件
+                                          </button>
+                                     </div>';
+                            if($admin['gid']==1){
+                                echo     '<div class="layui-inline">
+                                        <button type="button" lay-filter="del" data="custom_'.$v['field'].'"  lay-submit=""  class="layui-btn layui-btn-danger">删除</button>
+                                     </div>[  '.$v['field'].'  ]';
+                            }
+                                echo    '</div>
+                        
+                        <script>
+                
+                        layui.use("upload", function(){
+                              var upload_'.$v['field'].' = layui.upload;
+                               
+                              //执行实例
+                              var uploadInst = upload_'.$v['field'].'.render({
+                                elem: "#LAY_'.$v['field'].'_upload" //绑定元素
+                                ,url: "'.U('Common/uploads').'" //上传接口
+                                ,accept:"file"
+								,exts: "'.$this->webconf['fileType'].'"
+                                ,data:{molds:"sysconfig"}
+                                ,done: function(res){
+                                  
+                                    if(res.code==0){
+                                        
+                                         $("#'.$v['field'].'").val(res.url);
+                                    }else{
+                                         layer.alert(res.error, {icon: 5});
+                                    }
+                                }
+                                ,error: function(){
+                                  //请求异常回调
+                                  layer.alert("上传异常！");
+                                }
+                              });
+                            });
+                        </script>';
+                            
+                            break;
+							case 6:
+							echo '<div  class="layui-form-item">
+								<label style="width:150px"  class="layui-form-label">
+									<span class="x-red"></span>'.$v['title'].'
+								</label>
+								<div  class="layui-input-inline">
+								<select name="'.$v['field'].'" id="'.$v['field'].'" class="layui-btn layui-btn-normal">
+								<option value="1" ';
+								if($v['data']==1){
+									echo 'selected';
+								}
+								echo '>开启</option>
+								<option value="0" ';
+								if($v['data']==0){
+									echo 'selected';
+								}
+								echo '>关闭</option>
+								</select>
+								</div>';
+								if($admin['gid']==1){
+								echo '<div class="layui-inline">
+                                <button type="button" lay-filter="del" data="custom_'.$v['field'].'"  lay-submit="" class="layui-btn layui-btn-danger">删除</button>
+								</div>[  '.$v['field'].'  ]';
+								}
+								
+							echo '</div>';
+                            break;
+							case 7:
+							echo '<div  class="layui-form-item">
+								<label style="width:150px"  class="layui-form-label">
+									<span class="x-red"></span>'.$v['title'].'
+								</label>
+								<div  class="layui-input-inline">
+								<select name="'.$v['field'].'" id="'.$v['field'].'" class="layui-btn layui-btn-normal">
+								<option value="1" ';
+								if($v['data']==1){
+									echo 'selected';
+								}
+								echo '>是</option>
+								<option value="0" ';
+								if($v['data']==0){
+									echo 'selected';
+								}
+								echo '>否</option>
+								</select>
+								</div>';
+							if($admin['gid']==1){
+								echo '<div class="layui-inline">
+                                <button type="button" lay-filter="del" data="custom_'.$v['field'].'"  lay-submit="" class="layui-btn layui-btn-danger">删除</button>
+								</div>[  '.$v['field'].'  ]';
+								}
+								
+							echo '</div>';
+                            break;
                             
                         }
                         
@@ -314,6 +421,9 @@
 									<option value="2">单行文本</option>
 									<option value="3">多行文本</option>
 									<option value="4">编辑器</option>
+									<option value="5">文件上传</option>
+									<option value="6">下拉开启关闭选项</option>
+									<option value="7">下拉是否选项</option>
 									
 									</select>
 									
@@ -571,7 +681,7 @@
                                 class="layui-input">
                             </div>
 							<div class="layui-form-mid layui-word-aux">
-                           0代表不限，单位Kb
+                           0代表不限，单位b
                             </div> 
                         </div>
                         

@@ -130,27 +130,27 @@ class View
 		//include标签
 		preg_match_all('/\{include=\"(.*?)\"\}/si',$content,$i);
 		foreach($i[0] as $k=>$v){
-			$content=str_ireplace($v,$this->template_html_include(strtolower($i[1][$k])),$content);
+			$content=str_ireplace($v,$this->template_html_include($i[1][$k]),$content);
 		}
 		//loop标签
 		preg_match_all('/\{loop (.*?)\}/si',$content,$i);
 		$this->check_template_err(substr_count($content, '{/loop}'),count($i[0]),'loop');
 		foreach($i[0] as $k=>$v){
-			$content=str_ireplace($v,$this->template_html_loop(strtolower($i[1][$k])),$content);
+			$content=str_ireplace($v,$this->template_html_loop($i[1][$k]),$content);
 		}
 		$content=str_ireplace('{/loop}','<?php } ?>',$content);
 		//foreach循环
 		preg_match_all('/\{foreach(.*?)\}/si',$content,$i);
 		$this->check_template_err(substr_count($content, '{/foreach}'),count($i[0]),'foreach');
 		foreach($i[0] as $k=>$v){
-			$content=str_ireplace($v,$this->template_html_foreach(strtolower($i[1][$k])),$content);
+			$content=str_ireplace($v,$this->template_html_foreach($i[1][$k]),$content);
 		}
 		$content=str_ireplace('{/foreach}','<?php } ?>',$content);
 		//screen标签
 		preg_match_all('/\{screen (.*?)\}/si',$content,$i);
 		$this->check_template_err(substr_count($content, '{/screen}'),count($i[0]),'screen');
 		foreach($i[0] as $k=>$v){
-			$content=str_ireplace($v,$this->template_html_screen(strtolower($i[1][$k])),$content);
+			$content=str_ireplace($v,$this->template_html_screen($i[1][$k]),$content);
 		}
 		$content=str_ireplace('{/screen}','<?php } ?>',$content);
 		//for循环

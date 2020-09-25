@@ -631,13 +631,13 @@ class CommonController extends Controller
 		            <label for="'.$v['field'].'">'.$v['fieldname'].'：</label>
 		            <span class="view_img_'.$v['field'].'">';
 		            if($data[$v['field']]){
-		            	foreach(explode('||',$data[$v['field']]) as $v){
-		            		if($v!=''){
+		            	foreach(explode('||',$data[$v['field']]) as $s){
+		            		if($s!=''){
 								if($this->webconf['ispicsdes']==1){
-									$pic = explode('|',$v);
+									$pic = explode('|',$s);
 									$l .= '<span><img src="'.$pic[0].'" height="100"  /><input name="'.$v['field'].'_urls[]" type="text" value="'.$pic[0].'"><input name="'.$v['field'].'_des[]" type="text" placeholder="文字描述"  value="'.$pic[1].'" ><button type="button" onclick="deleteImage_auto(this)">删除</button></span>';
 								}else{
-									$l .= '<span><img src="'.$v.'" height="100"  /><input name="'.$v['field'].'_urls[]" type="text" value="'.$v.'"><button type="button" onclick="deleteImage_auto(this)">删除</button></span>';
+									$l .= '<span><img src="'.$s.'" height="100"  /><input name="'.$v['field'].'_urls[]" type="text" value="'.$s.'"><button type="button" onclick="deleteImage_auto(this)">删除</button></span>';
 								}
 		            			 
 		            		}
@@ -770,13 +770,13 @@ class CommonController extends Controller
 		            <label for="'.$v['field'].'">'.$v['fieldname'].'：</label>
 		            <span class="view_img_'.$v['field'].'">';
 		            if($data[$v['field']]){
-		            	foreach(explode('||',$data[$v['field']]) as $v){
-		            		if($v!=''){
+		            	foreach(explode('||',$data[$v['field']]) as $s){
+		            		if($s!=''){
 								if($this->webconf['ispicsdes']==1){
-									$pic = explode('|',$v);
+									$pic = explode('|',$s);
 									$l .= '<span><input name="'.$v['field'].'_urls[]" type="text" value="'.$pic[0].'"><input name="'.$v['field'].'_des[]" type="text" placeholder="文字描述"  value="'.$pic[1].'" ><button type="button" onclick="deleteImage_auto(this)">删除</button></span>';
 								}else{
-									$l .= '<span><input name="'.$v['field'].'_urls[]" type="text" value="'.$v.'"><button type="button" onclick="deleteImage_auto(this)">删除</button></span>';
+									$l .= '<span><input name="'.$v['field'].'_urls[]" type="text" value="'.$s.'"><button type="button" onclick="deleteImage_auto(this)">删除</button></span>';
 								}
 		            			 
 		            		}

@@ -381,9 +381,13 @@ class ClasstypeController extends CommonController
 			}
 		}
 		$m = M('molds')->find(['biaoshi'=>$molds]);
-		$fileArray[] = ['html'=>$m['list_html'],'value'=>str_replace('.html','',$m['list_html'])];
-		$fileArray[] = ['html'=>$m['details_html'],'value'=>str_replace('.html','',$m['details_html'])];
-
+		$source = [];
+		$source[] = ['html'=>$m['list_html'],'value'=>str_replace('.html','',$m['list_html'])];
+		$source[] = ['html'=>$m['details_html'],'value'=>str_replace('.html','',$m['details_html'])];
+		
+		$fileArray = array_merge($fileArray,$source);
+		
+		
 		JsonReturn(['code'=>0,'data'=>$fileArray,'path'=>$dir,'lists_html'=>str_replace('.html','',$m['list_html']),'details_html'=>str_replace('.html','',$m['details_html'])]);
 
 	}

@@ -112,30 +112,8 @@
 								</tbody>
 								</div>
 							</table>
-							<input name="go_backup" id="go_backup" type="hidden" value="0" />
-
-							<table class="table table-striped table-bordered">
-								<thead>
-									<tr class="table-primary">
-										<?php if(count($dblists)>0){?>
-										<th  colspan="2">检测到您存在备份数据库</th>
-									</tr>
-									<tr>
-										<td>备份数据库列表:</td>
-										<td>
-											<select name="backup_db" id="backup_db">
-											<?php foreach($dblists as $v){
-												echo "<option value='".$v."'>".$v."</option>";
-											}?>
-											</select>
-											<label class="normal passwordinfo"><input onclick="godbback()" value="直接安装备份数据库" type="button" /></label>
-										</td>
-									</tr>
-								</thead>
-							</table>
-
-							<?php }?>
-								<div class="cuetitle"></div>
+							
+							<div class="cuetitle"></div>
 							<table class="table table-striped table-bordered">
 								<thead>
 									<tr class="table-primary">
@@ -166,7 +144,29 @@
 									</tr>
 								</tbody>
 							</table>
+						<input name="go_backup" id="go_backup" type="hidden" value="0" />
+							<?php if(count($dblists)>0){?>
+							<table class="table table-striped table-bordered">
+								<thead>
+									<tr class="table-warning">
+										
+										<th  colspan="2">检测到您存在备份数据库  <span style="color: #f00;">如果是下载的网站源码，建议安装备份数据库，否则网站会报错！</span></th>
+									</tr>
+									<tr>
+										<td>备份数据库列表:</td>
+										<td>
+											<select name="backup_db" id="backup_db">
+											<?php foreach($dblists as $v){
+												echo "<option value='".$v."'>".$v."</option>";
+											}?>
+											</select>
+											<label class="normal passwordinfo"><input onclick="godbback()" value="安装备份数据库" type="button" /></label>
+										</td>
+									</tr>
+								</thead>
+							</table>
 
+							<?php }?>
 						<div class="form-group col-12">
 							<div class="row">
 								<div class="col-6">

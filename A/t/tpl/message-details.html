@@ -67,7 +67,15 @@
 				{else}
 				<input type="hidden" name="tid" value="{$data['tid']}" />
 				{/if}
-				
+				<div class="layui-form-item">
+                    <label for="email" class="layui-form-label">
+                        <span class="x-red">*</span>邮箱
+                    </label>
+                    <div class="layui-input-block">
+                        <input type="text" id="email" value="{$data['email']}"  name="email" 
+                        autocomplete="off" class="layui-input">
+                    </div>
+                </div>
 				<div class="layui-form-item">
                     <label for="tel" class="layui-form-label">
                         <span class="x-red">*</span>联系电话

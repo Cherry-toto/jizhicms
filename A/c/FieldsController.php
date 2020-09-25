@@ -390,8 +390,11 @@ class FieldsController extends CommonController
 			switch($v['fieldtype']){
 				case 1:
 				$l .= '<div class="layui-form-item">
-                    <label for="'.$v['field'].'" class="layui-form-label">
-                        <span class="x-red"></span>'.$v['fieldname'].'
+                    <label for="'.$v['field'].'" class="layui-form-label">';
+				if($v['ismust']==1){
+				$l .= '<span class="x-red">*</span>';	
+				}
+                $l .= $v['fieldname'].'
                     </label>
                     <div class="layui-input-block">
                         <input type="text" id="'.$v['field'].'" value="'.$data[$v['field']].'" name="'.$v['field'].'" ';
@@ -408,8 +411,11 @@ class FieldsController extends CommonController
 				break;
 				case 2:
 				$l .= '<div class="layui-form-item  layui-form-text">
-                    <label for="'.$v['field'].'" class="layui-form-label">
-                        <span class="x-red"></span>'.$v['fieldname'].'
+                    <label for="'.$v['field'].'" class="layui-form-label">';
+				if($v['ismust']==1){
+				$l .= '<span class="x-red">*</span>';	
+				}
+                $l .= $v['fieldname'].'
                     </label>
                     <div class="layui-input-block">
                         <textarea  class="layui-textarea" id="'.$v['field'].'"  name="'.$v['field'].'" ';
@@ -430,8 +436,11 @@ class FieldsController extends CommonController
 				break;
 				case 4:
 				$l .= '<div class="layui-form-item">
-                    <label for="'.$v['field'].'" class="layui-form-label">
-                        <span class="x-red"></span>'.$v['fieldname'].'
+                    <label for="'.$v['field'].'" class="layui-form-label">';
+				if($v['ismust']==1){
+				$l .= '<span class="x-red">*</span>';	
+				}
+                $l .= $v['fieldname'].'
                     </label>
                     <div class="layui-input-block">
                         <input type="number" id="'.$v['field'].'" value="'.$data[$v['field']].'" name="'.$v['field'].'" ';
@@ -448,8 +457,11 @@ class FieldsController extends CommonController
 				break;
 				case 14:
 				$l .= '<div class="layui-form-item">
-                    <label for="'.$v['field'].'" class="layui-form-label">
-                        <span class="x-red"></span>'.$v['fieldname'].'
+                    <label for="'.$v['field'].'" class="layui-form-label">';
+				if($v['ismust']==1){
+				$l .= '<span class="x-red">*</span>';	
+				}
+                $l .= $v['fieldname'].'
                     </label>
                     <div class="layui-input-block">
                         <input type="text" id="'.$v['field'].'" value="'.$data[$v['field']].'" name="'.$v['field'].'" ';
@@ -467,8 +479,11 @@ class FieldsController extends CommonController
 				case 11:
 				$laydate = ($data[$v['field']]=='' || $data[$v['field']]==0)?time():$data[$v['field']];
 				$l .= '<div class="layui-form-item">
-                    <label for="'.$v['field'].'" class="layui-form-label">
-                        <span class="x-red"></span>'.$v['fieldname'].'
+                    <label for="'.$v['field'].'" class="layui-form-label">';
+				if($v['ismust']==1){
+				$l .= '<span class="x-red">*</span>';	
+				}
+                $l .= $v['fieldname'].'
                     </label>
                     <div class="layui-input-block">
                         <input id="laydate_'.$v['field'].'" value="'.date('Y-m-d H:i:s',$laydate).'" name="'.$v['field'].'" ';
@@ -487,8 +502,11 @@ layui.use("laydate", function(){
 				break;
 				case 5:
 				$l .= '<div class="layui-form-item">
-                    <label for="'.$v['field'].'" class="layui-form-label">
-						<span class="x-red">*</span>'.$v['fieldname'].'  
+                    <label for="'.$v['field'].'" class="layui-form-label">';
+				if($v['ismust']==1){
+				$l .= '<span class="x-red">*</span>';	
+				}
+                $l .= $v['fieldname'].'  
                     </label>
 					
 					
@@ -614,8 +632,11 @@ layui.use("laydate", function(){
 				break;
 				case 7:
 				$l .= '<div class="layui-form-item">
-                    <label for="'.$v['field'].'" class="layui-form-label">
-                        <span class="x-red">*</span>'.$v['fieldname'].'  
+                    <label for="'.$v['field'].'" class="layui-form-label">';
+				if($v['ismust']==1){
+				$l .= '<span class="x-red">*</span>';	
+				}
+                $l .= $v['fieldname'].'  
                     </label>
                     <div class="layui-input-inline">
 						<select name="'.$v['field'].'" lay-search="" id="'.$v['field'].'" ><option value="">请选择</option>';
@@ -642,8 +663,11 @@ layui.use("laydate", function(){
 				break;
 				case 12:
 				$l .= '<div class="layui-form-item" pane>
-                    <label for="'.$v['field'].'" class="layui-form-label">
-                        <span class="x-red">*</span>'.$v['fieldname'].'  
+                    <label for="'.$v['field'].'" class="layui-form-label">';
+				if($v['ismust']==1){
+				$l .= '<span class="x-red">*</span>';	
+				}
+                $l .= $v['fieldname'].'  
                     </label>
                     <div class="layui-input-inline">';
 				foreach(explode(',',$v['body']) as $vv){
@@ -668,8 +692,11 @@ layui.use("laydate", function(){
 				break;
 				case 8:
 				$l .= '<div class="layui-form-item">
-						<label for="'.$v['field'].'" class="layui-form-label">
-							<span class="x-red">*</span>'.$v['fieldname'].'  
+						<label for="'.$v['field'].'" class="layui-form-label">';
+				if($v['ismust']==1){
+				$l .= '<span class="x-red">*</span>';	
+				}
+                $l .= $v['fieldname'].'  
 						</label>
 						<div class="layui-input-block">';
 				foreach(explode(',',$v['body']) as $vv){
@@ -695,8 +722,11 @@ layui.use("laydate", function(){
 				break;
 				case 9:
 				$l .= '<div class="layui-form-item">
-                    <label for="'.$v['field'].'" class="layui-form-label">
-						<span class="x-red">*</span>'.$v['fieldname'].'  
+                    <label for="'.$v['field'].'" class="layui-form-label">';
+				if($v['ismust']==1){
+				$l .= '<span class="x-red">*</span>';	
+				}
+                $l .= $v['fieldname'].'  
                     </label>
 					
                     <div class="layui-input-inline">
@@ -819,8 +849,11 @@ layui.use("laydate", function(){
 				case 13:
 				//tid,field
 				$l .= '<div class="layui-form-item">
-                    <label for="'.$v['field'].'" class="layui-form-label">
-                        <span class="x-red">*</span>'.$v['fieldname'].'  
+                    <label for="'.$v['field'].'" class="layui-form-label">';
+				if($v['ismust']==1){
+				$l .= '<span class="x-red">*</span>';	
+				}
+                $l .= $v['fieldname'].'  
                     </label>
                     <div class="layui-input-inline">
 						<select name="'.$v['field'].'" lay-search="" id="'.$v['field'].'" >';

@@ -1067,7 +1067,7 @@ class UserController extends Controller
 			unset($w['target']);
 			unset($w['ownurl']);
 			foreach($w as $k=>$v){
-				$w[$k] = format_param($v,1);
+				$w[$k] = format_param($v,4);
 			}
 			$w['molds'] = $this->frparam('molds',1);
 			//违禁词检测

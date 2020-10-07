@@ -133,6 +133,9 @@ class ArticleController extends CommonController
 			
 			$data = $this->frparam();
 			$data['addtime'] = strtotime($data['addtime']);
+			$data['title'] = $this->frparam('title',1);
+			$data['keywords'] = $this->frparam('keywords',1);
+			$data['seo_title'] = $this->frparam('seo_title',1) ? $this->frparam('seo_title',1) : $this->frparam('title',1);
 			$data['body'] = $this->frparam('body',4);
 			$data['userid'] = $_SESSION['admin']['id'];
 			$data['description'] = ($this->frparam('description',1)=='') ? newstr(strip_tags($data['body']),160) : $this->frparam('description',1);
@@ -261,7 +264,9 @@ class ArticleController extends CommonController
 			$data = $this->frparam();
 			$data['addtime'] = strtotime($data['addtime']);
 			$data['body'] = $this->frparam('body',4);
-
+			$data['title'] = $this->frparam('title',1);
+			$data['keywords'] = $this->frparam('keywords',1);
+			$data['seo_title'] = $this->frparam('seo_title',1) ? $this->frparam('seo_title',1) : $this->frparam('title',1);
 			$data['description'] = ($this->frparam('description',1)=='') ? newstr(strip_tags($data['body']),160) : $this->frparam('description',1);
 			$data['description'] = str_replace(' ','',$data['description']);
 			if(strlen($data['description'])>255){

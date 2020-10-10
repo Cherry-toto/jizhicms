@@ -438,6 +438,20 @@ class IndexController extends CommonController
 						}
 					}
 					break;
+					case 'image':
+					if(is_dir(APP_PATH.'cache/image')){
+						if($handle = opendir(APP_PATH.'cache/image')){
+			
+						  while (false !== ($file = readdir($handle))){
+							 if($file!='.' && $file!='..'){
+								
+								unlink(APP_PATH.'cache/image/'.$file);
+							 }
+						  }
+						  closedir($handle);
+						}
+					}
+					break;
 					case 'tpl':
 					if(is_dir(APP_PATH.'cache')){
 						if($handle = opendir(APP_PATH.'cache')){
@@ -538,6 +552,20 @@ class IndexController extends CommonController
 			}	
 		}
 		
+		//缩略图缓存
+		$imagecache = 0;
+		if(is_dir(APP_PATH.'cache/image')){
+			if($handle = opendir(APP_PATH.'cache/image')){
+			
+			  while (false !== ($file = readdir($handle))){
+				 if($file!='.' && $file!='..'){
+					 $imagecache+=round(filesize(APP_PATH.'cache/image/'.$file)/1024,2);
+				 }
+			  }
+			  closedir($handle);
+			}	
+		}
+		
 		//模板缓存
 		$tplcache = 0;
 		if(is_dir(APP_PATH.'cache')){
@@ -552,6 +580,7 @@ class IndexController extends CommonController
 			}
 		}
 		$this->datacache = $datacache;
+		$this->imagecache = $imagecache;
 		$this->logcache = $logcache;
 		$this->tplcache = $tplcache;
 		$this->logincache = $logincache;
@@ -609,38 +638,52 @@ class IndexController extends CommonController
 				//栏目
 				if($v=='classtype' && $list){
 					foreach($list as $s){
-						$l.='<url>
-							  <loc>'.$this->classtypedata[$s['id']]['url'].'</loc>
-							  <lastmod>'.date('Y-m-d').'T08:00:00+00:00</lastmod>
-							  <changefreq>'.$freq[$k].'</changefreq>
-							  <priority>'.$priority[$k].'</priority>
-							</url>';
-						if($this->webconf['iswap']==1){
+						if($this->classtypedata[$s['id']]['url']){
 							$l.='<url>
-							  <loc>'.$classtypedataMobile[$s['id']]['url'].'</loc>
-							  <lastmod>'.date('Y-m-d').'T08:00:00+00:00</lastmod>
-							  <changefreq>'.$freq[$k].'</changefreq>
-							  <priority>'.$priority[$k].'</priority>
-							</url>';
-						}	
+								  <loc>'.$this->classtypedata[$s['id']]['url'].'</loc>
+								  <lastmod>'.date('Y-m-d').'T08:00:00+00:00</lastmod>
+								  <changefreq>'.$freq[$k].'</changefreq>
+								  <priority>'.$priority[$k].'</priority>
+								</url>';
+							if($this->webconf['iswap']==1){
+								if($classtypedataMobile[$s['id']]['url']){
+									$l.='<url>
+									  <loc>'.$classtypedataMobile[$s['id']]['url'].'</loc>
+									  <lastmod>'.date('Y-m-d').'T08:00:00+00:00</lastmod>
+									  <changefreq>'.$freq[$k].'</changefreq>
+									  <priority>'.$priority[$k].'</priority>
+									</url>';
+								}
+								
+							}	
+						}
+						
 					}
 				}else if($list){
 					foreach($list as $s){
 						$s['addtime'] = isset($s['addtime']) ? $s['addtime'] : time();
-					//文章-商品
-						$l.='<url>
-						  <loc>'.gourl($s,$s['htmlurl']).'</loc>
-						  <lastmod>'.date('Y-m-d',$s['addtime']).'T08:00:00+00:00</lastmod>
-						  <changefreq>'.$freq[$k].'</changefreq>
-						  <priority>'.$priority[$k].'</priority>
-						</url>';
-						if($this->webconf['iswap']==1){
+						//文章-商品
+						$url = gourl($s,$s['htmlurl']);
+						if($url){
 							$l.='<url>
-							  <loc>'.gourl($s,$s['htmlurl']).'</loc>
+							  <loc>'.$url.'</loc>
 							  <lastmod>'.date('Y-m-d',$s['addtime']).'T08:00:00+00:00</lastmod>
 							  <changefreq>'.$freq[$k].'</changefreq>
 							  <priority>'.$priority[$k].'</priority>
 							</url>';
+						}
+						
+						if($this->webconf['iswap']==1){
+							$murl = $this->murl($s,$s['htmlurl']);
+							if($murl){
+								$l.='<url>
+								  <loc>'.$murl.'</loc>
+								  <lastmod>'.date('Y-m-d',$s['addtime']).'T08:00:00+00:00</lastmod>
+								  <changefreq>'.$freq[$k].'</changefreq>
+								  <priority>'.$priority[$k].'</priority>
+								</url>';
+							}
+							
 						}	
 					
 					}
@@ -665,6 +708,20 @@ class IndexController extends CommonController
 		}
 		
 		$this->display('sitemap');
+	}
+	
+	function murl($id,$htmlurl=null,$molds='article'){
+		
+		if(!$id){Error_msg('缺少ID！');}
+		$htmlpath = $this->webconf['iswap']==1 ? $this->webconf['mobile_html'] : $this->webconf['pc_html'];
+		$htmlpath = ($htmlpath=='' || $htmlpath=='/') ? '' : '/'.$htmlpath; 
+		if($htmlurl!=null){
+			return get_domain().$htmlpath.'/'.$htmlurl.'/'.$id.'.html';
+		}
+		
+		$tid = M($molds)->getField(array('id'=>$id),'tid');
+		$htmlurl = M('classtype')->getField(array('id'=>$tid),'htmlurl');
+		return get_domain().$htmlpath.'/'.$htmlurl.'/'.$id.'.html';
 	}
 	
 	//生成静态文件
@@ -907,7 +964,7 @@ class IndexController extends CommonController
 		$terminal_path = $_SESSION['terminal']=='pc' ? $this->webconf['pc_html'] : $this->webconf['mobile_html'];
 		$terminal_path = ($terminal_path=='' || $terminal_path=='/') ? '' : $terminal_path.'/';
 		
-		$www = get_domain();
+		$www = get_domain().'/index.php';
 		
 		
 		$lists = M('classtype')->findAll($sql,' id asc ',null,$limit);
@@ -1012,7 +1069,7 @@ class IndexController extends CommonController
 		
 		
 		$lists = M($model)->findAll($sql,' id asc ',null,$limit);
-		$www = get_domain();
+		$www = get_domain().'/index.php';
 		$urls=[];//存储更新url链接
 		if($lists && is_array($lists)){
 			//更新静态注意事项：

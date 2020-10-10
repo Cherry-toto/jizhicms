@@ -191,7 +191,7 @@ class FrPHP
 			$url = str_replace('/'.$terminal_path.'/','/',$url);
 			
 		}else{
-			if(isMobile() && $webconfig['iswap']==1){
+			if($webconfig['iswap']==1){
 				$webconfig['mobile_html'] = $webconfig['mobile_html']=='' ? '/' : $webconfig['mobile_html'];
 				$url = str_replace('/'.$webconfig['mobile_html'].'/','/',$url);
 			}else{

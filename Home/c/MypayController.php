@@ -528,6 +528,61 @@ class MypayController extends Controller
 				
 				break;
 				case 5:
+					// 支付宝当面付
+					//检查自主平台配置
+					if($order['ispay']==1){
+						if($this->frparam('ajax')){
+							JsonReturn(['code'=>1,'msg'=>'订单已支付！','url'=>$return_url]);
+						}
+						
+						Error('订单已支付！',$return_url);
+					}
+					//交易提醒
+					$task['aid'] = $order['id'];
+					$task['tid'] = 0;
+					$task['userid'] = $this->member['id'];
+					$task['puserid'] = $this->member['id'];
+					$task['molds'] = 'orders';
+					$task['type'] = 'rechange';
+					$task['addtime'] = time();
+					$task['body'] = '您的订单-'.$order['orderno'].'已经提交，请尽快支付！';
+					$task['url'] = U('user/orderdetails',['orderno'=>$order['orderno']]);
+					M('task')->add($task);
+					
+					$order['paytype'] = 'dmfalipay';
+					M('orders')->update(['id'=>$order['id']],['paytype'=>'支付宝当面付']);
+					/*** 请填写以下配置信息 ***/
+					extendFile('pay/alipay/AlipayService.php');
+					$appid = $this->webconf['alipay_partner'];  //https://open.alipay.com 账户中心->密钥管理->开放平台密钥，填写添加了电脑网站支付的应用的APPID
+					$returnUrl = U('Mypay/alipay_return_pay');     //付款成功后的同步回调地址
+					$notifyUrl = U('Mypay/alipay_notify_pay');     //付款成功后的异步回调地址
+					$outTradeNo = $order['orderno'];     //你自己的商品订单号
+					$payAmount = $order['price'];          //付款金额，单位:元
+					$orderName = '支付订单-'.$order['orderno'];    //订单标题
+					$signType = 'RSA2';			//签名算法类型，支持RSA2和RSA，推荐使用RSA2
+					$rsaPrivateKey=$this->webconf['alipay_private_key'];		//商户私钥，填写对应签名算法类型的私钥，如何生成密钥参考：https://docs.open.alipay.com/291/105971和https://docs.open.alipay.com/200/105310
+					/*** 配置结束 ***/
+					$aliPay = new \AlipayService();
+					$aliPay->setAppid($appid);
+					$aliPay->setReturnUrl($returnUrl);
+					$aliPay->setNotifyUrl($notifyUrl);
+					$aliPay->setRsaPrivateKey($rsaPrivateKey);
+					$aliPay->setTotalFee($payAmount);
+					$aliPay->setOutTradeNo($outTradeNo);
+					$aliPay->setOrderName($orderName);
+					$result = $aliPay->dmfPay();
+					$result = $result['alipay_trade_precreate_response'];
+					if($result['code'] && $result['code']=='10000'){
+						//生成二维码
+						$url = U('common/qrcode').'?data='.$result['qr_code'];
+						echo '<img src="'.$url.'" style="width:300px;"><br>';
+						
+					}else{
+						echo $result['msg'].' : '.$result['sub_msg'];
+					}
+					exit;
+				break;
+				case 6:
 				
 					if($this->islogin){
 						//交易提醒

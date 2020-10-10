@@ -1602,5 +1602,165 @@ function deldir($dir) {
 	}
 }
 
+
+/**
+ * 图片压缩裁剪
+ * src_image 原图链接  根目录绝对链接，支持远程图片
+ * out_image 生成图链接  写文件名即可
+ * mode=1 按尺寸裁剪 mode=0 按比例裁剪
+ * out_width 生成的宽（比例）
+ * out_height 生成的高（比例）
+ * img_quality 压缩比例（PNG无法压缩）
+ * direct=1 中间开始裁剪  direct=0 左上角开始裁剪
+ * debug=1 调试状态，每次请求都生成缓存 debug=0 会直接调用已生成的缩略图
+ */
+function jzresize($src_image,$out_width = NULL, $out_height = NULL, $mode = 1, $out_image = NULL,  $direct = 0 ,$debug=1 , $img_quality = 90 ) {
+	if(!is_dir('./cache/image')){
+		if(!mkdir('./cache/image',0777)){
+			exit('图片缓存文件夹不存在cache/image');
+		}		
+	}
+	// 检查原图是否存在
+	if(!file_exists('.'.$src_image)){
+		// 检查是否远程图片,并下载
+		if(strpos($src_image,'http')!==false){
+			  $path = 'cache/image';
+			  $ch = curl_init();
+			  curl_setopt($ch, CURLOPT_URL, $src_image);
+			  curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+			  curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 30);
+			  $file = curl_exec($ch);
+			  curl_close($ch);
+			  if($file==false){
+				  exit('无法下载！');
+			  }
+			  $filename = pathinfo($src_image, PATHINFO_BASENAME);
+			  $resource = fopen($path . $filename, 'a');
+			  fwrite($resource, $file);
+			  fclose($resource);
+			  $src_image = '/'.$path . $filename;
+		}else{
+			return '错误链接';//返回空，避免程序停止执行
+		}
+		
+	}
+	// 检查生成图片是否存在
+	if(file_exists('./'.$out_image) && !$debug){
+		return './'.$out_image;
+	}
+	
+	// 处理图片名称
+	if(!$out_image){
+		
+		$imageinfo = pathinfo($src_image);
+		$filename = str_replace('.'.$imageinfo['extension'],'_'.$out_width.'x'.$out_height.'.'.$imageinfo['extension'],$imageinfo['basename']);
+		$out_image = 'cache/image/'.$filename;
+	}
+	
+	$out_image = './'.$out_image;
+	// 将图片拷贝到缓存目录
+	if(!copy('.'.$src_image, $out_image)){
+		return '';
+	}
+	$src_image = $out_image;
+	
+	// 获取图片属性
+	list($width, $height, $type, $attr) = getimagesize($src_image);
+	switch ($type) {
+		case 1:
+			$img = imagecreatefromgif($src_image);
+			break;
+		case 2:
+			$img = imagecreatefromjpeg($src_image);
+			break;
+		case 3:
+			$img = imagecreatefrompng($src_image);
+			break;
+	}
+	
+	$thumbnail_w = $width;
+	$thumbnail_h = $height;
+	// 压缩形式
+	if($mode==1){
+		//尺寸
+		$new_img_thumbnail_width = $out_width;
+		$new_img_thumbnail_height = $out_height;
+		
+							
+	}else{
+		//比例
+		if($width<$height){
+			$new_img_thumbnail_width = $height * $out_width / $out_height;
+			$new_img_thumbnail_height = $height; 
+			//x:y = w:h
+		}else{
+			$new_img_thumbnail_height = $width * $out_height / $out_width;
+			$new_img_thumbnail_width = $width;
+			
+			
+		}    
+		//$new_img_thumbnail_width = $new_img_thumbnail_width>$width ? $width : $new_img_thumbnail_width;
+		//$new_img_thumbnail_height = $new_img_thumbnail_height>$height ? $height : $new_img_thumbnail_height;
+	}
+	
+	if ($width >= $new_img_thumbnail_width && $height >= $new_img_thumbnail_height) { // 长宽均满足
+        $thumbnail_w = $new_img_thumbnail_width;
+        $thumbnail_h = $new_img_thumbnail_height;
+    } else { // 有一边不满足
+        $scale1 = $width / $new_img_thumbnail_width;
+        $scale2 = $height / $new_img_thumbnail_height;
+        if ($scale1 < $scale2) { // 变化越多的一边取全值，其余一边等比例缩放
+            $thumbnail_w = $width;
+            $thumbnail_h = floor($height * ($width / $new_img_thumbnail_width));
+        } else {
+            $thumbnail_w = floor($new_img_thumbnail_width * ($height / $new_img_thumbnail_height));
+            $thumbnail_h = $height;
+        }
+    }
+	
+	
+	
+	if($direct==1){
+		//正中间裁剪
+		$start_x = $thumbnail_w / 2;
+		$start_y = $thumbnail_h / 2;
+	}else{
+		//左上角裁剪
+		$start_x = 0;
+		$start_y = 0;
+	}
+	
+	$new_img = imagecreatetruecolor($new_img_thumbnail_width, $new_img_thumbnail_height); // 创建画布
+															  
+	// 创建透明画布,避免黑色
+	if ($type == 1 || $type == 3) {
+		$color = imagecolorallocate($new_img, 255, 255, 255);
+		imagefill($new_img, 0, 0, $color);
+		imagecolortransparent($new_img, $color);
+	}
+	imagecopyresampled($new_img, $img, 0, 0, $start_x, $start_y, $thumbnail_w, $thumbnail_h, $new_img_thumbnail_width, $new_img_thumbnail_height);
+	
+	switch ($type) {
+		case 1:
+			imagegif($new_img, $out_image, $img_quality);
+			break;
+		case 2:
+			imagejpeg($new_img, $out_image, $img_quality);
+			break;
+		case 3:
+			imagepng($new_img, $out_image); 
+			break;
+		default:
+			imagejpeg($new_img, $out_image, $img_quality);
+	}
+	imagedestroy($new_img);
+	imagedestroy($img);
+	
+	
+	return $out_image;
+}
+
+
+
 //引入扩展方法文件
 include(APP_PATH.'Conf/FunctionsExt.php');

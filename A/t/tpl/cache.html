@@ -40,7 +40,7 @@
 						</div>
 						
 						<div class="layui-input-inline  cache-s">
-							<input lay-skin="primary"  type="checkbox" name="cache_data[]" value="login"   checked>
+							<input lay-skin="primary"  type="checkbox" name="cache_data[]" value="login"   >
 						</div>
 						<div class="layui-form-mid layui-word-aux">
 							  文件夹cache/tmp，主要是服务器session文件缓存，当前session将不会被清空
@@ -53,7 +53,7 @@
 							 {$logcache} kb
 						</div>
 						<div class="layui-input-inline  cache-s">
-							<input lay-skin="primary"  type="checkbox" name="cache_data[]" value="log"   checked>
+							<input lay-skin="primary"  type="checkbox" name="cache_data[]" value="log"   >
 						</div>
 						<div class="layui-form-mid layui-word-aux">
 							  文件夹cache/log，包括错误日志、支付日志、登录日志等
@@ -71,6 +71,19 @@
 						</div>
 						<div class="layui-form-mid layui-word-aux">
 							  文件夹cache，主要是程序执行时生成的模板编译文件
+						</div>
+					  </div>
+					  
+					  <div class="layui-form-item" >
+						<label class="layui-form-label">缩略图缓存</label>
+						<div class="layui-form-mid layui-word-aux  cache-s">
+							 {$imagecache} kb
+						</div>
+						<div class="layui-input-inline  cache-s">
+							<input lay-skin="primary"  type="checkbox" name="cache_data[]" value="image"   >
+						</div>
+						<div class="layui-form-mid layui-word-aux">
+							  文件夹image，主要是程序执行时生成的自定义缩略图
 						</div>
 					  </div>
 					  

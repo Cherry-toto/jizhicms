@@ -208,8 +208,8 @@ class View
 			$prefix = '.html';
 		}
 		if(APP_URL=='/index.php'){
-			$includefile = str_replace('//','/',APP_PATH . APP_HOME .'/'.HOME_VIEW.'/'.get_template().'/'.$filename. $prefix);
-			$file = get_template().'/'.$filename. $prefix;
+			$includefile = str_replace('//','/',APP_PATH . APP_HOME .'/'.HOME_VIEW.'/'.TEMPLATE.'/'.$filename. $prefix);
+			$file = TEMPLATE.'/'.$filename. $prefix;
 		}else{
 			$includefile = str_replace('//','/',APP_PATH . APP_HOME .'/'.HOME_VIEW.'/'.Tpl_template.'/'. Tpl_common .'/'.$filename. $prefix);
 			$file = Tpl_common .'/'.$filename. $prefix;

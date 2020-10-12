@@ -19,7 +19,7 @@ class LoginController extends Controller
 {
 	public function _init(){
 		  $webconf = webConf();
-		  $template = get_template();
+		  $template = TEMPLATE;
 		  $this->webconf = $webconf;
 		  $this->template = $template;
 		  $this->tpl = Tpl_style.$template.'/';

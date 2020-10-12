@@ -22,7 +22,7 @@ class UserController extends Controller
 		
 		$webconf = webConf();
 		$webcustom = get_custom();
-		$template = get_template();
+		$template = TEMPLATE;
 		$this->webconf = $webconf;
 		$this->webcustom = $webcustom;
 		$this->template = $template;
@@ -638,7 +638,7 @@ class UserController extends Controller
 				if($v!=''){
 					$d = explode('-',$v);
 					//tid-id
-					if($d!=''){
+					if(is_array($d) && isset($this->classtypedata[$d[0]])){
 						$xdata=M($this->classtypedata[$d[0]]['molds'])->find(['id'=>$d[1]]);
 						if($xdata){
 							$lists[]=$xdata;
@@ -649,7 +649,7 @@ class UserController extends Controller
 		}
 		
 		$arraypage = new \ArrayPage($lists);
-		$data = $arraypage->query(['page'=>$this->frparam('page',0,1)])->setPage(['limit'=>10])->go();
+		$data = $arraypage->query(['page'=>$this->frparam('page',0,1)])->setPage(['limit'=>$this->frparam('limit',0,10)])->go();
 		foreach($data as $k=>$v){
 			$data[$k]['url'] = gourl($v['id'],$v['htmlurl']);
 			if(isset($this->classtypedata[$v['tid']])){
@@ -825,14 +825,13 @@ class UserController extends Controller
 		$this->checklogin();
 		$lists = [];
 		if($this->member['collection']!=''){
-			//$ids = substr($this->member['collection'],1,strlen($this->member['collection'])-2);
 			$collection = explode('||',$this->member['collection']);
 
 			foreach($collection as $v){
 				if($v!=''){
 					$d = explode('-',$v);
 					//tid-id
-					if($d!=''){
+					if(is_array($d) && isset($this->classtypedata[$d[0]])){
 						$xdata=M($this->classtypedata[$d[0]]['molds'])->find(['id'=>$d[1]]);
 						if($xdata){
 							$lists[] = $xdata;
@@ -843,7 +842,7 @@ class UserController extends Controller
 		}
 		
 		$arraypage = new \ArrayPage($lists);
-		$data = $arraypage->query(['page'=>$this->frparam('page',0,1)])->setPage(['limit'=>10])->go();
+		$data = $arraypage->query(['page'=>$this->frparam('page',0,1)])->setPage(['limit'=>$this->frparam('limit',0,10)])->go();
 		foreach($data as $k=>$v){
 			$data[$k]['url'] = gourl($v['id'],$v['htmlurl']);
 			if(isset($this->classtypedata[$v['tid']])){

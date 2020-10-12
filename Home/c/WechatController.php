@@ -20,7 +20,7 @@ class WechatController extends Controller
 {
 	public function _init(){
 		$webconf = webConf();
-		$template = get_template();
+		$template = TEMPLATE;
 		$this->webconf = $webconf;
 		$this->template = $template;
 		$classtypedata = classTypeData();

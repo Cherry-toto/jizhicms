@@ -22,7 +22,7 @@ class OrderController extends Controller
 		
 		$webconf = webConf();
 		$webcustom = get_custom();
-		$template = get_template();
+		$template = TEMPLATE;
 		$this->webconf = $webconf;
 		$this->webcustom = $webcustom;
 		$this->template = $template;
@@ -547,7 +547,7 @@ class OrderController extends Controller
 				//钱包支付
 				$money = M('member')->getField(['id'=>$this->member['id']],'money');
 				
-				$allmoney = $order['qianbao'];
+				$allmoney = $order['price']*$this->webconf['money_exchange'];
 				if($money<$allmoney){
 					if($this->frparam('ajax')){
 						JsonReturn(['code'=>1,'msg'=>'钱包金额不足，请充值！','url'=>$return_url]);
@@ -559,7 +559,7 @@ class OrderController extends Controller
 				$money_x = $money-$allmoney;
 				$paytime = time();
 				M('orders')->update(['id'=>$order['id']],['ispay'=>1,'isshow'=>2,'paytime'=>$paytime,'paytype'=>'钱包支付']);
-				 M('member')->goDec(['id'=>$order['userid']],'money',$allmoney);
+				M('member')->update(['id'=>$order['userid']],['money'=>$money_x]);
 				$ww['userid'] = $order['userid'];
 				$ww['amount'] = $allmoney;
 				$ww['money'] = $order['price'];
@@ -601,8 +601,8 @@ class OrderController extends Controller
 				}
 				//积分支付
 				$jifen = M('member')->getField(['id'=>$this->member['id']],'jifen');
-				
-				$allmoney = $order['jifen'];
+				$allmoney = $order['price']*$this->webconf['jifen_exchange'];
+				//$allmoney = $order['jifen'];
 				if($jifen<$order['jifen']){
 					if($this->frparam('ajax')){
 						JsonReturn(['code'=>1,'msg'=>'积分不足，请充值！','url'=>$return_url]);
@@ -613,7 +613,8 @@ class OrderController extends Controller
 				$money_x = $jifen-$allmoney;
 				$paytime = time();
 				M('orders')->update(['id'=>$order['id']],['ispay'=>1,'isshow'=>2,'paytime'=>$paytime,'paytype'=>'积分兑换']);
-				 M('member')->goDec(['id'=>$order['userid']],'jifen',$allmoney);
+				
+				M('member')->update(['id'=>$order['userid']],['jifen'=>$money_x]);
 				$ww['userid'] = $order['userid'];
 				$ww['amount'] = $allmoney;
 				$ww['money'] = $order['price'];

@@ -20,7 +20,7 @@ class CommonController extends Controller
 	function _init(){
 
 		$webconf = webConf();
-		$template = get_template();
+		$template = TEMPLATE;
 		$this->webconf = $webconf;
 		$this->template = $template;
 		

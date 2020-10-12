@@ -27,7 +27,7 @@ class LoginController extends Controller
 			exit;
 		}
 		$webconf = webConf();
-		$template = get_template();
+		$template = TEMPLATE;
 		$this->webconf = $webconf;
 		$this->template = $template;
 		if(isset($_SESSION['terminal'])){

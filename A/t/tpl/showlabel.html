@@ -65,7 +65,7 @@
 										<option value="">选择栏目</option>
 									   {foreach $classtypes as $v}
 										{if($v['molds']=='article')}
-									   <option  value="{$v['id']}-{$v['molds']}">{fun str_repeat('--', $v['level']), $v['classname']}</option>
+									   <option  value="{$v['id']}-{$v['molds']}">{fun str_repeat('--', $v['level'])}{$v['classname']}</option>
 										{/if}
 									   {/foreach}
 									   </select>
@@ -124,7 +124,7 @@
 										<option value="">选择栏目</option>
 									   {foreach $classtypes as $v}
 										{if($v['molds']=='product')}
-									   <option  value="{$v['id']}-{$v['molds']}">{fun str_repeat('--', $v['level']), $v['classname']}</option>
+									   <option  value="{$v['id']}-{$v['molds']}">{fun str_repeat('--', $v['level'])}{$v['classname']}</option>
 										{/if}
 									   {/foreach}
 									   </select>

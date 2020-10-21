@@ -24,7 +24,7 @@
 			 <a class="layui-btn layui-btn-sm" onclick="x_admin_show('添加权限','{fun U('Rulers/addrulers')}')">添加权限</a>
 			 {/if}
 			  <div class="layui-input-inline" style="float: right;">
-				  <input type="checkbox" value="1" name="switch" lay-filter="type"  lay-text="展开|折叠" checked lay-skin="switch">
+				  <input type="checkbox" value="1" name="switch" lay-filter="type"  lay-text="展开|折叠" lay-skin="switch">
 			  </div>
 			</form>
 			</xblock>
@@ -53,14 +53,14 @@
                 </thead>
                 <tbody class="x-cate">
 		{foreach $lists as $v}
-          <tr cate-id="{$v['id']}" fid="{$v['pid']}" >
+          <tr cate-id="{$v['id']}" fid="{$v['pid']}" {if($v['pid']!=0)}style="display:none;"{/if}>
             
 			
             <td>{$v['id']}</td>
             <td>
 			  {fun str_repeat('&nbsp;&nbsp;&nbsp;',$v['level'])}
 			  {if($v['haschild'])}
-			  <i class="layui-icon x-show" status='false'>&#xe625;</i>
+			  <i class="layui-icon x-show" status='true'>&#xe623;</i>
 			  {else}
 			  {if($v['level'])}|——{/if}
 			  {/if}

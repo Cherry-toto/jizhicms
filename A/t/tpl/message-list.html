@@ -39,7 +39,7 @@
 					  <select name="tid" lay-filter="tid" lay-search class="layui-inline">
 					  <option value="">请选择栏目</option>
 					   {foreach $classtypes as $v}
-					   <option {if($tid==$v['id'])} selected="selected" {/if}value="{$v['id']}">{fun str_repeat('--', $v['level']), $v['classname']}</option>
+					   <option {if($tid==$v['id'])} selected="selected" {/if}value="{$v['id']}">{fun str_repeat('--', $v['level'])}{$v['classname']}</option>
 					   {/foreach}
 					
 					  </select>

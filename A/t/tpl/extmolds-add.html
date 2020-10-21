@@ -43,7 +43,7 @@
 					   {foreach $classtypes as $v}
 					   {if($v['molds']==$molds['biaoshi'])}
 					   {if($admin['classcontrol']==0 || $admin['isadmin']==1 || strpos($tids,','.$v['id'].',')!==false || $molds['iscontrol']==0)}
-					   <option {if($tid==$v['id'])}selected{/if} value="{$v['id']}">{fun str_repeat('--', $v['level']), $v['classname']}</option>
+					   <option {if($tid==$v['id'])}selected{/if} value="{$v['id']}">{fun str_repeat('--', $v['level'])}{$v['classname']}</option>
 					   {/if}
 					   {/if}
 					   {/foreach}

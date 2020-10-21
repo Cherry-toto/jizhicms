@@ -44,7 +44,7 @@
 			   <option value="0">顶级栏目</option>
 			   {foreach $classtypes as $v}
 			   {if($admin['classcontrol']==0 || $admin['isadmin']==1 || strpos($tids,','.$v['id'].',')!==false || $molds['iscontrol']==0)}
-			   <option {if($pid==$v['id'])}selected{/if}  value="{$v['id']}">{fun str_repeat('--', $v['level']), $v['classname']}</option>
+			   <option {if($pid==$v['id'])}selected{/if}  value="{$v['id']}">{fun str_repeat('--', $v['level'])}{$v['classname']}</option>
 			   {/if}
 			   {/foreach}
 			

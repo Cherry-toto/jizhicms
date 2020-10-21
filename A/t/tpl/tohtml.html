@@ -18,9 +18,9 @@
     </head>
     <body>
     <div class="x-body layui-anim layui-anim-up">
-      
+      <div class="layui-card">
+		<div class="layui-card-body">
         <fieldset class="layui-elem-field">
-            <legend>生成静态文件</legend>
             <div class="layui-field-box">
                 <div class="layui-col-md12">
 				<blockquote class="layui-elem-quote">{if($webconf['iscachepage']==1)}您已开启【缓存完整页面】，更新静态HTML需要预留足够的空间，如：总内存500M，已用280M（过半），不建议生成HMTL，可能会导致内存不够！<br>可以去【系统设置】-【高级设置】-【缓存完整页面】进行关闭{else}请确定空间内存是否足够，如果不够，可以开启【缓存完整页面】，也能达到静态访问打开页面速度！{/if}</blockquote>
@@ -39,7 +39,7 @@
 					<td><select class="tid" lay-search name="tid[]"  >
 						<option value="0">所有栏目</option>
 					   {foreach $classtypetree as $v}
-					   <option value="{$v['id']}">{fun str_repeat('--', $v['level']), $v['classname']}</option>
+					   <option value="{$v['id']}">{fun str_repeat('--', $v['level'])}{$v['classname']}</option>
 					   {/foreach}
 						</select>
 						</td>
@@ -64,7 +64,7 @@
 						<option value="0">所有栏目</option>
 					   {foreach $classtypetree as $v}
 					   {if($v['molds']=='article')}
-					   <option value="{$v['id']}">{fun str_repeat('--', $v['level']), $v['classname']}</option>
+					   <option value="{$v['id']}">{fun str_repeat('--', $v['level'])}{$v['classname']}</option>
 					   {/if}
 					   {/foreach}
 						</select>
@@ -87,7 +87,7 @@
 						<option value="0">所有栏目</option>
 					   {foreach $classtypetree as $v}
 					   {if($v['molds']=='product')}
-					   <option value="{$v['id']}">{fun str_repeat('--', $v['level']), $v['classname']}</option>
+					   <option value="{$v['id']}">{fun str_repeat('--', $v['level'])}{$v['classname']}</option>
 					   {/if}
 					   {/foreach}
 						</select>
@@ -150,7 +150,8 @@
                 </div>
             </div>
         </fieldset>
-       
+       </div>
+       </div>
        
     </div>
         <script>

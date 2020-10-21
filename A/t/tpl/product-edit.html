@@ -56,7 +56,7 @@
 					   {foreach $classtypes as $v}
 					   {if($v['molds']=='product')}
 					   {if($admin['classcontrol']==0 || $admin['isadmin']==1 || strpos($tids,','.$v['id'].',')!==false || $molds['iscontrol']==0)}
-					   <option {if($data['tid']==$v['id'])} selected="selected" {/if}  value="{$v['id']}">{fun str_repeat('--', $v['level']), $v['classname']}</option>
+					   <option {if($data['tid']==$v['id'])} selected="selected" {/if}  value="{$v['id']}">{fun str_repeat('--', $v['level'])}{$v['classname']}</option>
 					   {/if}
 					   {/foreach}
 					   {/if}
@@ -69,7 +69,7 @@
 				{/if}
 				 <div class="layui-form-item">
                     <label for="seo_title" class="layui-form-label">
-                        <span class="x-red">*</span>SEO标题
+                        <span class="x-red"></span>SEO标题
                     </label>
                     <div class="layui-input-inline">
                         <input type="text" id="seo_title" value="{$data['seo_title']}" style="width:500px;"  name="seo_title" 
@@ -114,7 +114,7 @@
                 </div>
 				<div class="layui-form-item">
                     <label for="litpic" class="layui-form-label">
-						<span class="x-red">*</span>首图  
+						<span class="x-red"></span>首图  
                     </label>
                     
 					<div class="layui-input-inline">
@@ -172,7 +172,7 @@
 				 
 				<div class="layui-form-item layui-form-text">
                     <label for="body" class="layui-form-label">
-                        <span class="x-red">*</span>内容
+                        <span class="x-red"></span>内容
                     </label>
                     <div class="layui-input-block" style="clear:both;" >
 					{include="content"}
@@ -241,7 +241,7 @@
 				
 				 <div class="layui-form-item" >
                     <label for="addtime" class="layui-form-label">
-                        <span class="x-red">*</span>更新时间
+                        <span class="x-red"></span>更新时间
                     </label>
                     <div class="layui-input-inline">
                       <input class="layui-input" value="{if($data)}{fun date('Y-m-d H:i:s',$data['addtime'])}{else}{fun date('Y-m-d H:i:s')}{/if}" name="addtime" placeholder="文件日期" id="product_addtime">

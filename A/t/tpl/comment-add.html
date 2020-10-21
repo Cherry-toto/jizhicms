@@ -52,7 +52,7 @@
 						<select name="tid" lay-search="" id="tid" >
 						<option value="0">选择栏目</option>
 					   {foreach $classtypes as $v}
-					   <option   value="{$v['id']}">{fun str_repeat('--', $v['level']), $v['classname']}</option>
+					   <option   value="{$v['id']}">{fun str_repeat('--', $v['level'])}{$v['classname']}</option>
 					   {/foreach}
 					   </select>
                     </div>

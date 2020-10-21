@@ -226,7 +226,7 @@ class HomeController extends CommonController
 			}
 			$limit = $limit<=0 ? 15 : $limit;
 			$data = $page->where($sql)->orderby($orders)->limit($limit)->page($this->frpage)->go();
-			$pages = $page->pageList(3,'-');
+			$pages = $page->pageList(5,'-');
 			
 			$this->pages = $pages;//组合分页
 			
@@ -438,7 +438,7 @@ class HomeController extends CommonController
 			}
 			
 			
-			$pages = $page->pageList(3,'-');
+			$pages = $page->pageList(5,'-');
 			$this->pages = $pages;//组合分页
 			foreach($data as $k=>$v){
 				if(isset($v['htmlurl']) && !isset($v['url'])){
@@ -730,15 +730,26 @@ class HomeController extends CommonController
 				
 			}
 			$this->word = $word;
-			$sql =  " isshow=1 and title like '%".$word."%'  ";
-			if($tid){
+			
+			$search_words = (isset($this->webconf['search_words'])&& $this->webconf['search_words']) ? explode('|',$this->webconf['search_words']) : ['title'];
+			$sql = ' isshow=1 ';
+			$sq = [];
+			foreach($search_words as $v){
+				$sq[]= " ".$v." like '%".$word."%' ";
+			}
+			if(count($sq)){
+				$sql.=" and (".implode(' or ',$sq).") ";
+			}
+			if($this->frparam('isall') && $tid){
+				$sql.= ' and tid in ('.implode(',',$this->classtypedata[$tid]['children']['ids']).') ';
+			}else if($tid){
 				$sql.=' and tid in('.$tid.') ';
 			}
 			
 			$page = new Page($molds);
 			$page->typeurl = 'search';
 			$data = $page->where($sql)->orderby('id desc')->limit($this->frparam('limit',0,15))->page($this->frparam('page',0,1))->go();
-			$pages = $page->pageList(3,'&page=');
+			$pages = $page->pageList(5,'&page=');
 			
 			$this->pages = $pages;//组合分页
 			
@@ -827,14 +838,26 @@ class HomeController extends CommonController
 				Error('请输入关键词搜索！');
 			}
 			$this->word = $word;
-			$sqlx =  "  isshow=1 and title like '%".$word."%'  ";
-			if($tid){
-				$sqlx.=' and tid in('.$tid.') ';
+			
+			$search_words = (isset($this->webconf['search_words'])&& $this->webconf['search_words']) ? explode('|',$this->webconf['search_words']) : ['title'];
+			$sql = ' isshow=1 ';
+			$sq = [];
+			foreach($search_words as $v){
+				$sq[]= " ".$v." like '%".$word."%' ";
 			}
+			if(count($sq)){
+				$sql.=" and (".implode(' or ',$sq).") ";
+			}
+			if($this->frparam('isall') && $tid){
+				$sql.= ' and tid in ('.implode(',',$this->classtypedata[$tid]['children']['ids']).') ';
+			}else if($tid){
+				$sql.=' and tid in('.$tid.') ';
+			}
+			
 		
 			$lists = [];
 			foreach($allow_table as $v){
-				$list_a = M($v)->findAll($sqlx);
+				$list_a = M($v)->findAll($sql);
 				if($list_a){
 					$sql = [];
 					$sql[] = " molds = '".$v."' and isshow=1 ";
@@ -877,6 +900,7 @@ class HomeController extends CommonController
 			$this->lists = $data;
 			$this->pages = $arraypage->pageList();
 			$this->pagelist = $arraypage->listpage;
+			$this->listpage = $arraypage->listpage;
 			if($this->frparam('ajax') && $this->webconf['isajax']){
 				if($this->frparam('ajax_tpl')){
 					$this->display($this->template.'/ajax_searchall_list');
@@ -906,8 +930,16 @@ class HomeController extends CommonController
         $url = $position === false ? $url : substr($url, 0, $position);
 		$r = M('customurl')->find(['url'=>$url]);
 		if($r){
-			$this->type = $this->classtypedata[$r['tid']];
-			$this->jizhi_details($r['aid']);
+			if(isset($this->classtypedata[$r['tid']])){
+				$this->type = $this->classtypedata[$r['tid']];
+				$this->jizhi_details($r['aid']);
+			}else if($r['molds']=='tags'){
+				$param = [];
+				$param['id'] = $r['aid'];
+				$tags = new TagsController($param);
+				$tags->index();
+			}
+			
 			exit;
 		}
 		$this->display($this->template.'/404');
@@ -1026,41 +1058,58 @@ class HomeController extends CommonController
 			}
 			foreach($model as $k=>$v){
 				$list = M($v)->findAll(['isshow'=>1]);
+				if(count($list)>1000){
+					continue;
+				}
 				//栏目
 				if($v=='classtype' && $list){
 					foreach($list as $s){
-						$l.='<url>
+						if($this->classtypedata[$s['id']]['url']){
+							$l.='<url>
 							  <loc>'.$this->classtypedata[$s['id']]['url'].'</loc>
 							  <lastmod>'.date('Y-m-d').'T08:00:00+00:00</lastmod>
 							  <changefreq>always</changefreq>
 							  <priority>0.80</priority>
 							</url>';
+						}
+						
 						if($this->webconf['iswap']==1){
-							$l.='<url>
-							  <loc>'.$classtypedataMobile[$s['id']]['url'].'</loc>
-							  <lastmod>'.date('Y-m-d').'T08:00:00+00:00</lastmod>
-							  <changefreq>always</changefreq>
-							  <priority>0.80</priority>
-							</url>';
+							if($classtypedataMobile[$s['id']]['url']){
+								$l.='<url>
+								  <loc>'.$classtypedataMobile[$s['id']]['url'].'</loc>
+								  <lastmod>'.date('Y-m-d').'T08:00:00+00:00</lastmod>
+								  <changefreq>always</changefreq>
+								  <priority>0.80</priority>
+								</url>';
+							}
+							
 						}	
 					}
 				}else if($list){
 					foreach($list as $s){
 						$s['addtime'] = isset($s['addtime']) ? $s['addtime'] : time();
 					//文章-商品
-						$l.='<url>
-						  <loc>'.gourl($s,$s['htmlurl']).'</loc>
-						  <lastmod>'.date('Y-m-d',$s['addtime']).'T08:00:00+00:00</lastmod>
-						   <changefreq>always</changefreq>
-							  <priority>0.80</priority>
-						</url>';
-						if($this->webconf['iswap']==1){
+						$url = gourl($s,$s['htmlurl']);
+						if($url){
 							$l.='<url>
-							  <loc>'.gourl($s,$s['htmlurl']).'</loc>
+							  <loc>'.$url.'</loc>
 							  <lastmod>'.date('Y-m-d',$s['addtime']).'T08:00:00+00:00</lastmod>
 							   <changefreq>always</changefreq>
-							  <priority>0.80</priority>
+								  <priority>0.80</priority>
 							</url>';
+						}
+						
+						if($this->webconf['iswap']==1){
+							$murl = $this->murl($s,$s['htmlurl']);
+							if($murl){
+								$l.='<url>
+								  <loc>'.$murl.'</loc>
+								  <lastmod>'.date('Y-m-d',$s['addtime']).'T08:00:00+00:00</lastmod>
+								   <changefreq>always</changefreq>
+								  <priority>0.80</priority>
+								</url>';
+							}
+							
 						}	
 					
 					}
@@ -1078,6 +1127,19 @@ class HomeController extends CommonController
 			
 		}
 		
+	}
+	function murl($id,$htmlurl=null,$molds='article'){
+		
+		if(!$id){Error_msg('缺少ID！');}
+		$htmlpath = $this->webconf['iswap']==1 ? $this->webconf['mobile_html'] : $this->webconf['pc_html'];
+		$htmlpath = ($htmlpath=='' || $htmlpath=='/') ? '' : '/'.$htmlpath; 
+		if($htmlurl!=null){
+			return get_domain().$htmlpath.'/'.$htmlurl.'/'.$id.'.html';
+		}
+		
+		$tid = M($molds)->getField(array('id'=>$id),'tid');
+		$htmlurl = M('classtype')->getField(array('id'=>$tid),'htmlurl');
+		return get_domain().$htmlpath.'/'.$htmlurl.'/'.$id.'.html';
 	}
 	
 	//生成RSS

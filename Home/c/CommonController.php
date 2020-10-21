@@ -84,11 +84,14 @@ class CommonController extends Controller
 	
 	
 	function vercode(){
-		if($this->frparam('code_name',1)){
-			frvercode(4,$this->frparam('code_name',1));
-		}else{
-			 frvercode();
-		}
+		$w = $this->frparam('w',0,160);
+		$h = $this->frparam('h',0,50);
+		$n = $this->frparam('n',0,4);
+		//frcode
+		$name = $this->frparam('name',1,$this->frparam('code_name',1,'frcode'));
+		
+		$imagecode=new \Imagecode($w,$h,$n,$name,APP_PATH."FrPHP/Extend/AdobeGothicStd-Bold.ttf");
+		$imagecode->imageout();
 		 
 	}
 	function checklogin(){

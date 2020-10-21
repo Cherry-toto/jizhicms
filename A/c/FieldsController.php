@@ -184,10 +184,7 @@ class FieldsController extends CommonController
 		$this->display('fields-add');
 	}
 	
-
-	
-	
-	public function editFields(){
+	function editFields(){
 		
 		if($this->frparam('go',1)==1){
 
@@ -366,12 +363,17 @@ class FieldsController extends CommonController
 	}
 	
 	function get_fields(){
-		$tid = $this->frparam('tid');
+		$tid = $this->frparam('tid',0,0);
 		$sql = array();
-		if($tid!=0){
+		$molds = strtolower($this->frparam('molds',1));
+		if(in_array($molds,['tags','message','comment','orders','admin','collect_type','fields','buylog','link_type','links','layout','level_group','level','member_group','molds','pictures','plugins','power','ruler','sysconfig','task','collect','member'])){
+			if($tid!=0){
+				$sql[] = " tids like '%,".$tid.",%' "; 
+			}
+		}else{
 			$sql[] = " tids like '%,".$tid.",%' "; 
 		}
-		$molds = $this->frparam('molds',1);
+		
 		$id = $this->frparam('id');
 		if($id){
 			$data = M($molds)->find(array('id'=>$id));
@@ -396,8 +398,8 @@ class FieldsController extends CommonController
 				}
                 $l .= $v['fieldname'].'
                     </label>
-                    <div class="layui-input-block">
-                        <input type="text" id="'.$v['field'].'" value="'.$data[$v['field']].'" name="'.$v['field'].'" ';
+                    <div class="layui-input-inline">
+                        <input type="text" id="'.$v['field'].'" style="width:500px;" value="'.$data[$v['field']].'" name="'.$v['field'].'" ';
 				if($v['ismust']==1){
 					$l.=' required="" lay-verify="required" ';
 				}		
@@ -889,10 +891,6 @@ layui.use("laydate", function(){
 		echo $l;
 	}
 	
-	
-	
-	
-	
 	function deleteFields(){
 		$id = $this->frparam('id');
 		if($id){
@@ -914,9 +912,6 @@ layui.use("laydate", function(){
 		}
 	}
 	
-	
-	
-	//修改排序
 	function changeOrders(){
 		
 		$w['orders'] = $this->frparam('orders',0,0);
@@ -927,7 +922,30 @@ layui.use("laydate", function(){
 		JsonReturn(array('code'=>0,'info'=>'修改成功！'));
 	}
 	
-	
+	function changeTid(){
+		$ids = $this->frparam('data',1);
+		if(!$ids){
+			JsonReturn(['code'=>1,'msg'=>'请选择字段！']);
+		}
+		$tid = $this->frparam('tid');
+		if(!$tid){
+			JsonReturn(['code'=>1,'msg'=>'请选择栏目！']);
+		}
+		$sql = 'id in('.$ids.') ';
+		$lists = M('fields')->findAll($sql);
+		foreach($lists as $v){
+			if(strpos($v['tids'],','.$tid.',')===false){
+				if($v['tids']){
+					$v['tids'] .= $tid.',';
+				}else{
+					$v['tids'] = ','.$tid.',';
+				}
+				M('fields')->update(['id'=>$v['id']],['tids'=>$v['tids']]);
+			}
+		}
+		
+		JsonReturn(['code'=>0,'msg'=>'操作成功！']);
+	}
 	
 	
 	

@@ -99,7 +99,7 @@ class ProductController extends CommonController
 				
 				$v['new_litpic'] = $v['litpic']=='' ? '' : get_domain().$v['litpic'];
 				$v['new_addtime'] = "\t".date('Y-m-d H:i:s',$v['addtime'])."\t";
-				$v['view_url'] = get_domain().'/'.$v['htmlurl'].'/'.$v['id'];
+				$v['view_url'] = gourl($v,$v['htmlurl']);
 				$v['edit_url'] = U('Product/editproduct',array('id'=>$v['id']));
 				
 				foreach($this->fields_list as $vv){
@@ -136,7 +136,6 @@ class ProductController extends CommonController
 			$data['keywords'] = $this->frparam('keywords',1);
 			$data['seo_title'] = $this->frparam('seo_title',1) ? $this->frparam('seo_title',1) : $this->frparam('title',1);
 			$data['description'] = ($this->frparam('description',1)=='') ? newstr(strip_tags($data['body']),160) : $this->frparam('description',1);
-			$data['description'] = str_replace(' ','',$data['description']);
 			if(strlen($data['description'])>255){
 				$data['description'] = newstr($data['description'],160);
 			}
@@ -248,7 +247,6 @@ class ProductController extends CommonController
 			$data['keywords'] = $this->frparam('keywords',1);
 			$data['seo_title'] = $this->frparam('seo_title',1) ? $this->frparam('seo_title',1) : $this->frparam('title',1);
 			$data['description'] = ($this->frparam('description',1)=='') ? newstr(strip_tags($data['body']),160) : $this->frparam('description',1);
-			$data['description'] = str_replace(' ','',$data['description']);
 			if(strlen($data['description'])>255){
 				$data['description'] = newstr($data['description'],160);
 			}
@@ -311,12 +309,12 @@ class ProductController extends CommonController
 						if($customurl['aid']!=$this->frparam('id')){
 							JsonReturn(array('code'=>1,'msg'=>'已存在相同的自定义URL！'));
 						}else if($customurl['url']!=$data['ownurl']){
-							M('customurl')->update(['molds'=>'product','tid'=>$data['tid'],'aid'=>$this->frparam('id')],['url'=>$data['ownurl']]);
+							M('customurl')->update(['tid'=>$data['tid'],'aid'=>$this->frparam('id')],['url'=>$data['ownurl'],'molds'=>'product']);
 						}
 						
 					}else{
 						if(M('customurl')->find(['aid'=>$this->frparam('id')])){
-							M('customurl')->update(['molds'=>'product','tid'=>$data['tid'],'aid'=>$this->frparam('id')],['url'=>$data['ownurl']]);
+							M('customurl')->update(['tid'=>$data['tid'],'aid'=>$this->frparam('id')],['url'=>$data['ownurl'],'molds'=>'product']);
 						}else{
 							M('customurl')->add(['molds'=>'product','tid'=>$data['tid'],'url'=>$data['ownurl'],'addtime'=>time(),'aid'=>$this->frparam('id')]);
 						}

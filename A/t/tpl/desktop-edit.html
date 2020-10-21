@@ -71,12 +71,18 @@
                                 </td>
                                 <td>
 								{foreach $v['nav'] as $s}
-								{if($s!=0)}
+								{if($s)}
                                     <div class="layui-input-inline">
 										<select name="left_nav_func_{$k+1}[]"   >
 										<option value="0">选择功能</option>
 									   {foreach $lists as $vv}
-									   <option  value="{$vv['id']}" {if($s==$vv['id'])}selected{/if} >{$vv['name']}</option>
+									   {if($vv['isdesktop']==1 || $vv['pid']==0)}
+									   <option  value="{$vv['id']}" {if($vv['pid']==0)}disabled{/if} {if($s==$vv['id'])}selected{/if} >{fun str_repeat('--', $vv['level'])}{$vv['name']}</option>
+									   {/if}
+									   {/foreach}
+									   <option   disabled >栏目列表</option>
+									   {foreach $classtypetree as $vv}
+									   <option  value="class_{$vv['id']}"  {if($s=='class_'.$vv['id'])}selected{/if} >--{fun str_repeat('--', $vv['level'])}{$vv['classname']}</option>
 									   {/foreach}
 									   </select>
 									   
@@ -111,7 +117,13 @@
 										<select name="left_nav_func_1[]"   >
 										<option value="0">选择功能</option>
 									   {foreach $lists as $v}
-									   <option  value="{$v['id']}">{$v['name']}</option>
+									   {if($v['isdesktop']==1 || $v['pid']==0)}
+									   <option {if($v['pid']==0)}disabled{/if}  value="{$v['id']}">{fun str_repeat('--', $v['level'])}{$v['name']}</option>
+									   {/if}
+									   {/foreach}
+									   <option   disabled >栏目列表</option>
+									   {foreach $classtypetree as $vv}
+									   <option  value="class_{$vv['id']}"  >--{fun str_repeat('--', $vv['level'])}{$vv['classname']}</option>
 									   {/foreach}
 									   </select>
 									   
@@ -168,12 +180,18 @@
                                 </td>
                                 <td>
 								{foreach $v['nav'] as $s}
-								{if($s!=0)}
+								{if($s)}
                                     <div class="layui-input-inline">
 										<select name="top_nav_func_{$k+1}[]"   >
 										<option value="0">选择功能</option>
 									   {foreach $lists as $vv}
-									   <option  value="{$vv['id']}" {if($s==$vv['id'])}selected{/if}>{$vv['name']}</option>
+									   {if($vv['isdesktop']==1 || $vv['pid']==0)}
+									   <option {if($vv['pid']==0)}disabled{/if}  value="{$vv['id']}" {if($s==$vv['id'])}selected{/if}>{fun str_repeat('--', $vv['level'])}{$vv['name']}</option>
+									   {/if}
+									   {/foreach}
+									   <option   disabled >栏目列表</option>
+									   {foreach $classtypetree as $vv}
+									   <option  value="class_{$vv['id']}" {if($s=='class_'.$vv['id'])}selected{/if}  >--{fun str_repeat('--', $vv['level'])}{$vv['classname']}</option>
 									   {/foreach}
 									   </select>
 									   
@@ -208,7 +226,13 @@
 										<select name="top_nav_func_1[]"   >
 										<option value="0">选择功能</option>
 									   {foreach $lists as $v}
-									   <option  value="{$v['id']}">{$v['name']}</option>
+									   {if($v['isdesktop']==1 || $v['pid']==0)}
+									   <option {if($v['pid']==0)}disabled{/if}  value="{$v['id']}">{fun str_repeat('--', $v['level'])}{$v['name']}</option>
+									   {/if}
+									   {/foreach}
+									   <option   disabled >栏目列表</option>
+									   {foreach $classtypetree as $vv}
+									   <option  value="class_{$vv['id']}"  >--{fun str_repeat('--', $vv['level'])}{$vv['classname']}</option>
 									   {/foreach}
 									   </select>
 									   
@@ -346,9 +370,15 @@
 				if(m==1){
 					var nn = parseInt($(n).parent().parent().attr('data'));
 					var html='<div class="layui-input-inline"><select name="left_nav_func_'+nn+'[]"   ><option value="0">选择功能</option>'+
-										   {foreach $lists as $v}
-										   '<option  value="{$v['id']}">{$v['name']}</option>'+
-										   {/foreach}
+					{foreach $lists as $v}
+				   {if($v['isdesktop']==1 || $v['pid']==0)}
+				   '<option {if($v['pid']==0)}disabled{/if}  value="{$v['id']}">{fun str_repeat('--', $v['level'])}{$v['name']}</option>'+
+				   {/if}
+				   {/foreach}
+				   '<option   disabled >栏目列表</option>'+
+				   {foreach $classtypetree as $vv}
+				   '<option  value="class_{$vv['id']}"  >--{fun str_repeat('--', $vv['level'])}{$vv['classname']}</option>'+
+				   {/foreach}
 										   '</select></div>';
 					$(n).before(html);
 					
@@ -357,7 +387,13 @@
 					var nn = parseInt($("#left_num").val());
 					var html=' <tr data='+(nn+1)+'><td><input type="text" name="left_nav[]" value="" title="填写顶级菜单" required="" lay-verify="required" autocomplete="off" class="layui-input" ></td><td><input type="text" name="left_nav_icon[]" value="" title="填写菜单图标" autocomplete="off" class="layui-input" ></td><td><div class="layui-input-inline"><select name="left_nav_func_'+(nn+1)+'[]"   ><option value="0">选择功能</option>'+
 				   {foreach $lists as $v}
-				   '<option  value="{$v['id']}">{$v['name']}</option>'+
+				   {if($v['isdesktop']==1 || $v['pid']==0)}
+				   '<option {if($v['pid']==0)}disabled{/if}  value="{$v['id']}">{fun str_repeat('--', $v['level'])}{$v['name']}</option>'+
+				   {/if}
+				   {/foreach}
+				   '<option   disabled >栏目列表</option>'+
+				   {foreach $classtypetree as $vv}
+				   '<option  value="class_{$vv['id']}"  >--{fun str_repeat('--', $vv['level'])}{$vv['classname']}</option>'+
 				   {/foreach}
 				   '</select></div><button  type="button" onClick="addfunc(this,1)" class="layui-btn" >新增+</button></td><td><button  type="button" class="layui-btn layui-btn layui-btn-xs"  onClick="addfunc(this,2)" ><i class="layui-icon">&#xe642;</i>新增+</button><button type="button" class="layui-btn-danger layui-btn layui-btn-xs" onClick="addfunc(this,3)"  href="javascript:;" ><i class="layui-icon">&#xe640;</i>删除</button></td><input name="left_num_count[]" type="hidden" id="tr_left_'+(nn+1)+'" value="'+(nn+1)+'"></tr>';
 					$(n).parent().parent().after(html);
@@ -370,10 +406,16 @@
 				}else if(m==4){
 					var nn = parseInt($(n).parent().parent().attr('data'));
 					var html='<div class="layui-input-inline"><select name="top_nav_func_'+nn+'[]"   ><option value="0">选择功能</option>'+
-										   {foreach $lists as $v}
-										   '<option  value="{$v['id']}">{$v['name']}</option>'+
-										   {/foreach}
-										   '</select></div>';
+					{foreach $lists as $v}
+				   {if($v['isdesktop']==1 || $v['pid']==0)}
+				   '<option {if($v['pid']==0)}disabled{/if}  value="{$v['id']}">{fun str_repeat('--', $v['level'])}{$v['name']}</option>'+
+				   {/if}
+				   {/foreach}
+				   '<option   disabled >栏目列表</option>'+
+				   {foreach $classtypetree as $vv}
+				   '<option  value="class_{$vv['id']}"  >--{fun str_repeat('--', $vv['level'])}{$vv['classname']}</option>'+
+				   {/foreach}
+				   '</select></div>';
 					$(n).before(html);
 					
 					renderForm();
@@ -381,7 +423,13 @@
 					var nn = parseInt($("#top_num").val());
 					var html=' <tr data="'+(nn+1)+'"><td><input type="text" name="top_nav[]" value="" title="填写顶级菜单" required="" lay-verify="required" autocomplete="off" class="layui-input" ></td><td><input type="text" name="top_nav_icon[]" value="" title="填写菜单图标" autocomplete="off" class="layui-input" ></td><td><div class="layui-input-inline"><select name="top_nav_func_'+(nn+1)+'[]"   ><option value="0">选择功能</option>'+
 				   {foreach $lists as $v}
-				   '<option  value="{$v['id']}">{$v['name']}</option>'+
+				   {if($v['isdesktop']==1 || $v['pid']==0)}
+				   '<option {if($v['pid']==0)}disabled{/if}  value="{$v['id']}">{fun str_repeat('--', $v['level'])}{$v['name']}</option>'+
+				   {/if}
+				   {/foreach}
+				   '<option   disabled >栏目列表</option>'+
+				   {foreach $classtypetree as $vv}
+				   '<option  value="class_{$vv['id']}"  >--{fun str_repeat('--', $vv['level'])}{$vv['classname']}</option>'+
 				   {/foreach}
 				   '</select></div><button  type="button" onClick="addfunc(this,4)" class="layui-btn" >新增+</button></td><td><button  type="button" class="layui-btn layui-btn layui-btn-xs"  onClick="addfunc(this,5)" ><i class="layui-icon">&#xe642;</i>新增+</button><button type="button" class="layui-btn-danger layui-btn layui-btn-xs" onClick="addfunc(this,6)"  href="javascript:;" ><i class="layui-icon">&#xe640;</i>删除</button></td><input name="top_num_count[]" type="hidden" id="tr_top_'+(nn+1)+'" value="'+(nn+1)+'"></tr>';
 					$(n).parent().parent().parent().after(html);

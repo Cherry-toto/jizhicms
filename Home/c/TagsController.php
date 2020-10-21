@@ -31,7 +31,8 @@ class TagsController extends CommonController
 				}
 			}
 			$this->tagname = $keywords;
-			$this->tags = M('tags')->find(['keywords'=>$keywords,'isshow'=>1]);
+			$sql = "keywords='".$keywords."' and isshow=1 and newname is null ";
+			$this->tags = M('tags')->find($sql);
 			if(!$this->tags){
 				Error('标签未找到或已删除！');
 			}
@@ -138,7 +139,7 @@ class TagsController extends CommonController
 			$this->display($this->template.'/tags-details');
 		}else{
 
-			$sql = 'isshow=1';
+			$sql = ' isshow=1 and newname is null ';
 			$page = new Page('tags');
 			
 			//手动设置分页条数

@@ -89,7 +89,7 @@ class Controller
 			} 
 		}
 		
-		return format_param($value,$int);
+		return format_param($value,$int,$default);
 		
 		
 	}

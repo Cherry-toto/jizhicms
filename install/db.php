@@ -192,7 +192,7 @@ CREATE TABLE `jz_layout` (
   `sys` tinyint(1) NOT NULL DEFAULT '0',
   `isdefault` tinyint(1) NOT NULL DEFAULT '0' COMMENT '1系统默认布局',
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=5 DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
 -- ----------------------------
 -- Table structure for jz_level
 -- ----------------------------
@@ -224,7 +224,7 @@ CREATE TABLE `jz_level_group` (
   `isagree` tinyint(1) NOT NULL DEFAULT '1' COMMENT '1允许登录0不允许',
   `description` varchar(500) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=5 DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
 -- ----------------------------
 -- Table structure for jz_links
 -- ----------------------------
@@ -604,10 +604,8 @@ INSERT INTO `jz_fields` (`id`,`field`,`molds`,`fieldname`,`tips`,`fieldtype`,`ti
 -- ----------------------------
 -- Records of jz_layout
 -- ----------------------------
-INSERT INTO `jz_layout` (`id`,`name`,`top_layout`,`left_layout`,`gid`,`ext`,`sys`,`isdefault`) VALUES ('1','CMS系统默认','[]','[{"name":"网站管理","icon":"&amp;#xe699;","nav":["42","9","95","83","147","22"]},{"name":"商品管理","icon":"&amp;#xe698;","nav":["105","129","2","118","123","16","177"]},{"name":"扩展管理","icon":"&amp;#xe6ce;","nav":["76","116","141","142","143","35","61","154","153"]},{"name":"系统设置","icon":"&amp;#xe6ae;","nav":["40","54","49","70","115","114","66"]}]','0','系统配置，不可删除！','1','1');
-INSERT INTO `jz_layout` (`id`,`name`,`top_layout`,`left_layout`,`gid`,`ext`,`sys`,`isdefault`) VALUES ('2','CMS客户界面','[]','[{"name":"内容管理","icon":"&amp;#xe6fb;","nav":["9"]},{"name":"栏目管理","icon":"&amp;#xe699;","nav":["42"]},{"name":"商品管理","icon":"&amp;#xe6cb;","nav":["105"]},{"name":"订单管理","icon":"&amp;#xe722;","nav":["129"]},{"name":"会员管理","icon":"&amp;#xe6b8;","nav":["2"]},{"name":"网站留言","icon":"&amp;#xe69f;","nav":["22"]},{"name":"友情链接","icon":"&amp;#xe6f7;","nav":["95"]},{"name":"轮播图","icon":"&amp;#xe6a8;","nav":["83"]},{"name":"公众号","icon":"&amp;#xe60e;","nav":["141","142"]},{"name":"系统设置","icon":"&amp;#xe6ae;","nav":["40","35","114","116"]}]','2','网站管理员-客户端-按需配置','0','0');
-INSERT INTO `jz_layout` (`id`,`name`,`top_layout`,`left_layout`,`gid`,`ext`,`sys`,`isdefault`) VALUES ('3','Blog界面','[]','[{"name":"栏目管理","icon":"&amp;#xe699;","nav":["42"]},{"name":"文章管理","icon":"&amp;#xe6fb;","nav":["9"]},{"name":"会员管理","icon":"&amp;#xe6b8;","nav":["2","118","123"]},{"name":"轮播图","icon":"&amp;#xe6a8;","nav":["83","89"]},{"name":"评论管理","icon":"&amp;#xe69b;","nav":["16"]},{"name":"留言管理","icon":"&amp;#xe69f;","nav":["22"]},{"name":"友情链接","icon":"&amp;#xe6f7;","nav":["95"]},{"name":"系统扩展","icon":"&amp;#xe6ce;","nav":["35","70","76","116"]},{"name":"系统设置","icon":"&amp;#xe6ae;","nav":["40","115","153","154","114"]}]','3','Blog用户界面，可以自定义修改，比较简洁一些','0','0');
-INSERT INTO `jz_layout` (`id`,`name`,`top_layout`,`left_layout`,`gid`,`ext`,`sys`,`isdefault`) VALUES ('4','基础建站客户端','[]','[{"name":"栏目管理","icon":"&amp;#xe699;","nav":["42"]},{"name":"文章管理","icon":"&amp;#xe6fb;","nav":["9"]},{"name":"商品管理","icon":"&amp;#xe6cb;","nav":["105"]},{"name":"轮播图","icon":"&amp;#xe6a8;","nav":["83","89"]},{"name":"友情链接","icon":"&amp;#xe6f7;","nav":["95"]},{"name":"网站留言","icon":"&amp;#xe69f;","nav":["22"]},{"name":"系统设置","icon":"&amp;#xe6ae;","nav":["40","35","114"]}]','0','基础建站-没有会员-没有评论-系统设置里面高级配置需要建站人员自己隐藏！','0','0');
+INSERT INTO `jz_layout` (`id`,`name`,`top_layout`,`left_layout`,`gid`,`ext`,`sys`,`isdefault`) VALUES ('1','系统默认','[]','[{"name":"内容管理","icon":"&amp;#xe6b4;","nav":["9","105"]},{"name":"栏目管理","icon":"&amp;#xe699;","nav":["42"]},{"name":"互动管理","icon":"&amp;#xe69b;","nav":["22","16"]},{"name":"SEO设置","icon":"&amp;#xe6b3;","nav":["147","95","153"]},{"name":"用户管理","icon":"&amp;#xe6b8;","nav":["2","118","123","54","49","66","129","177"]},{"name":"系统设置","icon":"&amp;#xe6ae;","nav":["40","70","83","89","114"]},{"name":"扩展管理","icon":"&amp;#xe6ce;","nav":["76","116","61","35","141","142","143","154","115"]}]','0','CMS默认配置，不可删除！','0','0');
+INSERT INTO `jz_layout` (`id`,`name`,`top_layout`,`left_layout`,`gid`,`ext`,`sys`,`isdefault`) VALUES ('2','旧版桌面','[]','[{"name":"网站管理","icon":"&amp;#xe699;","nav":["42","9","95","83","147","22"]},{"name":"商品管理","icon":"&amp;#xe698;","nav":["105","129","2","118","123","16","177"]},{"name":"扩展管理","icon":"&amp;#xe6ce;","nav":["76","116","141","142","143","35","61","154","153"]},{"name":"系统设置","icon":"&amp;#xe6ae;","nav":["40","54","49","70","115","114","66"]}]','0','旧版本配置','1','1');
 -- ----------------------------
 -- Records of jz_level
 -- ----------------------------
@@ -616,9 +614,6 @@ INSERT INTO `jz_level` (`id`,`name`,`pass`,`tel`,`gid`,`email`,`regtime`,`logint
 -- Records of jz_level_group
 -- ----------------------------
 INSERT INTO `jz_level_group` (`id`,`name`,`isadmin`,`paction`,`isagree`,`description`) VALUES ('1','超级管理员','1',',Fields,','1', NULL);
-INSERT INTO `jz_level_group` (`id`,`name`,`isadmin`,`paction`,`isagree`,`description`) VALUES ('2','网站管理员','0',',Member,Article,Comment,Message,Fields/get_fields,Index,Sys/index,Sys/loginlog,Sys/pictures,Sys/uploadcert,Sys/deletePic,Sys/deletePicAll,Sys/custom_del,Sys/email-order,Sys/payconfig,Sys/wechatbind,Classtype,Extmolds,Collect,Common,Product,Order,Wechat,','1','网站管理员，客户使用分组，权限仅次于超级管理员。');
-INSERT INTO `jz_level_group` (`id`,`name`,`isadmin`,`paction`,`isagree`,`description`) VALUES ('3','Blog','0',',Member,Article,Comment,Message,Fields/get_fields,Index/index,Index/welcome,Index/beifen,Index/backup,Index/huanyuan,Index/shanchu,Index/details,Index/desktop,Index/desktop_edit,Index/unicode,Index/update_session_maxlifetime,Index/cleanCache,Index/showlabel,Index/sitemap,Index/tohtml,Index/html_classtype,Index/html_molds,Sys/index,Sys/loginlog,Sys/pictures,Sys/uploadcert,Sys/deletePic,Sys/deletePicAll,Sys/custom_del,Classtype,Molds,Plugins,Links/index,Links/addlinks,Links/editlinks,Links/copylinks,Links/deletelinks,Links/deleteAll,Links/editOrders,Links/changeType,Links/copyAll,Links/editOrders,Links/linktype,Links/linktypeadd,Links/linktypeedit,Links/linktypedelete,Collect,Common,Common/uploads,Product,','1','Blog角色-主要用户blog用户使用，比较简洁');
-INSERT INTO `jz_level_group` (`id`,`name`,`isadmin`,`paction`,`isagree`,`description`) VALUES ('4','基础建站','0',',Article,Message,Fields/get_fields,Index/index,Index/welcome,Index/beifen,Index/backup,Index/huanyuan,Index/shanchu,Index/details,Index/update_session_maxlifetime,Index/cleanCache,Index/sitemap,Index/tohtml,Index/html_classtype,Index/html_molds,Sys/index,Sys/uploadcert,Classtype/index,Classtype/editclass,Classtype/editClassOrders,Classtype/change_status,Classtype/get_pinyin,Links/index,Links/addlinks,Links/editlinks,Links/copylinks,Links/deletelinks,Links/deleteAll,Links/editOrders,Links/changeType,Links/copyAll,Links/editOrders,Links/linktype,Links/linktypeadd,Links/linktypeedit,Links/linktypedelete,Collect,Common,Common/uploads,Product,','1','基础建站，会员评论等功能模块去除');
 -- ----------------------------
 -- Records of jz_links
 -- ----------------------------
@@ -772,11 +767,11 @@ INSERT INTO `jz_ruler` (`id`,`name`,`fc`,`pid`,`isdesktop`,`sys`) VALUES ('27','
 INSERT INTO `jz_ruler` (`id`,`name`,`fc`,`pid`,`isdesktop`,`sys`) VALUES ('28','新增字段','Fields/addFields','26','0','1');
 INSERT INTO `jz_ruler` (`id`,`name`,`fc`,`pid`,`isdesktop`,`sys`) VALUES ('29','修改字段','Fields/editFields','26','0','1');
 INSERT INTO `jz_ruler` (`id`,`name`,`fc`,`pid`,`isdesktop`,`sys`) VALUES ('30','删除字段','Fields/deleteFields','26','0','1');
-INSERT INTO `jz_ruler` (`id`,`name`,`fc`,`pid`,`isdesktop`,`sys`) VALUES ('31','获取字段列表','Fields/get_fields','26','0','1');
+INSERT INTO `jz_ruler` (`id`,`name`,`fc`,`pid`,`isdesktop`,`sys`) VALUES ('31','获取字段','Fields/get_fields','26','0','1');
 INSERT INTO `jz_ruler` (`id`,`name`,`fc`,`pid`,`isdesktop`,`sys`) VALUES ('32','基本功能','Index','0','0','1');
 INSERT INTO `jz_ruler` (`id`,`name`,`fc`,`pid`,`isdesktop`,`sys`) VALUES ('33','系统界面','Index/index','32','0','1');
 INSERT INTO `jz_ruler` (`id`,`name`,`fc`,`pid`,`isdesktop`,`sys`) VALUES ('34','后台首页','Index/welcome','32','1','1');
-INSERT INTO `jz_ruler` (`id`,`name`,`fc`,`pid`,`isdesktop`,`sys`) VALUES ('35','数据库列表','Index/beifen','32','1','1');
+INSERT INTO `jz_ruler` (`id`,`name`,`fc`,`pid`,`isdesktop`,`sys`) VALUES ('35','数据库备份','Index/beifen','32','1','1');
 INSERT INTO `jz_ruler` (`id`,`name`,`fc`,`pid`,`isdesktop`,`sys`) VALUES ('36','数据库备份','Index/backup','32','0','1');
 INSERT INTO `jz_ruler` (`id`,`name`,`fc`,`pid`,`isdesktop`,`sys`) VALUES ('37','数据库还原','Index/huanyuan','32','0','1');
 INSERT INTO `jz_ruler` (`id`,`name`,`fc`,`pid`,`isdesktop`,`sys`) VALUES ('38','数据库删除','Index/shanchu','32','0','1');
@@ -801,11 +796,11 @@ INSERT INTO `jz_ruler` (`id`,`name`,`fc`,`pid`,`isdesktop`,`sys`) VALUES ('56','
 INSERT INTO `jz_ruler` (`id`,`name`,`fc`,`pid`,`isdesktop`,`sys`) VALUES ('57','管理员状态','Admin/change_status','48','0','1');
 INSERT INTO `jz_ruler` (`id`,`name`,`fc`,`pid`,`isdesktop`,`sys`) VALUES ('58','删除管理员','Admin/admindelete','48','0','1');
 INSERT INTO `jz_ruler` (`id`,`name`,`fc`,`pid`,`isdesktop`,`sys`) VALUES ('59','个人信息','Index/details','32','1','1');
-INSERT INTO `jz_ruler` (`id`,`name`,`fc`,`pid`,`isdesktop`,`sys`) VALUES ('60','模块管理','Molds','0','0','1');
-INSERT INTO `jz_ruler` (`id`,`name`,`fc`,`pid`,`isdesktop`,`sys`) VALUES ('61','模块列表','Molds/index','60','1','1');
-INSERT INTO `jz_ruler` (`id`,`name`,`fc`,`pid`,`isdesktop`,`sys`) VALUES ('62','新增模块','Molds/addMolds','60','0','1');
-INSERT INTO `jz_ruler` (`id`,`name`,`fc`,`pid`,`isdesktop`,`sys`) VALUES ('63','修改模块','Molds/editMolds','60','0','1');
-INSERT INTO `jz_ruler` (`id`,`name`,`fc`,`pid`,`isdesktop`,`sys`) VALUES ('64','删除模块','Molds/deleteMolds','60','0','1');
+INSERT INTO `jz_ruler` (`id`,`name`,`fc`,`pid`,`isdesktop`,`sys`) VALUES ('60','模型管理','Molds','0','0','1');
+INSERT INTO `jz_ruler` (`id`,`name`,`fc`,`pid`,`isdesktop`,`sys`) VALUES ('61','模型列表','Molds/index','60','1','1');
+INSERT INTO `jz_ruler` (`id`,`name`,`fc`,`pid`,`isdesktop`,`sys`) VALUES ('62','新增模型','Molds/addMolds','60','0','1');
+INSERT INTO `jz_ruler` (`id`,`name`,`fc`,`pid`,`isdesktop`,`sys`) VALUES ('63','修改模型','Molds/editMolds','60','0','1');
+INSERT INTO `jz_ruler` (`id`,`name`,`fc`,`pid`,`isdesktop`,`sys`) VALUES ('64','删除模型','Molds/deleteMolds','60','0','1');
 INSERT INTO `jz_ruler` (`id`,`name`,`fc`,`pid`,`isdesktop`,`sys`) VALUES ('65','权限管理','Rulers','0','0','1');
 INSERT INTO `jz_ruler` (`id`,`name`,`fc`,`pid`,`isdesktop`,`sys`) VALUES ('66','权限列表','Rulers/index','65','1','1');
 INSERT INTO `jz_ruler` (`id`,`name`,`fc`,`pid`,`isdesktop`,`sys`) VALUES ('67','新增权限','Rulers/addrulers','65','0','1');
@@ -820,24 +815,24 @@ INSERT INTO `jz_ruler` (`id`,`name`,`fc`,`pid`,`isdesktop`,`sys`) VALUES ('75','
 INSERT INTO `jz_ruler` (`id`,`name`,`fc`,`pid`,`isdesktop`,`sys`) VALUES ('76','插件列表','Plugins/index','75','1','1');
 INSERT INTO `jz_ruler` (`id`,`name`,`fc`,`pid`,`isdesktop`,`sys`) VALUES ('77','模块扩展','Extmolds','0','0','1');
 INSERT INTO `jz_ruler` (`id`,`name`,`fc`,`pid`,`isdesktop`,`sys`) VALUES ('82','轮播图','Collect','0','0','1');
-INSERT INTO `jz_ruler` (`id`,`name`,`fc`,`pid`,`isdesktop`,`sys`) VALUES ('83','轮播图列表','Collect/index','82','1','1');
+INSERT INTO `jz_ruler` (`id`,`name`,`fc`,`pid`,`isdesktop`,`sys`) VALUES ('83','轮播图','Collect/index','82','1','1');
 INSERT INTO `jz_ruler` (`id`,`name`,`fc`,`pid`,`isdesktop`,`sys`) VALUES ('84','新增轮播图','Collect/addcollect','82','0','1');
 INSERT INTO `jz_ruler` (`id`,`name`,`fc`,`pid`,`isdesktop`,`sys`) VALUES ('85','修改轮播图','Collect/editcollect','82','0','1');
 INSERT INTO `jz_ruler` (`id`,`name`,`fc`,`pid`,`isdesktop`,`sys`) VALUES ('86','删除轮播图','Collect/deletecollect','82','0','1');
 INSERT INTO `jz_ruler` (`id`,`name`,`fc`,`pid`,`isdesktop`,`sys`) VALUES ('87','复制轮播图','Collect/copycollect','82','0','1');
 INSERT INTO `jz_ruler` (`id`,`name`,`fc`,`pid`,`isdesktop`,`sys`) VALUES ('88','批量删除轮播图','Collect/deleteAll','82','0','1');
-INSERT INTO `jz_ruler` (`id`,`name`,`fc`,`pid`,`isdesktop`,`sys`) VALUES ('89','轮播图分类列表','Collect/collectType','82','1','1');
+INSERT INTO `jz_ruler` (`id`,`name`,`fc`,`pid`,`isdesktop`,`sys`) VALUES ('89','轮播图分类','Collect/collectType','82','1','1');
 INSERT INTO `jz_ruler` (`id`,`name`,`fc`,`pid`,`isdesktop`,`sys`) VALUES ('90','新增轮播图分类','Collect/collectTypeAdd','82','0','1');
 INSERT INTO `jz_ruler` (`id`,`name`,`fc`,`pid`,`isdesktop`,`sys`) VALUES ('91','修改轮播图分类','Collect/collectTypeEdit','82','0','1');
 INSERT INTO `jz_ruler` (`id`,`name`,`fc`,`pid`,`isdesktop`,`sys`) VALUES ('92','删除轮播图分类','Collect/collectTypeDelete','82','0','1');
 INSERT INTO `jz_ruler` (`id`,`name`,`fc`,`pid`,`isdesktop`,`sys`) VALUES ('93','批量复制','Article/copyAll','8','0','1');
 INSERT INTO `jz_ruler` (`id`,`name`,`fc`,`pid`,`isdesktop`,`sys`) VALUES ('94','批量修改栏目','Article/changeType','8','0','1');
-INSERT INTO `jz_ruler` (`id`,`name`,`fc`,`pid`,`isdesktop`,`sys`) VALUES ('95','友情链接列表','Links/index','189','1','0');
-INSERT INTO `jz_ruler` (`id`,`name`,`fc`,`pid`,`isdesktop`,`sys`) VALUES ('96','新增友情链接','Links/addlinks','189','0','0');
-INSERT INTO `jz_ruler` (`id`,`name`,`fc`,`pid`,`isdesktop`,`sys`) VALUES ('97','修改友情链接','Links/editlinks','189','0','0');
-INSERT INTO `jz_ruler` (`id`,`name`,`fc`,`pid`,`isdesktop`,`sys`) VALUES ('98','复制友情链接','Links/copylinks','189','0','0');
-INSERT INTO `jz_ruler` (`id`,`name`,`fc`,`pid`,`isdesktop`,`sys`) VALUES ('99','删除友情链接','Links/deletelinks','189','0','0');
-INSERT INTO `jz_ruler` (`id`,`name`,`fc`,`pid`,`isdesktop`,`sys`) VALUES ('100','批量删除友情链接','Links/deleteAll','189','0','0');
+INSERT INTO `jz_ruler` (`id`,`name`,`fc`,`pid`,`isdesktop`,`sys`) VALUES ('95','友情链接','Links/index','189','1','0');
+INSERT INTO `jz_ruler` (`id`,`name`,`fc`,`pid`,`isdesktop`,`sys`) VALUES ('96','新增友链','Links/addlinks','189','0','0');
+INSERT INTO `jz_ruler` (`id`,`name`,`fc`,`pid`,`isdesktop`,`sys`) VALUES ('97','修改友链','Links/editlinks','189','0','0');
+INSERT INTO `jz_ruler` (`id`,`name`,`fc`,`pid`,`isdesktop`,`sys`) VALUES ('98','复制友链','Links/copylinks','189','0','0');
+INSERT INTO `jz_ruler` (`id`,`name`,`fc`,`pid`,`isdesktop`,`sys`) VALUES ('99','删除友链','Links/deletelinks','189','0','0');
+INSERT INTO `jz_ruler` (`id`,`name`,`fc`,`pid`,`isdesktop`,`sys`) VALUES ('100','批量删除友链','Links/deleteAll','189','0','0');
 INSERT INTO `jz_ruler` (`id`,`name`,`fc`,`pid`,`isdesktop`,`sys`) VALUES ('101','通用模块','Common','0','0','1');
 INSERT INTO `jz_ruler` (`id`,`name`,`fc`,`pid`,`isdesktop`,`sys`) VALUES ('102','上传文件','Common/uploads','101','0','1');
 INSERT INTO `jz_ruler` (`id`,`name`,`fc`,`pid`,`isdesktop`,`sys`) VALUES ('103','更新cookie','Index/update_session_maxlifetime','32','0','1');
@@ -880,7 +875,7 @@ INSERT INTO `jz_ruler` (`id`,`name`,`fc`,`pid`,`isdesktop`,`sys`) VALUES ('139',
 INSERT INTO `jz_ruler` (`id`,`name`,`fc`,`pid`,`isdesktop`,`sys`) VALUES ('140','微信公众号','Wechat','0','0','1');
 INSERT INTO `jz_ruler` (`id`,`name`,`fc`,`pid`,`isdesktop`,`sys`) VALUES ('141','公众号菜单','Wechat/wxcaidan','140','1','1');
 INSERT INTO `jz_ruler` (`id`,`name`,`fc`,`pid`,`isdesktop`,`sys`) VALUES ('142','公众号素材','Wechat/sucai','140','1','1');
-INSERT INTO `jz_ruler` (`id`,`name`,`fc`,`pid`,`isdesktop`,`sys`) VALUES ('143','模板制作手册','Index/showlabel','32','1','1');
+INSERT INTO `jz_ruler` (`id`,`name`,`fc`,`pid`,`isdesktop`,`sys`) VALUES ('143','模板制作','Index/showlabel','32','1','1');
 INSERT INTO `jz_ruler` (`id`,`name`,`fc`,`pid`,`isdesktop`,`sys`) VALUES ('144','获取首字母拼音','Classtype/get_pinyin','41','0','1');
 INSERT INTO `jz_ruler` (`id`,`name`,`fc`,`pid`,`isdesktop`,`sys`) VALUES ('145','批量新增栏目','Classtype/addmany','41','0','1');
 INSERT INTO `jz_ruler` (`id`,`name`,`fc`,`pid`,`isdesktop`,`sys`) VALUES ('146','自定义配置删除','Sys/custom_del','39','0','1');
@@ -896,11 +891,11 @@ INSERT INTO `jz_ruler` (`id`,`name`,`fc`,`pid`,`isdesktop`,`sys`) VALUES ('155',
 INSERT INTO `jz_ruler` (`id`,`name`,`fc`,`pid`,`isdesktop`,`sys`) VALUES ('156','更新模块HTML','Index/html_molds','32','0','1');
 INSERT INTO `jz_ruler` (`id`,`name`,`fc`,`pid`,`isdesktop`,`sys`) VALUES ('157','批量修改推荐属性','Article/changeAttribute','8','0','1');
 INSERT INTO `jz_ruler` (`id`,`name`,`fc`,`pid`,`isdesktop`,`sys`) VALUES ('158','批量修改推荐属性','Product/changeAttribute','104','0','1');
-INSERT INTO `jz_ruler` (`id`,`name`,`fc`,`pid`,`isdesktop`,`sys`) VALUES ('159','批量修改友情链接栏目','Links/changeType','189','0','0');
+INSERT INTO `jz_ruler` (`id`,`name`,`fc`,`pid`,`isdesktop`,`sys`) VALUES ('159','批量修改友链栏目','Links/changeType','189','0','0');
 INSERT INTO `jz_ruler` (`id`,`name`,`fc`,`pid`,`isdesktop`,`sys`) VALUES ('160','批量修改TAG栏目','Extmolds/changeType/molds/tags','77','0','0');
-INSERT INTO `jz_ruler` (`id`,`name`,`fc`,`pid`,`isdesktop`,`sys`) VALUES ('161','批量复制友情链接','Links/copyAll','189','0','0');
+INSERT INTO `jz_ruler` (`id`,`name`,`fc`,`pid`,`isdesktop`,`sys`) VALUES ('161','批量复制友链','Links/copyAll','189','0','0');
 INSERT INTO `jz_ruler` (`id`,`name`,`fc`,`pid`,`isdesktop`,`sys`) VALUES ('162','批量复制TAG','Extmolds/copyAll/molds/tags','77','0','0');
-INSERT INTO `jz_ruler` (`id`,`name`,`fc`,`pid`,`isdesktop`,`sys`) VALUES ('163','批量修改友情链接排序','Links/editOrders','189','0','0');
+INSERT INTO `jz_ruler` (`id`,`name`,`fc`,`pid`,`isdesktop`,`sys`) VALUES ('163','批量修改友链排序','Links/editOrders','189','0','0');
 INSERT INTO `jz_ruler` (`id`,`name`,`fc`,`pid`,`isdesktop`,`sys`) VALUES ('164','批量修改TAG排序','Extmolds/editOrders/molds/tags','77','0','0');
 INSERT INTO `jz_ruler` (`id`,`name`,`fc`,`pid`,`isdesktop`,`sys`) VALUES ('165','删除订单','Order/deleteorder','128','0','1');
 INSERT INTO `jz_ruler` (`id`,`name`,`fc`,`pid`,`isdesktop`,`sys`) VALUES ('166','批量删除','Admin/deleteAll','48','0','1');
@@ -912,7 +907,7 @@ INSERT INTO `jz_ruler` (`id`,`name`,`fc`,`pid`,`isdesktop`,`sys`) VALUES ('171',
 INSERT INTO `jz_ruler` (`id`,`name`,`fc`,`pid`,`isdesktop`,`sys`) VALUES ('172','批量审核','Product/checkAll','104','0','1');
 INSERT INTO `jz_ruler` (`id`,`name`,`fc`,`pid`,`isdesktop`,`sys`) VALUES ('173','批量审核','Message/checkAll','21','0','1');
 INSERT INTO `jz_ruler` (`id`,`name`,`fc`,`pid`,`isdesktop`,`sys`) VALUES ('174','批量审核','Comment/checkAll','15','0','1');
-INSERT INTO `jz_ruler` (`id`,`name`,`fc`,`pid`,`isdesktop`,`sys`) VALUES ('175','批量审核友情链接','Links/checkAll','189','0','0');
+INSERT INTO `jz_ruler` (`id`,`name`,`fc`,`pid`,`isdesktop`,`sys`) VALUES ('175','批量审核友链','Links/checkAll','189','0','0');
 INSERT INTO `jz_ruler` (`id`,`name`,`fc`,`pid`,`isdesktop`,`sys`) VALUES ('176','批量审核TAG','Extmolds/checkAll/molds/tags','77','0','0');
 INSERT INTO `jz_ruler` (`id`,`name`,`fc`,`pid`,`isdesktop`,`sys`) VALUES ('177','充值列表','Order/czlist','128','1','1');
 INSERT INTO `jz_ruler` (`id`,`name`,`fc`,`pid`,`isdesktop`,`sys`) VALUES ('178','手动充值','Order/chongzhi','128','0','1');
@@ -922,10 +917,10 @@ INSERT INTO `jz_ruler` (`id`,`name`,`fc`,`pid`,`isdesktop`,`sys`) VALUES ('181',
 INSERT INTO `jz_ruler` (`id`,`name`,`fc`,`pid`,`isdesktop`,`sys`) VALUES ('182','插件更新','Plugins/update','75','0','1');
 INSERT INTO `jz_ruler` (`id`,`name`,`fc`,`pid`,`isdesktop`,`sys`) VALUES ('183','获取栏目模板','Classtype/get_html','41','0','1');
 INSERT INTO `jz_ruler` (`id`,`name`,`fc`,`pid`,`isdesktop`,`sys`) VALUES ('184','批量修改栏目','Classtype/changeClass','41','0','1');
-INSERT INTO `jz_ruler` (`id`,`name`,`fc`,`pid`,`isdesktop`,`sys`) VALUES ('185','友情链接分类列表','Links/linktype','189','1','1');
-INSERT INTO `jz_ruler` (`id`,`name`,`fc`,`pid`,`isdesktop`,`sys`) VALUES ('186','新增友情链接分类','Links/linktypeadd','189','0','1');
-INSERT INTO `jz_ruler` (`id`,`name`,`fc`,`pid`,`isdesktop`,`sys`) VALUES ('187','修改友情链接分类','Links/linktypeedit','189','0','1');
-INSERT INTO `jz_ruler` (`id`,`name`,`fc`,`pid`,`isdesktop`,`sys`) VALUES ('188','删除友情链接分类','Links/linktypedelete','189','0','1');
+INSERT INTO `jz_ruler` (`id`,`name`,`fc`,`pid`,`isdesktop`,`sys`) VALUES ('185','友链分类','Links/linktype','189','1','1');
+INSERT INTO `jz_ruler` (`id`,`name`,`fc`,`pid`,`isdesktop`,`sys`) VALUES ('186','新增友链分类','Links/linktypeadd','189','0','1');
+INSERT INTO `jz_ruler` (`id`,`name`,`fc`,`pid`,`isdesktop`,`sys`) VALUES ('187','修改友链分类','Links/linktypeedit','189','0','1');
+INSERT INTO `jz_ruler` (`id`,`name`,`fc`,`pid`,`isdesktop`,`sys`) VALUES ('188','删除友链分类','Links/linktypedelete','189','0','1');
 INSERT INTO `jz_ruler` (`id`,`name`,`fc`,`pid`,`isdesktop`,`sys`) VALUES ('189','友情链接','Links','0','0','1');
 -- ----------------------------
 -- Records of jz_sysconfig
@@ -951,7 +946,8 @@ INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`) VALUES ('1
 INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`) VALUES ('19','cache_time','缓存时间', NULL,'0','0');
 INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`) VALUES ('20','fileSize','限制上传文件大小', NULL,'0','0');
 INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`) VALUES ('21','fileType','允许上传文件类型', NULL,'0','pdf|jpg|jpeg|png|zip|rar|gzip|doc|docx|xlsx');
-INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`) VALUES ('22','ueditor_config','UEditor编辑器导航条配置', NULL,'0','&quot;undo&quot;, &quot;redo&quot;, &quot;|&quot;,&quot;paragraph&quot;,&quot;bold&quot;,&quot;forecolor&quot;,&quot;fontfamily&quot;,&quot;fontsize&quot;, &quot;italic&quot;, &quot;blockquote&quot;, &quot;insertparagraph&quot;, &quot;justifyleft&quot;, &quot;justifycenter&quot;, &quot;justifyright&quot;,&quot;justifyjustify&quot;,&quot;|&quot;,&quot;indent&quot;, &quot;insertorderedlist&quot;, &quot;insertunorderedlist&quot;,&quot;|&quot;, &quot;insertimage&quot;, &quot;inserttable&quot;, &quot;deletetable&quot;, &quot;insertparagraphbeforetable&quot;, &quot;insertrow&quot;, &quot;deleterow&quot;, &quot;insertcol&quot;, &quot;deletecol&quot;,&quot;mergecells&quot;, &quot;mergeright&quot;, &quot;mergedown&quot;, &quot;splittocells&quot;, &quot;splittorows&quot;, &quot;splittocols&quot;, &quot;|&quot;,&quot;drafts&quot;, &quot;|&quot;,&quot;fullscreen&quot;');
+INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`) VALUES ('22','ueditor_config','UEditor编辑器导航条配置', NULL,'0','&quot;fullscreen&quot;, 
+&quot;source&quot;,&quot;undo&quot;, &quot;redo&quot;,&quot;bold&quot;, &quot;italic&quot;, &quot;underline&quot;, &quot;fontborder&quot;, &quot;strikethrough&quot;, &quot;superscript&quot;, &quot;subscript&quot;, &quot;removeformat&quot;, &quot;formatmatch&quot;, &quot;autotypeset&quot;, &quot;blockquote&quot;, &quot;pasteplain&quot;,&quot;forecolor&quot;, &quot;backcolor&quot;, &quot;insertorderedlist&quot;, &quot;insertunorderedlist&quot;, &quot;selectall&quot;, &quot;cleardoc&quot;,&quot;rowspacingtop&quot;, &quot;rowspacingbottom&quot;, &quot;lineheight&quot;,&quot;customstyle&quot;, &quot;paragraph&quot;, &quot;fontfamily&quot;, &quot;fontsize&quot;,&quot;directionalityltr&quot;, &quot;directionalityrtl&quot;, &quot;indent&quot;,&quot;justifyleft&quot;, &quot;justifycenter&quot;, &quot;justifyright&quot;, &quot;justifyjustify&quot;,&quot;touppercase&quot;, &quot;tolowercase&quot;,&quot;link&quot;, &quot;unlink&quot;, &quot;anchor&quot;, &quot;imagenone&quot;, &quot;imageleft&quot;, &quot;imageright&quot;, &quot;imagecenter&quot;,&quot;simpleupload&quot;, &quot;insertimage&quot;, &quot;emotion&quot;, &quot;scrawl&quot;, &quot;insertvideo&quot;, &quot;music&quot;, &quot;attachment&quot;, &quot;map&quot;, &quot;gmap&quot;, &quot;insertframe&quot;, &quot;insertcode&quot;, &quot;webapp&quot;, &quot;pagebreak&quot;,&quot;template&quot;, &quot;background&quot;,&quot;horizontal&quot;, &quot;date&quot;, &quot;time&quot;, &quot;spechars&quot;, &quot;snapscreen&quot;, &quot;wordimage&quot;,&quot;inserttable&quot;, &quot;deletetable&quot;, &quot;insertparagraphbeforetable&quot;, &quot;insertrow&quot;, &quot;deleterow&quot;, &quot;insertcol&quot;, &quot;deletecol&quot;, &quot;mergecells&quot;, &quot;mergeright&quot;, &quot;mergedown&quot;, &quot;splittocells&quot;, &quot;splittorows&quot;, &quot;splittocols&quot;, &quot;charts&quot;,&quot;print&quot;, &quot;preview&quot;, &quot;searchreplace&quot;, &quot;help&quot;, &quot;drafts&quot;');
 INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`) VALUES ('23','search_table','允许前台搜索的表', NULL,'0','article|product');
 INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`) VALUES ('24','imagequlity','上传图片压缩比例', NULL,'0','75');
 INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`) VALUES ('25','ispngcompress','PNG是否压缩', NULL,'0','0');
@@ -985,7 +981,7 @@ INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`) VALUES ('5
 INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`) VALUES ('53','huanying','公众号关注欢迎语','公众号关注时发送的第一句推送','0','欢迎关注公众号~');
 INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`) VALUES ('54','wx_token','自主平台微信token','支付相关','0', NULL);
 INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`) VALUES ('55','web_logo','网站LOGO', NULL,'0', '/static/default/assets/img/logo.png');
-INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`) VALUES ('56','admintpl','后台模板风格','默认tpl,原始风格default','0','tpl');
+INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`) VALUES ('56','admintpl','后台模板风格','默认tpl,原始风格default','0','default');
 INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`) VALUES ('58','isopenwebsite','是否绑定多域名','开启绑定多域名后，需要到插件中配置','0','1');
 INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`) VALUES ('59','domain','网站网址','全局网址,最后不带/（斜杠）','0', NULL);
 INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`) VALUES ('60','isrelative','基本信息下扩展','新增字段是否显示在【基本信息】底部，默认在【扩展信息】下','0','0');
@@ -1041,6 +1037,8 @@ INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`) VALUES ('1
 INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`) VALUES ('110','isregister','前台用户注册', '关闭前台注册后，前台无法进入注册页面','0','1');
 INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`) VALUES ('111','onlyinvite','仅邀请码注册', '开启后，必须通过邀请链接才能注册！','0','0');
 INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`) VALUES ('112','release_table','允许前台发布模块', '防止数据泄露,填写允许发布模块标识,留空表示不允许发布,多个表可用|分割','0','article|product');
+INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`) VALUES ('114','closehomevercode','前台验证码', '关闭后，登录注册不需要验证码,'0','0');
+INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`) VALUES ('115','closeadminvercode','后台验证码', '关闭后，后台管理员登录不需要验证码','0','0');
 -- ----------------------------
 -- Records of jz_tags
 -- ----------------------------

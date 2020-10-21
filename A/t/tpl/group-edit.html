@@ -18,6 +18,8 @@
             <a class="layui-btn layui-btn-small" style="line-height:1.6em;margin-top:3px;float:right"  href="javascript:location.replace(location.href);" title="刷新"><i class="iconfont" style="line-height:30px">&#xe6aa;</i></a>
     </div>
     <div class="x-body">
+		<div class="layui-card">
+		<div class="layui-card-body">
         <form  method="post" class="layui-form layui-form-pane">
 			<input type="hidden" name="go" value="1" />
 			<input type="hidden" name="id" value="{$data['id']}" />
@@ -58,11 +60,18 @@
                 </div>
 				<div class="layui-form-item layui-form-text">
                     <label class="layui-form-label">
-                        栏目权限
+                        栏目权限 <span class="x-red">选中顶级栏目，则默认子栏目也选中。如果只需要子栏目权限，请不要选中顶级栏目</span>
                     </label>
                     <table  class="layui-table layui-input-block">
                         <tbody>
-
+							<tr>
+                                <th>
+                                   顶级栏目
+                                </th>
+                                <th>
+                                   子栏目
+                                </th>
+                            </tr>
                         {foreach $classtypetree as $v}
                         {if($v['pid']==0)}
                             <tr>
@@ -87,10 +96,19 @@
                 </div>
                 <div class="layui-form-item layui-form-text">
                     <label class="layui-form-label">
-                        拥有权限
+                        拥有权限  <span class="x-red">选中主模块，则默认子模块也选中。如果只需要子模块权限，请不要选中主模块</span>
                     </label>
                     <table  class="layui-table layui-input-block">
                         <tbody>
+							<tr>
+                                <th>
+                                   主模块
+                                </th>
+                                <th>
+                                   子模块
+                                </div>
+                                </th>
+                            </tr>
 						{foreach $ruler_top as $v}
                             <tr>
                                 <td>
@@ -136,6 +154,8 @@
                 <button class="layui-btn" lay-submit="" lay-filter="save">修改</button>
               </div>
             </form>
+			</div>
+			</div>
     </div>
     <script>
         layui.use(['form','layer'], function(){

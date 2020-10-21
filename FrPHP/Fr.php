@@ -166,7 +166,11 @@ class FrPHP
 
 			}
 			
-			
+			$position = strpos($url,'?');
+			if($position!==false){
+				$param = substr($url,$position+1);
+				parse_str($param,$_GET);
+			}
 			
 		}else{
 			$open_url_route = [];

@@ -71,50 +71,8 @@
 			$this->url = $url;
 			return $this;
 		}
-	
-		/*
-		
-		<div class="pagination">
-		  <ul>
-			<li><a href="#">Prev</a></li>
-			<li><a href="#">1</a></li>
-			<li><a href="#">2</a></li>
-			<li><a href="#">3</a></li>
-			<li><a href="#">4</a></li>
-			<li class="active" ><a href="#">5</a></li>
-			<li><a href="#">Next</a></li>
-		  </ul>
-		</div>
-		
-		*/
-		public function pageList($pv=3){
-			/**
-			分页样式
-			
-			左边框  $padding-left-f
-			右边框  $padding-right-f
-			
-			上一页  $prev-f
-			下一页  $next-f
-			
-			当前页  $current_f
-			
-			普通页  $public_f
-			
-			
-			**/
-			/**
-				首页url  		home
-				上一页url		prev
-				下一页url       next
-				当前页url       current
-				总页数  	    allpage
-				当前页码		current_num
-				普通页码组      list
-				最后一页url		last
-			
-			
-			**/
+
+		public function pageList($pv=5){
 			$listpage = array(
 				'home' => null,
 				'prev' => null,
@@ -139,33 +97,21 @@
 				$this->url = '?'.$this->url.'&'.$this->pagetype.'=';
 			}
 			$listpage['current'] = $this->url.$this->currentPage;	
-			for($i=1;$i<=$this->allpage;$i++){
-				if($this->allpage >= 2*$this->pv){
-					//需要间隔
-					$start = $this->currentPage+$this->pv;
-					$end = $this->currentPage-$this->pv;
-					if($i>=$end && $i<=$start){
-						if($i==$this->currentPage){
-				
-						$list.='<li class="active" ><a >'.$this->currentPage.'</a></li>';
-						}else{
-							
-							$list .= '<li><a href="'.$this->url.$i.'" data-page="'.$i.'">'.$i.'</a></li>';
-						}
-						$listpage['list'][] = array('url'=>$this->url.$i,'num'=>$i);
-					}
-				}else{
-					if($i==$this->currentPage){
-					
+			$start = $this->currentPage-$this->pv;
+			$start = $start<1 ? 1 : $start;
+			$end = $this->currentPage+$this->pv;
+			$end = $end>$this->allpage ? $this->allpage : $end;
+			while($start<=$end){
+				if($start==$this->currentPage){
 					$list.='<li class="active" ><a >'.$this->currentPage.'</a></li>';
-					}else{
-						
-						$list .= '<li><a href="'.$this->url.$i.'" data-page="'.$i.'">'.$i.'</a></li>';
-					}
-					$listpage['list'][] = array('url'=>$this->url.$i,'num'=>$i);
+					$listpage['current'] = $this->url.$start;
+					$listpage['current_num'] = $this->currentPage;
+				}else{
+					$list .= '<li><a href="'.$this->url.$this->sep.$start.'" data-page="'.$start.'">'.$start.'</a></li>';
 				}
+				$listpage['list'][] = array('url'=>$this->url.$this->sep.$start,'num'=>$start);
+				$start++;
 			}
-			
 			
 			$prev = '<li><a href="'.$this->url.($this->currentPage-1).'" class="layui-laypage-prev" data-page="'.($this->currentPage-1).'"><em>&lt;</em></a></li>';
 			

@@ -478,11 +478,11 @@ class View
 			if(strpos($notempty,'|')!==false){
 				$notempty = explode('|',$notempty);
 				foreach($notempty as $v){
-					$w.=' (and trim('.$v.') !="" or trim('.$v.') is not null) ';
+					$w.=' (and trim('.$v.') !="" && trim('.$v.') is not null) ';
 				}
 				
 			}else{
-				$w.=' and (trim('.$notempty.') !="" or trim('.$notempty.') is not null)  ';
+				$w.=' and (trim('.$notempty.') !="" && trim('.$notempty.') is not null)  ';
 			}
 			
 		}

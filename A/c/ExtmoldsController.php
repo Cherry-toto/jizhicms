@@ -128,7 +128,7 @@ class ExtmoldsController extends Controller
 				}
 				
 				$v['new_isshow'] = $v['isshow']==1 ? '已审' : ($v['isshow']==2 ? '退回' : '未审');
-				$v['view_url'] = $v['htmlurl']!='' ? get_domain().'/'.$v['htmlurl'].'/'.$v['id'] : '';
+				$v['view_url'] = gourl($v,$v['htmlurl']);
 				$v['edit_url'] = U('Extmolds/editmolds',array('id'=>$v['id'],'molds'=>$molds));
 				
 				foreach($this->fields_list as $vv){
@@ -221,12 +221,12 @@ class ExtmoldsController extends Controller
 						if($customurl['aid']!=$this->frparam('id')){
 							JsonReturn(array('code'=>1,'msg'=>'已存在相同的自定义URL！'));
 						}else if($customurl['url']!=$data['ownurl']){
-							M('customurl')->update(['molds'=>$molds,'tid'=>$data['tid'],'aid'=>$this->frparam('id')],['url'=>$data['ownurl']]);
+							M('customurl')->update(['tid'=>$data['tid'],'aid'=>$this->frparam('id')],['url'=>$data['ownurl'],'molds'=>$molds]);
 						}
 						
 					}else{
 						if(M('customurl')->find(['aid'=>$this->frparam('id')])){
-							M('customurl')->update(['molds'=>$molds,'tid'=>$data['tid'],'aid'=>$this->frparam('id')],['url'=>$data['ownurl']]);
+							M('customurl')->update(['tid'=>$data['tid'],'aid'=>$this->frparam('id')],['url'=>$data['ownurl'],'molds'=>$molds]);
 						}else{
 							M('customurl')->add(['molds'=>$molds,'tid'=>$data['tid'],'url'=>$data['ownurl'],'addtime'=>time(),'aid'=>$this->frparam('id')]);
 						}

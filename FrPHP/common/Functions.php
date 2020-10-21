@@ -49,8 +49,9 @@ function M($name=null) {
 /**
 	参数过滤，格式化
 **/
-function format_param($value=null,$int=0){
+function format_param($value=null,$int=0,$default=false){
 	if($value==null){ return '';}
+	if($value===false && $default!==false){ return $default;}
 	switch ($int){
 		case 0://整数
 			return (int)$value;

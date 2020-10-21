@@ -25,16 +25,31 @@ class IndexController extends CommonController
 		}
 		
 		$this->left_layout = json_decode($desktop['left_layout'],true);
-		$this->left_num = count($this->left_layout);
 		$this->top_layout = json_decode($desktop['top_layout'],true);
+		$this->top_num = count($this->top_layout);
 		$rulers = M('Ruler')->findAll(array('isdesktop'=>1));
 		$actions = array();
 		foreach($rulers as $k=>$v){
 			$actions[$v['id']] = $v;
 		}
-		
 		$this->actions = $actions;
-
+		$classnav = [];
+		foreach($this->classtypetree as $v){
+			$k = 'class_'.$v['id'];
+			if($v['molds']=='page'){
+				$v['act'] = U('classtype/editclass',['id'=>$v['id']]);
+			}else if($v['molds']=='article'){
+				$v['act'] = U('article/articlelist',['tid'=>$v['id']]);
+			}else if($v['molds']=='product'){
+				$v['act'] = U('product/productlist',['tid'=>$v['id']]);
+			}else if($v['molds']=='message'){
+				$v['act'] = U('message/messagelist',['tid'=>$v['id']]);
+			}else{
+				$v['act'] = U('extmolds/index',['molds'=>$v['molds'],'tid'=>$v['id']]);
+			}
+			$classnav[$k] = $v;
+		}
+		$this->classnav = $classnav;
 		$this->display('index');
 	}
 	public function details(){
@@ -295,7 +310,9 @@ class IndexController extends CommonController
 			}
 			exit;
 		}
-		$this->lists = M('Ruler')->findAll(array('isdesktop'=>1),'id ASC');
+		$lists = M('Ruler')->findAll(null,'id asc');
+		$lists = getTree($lists);
+		$this->lists = $lists;
 		$this->display('desktop-add');
 	}
 	
@@ -384,7 +401,9 @@ class IndexController extends CommonController
 		$this->left_layout = $left_layout;
 		$this->top_num = count($top_layout);
 		$this->left_num = count($left_layout);
-		$this->lists = M('Ruler')->findAll(array('isdesktop'=>1),'id ASC');
+		$lists = M('Ruler')->findAll(null,'id asc');
+		$lists = getTree($lists);
+		$this->lists = $lists;
 		$this->display('desktop-edit');
 	}
 	

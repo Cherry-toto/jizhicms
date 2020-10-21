@@ -171,7 +171,12 @@ class MoldsController extends CommonController
 				
 				//if($x){
 					//添加权限管理
-					$ruler['name'] = $data['name'].'列表';
+					if(strlen($data['name'])>12){
+						$ruler['name'] = $data['name'];
+					}else{
+						$ruler['name'] = $data['name'].'列表';
+					}
+					
 					$ruler['fc'] = 'Extmolds/index/molds/'.$data['biaoshi'];
 					$ruler['pid'] = 77;
 					$ruler['isdesktop'] = 1;
@@ -198,7 +203,12 @@ class MoldsController extends CommonController
 					$ruler['name'] = '批量复制'.$data['name'];
 					$ruler['fc'] = 'Extmolds/copyAll/molds/'.$data['biaoshi'];
 					M('Ruler')->add($ruler);
-					$ruler['name'] = '批量修改'.$data['name'].'列表';
+					if(strlen($data['name'])>12){
+						$ruler['name'] = '批量修改'.$data['name'];
+					}else{
+						$ruler['name'] = '批量修改'.$data['name'].'列表';
+					}
+					
 					$ruler['fc'] = 'Extmolds/editOrders/molds/'.$data['biaoshi'];
 					M('Ruler')->add($ruler);
 					$ruler['name'] = '批量审核'.$data['name'];
@@ -209,16 +219,16 @@ class MoldsController extends CommonController
 					$dao = M('layout')->find(['id'=>1]);
 					$left_layout = json_decode($dao['left_layout'],1);
 					$left_layout[]=[
-						"name" => $data['name'].'模块',
+						"name" => $data['name'].'模型',
 						"icon" => '&amp;#xe6cb;',
 						"nav" => array($m_id)
 					];
 					$left_layout = json_encode($left_layout,JSON_UNESCAPED_UNICODE);
 					M('layout')->update(['id'=>$dao['id']],['left_layout'=>$left_layout]);
 					if($data['ismust']==1 && $data['isshowclass']==1){
-						JsonReturn(array('code'=>0,'msg'=>'新增模块成功，快去创建对应的栏目吧！','url'=>U('Classtype/addclass',['biaoshi'=>$data['biaoshi']])));
+						JsonReturn(array('code'=>0,'msg'=>'新增模型成功，快去创建对应的栏目吧！','url'=>U('Classtype/addclass',['biaoshi'=>$data['biaoshi']])));
 					}else{
-						JsonReturn(array('code'=>0,'msg'=>'新增模块成功，快去设置表字段吧！','url'=>U('Fields/index',['molds'=>$data['biaoshi']])));
+						JsonReturn(array('code'=>0,'msg'=>'新增模型成功，快去设置表字段吧！','url'=>U('Fields/index',['molds'=>$data['biaoshi']])));
 					}
 					
 				
@@ -228,7 +238,7 @@ class MoldsController extends CommonController
 				
 			}else{
 				//Error('添加失败！');
-				JsonReturn(array('code'=>1,'msg'=>'新增模块失败！'));
+				JsonReturn(array('code'=>1,'msg'=>'新增模型失败！'));
 				
 			}
 			
@@ -255,7 +265,7 @@ class MoldsController extends CommonController
 				}
 				$molds = M('Molds')->find(array('id'=>$this->frparam('id')));
 				if($molds['sys']==1 && $data['biaoshi']!=$molds['biaoshi']){
-					JsonReturn(array('code'=>1,'msg'=>'系统模块标识不允许修改！'));
+					JsonReturn(array('code'=>1,'msg'=>'系统模型标识不允许修改！'));
 					exit;
 				}
 				
@@ -299,7 +309,7 @@ class MoldsController extends CommonController
 				JsonReturn(array('code'=>1,'msg'=>$molds['name'].'里面存在数据，请先清空表内数据！'));
 			}
 			if($molds['sys']==1){
-				JsonReturn(array('code'=>1,'msg'=>$molds['name'].'是系统模块，不允许删除！'));
+				JsonReturn(array('code'=>1,'msg'=>$molds['name'].'是系统模型，不允许删除！'));
 			}
 			if(M('Molds')->delete('id='.$id)){
 				//删除表

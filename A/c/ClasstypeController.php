@@ -66,6 +66,7 @@ class ClasstypeController extends CommonController
 			$w['pid'] = $this->frparam('pid');
 			$w['orders'] = $this->frparam('orders');
 			$w['classname'] = $this->frparam('classname',1);
+			$w['seo_classname'] = $this->frparam('seo_classname',1) ? $this->frparam('seo_classname',1) : $this->frparam('classname',1);
 			$w['molds'] = $this->frparam('molds',1);
 			$w['description'] = $this->frparam('description',1);
 			$w['keywords'] = $this->frparam('keywords',1);
@@ -381,11 +382,13 @@ class ClasstypeController extends CommonController
 			}
 		}
 		$m = M('molds')->find(['biaoshi'=>$molds]);
-		$source = [];
-		$source[] = ['html'=>$m['list_html'],'value'=>str_replace('.html','',$m['list_html'])];
-		$source[] = ['html'=>$m['details_html'],'value'=>str_replace('.html','',$m['details_html'])];
+		if(!count($fileArray)){
+			$fileArray[] = ['html'=>$m['list_html'],'value'=>str_replace('.html','',$m['list_html'])];
+			$fileArray[] = ['html'=>$m['details_html'],'value'=>str_replace('.html','',$m['details_html'])];
+			
+		}
 		
-		$fileArray = array_merge($fileArray,$source);
+		
 		
 		
 		JsonReturn(['code'=>0,'data'=>$fileArray,'path'=>$dir,'lists_html'=>str_replace('.html','',$m['list_html']),'details_html'=>str_replace('.html','',$m['details_html'])]);

@@ -648,8 +648,7 @@ class PluginsController extends CommonController
 			$plg = new \A\exts\PluginsController($this->frparam());
 			//转入插件内部处理
 			if($_POST){
-				
-				$plg->setconfigdata($this->frparam());//传入插件内部处理
+				$plg->setconfigdata($_POST);//传入插件内部处理
 				exit;
 				
 			}

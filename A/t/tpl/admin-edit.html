@@ -17,6 +17,8 @@
 		<a class="layui-btn layui-btn-small" style="line-height:1.6em;margin-top:3px;float:right"  href="javascript:location.replace(location.href);" title="刷新"><i class="iconfont" style="line-height:30px">&#xe6aa;</i></a>
 	</div>
     <div class="x-body">
+	<div class="layui-card">
+	    <div class="layui-card-body">
         <form class="layui-form layui-form-pane">
           <div class="layui-form-item">
               <label for="name" class="layui-form-label">
@@ -81,7 +83,7 @@
 
           <div class="layui-form-item">
               <label for="L_pass" class="layui-form-label">
-                  <span class="x-red">*</span>密码
+                  <span class="x-red"></span>密码
               </label>
               <div class="layui-input-inline">
                   <input type="password" id="L_pass" name="pass" required="" lay-verify="pass"
@@ -94,7 +96,7 @@
 		  
           <div class="layui-form-item">
               <label for="L_repass" class="layui-form-label">
-                  <span class="x-red">*</span>确认密码
+                  <span class="x-red"></span>确认密码
               </label>
               <div class="layui-input-inline">
                   <input type="password" id="L_repass" name="repass" required="" lay-verify="repass"
@@ -124,7 +126,9 @@
                   保存
               </button>
           </div>
-      </form>
+		</form>
+		</div>
+	</div>
     </div>
     <script>
 	{include="fields"}

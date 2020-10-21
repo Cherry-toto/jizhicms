@@ -15,10 +15,12 @@
             <a class="layui-btn layui-btn-small" style="line-height:1.6em;margin-top:3px;float:right"  href="javascript:location.replace(location.href);" title="刷新"><i class="iconfont" style="line-height:30px">&#xe6aa;</i></a>
         </div>
         <div class="x-body">
-         <div class="layui-collapse">
+		
+		<div class="layui-card">
+			<div class="layui-card-body"> <div class="layui-collapse">
 		    <div class="layui-colla-item">
 			<h2 class="layui-colla-title">搜索</h2>
-				<div class="layui-colla-content layui-show">
+				<div class="layui-colla-content">
 				<div class="layui-row">
 					<form class="layui-form layui-col-md12 x-so" method="get" id="myform">
 					<div class="layui-input-inline">
@@ -46,7 +48,7 @@
 					 
 					  <input type="text" name="orderno" style="width:200px"   placeholder="请输入订单号"  value="{$orderno}"  autocomplete="off" class="layui-input">
 					 
-					  <button class="layui-btn"  lay-submit="" lay-filter="search"><i class="layui-icon">&#xe615;</i></button>
+					  <button class="layui-btn"  lay-submit="" lay-filter="search">搜索</button>
 					</form>
 				</div>
 				</div>
@@ -55,22 +57,26 @@
 		  
 		<table class="layui-hide" lay-data="{id: 'jizhi_table'}" id="jizhi_table" lay-filter="jizhi_table"></table>
 		<input id="select_data" type="hidden" value="" />
+			</div>
+		</div>
+		
+        
 		<script type="text/html" id="rightbar">
 		{if(checkAction('Order/delbuylog'))}
-			<button class="layui-btn layui-btn-xs layui-btn-danger" lay-event="delete"><i class="layui-icon">&#xe640;</i>删除</button>
+			<a class="layui-btn layui-btn-xs layui-btn-danger" lay-event="delete">删除</a>
 		{/if}	
 			
 		</script>
 		<script type="text/html" id="toolbar">
 		 <div class="layui-btn-container" style="font-size:15px;">
 		 {if(checkAction('Order/delAllbuylog'))}
-			   <button class="layui-btn layui-btn-danger" onclick="delAll()"><i class="layui-icon">&#xe640;</i>批量删除</button>
+			   <a class="layui-btn layui-btn-sm layui-btn-danger" onclick="delAll()">批量删除</a>
 		 {/if}	  
-			  <button class="layui-btn layui-btn-info" onclick="x_admin_show('充值','{fun U('Order/chongzhi')}')"><i class="layui-icon">&#xe608;</i>充值</button>
-			  <button class="layui-btn">总订单<span id="all_num" class="layui-badge layui-bg-gray"></span></button>
-			  <button class="layui-btn">已充值<span id="chongzhi_num" class="layui-badge layui-bg-blue"></span></button>
-			  <button class="layui-btn">已兑换<span id="rechange_num" class="layui-badge "></span></button>
-			  <button class="layui-btn">总赠送<span id="allmoney" class="layui-badge layui-bg-orange"></span></button> 
+			  <a class="layui-btn layui-btn-sm layui-btn-info" onclick="x_admin_show('会员充值','{fun U('Order/chongzhi')}')">会员充值</a>
+			  <a class="layui-btn layui-btn-sm">总订单<span id="all_num" class="layui-badge layui-bg-gray"></span></a>
+			  <a class="layui-btn layui-btn-sm">已充值<span id="chongzhi_num" class="layui-badge layui-bg-blue"></span></a>
+			  <a class="layui-btn layui-btn-sm">已兑换<span id="rechange_num" class="layui-badge "></span></a>
+			  <a class="layui-btn layui-btn-sm">总赠送<span id="allmoney" class="layui-badge layui-bg-orange"></span></a> 
 				  
 			  
 			
@@ -99,7 +105,7 @@
 			});
 			  table.render({
 				elem: '#jizhi_table'
-				,height: 650
+				,height: 700
 				,url: window.location.href+'?ajax=1' //数据接口
 				,page: true //开启分页
 				,size:'lg'
@@ -129,14 +135,14 @@
 				  }
 				,cols: [[ //表头
 				  {type:'checkbox'}
-				  ,{field: 'id', title: 'ID', width:50, sort: true}
-				  ,{field: 'orderno', title: '订单号',sort: true}
-				  ,{field: 'new_type', title: '类型',width:150, sort: true}
-				  ,{field: 'new_buytype', title: '交易',width:150, sort: true}
-				  ,{field: 'username', title: '用户名',width:150,  sort: true}
+				  ,{field: 'id', title: 'ID', width:60}
+				  ,{field: 'orderno', title: '订单号'}
+				  ,{field: 'new_type', title: '类型',width:150}
+				  ,{field: 'new_buytype', title: '交易',width:150}
+				  ,{field: 'username', title: '用户名',width:150}
 				  ,{field: 'amount', title: '数量',width:150} 
 				  ,{field: 'money', title: '金额',width:150} 
-				  ,{field: 'msg', title: '备注',width:150} 
+				  ,{field: 'msg', title: '备注'} 
 				  ,{field: 'new_addtime', title: '时间',width:160}
 				  ,{field: '', title: '操作',width:160, toolbar: '#rightbar', fixed:'right'}
 				 
@@ -196,14 +202,7 @@
 				});
 			  
 			  table.on('checkbox(jizhi_table)', function(obj){
-				 // console.log(obj.checked); //当前是否选中状态
-				 // console.log(obj.data); //选中行的相关数据
-				 // console.log(obj.type); //如果触发的是全选，则为：all，如果触发的是单选，则为：one
-				 /*
-					console.log(checkStatus.data) //获取选中行的数据
-					console.log(checkStatus.data.length) //获取选中行数量，可作为是否有选中行的条件
-					console.log(checkStatus.isAll ) //表格是否全选
-				 */
+				 
 				   var checkStatus = table.checkStatus('jizhi_table'); //idTest 即为基础参数 id 对应的值
 				   var len = checkStatus.data.length;
 				   var arr=[];
@@ -221,6 +220,7 @@
 				
 				form.on('submit(search)', function(data){
 					//data.field
+					data.field.page=1;
 					table.reload('jizhi_table', {
 					  url: window.location.href+'?ajax=1'
 					  ,where: data.field //设定异步数据接口的额外参数

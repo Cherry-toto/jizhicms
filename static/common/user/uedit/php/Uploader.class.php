@@ -63,7 +63,8 @@ class Uploader
             $this->upFile();
         }
 
-        $this->stateMap['ERROR_TYPE_NOT_ALLOWED'] = iconv('unicode', 'utf-8', $this->stateMap['ERROR_TYPE_NOT_ALLOWED']);
+        //$this->stateMap['ERROR_TYPE_NOT_ALLOWED'] = iconv('unicode', 'utf-8', $this->stateMap['ERROR_TYPE_NOT_ALLOWED']);
+		$this->stateMap['ERROR_TYPE_NOT_ALLOWED'];
     }
 
     /**
@@ -374,7 +375,7 @@ class Uploader
 	
 	//引入系统，并存入数据库
 	public function save_files($filename){
-		include('../../../../../FrPHP/Extend/DB_API.php');
+		include_once('../../../../../FrPHP/Extend/DB_API.php');
 		$config = include('../../../../../Conf/config.php');
 		
 		$conf['db_host'] = $config['db']['host'];

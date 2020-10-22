@@ -62,7 +62,6 @@ class FrPHP
 		if(file_exists($ext_fun)){
 			require($ext_fun);
 		}
-		defined('TEMPLATE',get_template());
 		//引入扩展函数
 		$Extend = scandir(CORE_PATH.'/Extend');
 		//var_dump($Extend);
@@ -210,7 +209,8 @@ class FrPHP
         $controllerName = DefaultController;
         $actionName = DefaultAction;
         $param = array();
-
+		$tpl = get_template();
+		define('TEMPLATE',$tpl);
        // $url = urldecode($url);
         // 清除?之后的内容
         $position = strpos($url, '?');

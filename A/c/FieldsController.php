@@ -366,7 +366,7 @@ class FieldsController extends CommonController
 		$tid = $this->frparam('tid',0,0);
 		$sql = array();
 		$molds = strtolower($this->frparam('molds',1));
-		if(in_array($molds,['tags','message','comment','orders','admin','collect_type','fields','buylog','link_type','links','layout','level_group','level','member_group','molds','pictures','plugins','power','ruler','sysconfig','task','collect','member'])){
+		if(in_array($molds,['tags','message','comment','orders','admin','collect_type','fields','buylog','link_type','links','layout','level_group','level','member_group','molds','pictures','plugins','power','ruler','sysconfig','task','collect','member','menu'])){
 			if($tid!=0){
 				$sql[] = " tids like '%,".$tid.",%' "; 
 			}

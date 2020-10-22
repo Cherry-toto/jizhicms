@@ -567,6 +567,17 @@ CREATE TABLE `jz_customurl` (
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 -- ----------------------------
+-- Table structure for jz_menu
+-- ----------------------------
+DROP TABLE IF EXISTS `jz_menu`;
+CREATE TABLE `jz_menu` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `name` varchar(255) DEFAULT NULL,
+  `nav` text DEFAULT NULL,
+  `isshow`tinyint(1) NOT NULL DEFAULT 1'
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+-- ----------------------------
 -- Records of jz_article
 -- ----------------------------
 INSERT INTO `jz_article` (`id`,`title`,`tid`,`molds`,`htmlurl`,`keywords`,`description`,`seo_title`,`userid`,`litpic`,`body`,`addtime`,`orders`,`hits`,`isshow`,`comment_num`,`istop`,`ishot`,`istuijian`,`tags`,`member_id`) VALUES ('13','极致CMS新闻测试标题1','11','article','xinwenfenleier','极致CMS,演示站','极致CMS新闻测试简介内容极致CMS新闻测试简介内容极致CMS新闻测试简介内容极致CMS新闻测试简介内容极致CMS新闻测试简介内容极致CMS新闻测试简介内容极致CMS新闻测试简介内容','极致CMS新闻测试SEO标题','1','/static/default/assets/img/desk.jpg','<p>极致CMS测试文章内容极致CMS测试文章内容极致CMS测试文章内容极致CMS测试文章内容极致CMS测试文章内容极致CMS测试文章内容极致CMS测试文章内容极致CMS测试文章内容极致CMS测试文章内容极致CMS测试文章内容极致CMS测试文章内容极致CMS测试文章内容极致CMS测试文章内容极致CMS测试文章内容极致CMS测试文章内容极致CMS测试文章内容极致CMS测试文章内容极致CMS测试文章内容极致CMS测试文章内容极致CMS测试文章内容</p><p><img src="/static/default/assets/img/scenery/image6.jpg"/></p>','1565351871','1','15','1','0','1','0','0', NULL,'0');
@@ -656,8 +667,8 @@ INSERT INTO `jz_fields` (`id`,`field`,`molds`,`fieldname`,`tips`,`fieldtype`,`ti
 -- ----------------------------
 -- Records of jz_layout
 -- ----------------------------
-INSERT INTO `jz_layout` (`id`,`name`,`top_layout`,`left_layout`,`gid`,`ext`,`sys`,`isdefault`) VALUES ('1','系统默认','[]','[{"name":"内容管理","icon":"&amp;#xe6b4;","nav":["9","105"]},{"name":"栏目管理","icon":"&amp;#xe699;","nav":["42"]},{"name":"互动管理","icon":"&amp;#xe69b;","nav":["22","16"]},{"name":"SEO设置","icon":"&amp;#xe6b3;","nav":["147","95","153"]},{"name":"用户管理","icon":"&amp;#xe6b8;","nav":["2","118","123","54","49","66","129","177"]},{"name":"系统设置","icon":"&amp;#xe6ae;","nav":["40","70","83","89","114"]},{"name":"扩展管理","icon":"&amp;#xe6ce;","nav":["76","116","61","35","141","142","143","154","115"]}]','0','CMS默认配置，不可删除！','0','0');
-INSERT INTO `jz_layout` (`id`,`name`,`top_layout`,`left_layout`,`gid`,`ext`,`sys`,`isdefault`) VALUES ('2','旧版桌面','[]','[{"name":"网站管理","icon":"&amp;#xe699;","nav":["42","9","95","83","147","22"]},{"name":"商品管理","icon":"&amp;#xe698;","nav":["105","129","2","118","123","16","177"]},{"name":"扩展管理","icon":"&amp;#xe6ce;","nav":["76","116","141","142","143","35","61","154","153"]},{"name":"系统设置","icon":"&amp;#xe6ae;","nav":["40","54","49","70","115","114","66"]}]','0','旧版本配置','1','1');
+INSERT INTO `jz_layout` (`id`,`name`,`top_layout`,`left_layout`,`gid`,`ext`,`sys`,`isdefault`) VALUES ('1','系统默认','[]','[{"name":"内容管理","icon":"&amp;#xe6b4;","nav":["9","105"]},{"name":"栏目管理","icon":"&amp;#xe699;","nav":["42"]},{"name":"互动管理","icon":"&amp;#xe69b;","nav":["22","16"]},{"name":"SEO设置","icon":"&amp;#xe6b3;","nav":["147","95","153"]},{"name":"用户管理","icon":"&amp;#xe6b8;","nav":["2","118","123","54","49","66","129","177"]},{"name":"系统设置","icon":"&amp;#xe6ae;","nav":["40","70","190","83","89","114"]},{"name":"扩展管理","icon":"&amp;#xe6ce;","nav":["76","116","61","35","141","142","143","154","115"]}]','0','CMS默认配置，不可删除！','1','1');
+INSERT INTO `jz_layout` (`id`,`name`,`top_layout`,`left_layout`,`gid`,`ext`,`sys`,`isdefault`) VALUES ('2','旧版桌面','[]','[{"name":"网站管理","icon":"&amp;#xe699;","nav":["42","9","95","83","147","22"]},{"name":"商品管理","icon":"&amp;#xe698;","nav":["105","129","2","118","123","16","177"]},{"name":"扩展管理","icon":"&amp;#xe6ce;","nav":["76","116","141","142","143","35","61","154","153"]},{"name":"系统设置","icon":"&amp;#xe6ae;","nav":["40","54","49","190","70","115","114","66"]}]','0','旧版本配置','0','0');
 -- ----------------------------
 -- Records of jz_level
 -- ----------------------------
@@ -997,6 +1008,10 @@ INSERT INTO `jz_ruler` (`id`,`name`,`fc`,`pid`,`isdesktop`,`sys`) VALUES ('186',
 INSERT INTO `jz_ruler` (`id`,`name`,`fc`,`pid`,`isdesktop`,`sys`) VALUES ('187','修改友链分类','Links/linktypeedit','189','0','1');
 INSERT INTO `jz_ruler` (`id`,`name`,`fc`,`pid`,`isdesktop`,`sys`) VALUES ('188','删除友链分类','Links/linktypedelete','189','0','1');
 INSERT INTO `jz_ruler` (`id`,`name`,`fc`,`pid`,`isdesktop`,`sys`) VALUES ('189','友情链接','Links','0','0','1');
+INSERT INTO `jz_ruler` (`id`,`name`,`fc`,`pid`,`isdesktop`,`sys`) VALUES ('190','导航设置','Index/menu','32','1','1');
+INSERT INTO `jz_ruler` (`id`,`name`,`fc`,`pid`,`isdesktop`,`sys`) VALUES ('191','新增导航','Index/addmenu','32','0','1');
+INSERT INTO `jz_ruler` (`id`,`name`,`fc`,`pid`,`isdesktop`,`sys`) VALUES ('192','修改导航','Index/editmenu','32','0','1');
+INSERT INTO `jz_ruler` (`id`,`name`,`fc`,`pid`,`isdesktop`,`sys`) VALUES ('193','删除导航','Index/delmenu','32','0','1');
 -- ----------------------------
 -- Records of jz_sysconfig
 -- ----------------------------

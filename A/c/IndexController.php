@@ -1105,8 +1105,6 @@ class IndexController extends CommonController
 				}
 				//检测htmlurl是否为空
 				if(trim($v['htmlurl'])==''){
-					//JsonReturn(['code'=>1,'msg'=>$modelname.'模块未绑定栏目，无法生存HTML！']);
-					//echo $modelname.'模块未绑定栏目，无法生存HTML！';exit;
 					JsonReturn(['code'=>1,'msg'=>$modelname.'模块未绑定栏目，无法生存HTML！']);
 				}
 				
@@ -1116,8 +1114,6 @@ class IndexController extends CommonController
 				if(!is_dir(APP_PATH.$terminal_path)){
 					$r = mkdir(APP_PATH.$terminal_path,0777,true);
 					if(!$r){
-						//JsonReturn(['code'=>1,'msg'=>'根目录创建目录失败！']);
-						//echo '系统创建 [ '.str_replace('/','\\',APP_PATH.$terminal_path).' ] 目录失败!';exit;
 						JsonReturn(['code'=>1,'msg'=>'系统创建 [ '.str_replace('/','\\',APP_PATH.$terminal_path).' ] 目录失败!']);
 					}
 					
@@ -1134,8 +1130,6 @@ class IndexController extends CommonController
 							
 							$r = mkdir($create_dir,0777,true);
 							if(!$r){
-								//JsonReturn(['code'=>1,'msg'=>'根目录创建目录失败！']);
-								//echo '系统创建 [ '.str_replace('/','\\',$create_dir).' ] 目录失败!';exit;
 								JsonReturn(['code'=>1,'msg'=>'系统创建 [ '.str_replace('/','\\',$create_dir).' ] 目录失败!']);
 							}
 							
@@ -1147,8 +1141,6 @@ class IndexController extends CommonController
 					if(!is_dir(APP_PATH.$terminal_path.$v['htmlurl'])){
 						$r = mkdir(APP_PATH.$terminal_path.$v['htmlurl'],0777,true);
 						if(!$r){
-							//JsonReturn(['code'=>1,'msg'=>'根目录创建目录失败！']);
-							//echo '系统创建 [ '.str_replace('/','\\',APP_PATH.$terminal_path.$v['htmlurl']).' ] 目录失败！';exit;
 							JsonReturn(['code'=>1,'msg'=>'系统创建 [ '.str_replace('/','\\',APP_PATH.$terminal_path.$v['htmlurl']).' ] 目录失败！']);
 						}
 					}
@@ -1169,19 +1161,115 @@ class IndexController extends CommonController
 		
 	}
 	
+	// 导航
+	public function menu(){
+		
+		$this->lists = M('menu')->findAll();
+		
+		$this->display('menu');
+	}
 	
-	//内容过多时的静态HTML生成处理
-	function html_multi(){
-		$echo_html_cache = getCache('echo_html_cache');
-		if($echo_html_cache){
+	public function addmenu(){
+		if($this->frparam('go',1)==1){
+			$data = $this->frparam();
+			$data['name'] = $this->frparam("name",1);
+			$data['isshow'] = $this->frparam("isshow");
+			$tid = $this->frparam('tid',2);
+			$title = $this->frparam('title',2);
+			$gourl = $this->frparam('gourl',2);
+			$target = $this->frparam('target',2);
+			$status = $this->frparam('status',2);
 			
+			$data = get_fields_data($data,'menu');
+			$nav = [];
+			foreach($tid as $k=>$v){
+				$nav[] = [
+					'tid'=>$v,
+					'title'=>$title[$k],
+					'gourl'=>$gourl[$k],
+					'target'=>$target[$k],
+					'status'=>$status[$k],
+				];
+				
+			}
+			$data['nav'] = serialize($nav);
+			
+			
+			if(M('menu')->add($data)){
+				JsonReturn(array('code'=>0,'msg'=>'添加成功！继续添加~','url'=>U('index/addmenu')));
+				exit;
+			}else{
+				JsonReturn(array('code'=>1,'msg'=>'添加失败！'));
+				exit;
+			}
 			
 			
 		}
-		return true;
-		
-		
+
+		$this->display('addmenu');
 	}
+	
+	public function editmenu(){
+		$id = $this->frparam('id');
+		$menu = M('menu')->find(['id'=>$id]);
+		if(!$id || !$menu){
+			if($this->frparam('ajax')){
+				JsonReturn(['code'=>1,'msg'=>'缺少ID']);
+			}
+			Error('链接错误！');
+		}
+		if($this->frparam('go',1)==1){
+			$data = $this->frparam();
+			$data['name'] = $this->frparam("name",1);
+			$data['isshow'] = $this->frparam("isshow");
+			$tid = $this->frparam('tid',2);
+			$title = $this->frparam('title',2);
+			$gourl = $this->frparam('gourl',2);
+			$target = $this->frparam('target',2);
+			$status = $this->frparam('status',2);
+			
+			$data = get_fields_data($data,'menu');
+			$nav = [];
+			foreach($tid as $k=>$v){
+				$nav[] = [
+					'tid'=>$v,
+					'title'=>$title[$k],
+					'gourl'=>$gourl[$k],
+					'target'=>$target[$k],
+					'status'=>$status[$k],
+				];
+				
+			}
+			$data['nav'] = serialize($nav);
+			
+			
+			if(M('menu')->update(['id'=>$id],$data)){
+				JsonReturn(array('code'=>0,'msg'=>'修改成功！','url'=>U('index/menu')));
+				exit;
+			}else{
+				JsonReturn(array('code'=>1,'msg'=>'修改失败！'));
+				exit;
+			}
+			
+			
+		}
+		$menu['nav'] = unserialize($menu['nav']);
+		$this->data = $menu;
+		
+		$this->display('editmenu');
+	}
+	
+	public function delmenu(){
+		$id = $this->frparam('id');
+		if($id){
+			if(M('menu')->delete('id='.$id)){
+				JsonReturn(array('code'=>0,'msg'=>'删除成功！'));
+			}else{
+				JsonReturn(array('code'=>1,'msg'=>'删除失败！'));
+			}
+		}
+	}
+	
 	
 	
 	

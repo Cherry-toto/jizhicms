@@ -574,7 +574,7 @@ CREATE TABLE `jz_menu` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `name` varchar(255) DEFAULT NULL,
   `nav` text DEFAULT NULL,
-  `isshow`tinyint(1) NOT NULL DEFAULT 1'
+  `isshow`tinyint(1) NOT NULL DEFAULT '1',
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 -- ----------------------------
@@ -1128,5 +1128,5 @@ INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`) VALUES ('1
 INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`) VALUES ('111','onlyinvite','仅邀请码注册', '开启后，必须通过邀请链接才能注册！','0','0');
 INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`) VALUES ('112','release_table','允许前台发布模块', '防止数据泄露,填写允许发布模块标识,留空表示不允许发布,多个表可用|分割','0','article|product');
 INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`) VALUES ('113','search_words','前台搜索的字段', '可以设置搜索表中的相关字段进行模糊查询,多个字段可用|分割','0','title');
-INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`) VALUES ('114','closehomevercode','前台验证码', '关闭后，登录注册不需要验证码,'0','0');
+INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`) VALUES ('114','closehomevercode','前台验证码', '关闭后，登录注册不需要验证码','0','0');
 INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`) VALUES ('115','closeadminvercode','后台验证码', '关闭后，后台管理员登录不需要验证码','0','0');

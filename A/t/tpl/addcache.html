@@ -27,6 +27,27 @@
 			  </ul>
 			  <div class="layui-tab-content">
 				<div class="layui-tab-item layui-show">
+				
+				<div class="layui-collapse">
+		        <div class="layui-colla-item">
+			    <h2 class="layui-colla-title">使用说明</h2>
+				<div class="layui-colla-content">
+				<div class="row">
+				<p>1. 指定几个id或者几个tid的内容输出(栏目：不限制栏目)</p>
+				<p>SQL中输入：  id in(1,2,3)  或者  tid in(2,3,4)</p>
+				<p>2. 模糊查询，查询标题跟 “网站建设” 相关的内容</p>
+				<p>SQL中输入： title like '%网站建设%' </p>
+				<p>3. 模糊查询，查询标题/内容跟 “网站建设” 相关的内容</p>
+				<p>SQL中输入： (title like '%网站建设%' or body like '%网站建设%' ) </p>
+				<p>4. 不支持联表查询 </p>
+				<p>5. 注意字符串都要使用英文单引号</p>
+				<p>如：  title='网站建设' </p>
+				</div>
+				</div>
+				</div>
+				</div>
+				
+				
 				<div class="layui-form-item">
                     <label  class="layui-form-label">
                         <span class="x-red">*</span>碎片名称
@@ -41,9 +62,12 @@
                         <span class="x-red">*</span>碎片标识
                     </label>
                     <div class="layui-input-inline">
-                        <input type="text" id="field" value="" style="width:500px;" name="field" required="" lay-verify="required"
+                        <input type="text" id="field" value=""  name="field" required="" lay-verify="required"
                         autocomplete="off" class="layui-input">
                     </div>
+					<div class="layui-form-mid layui-word-aux">
+					  建议英文，不要重复
+					</div>
                 </div>
 				<div class="layui-form-item">
 					  <label class="layui-form-label">模型</label>
@@ -78,7 +102,7 @@
                 </div>
 				<div class="layui-form-item layui-form-text">
 					<label for="sql" class="layui-form-label">
-						<span class="x-red"></span>SQL相关
+						<span class="x-red"></span>SQL
 					</label>
 					<div class="layui-input-block">
 						<textarea  name="sqls" placeholder="可留空" class="layui-textarea"></textarea>

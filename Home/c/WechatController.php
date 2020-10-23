@@ -42,6 +42,26 @@ class WechatController extends Controller
 		}else{
 			$this->islogin = false;
 		}
+		
+		$jznav = getCache('jznav');
+		if(!$jznav){
+			$nav = M('menu')->findAll(['isshow'=>1]);
+			$jznav = [];
+			if($nav){
+				foreach($nav as $v){
+					$menulist = unserialize($v['nav']);
+					foreach($menulist as $vv){
+						if($vv['status']==1){
+							$vv['url'] = $vv['tid'] ? $this->classtypedata[$vv['tid']]['url'] : $vv['gourl'];
+							$vv['title'] = $vv['title'] ? $vv['title'] : ($vv['tid'] ? $this->classtypedata[$vv['tid']]['classname'] : '');
+							$jznav[$v['id']][]=$vv;
+						}
+					}
+				}
+			}
+			setCache('jznav',$jznav);
+		}
+		$this->jznav = $jznav;
 	}
 	
 	

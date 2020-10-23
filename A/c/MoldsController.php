@@ -79,6 +79,7 @@ class MoldsController extends CommonController
 				`istop` tinyint(1) DEFAULT 0,
 				`hits` int(11) DEFAULT 0,
 				`zan` int(11) DEFAULT 0,
+				`tags` varchar(255) DEFAULT NULL,
 				`addtime` int(11) DEFAULT 0,
 				PRIMARY 
 				KEY  (`id`)

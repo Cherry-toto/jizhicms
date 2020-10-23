@@ -518,7 +518,6 @@ table th, table td {
 .footer .copyright{
     margin-left: 10px;
 }
-.delete_file{font-size:2rem;}
 
 @media screen and (max-width: 768px){
     .fast-add{
@@ -774,3 +773,6 @@ ul#nav {
 .active a{   
 	background: #f00;
     color: #fff;}
+.upload-icon-img {
+    padding-right: 8px;
+}

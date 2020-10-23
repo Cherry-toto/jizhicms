@@ -69,7 +69,25 @@ class CommonController extends Controller
 			$this->islogin = false;
 		}
 		
-		
+		$jznav = getCache('jznav');
+		if(!$jznav){
+			$nav = M('menu')->findAll(['isshow'=>1]);
+			$jznav = [];
+			if($nav){
+				foreach($nav as $v){
+					$menulist = unserialize($v['nav']);
+					foreach($menulist as $vv){
+						if($vv['status']==1){
+							$vv['url'] = $vv['tid'] ? $this->classtypedata[$vv['tid']]['url'] : $vv['gourl'];
+							$vv['title'] = $vv['title'] ? $vv['title'] : ($vv['tid'] ? $this->classtypedata[$vv['tid']]['classname'] : '');
+							$jznav[$v['id']][]=$vv;
+						}
+					}
+				}
+			}
+			setCache('jznav',$jznav);
+		}
+		$this->jznav = $jznav;
     
     }
 	
@@ -875,6 +893,22 @@ class CommonController extends Controller
 	function error($msg){
 		$this->display($this->template.'/404');
 		exit;
+	}
+	
+	//更新session的过期时间
+    function updateactive(){
+	  $cache_time = (int)webConf('cache_time');
+	  $cache_time = $cache_time==0 ? 3600 : $cache_time;
+	  setcookie('PHPSESSID', $_COOKIE['PHPSESSID'], time() + $cache_time);
+	  
+    }
+	
+	//递增递减
+	function gohits($id=0,$molds='article',$i=1){
+		$n = M($molds)->getField(['id'=>$id],'hits');
+		$num = $n+$i;
+		M($molds)->update(['id'=>$id],['hits'=>$num]);
+		JsonReturn(['code'=>0,'msg'=>'success','data'=>$num]);
 	}
 
 }

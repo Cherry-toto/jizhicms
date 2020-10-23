@@ -185,6 +185,7 @@ class ProductController extends CommonController
 			$data['ishot'] = $this->frparam('ishot',0,0);
 			$data['istuijian'] = $this->frparam('istuijian',0,0);
 			$data = get_fields_data($data,'product');
+			$data['tags'] = $data['tags'] ? $data['tags'] : $data['keywords'];
 			if($data['tags']!=''){
 				$data['tags'] = ','.$data['tags'].',';
 			}
@@ -295,6 +296,7 @@ class ProductController extends CommonController
 			$data['ishot'] = $this->frparam('ishot',0,0);
 			$data['istuijian'] = $this->frparam('istuijian',0,0);
 			$data = get_fields_data($data,'product');
+			$data['tags'] = $data['tags'] ? $data['tags'] : $data['keywords'];
 			if($data['tags']!=''){
 				$data['tags'] = ','.$data['tags'].',';
 			}
@@ -344,10 +346,11 @@ class ProductController extends CommonController
 									$w['target'] = '_blank';
 									M('tags')->add($w);
 								}else{
-									//M('tags')->goInc(['keywords'=>$v],'number',1);
-									$num1 = M('article')->getCount(" tags like '%,".$v.",%' ");
-									$num2 = M('product')->getCount(" tags like '%,".$v.",%' ");
-									M('tags')->update(['keywords'=>$v],['number'=>$num1+$num2]);
+									if(strpos(','.$v.',',$old_tags)===false){
+										M('tags')->goInc(['keywords'=>$v],'number');
+									}else if(strpos(','.$v.',',$data['tags'])===false){
+										M('tags')->goDec(['keywords'=>$v],'number');
+									}
 								}
 								
 								$new[]=$v;

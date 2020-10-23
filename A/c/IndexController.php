@@ -513,6 +513,33 @@ class IndexController extends CommonController
 						  closedir($handle);
 						}
 					}
+					$datacache = M('cachedata')->findAll();
+					if($datacache){
+						foreach($datacache as $v){
+							$tid = $v['tid'] ? ($v['isall']==1 ? ' and tid in ('.implode(',',$this->classtypedata[$v['tid']]['children']['ids']).') ' : ' and tid='.$v['tid']) : '';
+							$sqls = $v['sqls'] ? ' and '.$v['sqls'] : '';
+							$orderby = $v['orders'] ? ' order by '.$v['orders'] : '';
+							$limit = $v['limits'] ? ' limit '.$v['limits'] : '';
+							if($tid || $sqls){
+								$where = ' where 1=1 '.$tid.htmlspecialchars_decode($sqls,ENT_QUOTES);
+							}else{
+								$where = '';
+							}
+							$sql = "select * from ".DB_PREFIX.$v['molds'].$where.$orderby.$limit;
+							$result = M()->findSql($sql);
+							if($result){
+								foreach($result as $kk=>$vv){
+									if(isset($vv['htmlurl'])){
+										$result[$kk]['url'] = gourl($vv,$vv['htmlurl']);
+									}
+								}
+							}
+							$time = $v['times']*60+time();
+							setCache('jzcache_'.$v['field'],$result,$time);
+						}
+					}
+					
+					
 					setCache(session_id(),$ip);
 					break;
 					case 'pc_html':
@@ -730,7 +757,18 @@ class IndexController extends CommonController
 	}
 	
 	function murl($id,$htmlurl=null,$molds='article'){
-		
+		if(is_array($id)){
+			$value = $id;
+			if($value['target']){
+				return $value['target'];
+			}else{
+				if($value['ownurl']){
+					return get_domain().'/'.$value['ownurl'];
+					
+				}
+			}
+			$id = $value['id'];
+		}
 		if(!$id){Error_msg('缺少ID！');}
 		$htmlpath = $this->webconf['iswap']==1 ? $this->webconf['mobile_html'] : $this->webconf['pc_html'];
 		$htmlpath = ($htmlpath=='' || $htmlpath=='/') ? '' : '/'.$htmlpath; 

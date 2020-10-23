@@ -310,8 +310,13 @@ class SysController extends CommonController
 				$data['code'] = 1003;
 				JsonReturn($data);
 			}
-		  
-		  $filename =  'Public/cert/'.date('Ymd').rand(1000,9999).'.'.$pix;
+			if(!is_dir('static/upload')){
+				mkdir('static/upload',0777);
+			}
+			if(!is_dir('static/upload/cert')){
+				mkdir('static/upload/cert',0777);
+			}
+		    $filename =  'static/upload/cert/'.date('Ymd').rand(1000,9999).'.'.$pix;
 		  
 			if(move_uploaded_file($_FILES["file"]['tmp_name'],$filename)){
 				$data['url'] = $filename;
@@ -319,7 +324,7 @@ class SysController extends CommonController
 				$filesize = round(filesize(APP_PATH.$filename)/1024,2);
 				M('pictures')->add(['litpic'=>'/'.$filename,'addtime'=>time(),'userid'=>$_SESSION['admin']['id'],'size'=>$filesize,'filetype'=>strtolower($pix),'tid'=>$this->frparam('tid',0,0),'molds'=>$this->frparam('molds',1,null)]);
 			}else{
-				$data['error'] =  "Error: 请检查目录[Public/cert]写入权限";
+				$data['error'] =  "Error: 请检查目录[static/upload/cert]写入权限";
 				$data['code'] = 1001;
 				  
 			} 
@@ -332,6 +337,159 @@ class SysController extends CommonController
 		  
 	}
 
+	public function datacache(){
+		$this->lists = M('cachedata')->findAll();
+		$this->display('datacache');
+	}
+	
+	public function addcache(){
+		if($this->frparam('go',1)==1){
+			$data = $this->frparam();
+			$data['title'] = $this->frparam("title",1);
+			$data['limits'] = $this->frparam("limits");
+			$data['orders'] = $this->frparam("orders",1);
+			$data['tid'] = $this->frparam('tid');
+			$data['isall'] = $this->frparam('isall');
+			$data['sqls'] = $this->frparam('sqls',1);
+			$data['field'] = $this->frparam('field',1);
+			$data['times'] = $this->frparam('times',0,10);
+			$data['molds'] = $this->frparam('molds',1);
+			
+			if(stripos($data['sqls'],'update')!==false || stripos($data['sqls'],'delete')!==false || stripos($data['sqls'],'insert')!==false || stripos($data['sqls'],'drop')!==false || stripos($data['sqls'],'truncate')!==false){
+				JsonReturn(array('code'=>1,'msg'=>'非法操作'));
+			}
+			
+			
+			if(M('cachedata')->add($data)){
+				$tid = $data['tid'] ? ($data['isall']==1 ? ' and tid in ('.implode(',',$this->classtypedata[$data['tid']]['children']['ids']).') ' : ' and tid='.$data['tid']) : '';
+				$sqls = $data['sqls'] ? ' and '.$data['sqls'] : '';
+				$orderby = $data['orders'] ? ' order by '.$data['orders'] : '';
+				$limit = $data['limits'] ? ' limit '.$data['limits'] : '';
+				if($tid || $sqls){
+					$where = ' where 1=1 '.$tid.htmlspecialchars_decode($sqls,ENT_QUOTES);
+				}else{
+					$where = '';
+				}
+				$sql = "select * from ".DB_PREFIX.$data['molds'].$where.$orderby.$limit;
+				$result = M()->findSql($sql);
+				if($result){
+					foreach($result as $k=>$v){
+						if(isset($v['htmlurl'])){
+							$result[$k]['url'] = gourl($v,$v['htmlurl']);
+						}
+					}
+				}
+				$time = $data['times']*60+time();
+				setCache('jzcache_'.$data['field'],$result,$time);
+				
+				JsonReturn(array('code'=>0,'msg'=>'添加成功！继续添加~','url'=>U('index/addcache')));
+				exit;
+			}else{
+				JsonReturn(array('code'=>1,'msg'=>'添加失败！'));
+				exit;
+			}
+			
+			
+		}
+
+		$this->display('addcache');
+	}
+	
+	public function editcache(){
+		$id = $this->frparam('id');
+		$res = M('cachedata')->find(['id'=>$id]);
+		if(!$id || !$res){
+			if($this->frparam('ajax')){
+				JsonReturn(['code'=>1,'msg'=>'缺少ID']);
+			}
+			Error('链接错误！');
+		}
+		if($this->frparam('go',1)==1){
+			$data = $this->frparam();
+			$data['title'] = $this->frparam("title",1);
+			$data['limits'] = $this->frparam("limits");
+			$data['orders'] = $this->frparam("orders",1);
+			$data['tid'] = $this->frparam('tid');
+			$data['isall'] = $this->frparam('isall');
+			$data['sqls'] = $this->frparam('sqls',1);
+			$data['field'] = $this->frparam('field',1);
+			$data['times'] = $this->frparam('times',0,10);
+			$data['molds'] = $this->frparam('molds',1);
+			if(stripos($data['sqls'],'update')!==false || stripos($data['sqls'],'delete')!==false || stripos($data['sqls'],'insert')!==false || stripos($data['sqls'],'drop')!==false || stripos($data['sqls'],'truncate')!==false){
+				JsonReturn(array('code'=>1,'msg'=>'非法操作'));
+			}
+			if(M('cachedata')->update(['id'=>$id],$data)){
+				$tid = $data['tid'] ? ($data['isall']==1 ? ' and tid in ('.implode(',',$this->classtypedata[$data['tid']]['children']['ids']).') ' : ' and tid='.$data['tid']) : '';
+				$sqls = $data['sqls'] ? ' and '.$data['sqls'] : '';
+				$orderby = $data['orders'] ? ' order by '.$data['orders'] : '';
+				$limit = $data['limits'] ? ' limit '.$data['limits'] : '';
+				if($tid || $sqls){
+					$where = ' where 1=1 '.$tid.htmlspecialchars_decode($sqls,ENT_QUOTES);
+				}else{
+					$where = '';
+				}
+				$sql = "select * from ".DB_PREFIX.$data['molds'].$where.$orderby.$limit;
+				$result = M()->findSql($sql);
+				if($result){
+					foreach($result as $k=>$v){
+						if(isset($v['htmlurl'])){
+							$result[$k]['url'] = gourl($v,$v['htmlurl']);
+						}
+					}
+				}
+				$time = $data['times']*60+time();
+				setCache('jzcache_'.$data['field'],$result,$time);
+				JsonReturn(array('code'=>0,'msg'=>'修改成功！','url'=>U('sys/datacache')));
+				exit;
+			}else{
+				JsonReturn(array('code'=>1,'msg'=>'修改失败！'));
+				exit;
+			}
+			
+			
+		}
+		
+		$this->data = $res;
+		
+		$this->display('editcache');
+	}
+	
+	public function delcache(){
+		$id = $this->frparam('id');
+		if($id){
+			if(M('cachedata')->delete('id='.$id)){
+				JsonReturn(array('code'=>0,'msg'=>'删除成功！'));
+			}else{
+				JsonReturn(array('code'=>1,'msg'=>'删除失败！'));
+			}
+		}
+	}
+	
+	public function viewcache(){
+		$id = $this->frparam('id');
+		$res = M('cachedata')->find(['id'=>$id]);
+		if(!$id || !$res){
+			if($this->frparam('ajax')){
+				JsonReturn(['code'=>1,'msg'=>'缺少ID']);
+			}
+			Error('链接错误！');
+		}
+		
+		
+		$tid = $res['tid'] ? ($res['isall']==1 ? ' and tid in ('.implode(',',$this->classtypedata[$res['tid']]['children']['ids']).') ' : ' and tid='.$res['tid']) : '';
+		$sqls = $res['sqls'] ? ' and '.$res['sqls'] : '';
+		$orderby = $res['orders'] ? ' order by '.$res['orders'] : '';
+		$limit = $res['limits'] ? ' limit '.$res['limits'] : '';
+		if($tid || $sqls){
+			$where = ' where 1=1 '.$tid.htmlspecialchars_decode($sqls,ENT_QUOTES);
+		}else{
+			$where = '';
+		}
+		$sql = "select * from ".DB_PREFIX.$res['molds'].$where.$orderby.$limit;
+		echo 'SQL:'.$sql.'<br>';
+		
+		
+	}
 
 
 

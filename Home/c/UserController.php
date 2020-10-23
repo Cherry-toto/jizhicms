@@ -78,6 +78,25 @@ class UserController extends Controller
 			$this->islogin = false;
 			
 		}
+		$jznav = getCache('jznav');
+		if(!$jznav){
+			$nav = M('menu')->findAll(['isshow'=>1]);
+			$jznav = [];
+			if($nav){
+				foreach($nav as $v){
+					$menulist = unserialize($v['nav']);
+					foreach($menulist as $vv){
+						if($vv['status']==1){
+							$vv['url'] = $vv['tid'] ? $this->classtypedata[$vv['tid']]['url'] : $vv['gourl'];
+							$vv['title'] = $vv['title'] ? $vv['title'] : ($vv['tid'] ? $this->classtypedata[$vv['tid']]['classname'] : '');
+							$jznav[$v['id']][]=$vv;
+						}
+					}
+				}
+			}
+			setCache('jznav',$jznav);
+		}
+		$this->jznav = $jznav;
 	}
 	
 	function close(){
@@ -489,7 +508,7 @@ class UserController extends Controller
 		
 	}
 	function likesAction(){
-		$this->checklogin();
+		
 		if(!isset($_SESSION['return_url'])){
 			$referer = ($_SERVER['HTTP_REFERER']=='') ? U('user/likes') : $_SERVER['HTTP_REFERER'];
 			$_SESSION['return_url'] = $referer;
@@ -503,6 +522,33 @@ class UserController extends Controller
 			}
 			Error('参数错误！');
 		}
+		if(!$this->islogin){
+			if(isset($_SESSION['likes'])){
+				$likes = $_SESSION['likes'];
+			}else{
+				$likes = [];
+			}
+			$lk = $tid.'-'.$id;
+			if(in_array($lk,$likes)){
+				$newlikes = [];
+				foreach($likes as $v){
+					if($v!=$lk){
+						$newlikes[]=$v;
+					}
+				}
+				$msg = '已取消点赞！';
+				$likes = $newlikes;
+			}else{
+				$msg = '点赞成功！';
+				$likes[]=$lk;
+			}
+			$_SESSION['likes'] = $likes;
+			if($this->frparam('ajax')){
+				JsonReturn(['code'=>0,'msg'=>$msg,'url'=>$_SESSION['return_url']]);
+			}
+			Success($msg,$_SESSION['return_url']);
+		}
+		
 		$likes = explode('||',$this->member['likes']);
 		$new = [];
 		$add = $tid.'-'.$id;

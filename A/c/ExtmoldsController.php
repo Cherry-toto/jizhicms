@@ -177,8 +177,32 @@ class ExtmoldsController extends Controller
 			}
 			$data['userid'] = $this->admin['id'];
 			$data['molds'] = $molds;
+			if($data['tags']){
+				$data['tags'] = ','.$data['tags'].',';
+			}
 			$r = M($molds)->add($data);
 			if($r){
+				//tags处理
+				if($data['tags']){
+					$tags = explode(',',$data['tags']);
+					foreach($tags as $v){
+						if($v!=''){
+							$r = M('tags')->find(['keywords'=>$v]);
+							if(!$r){
+								$w['keywords'] = $v;
+								$w['newname'] = '';
+								$w['url'] = '';
+								$w['num'] = -1;
+								$w['isshow'] = 1;
+								$w['number'] = 1;
+								$w['target'] = '_blank';
+								M('tags')->add($w);
+							}else{
+								M('tags')->goInc(['keywords'=>$v],'number',1);
+							}
+						}
+					}
+				}
 				if(isset($data['ownurl'])){
 					M('customurl')->add(['molds'=>$molds,'tid'=>$data['tid'],'url'=>$data['ownurl'],'addtime'=>time(),'aid'=>$r]);
 				}
@@ -235,8 +259,49 @@ class ExtmoldsController extends Controller
 				}else{
 					M('customurl')->delete(['molds'=>$molds,'aid'=>$this->frparam('id')]);
 				}
-				
+				if($data['tags']){
+					$data['tags'] = ','.$data['tags'].',';
+				}
 				if(M($molds)->update(array('id'=>$this->frparam('id')),$data)){
+					$old_tags = M($molds)->getField(['id'=>$this->frparam('id')],'tags');
+					if($old_tags!=$data['tags']){
+						
+						$a = $old_tags.$data['tags'];
+						$new = [];
+						$a = explode(',',$a);
+						foreach($a as $v){
+							if($v!='' && !in_array($v,$new)){
+								
+								$r = M('tags')->find(['keywords'=>$v]);
+								if(!$r){
+									$w['keywords'] = $v;
+									$w['newname'] = '';
+									$w['url'] = '';
+									$w['num'] = -1;
+									$w['isshow'] = 1;
+									$w['number'] = 1;
+									$w['target'] = '_blank';
+									M('tags')->add($w);
+								}else{
+									
+									if(strpos(','.$v.',',$old_tags)===false){
+										M('tags')->goInc(['keywords'=>$v],'number');
+									}else if(strpos(','.$v.',',$data['tags'])===false){
+										M('tags')->goDec(['keywords'=>$v],'number');
+									}
+									
+									
+								}
+								
+								$new[]=$v;
+							}
+						}
+						
+						
+						
+						
+					}
+					
 					if($this->webconf['release_award_open']==1 && $data['isshow']==1){
 						$award = round($this->webconf['release_award'],2);
 						$max_award = round($this->webconf['release_max_award'],2);

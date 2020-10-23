@@ -4,6 +4,8 @@
     <head>
        <meta charset="UTF-8">
         {include="style"}
+		<link rel="stylesheet" type="text/css" href="{__Tpl_style__}/style/tags/jquery.tagsinput.css" />
+		<script type="text/javascript" charset="utf-8" src="{__Tpl_style__}/style/tags/jquery.tagsinput.js"></script>
 		{include="edit"}
 		
     </head>
@@ -58,7 +60,15 @@
 				<span id="ext_fields"></span>
 				
 				
-				
+				<div class="layui-form-item layui-form-text">
+                    <label for="tags" class="layui-form-label">
+                        <span class="x-red"></span>TAG标签 [ 按Enter回车自动添加 ]
+                    </label>
+                    <div class="layui-input-block">
+                       
+						 <input id="tags" type="text" class="tags" name="tags" value="{fun trim($data['tags'],',')}"  autocomplete="off" class="layui-input"  />
+                    </div>
+                </div>
 				<div class="layui-form-item" pane>
                     <label for="isshow" class="layui-form-label">
                         <span class="x-red"></span>是否审核
@@ -100,6 +110,12 @@
       
         <script>
 		{include="fields"}
+			$(function() {
+			  $('#tags').tagsInput({
+					width:'auto',
+					defaultText:'添加一个标签',
+			  });	
+			})
             layui.use(['laydate','form','layer','upload'], function(){
                 $ = layui.jquery;
               var form = layui.form

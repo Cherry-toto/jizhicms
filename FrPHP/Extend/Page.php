@@ -53,12 +53,10 @@ namespace FrPHP\Extend;
 		
 		
 		
-		public function __construct($table){
+		public function __construct($table=''){
 			
 			$this->table = $table;
-			if(!$table){
-				Error_msg('缺少表对象！');
-			}
+
 		}
 		
 		
@@ -332,7 +330,36 @@ namespace FrPHP\Extend;
 			return $this->datalist;
 		}
 		
+		// SQL处理
+		public function goSql(){
+			if($this->currentPage!=1){
+				$limitsql = (($this->limit*($this->currentPage-1)) - ($this->limit_t)).','.$this->limit;
+				//1-0:1  2-2:3
+			}else{
+				if($this->limit_t!=0){
+					$limitsql = $this->limit_t.','.$this->limit;
+				}else{
+					$limitsql = $this->limit;
+				}
+				
+			}
+			$orderby = $this->order ? ' order by '.$this->order : '';
+			$limit = ' limit '.$limitsql;
+			$sql = $this->sql.' '.$orderby.' '.$limit;
+			$this->datalist = M()->findSql($sql);
+			$this->limit = $this->limit;
+
+			$allpage = ceil($this->sum/$this->limit);
+			if($allpage==0){$allpage=1;}
+			$this->allpage = $allpage;
+			return $this->datalist;
+		}
 		
+		public function goCount($sql){
+			$n = M()->findSql($sql);
+			$this->sum = count($n);
+			return $this;
+		}
 		
 		
 		

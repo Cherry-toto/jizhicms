@@ -853,54 +853,32 @@ class HomeController extends CommonController
 			}else if($tid){
 				$sql.=' and tid in('.$tid.') ';
 			}
-			
-		
-			$lists = [];
+			$sqlx = [];
+			$sqln = [];
 			foreach($allow_table as $v){
 				$list_a = M($v)->findAll($sql);
-				if($list_a){
-					$sql = [];
-					$sql[] = " molds = '".$v."' and isshow=1 ";
-					$sql[] = " isajax=0 ";//查询出不允许访问的字段，进行限制
-					$sql = implode(' and ',$sql);
-					$fields_list = M('Fields')->findAll($sql,'orders desc,id asc');
-					if($fields_list){
-						$noallow = [];
-						foreach($fields_list as $vv){
-							$noallow[]=$vv['field'];
-						}
-						$newdata = [];
-						foreach($list_a as $vs){
-							foreach($vs as $kk=>$vv){
-								if(in_array($kk,$noallow)){
-									unset($vs[$kk]);
-								}
-							}
-							$newdata[]=$vs;
-						}
-						
-						$list_a = $newdata;
-					}
-					
-					$lists = count($lists)>0 ? array_merge($lists,$list_a) : $list_a;
-				}
+				$sqlx[] = ' select id,tid,title,tags,keywords,molds,htmlurl,description,addtime,userid,member_id from '.DB_PREFIX.$v." where ".$sql;
+				$sqln[] = ' select id from '.DB_PREFIX.$v." where ".$sql;
 			}
 			
-			$arraypage = new \ArrayPage($lists);
-			$data = $arraypage->query(['page'=>$this->frparam('page',0,1),'word'=>$word,'molds'=>$molds,'tid'=>$tid])->setPage(['limit'=>$this->frparam('limit',0,15)])->go();
-			
+			$sql = implode(' union all ',$sqlx);
+			$sqln = implode(' union all ',$sqln);
+			$page = new Page();
+			$data = $page->where($sql)->setPage(['limit'=>$this->frparam('limit',0,15)])->page($this->frpage)->goCount($sqln)->goSql();
 			foreach($data as $k=>$v){
-				if(isset($v['htmlurl']) && !isset($v['url'])){
-					$data[$k]['url'] = gourl($v,$v['htmlurl']);
-				}
-				
+				$data[$k]['url'] = gourl($v['id'],$v['htmlurl']);
 				$data[$k]['classname'] = $this->classtypedata[$v['tid']]['classname'];
-				$data[$k]['title'] = str_replace($word,'<b style="color:#f00">'.$word.'</b>',$v['title']);
+				$data[$k]['title'] = str_replace($word,'<span style="color:#f00;">'.$word.'</span>',$v['title']);
 			}
-			$this->lists = $data;
-			$this->pages = $arraypage->pageList();
-			$this->pagelist = $arraypage->listpage;
-			$this->listpage = $arraypage->listpage;
+			$pages = $page->pageList(5,'&page=');
+			$this->pages = $pages;//组合分页
+			$this->lists = $data;//列表数据
+			$this->sum = $page->sum;//总数据
+			$this->pagelist = $page->listpage;//分页数组-自定义分页可用
+			$this->listpage = $page->listpage;//分页数组-自定义分页可用
+			$this->prevpage = $page->prevpage;//上一页
+			$this->nextpage = $page->nextpage;//下一页
+			$this->allpage = $page->allpage;//总页数
 			if($this->frparam('ajax') && $this->webconf['isajax']){
 				if($this->frparam('ajax_tpl')){
 					$this->display($this->template.'/ajax_searchall_list');
@@ -1129,7 +1107,18 @@ class HomeController extends CommonController
 		
 	}
 	function murl($id,$htmlurl=null,$molds='article'){
-		
+		if(is_array($id)){
+			$value = $id;
+			if($value['target']){
+				return $value['target'];
+			}else{
+				if($value['ownurl']){
+					return get_domain().'/'.$value['ownurl'];
+					
+				}
+			}
+			$id = $value['id'];
+		}
 		if(!$id){Error_msg('缺少ID！');}
 		$htmlpath = $this->webconf['iswap']==1 ? $this->webconf['mobile_html'] : $this->webconf['pc_html'];
 		$htmlpath = ($htmlpath=='' || $htmlpath=='/') ? '' : '/'.$htmlpath; 

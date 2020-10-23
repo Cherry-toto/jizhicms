@@ -1301,17 +1301,32 @@ function checkCollect($tid=0,$id=0){
 }
 //检测是否点赞
 function checkLikes($tid=0,$id=0){
-	if($tid && $id && isset($_SESSION['member'])){
-		if(strpos($_SESSION['member']['likes'],'||'.$tid.'-'.$id.'||')!==false){
-			return true;
+	if(isset($_SESSION['member'])){
+		if($tid && $id){
+			if(strpos($_SESSION['member']['likes'],'||'.$tid.'-'.$id.'||')!==false){
+				return true;
+			}else{
+				return false;
+			}
+			
+			
 		}else{
 			return false;
 		}
-		
-		
 	}else{
-		return false;
+		if($tid && $id && isset($_SESSION['likes'])){
+			if(in_array($tid.'-'.$id,$_SESSION['likes'])){
+				return true;
+			}else{
+				return false;
+			}
+			
+			
+		}else{
+			return false;
+		}
 	}
+	
 	
 }
 
@@ -1760,7 +1775,46 @@ function jzresize($src_image,$out_width = NULL, $out_height = NULL, $mode = 1, $
 	return $out_image;
 }
 
-
+function jzcachedata($field){
+	$result = getCache('jzcache_'.$field);
+	if(!$result){
+		$res = M('cachedata')->find(['field'=>$field]);
+		
+		if($res['isall'] && $res['tid']){
+			if(isset($_SESSION['terminal'])){
+				$classtypedata = $_SESSION['terminal']=='mobile' ? classTypeDataMobile() : classTypeData();
+			}else{
+				$classtypedata = (isMobile() && $webconf['iswap']==1)?classTypeDataMobile():classTypeData();
+			}
+			foreach($classtypedata as $k=>$v){
+				$classtypedata[$k]['children'] = get_children($v,$classtypedata);
+			}
+		}
+		
+		
+		$tid = $res['tid'] ? ($res['isall']==1 ? ' and tid in ('.implode(',',$classtypedata[$res['tid']]['children']['ids']).') ' : ' and tid='.$res['tid']) : '';
+		$sqls = $res['sqls'] ? ' and '.$res['sqls'] : '';
+		$orderby = $res['orders'] ? ' order by '.$res['orders'] : '';
+		$limit = $res['limits'] ? ' limit '.$res['limits'] : '';
+		if($tid || $sqls){
+			$where = ' where 1=1 '.$tid.htmlspecialchars_decode($sqls,ENT_QUOTES);
+		}else{
+			$where = '';
+		}
+		$sql = "select * from ".DB_PREFIX.$res['molds'].$where.$orderby.$limit;
+		$result = M()->findSql($sql);
+		if($result){
+			foreach($result as $kk=>$vv){
+				if(isset($vv['htmlurl'])){
+					$result[$kk]['url'] = gourl($vv,$vv['htmlurl']);
+				}
+			}
+		}
+		$time = $res['times']*60+time();
+		setCache('jzcache_'.$res['field'],$result,$time);
+	}
+	return $result;
+}
 
 //引入扩展方法文件
 include(APP_PATH.'Conf/FunctionsExt.php');

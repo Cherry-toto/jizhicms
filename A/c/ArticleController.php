@@ -142,7 +142,6 @@ class ArticleController extends CommonController
 			if(strlen($data['description'])>255){
 				$data['description'] = newstr($data['description'],160);
 			}
-			
 			if($this->frparam('litpic',1)==''){
 				$pattern='/<img.*?src="(.*?)".*?>/is';
 				if($this->frparam('body',1)!=''){
@@ -164,6 +163,7 @@ class ArticleController extends CommonController
 			$data['ishot'] = $this->frparam('ishot',0,0);
 			$data['istuijian'] = $this->frparam('istuijian',0,0);
 			$data = get_fields_data($data,'article');
+			$data['tags'] = $data['tags'] ? $data['tags'] : $data['keywords'];
 			if($data['tags']!=''){
 				$data['tags'] = ','.$data['tags'].',';
 			}
@@ -293,6 +293,7 @@ class ArticleController extends CommonController
 			$data['ishot'] = $this->frparam('ishot',0,0);
 			$data['istuijian'] = $this->frparam('istuijian',0,0);
 			$data = get_fields_data($data,'article');
+			$data['tags'] = $data['tags'] ? $data['tags'] : $data['keywords'];
 			if($data['tags']!=''){
 				$data['tags'] = ','.$data['tags'].',';
 			}
@@ -386,9 +387,12 @@ class ArticleController extends CommonController
 									M('tags')->add($w);
 								}else{
 									
-									$num1 = M('article')->getCount(" tags like '%,".$v.",%' ");
-									$num2 = M('product')->getCount(" tags like '%,".$v.",%' ");
-									M('tags')->update(['keywords'=>$v],['number'=>$num1+$num2]);
+									if(strpos(','.$v.',',$old_tags)===false){
+										M('tags')->goInc(['keywords'=>$v],'number');
+									}else if(strpos(','.$v.',',$data['tags'])===false){
+										M('tags')->goDec(['keywords'=>$v],'number');
+									}
+									
 								}
 								
 								$new[]=$v;

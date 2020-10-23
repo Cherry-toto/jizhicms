@@ -860,14 +860,28 @@
                         </div>
                         
                         
-                        
+                        <div  class="layui-form-item">
+                            <label  style="width:150px"  class="layui-form-label">
+                                前台搜索的字段
+                            </label>
+                            <div  style="margin-left: 150px;"   class="layui-input-block">
+                                <input type="text" name="search_words" value="{$config['search_words']}" autocomplete="off" placeholder=""
+                                class="layui-input">
+                            </div>
+							<div class="layui-form-mid layui-word-aux">
+                                可以设置搜索表中的相关字段进行模糊查询,多个字段可用|分割,如：title|body 
+                            </div>
+                        </div>
                         <div  class="layui-form-item">
                             <label  style="width:150px"  class="layui-form-label">
                                 允许前台搜索的表
                             </label>
                             <div  style="margin-left: 150px;"   class="layui-input-block">
-                                <input type="text" name="search_table" value="{$config['search_table']}" autocomplete="off" placeholder="防止数据泄露,填写允许搜索的表名,留空表示不允许搜索,多个表可用|分割,如：article|product "
+                                <input type="text" name="search_table" value="{$config['search_table']}" autocomplete="off" placeholder=""
                                 class="layui-input">
+                            </div>
+							<div class="layui-form-mid layui-word-aux">
+                                 防止数据泄露,填写允许搜索的表名,留空表示不允许搜索,多个表可用|分割,如：article|product
                             </div>
                         </div>
                         
@@ -876,22 +890,26 @@
                                 允许前台发布模块
                             </label>
                             <div  style="margin-left: 150px;"   class="layui-input-block">
-                                <input type="text" name="release_table" value="{$config['release_table']}" autocomplete="off" placeholder="防止数据泄露,填写允许发布模块标识,留空表示不允许发布,多个表可用|分割,如：article|product "
+                                <input type="text" name="release_table" value="{$config['release_table']}" autocomplete="off" placeholder=""
                                 class="layui-input">
                             </div>
+							<div class="layui-form-mid layui-word-aux">
+                                防止数据泄露,填写允许发布模块标识,留空表示不允许发布,多个表可用|分割,如：article|product 
+                            </div>
                         </div>
-						
 						<div  class="layui-form-item">
                             <label  style="width:150px"  class="layui-form-label">
-                                前台搜索的字段
+                                TAG包含模型
                             </label>
                             <div  style="margin-left: 150px;"   class="layui-input-block">
-                                <input type="text" name="search_words" value="{$config['search_words']}" autocomplete="off" placeholder="可以设置搜索表中的相关字段进行模糊查询,多个字段可用|分割,如：title|body "
+                                <input type="text" name="tag_table" value="{$config['tag_table']}" autocomplete="off" placeholder=""
                                 class="layui-input">
                             </div>
+							<div class="layui-form-mid layui-word-aux">
+                                在tag列表上查询的相关模型,多个模型标识可用|分割,如：article|product 
+                            </div>
                         </div>
-						
-                         <div class="layui-form-item" pane>
+                        <div class="layui-form-item" pane>
                             <label for="isopenhomepower" style="width:150px" class="layui-form-label">
                                 <span class="x-red"></span>是否开启前台权限
                             </label>
@@ -904,7 +922,7 @@
                             </div> 
                             
                         </div>
-                         <div class="layui-form-item" pane>
+                        <div class="layui-form-item" pane>
                             <label for="autocheckmessage" style="width:150px" class="layui-form-label">
                                 <span class="x-red"></span>是否留言自动审核
                             </label>
@@ -1566,7 +1584,9 @@
 							</select>
                         </div>
                      
-						
+						<label style="width:150px" class="layui-form-label">
+                            <span class='x-red'>*</span>是否关闭
+                        </label>
 						<div  class="layui-input-inline">
 								<input type="radio" name="invite_award_open" value="0" title="关闭" {if($config['invite_award_open']==0)}checked{/if}>
 								<input type="radio" name="invite_award_open" value="1" title="开启" {if($config['invite_award_open']==1)}checked{/if}>

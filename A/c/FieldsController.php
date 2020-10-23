@@ -581,9 +581,9 @@ layui.use("laydate", function(){
 						foreach(explode('||',$data[$v['field']]) as $vv){
 							if($this->webconf['ispicsdes']==1){
 								$pic = explode('|',$vv);
-								$l.='<div class="upload-icon-img layui-input-inline" ><div class="upload-pre-item"><img src="'.$pic[0].'" class="img" width="200px" height="200px" ><input name="'.$v['field'].'_urls[]" type="text" class="layui-input"  value="'.$pic[0].'" /><input name="'.$v['field'].'_des[]" type="text" class="layui-input" placeholder="文字描述"  value="'.$pic[1].'" /><i  class="layui-icon delete_file" >&#xe640;</i></div></div>';
+								$l.='<div class="upload-icon-img layui-input-inline" ><div class="upload-pre-item"><img src="'.$pic[0].'" class="img" width="200px" height="200px" ><input name="'.$v['field'].'_urls[]" type="text" class="layui-input"  value="'.$pic[0].'" /><input name="'.$v['field'].'_des[]" type="text" class="layui-input" placeholder="文字描述"  value="'.$pic[1].'" /><a class="layui-btn layui-btn-sm layui-btn-radius layui-btn-danger delete_file">删除</a><a class="layui-btn layui-btn-sm layui-btn-radius imgorder " onclick="goleft(this)">左移</a><a class="layui-btn layui-btn-sm layui-btn-radius imgorder " onclick="goright(this)">右移</a></div></div>';
 							}else{
-								$l.='<div class="upload-icon-img layui-input-inline" ><div class="upload-pre-item"><img src="'.$vv.'" class="img" width="200px" height="200px" ><input name="'.$v['field'].'_urls[]" type="text" class="layui-input"  value="'.$vv.'" /><i  class="layui-icon delete_file" >&#xe640;</i></div></div>';
+								$l.='<div class="upload-icon-img layui-input-inline" ><div class="upload-pre-item"><img src="'.$vv.'" class="img" width="200px" height="200px" ><input name="'.$v['field'].'_urls[]" type="text" class="layui-input"  value="'.$vv.'" /><a class="layui-btn layui-btn-sm layui-btn-radius layui-btn-danger delete_file">删除</a><a class="layui-btn layui-btn-sm layui-btn-radius imgorder " onclick="goleft(this)">左移</a><a class="layui-btn layui-btn-sm layui-btn-radius imgorder " onclick="goright(this)">右移</a></div></div>';
 							}
 							
 						}
@@ -612,9 +612,9 @@ layui.use("laydate", function(){
 							layer.closeAll("loading"); //关闭loading
 							if(res.code==0){';
 							if($this->webconf['ispicsdes']==1){
-								$l.='$(".preview_'.$v['field'].'").append(\'<div class="upload-icon-img layui-input-inline" ><div class="upload-pre-item"><img src="\' + res.url + \'" class="img" width="200px" height="200px" ><input name="'.$v['field'].'_urls[]" type="text" class="layui-input"  value="\' + res.url + \'" /><input name="'.$v['field'].'_des[]" type="text" class="layui-input"  placeholder="文字描述" value="" /><i  class="layui-icon delete_file" >&#xe640;</i></div></div>\');';
+								$l.='$(".preview_'.$v['field'].'").append(\'<div class="upload-icon-img layui-input-inline" ><div class="upload-pre-item"><img src="\' + res.url + \'" class="img" width="200px" height="200px" ><input name="'.$v['field'].'_urls[]" type="text" class="layui-input"  value="\' + res.url + \'" /><input name="'.$v['field'].'_des[]" type="text" class="layui-input"  placeholder="文字描述" value="" /><a class="layui-btn layui-btn-sm layui-btn-radius layui-btn-danger delete_file">删除</a><a class="layui-btn layui-btn-sm layui-btn-radius imgorder " onclick="goleft(this)">左移</a><a class="layui-btn layui-btn-sm layui-btn-radius imgorder " onclick="goright(this)">右移</a></div></div>\');';
 							}else{
-								$l.='$(".preview_'.$v['field'].'").append(\'<div class="upload-icon-img layui-input-inline" ><div class="upload-pre-item"><img src="\' + res.url + \'" class="img" width="200px" height="200px" ><input name="'.$v['field'].'_urls[]" type="text" class="layui-input"  value="\' + res.url + \'" /><i  class="layui-icon delete_file" >&#xe640;</i></div></div>\');';
+								$l.='$(".preview_'.$v['field'].'").append(\'<div class="upload-icon-img layui-input-inline" ><div class="upload-pre-item"><img src="\' + res.url + \'" class="img" width="200px" height="200px" ><input name="'.$v['field'].'_urls[]" type="text" class="layui-input"  value="\' + res.url + \'" /><a class="layui-btn layui-btn-sm layui-btn-radius layui-btn-danger delete_file">删除</a><a class="layui-btn layui-btn-sm layui-btn-radius imgorder " onclick="goleft(this)">左移</a><a class="layui-btn layui-btn-sm layui-btn-radius imgorder " onclick="goright(this)">右移</a></div></div>\');';
 							}
 							
 							
@@ -798,9 +798,9 @@ layui.use("laydate", function(){
 						foreach(explode('||',$data[$v['field']]) as $vv){
 							if($this->webconf['ispicsdes']==1){
 								$pic = explode('|',$vv);
-								$l.='<div class="upload-icon-img layui-input-inline" ><div class="upload-pre-item"><input name="'.$v['field'].'_urls[]" type="text" class="layui-input"  value="'.$pic[0].'" /><input name="'.$v['field'].'_des[]" type="text" class="layui-input" placeholder="文字描述"  value="'.$pic[1].'" /><i  class="layui-icon delete_file" >&#xe640;</i></div></div>';
+								$l.='<div class="upload-icon-img layui-input-inline" ><div class="upload-pre-item"><input name="'.$v['field'].'_urls[]" type="text" class="layui-input"  value="'.$pic[0].'" /><input name="'.$v['field'].'_des[]" type="text" class="layui-input" placeholder="文字描述"  value="'.$pic[1].'" /><a class="layui-btn layui-btn-sm layui-btn-radius layui-btn-danger delete_file">删除</a><a class="layui-btn layui-btn-sm layui-btn-radius imgorder " onclick="goleft(this)">左移</a><a class="layui-btn layui-btn-sm layui-btn-radius imgorder " onclick="goright(this)">右移</a></div></div>';
 							}else{
-								$l.='<div class="upload-icon-img layui-input-inline" ><div class="upload-pre-item"><input name="'.$v['field'].'_urls[]" type="text" class="layui-input"  value="'.$vv.'" /><i  class="layui-icon delete_file" >&#xe640;</i></div></div>';
+								$l.='<div class="upload-icon-img layui-input-inline" ><div class="upload-pre-item"><input name="'.$v['field'].'_urls[]" type="text" class="layui-input"  value="'.$vv.'" /><a class="layui-btn layui-btn-sm layui-btn-radius layui-btn-danger delete_file">删除</a><a class="layui-btn layui-btn-sm layui-btn-radius imgorder " onclick="goleft(this)">左移</a><a class="layui-btn layui-btn-sm layui-btn-radius imgorder " onclick="goright(this)">右移</a></div></div>';
 							}
 							
 						}
@@ -829,9 +829,9 @@ layui.use("laydate", function(){
 							layer.closeAll("loading"); //关闭loading
 							if(res.code==0){';
 							if($this->webconf['ispicsdes']==1){
-								$l.='$(".preview_'.$v['field'].'").append(\'<div class="upload-icon-img layui-input-inline" ><div class="upload-pre-item"><input name="'.$v['field'].'_urls[]" type="text" class="layui-input"  value="\' + res.url + \'" /><input name="'.$v['field'].'_des[]" type="text" class="layui-input" placeholder="文字描述"  value="" /><i  class="layui-icon delete_file" >&#xe640;</i></div></div>\');';
+								$l.='$(".preview_'.$v['field'].'").append(\'<div class="upload-icon-img layui-input-inline" ><div class="upload-pre-item"><input name="'.$v['field'].'_urls[]" type="text" class="layui-input"  value="\' + res.url + \'" /><input name="'.$v['field'].'_des[]" type="text" class="layui-input" placeholder="文字描述"  value="" /><a class="layui-btn layui-btn-sm layui-btn-radius layui-btn-danger delete_file">删除</a><a class="layui-btn layui-btn-sm layui-btn-radius imgorder " onclick="goleft(this)">左移</a><a class="layui-btn layui-btn-sm layui-btn-radius imgorder " onclick="goright(this)">右移</a></div></div>\');';
 							}else{
-								$l.='$(".preview_'.$v['field'].'").append(\'<div class="upload-icon-img layui-input-inline" ><div class="upload-pre-item"><input name="'.$v['field'].'_urls[]" type="text" class="layui-input"  value="\' + res.url + \'" /><i  class="layui-icon delete_file" >&#xe640;</i></div></div>\');';
+								$l.='$(".preview_'.$v['field'].'").append(\'<div class="upload-icon-img layui-input-inline" ><div class="upload-pre-item"><input name="'.$v['field'].'_urls[]" type="text" class="layui-input"  value="\' + res.url + \'" /><a class="layui-btn layui-btn-sm layui-btn-radius layui-btn-danger delete_file">删除</a><a class="layui-btn layui-btn-sm layui-btn-radius imgorder " onclick="goleft(this)">左移</a><a class="layui-btn layui-btn-sm layui-btn-radius imgorder " onclick="goright(this)">右移</a></div></div>\');';
 							}
 							
 							$l.='

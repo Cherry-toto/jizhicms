@@ -97,7 +97,7 @@ class SysController extends CommonController
 		   }
 		   $ress = file_put_contents(APP_PATH.'Conf/config.php', '<?php return ' . var_export($config, true) . '; ?>');
 
-		   if($this->webconf['pc_html']!=$this->frparam('pc_html') || $this->webconf['mobile_html']!=$this->frparam('mobile_html')){
+		   if($this->webconf['pc_html']!=$this->frparam('pc_html',1) || $this->webconf['mobile_html']!=$this->frparam('mobile_html',1)){
 			   setCache('classtype',null);
 			   setCache('mobileclasstype',null);
 		   }

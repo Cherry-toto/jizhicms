@@ -134,6 +134,7 @@ select#paytype {
               <select name="paytypeselect" id="paytype">
               {if($webconf['isopenzfb'])}
               <option value="1">支付宝（需付：{$order['price']}）</option>
+              <option value="5">支付宝当面付（需付：{$order['price']}）</option>
               {/if}
               {if($webconf['isopenweixin'])}
               <option value="2">微信（需付：{$order['price']}）</option>

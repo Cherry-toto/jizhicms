@@ -1075,6 +1075,7 @@ INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`) VALUES ('1
 INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`) VALUES ('110','isregister','前台用户注册', '关闭前台注册后，前台无法进入注册页面','0','1');
 INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`) VALUES ('111','onlyinvite','仅邀请码注册', '开启后，必须通过邀请链接才能注册！','0','0');
 INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`) VALUES ('112','release_table','允许前台发布模块', '防止数据泄露,填写允许发布模块标识,留空表示不允许发布,多个表可用|分割','0','article|product');
+INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`) VALUES ('113','search_words','前台搜索的字段', '可以设置搜索表中的相关字段进行模糊查询,多个字段可用|分割','0','title');
 INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`) VALUES ('114','closehomevercode','前台验证码', '关闭后，登录注册不需要验证码','0','0');
 INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`) VALUES ('115','closeadminvercode','后台验证码', '关闭后，后台管理员登录不需要验证码','0','0');
 INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`) VALUES ('116','tag_table','TAG包含模型', '在tag列表上查询的相关模型,多个模型标识可用|分割,如：article|product','0','article|product');

@@ -249,7 +249,7 @@ class ExtmoldsController extends Controller
 						}
 						
 					}else{
-						if(M('customurl')->find(['aid'=>$this->frparam('id')])){
+						if(M('customurl')->find(['aid'=>$this->frparam('id'),'molds'=>$molds])){
 							M('customurl')->update(['tid'=>$data['tid'],'aid'=>$this->frparam('id')],['url'=>$data['ownurl'],'molds'=>$molds]);
 						}else{
 							M('customurl')->add(['molds'=>$molds,'tid'=>$data['tid'],'url'=>$data['ownurl'],'addtime'=>time(),'aid'=>$this->frparam('id')]);

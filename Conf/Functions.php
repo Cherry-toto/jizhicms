@@ -1629,7 +1629,7 @@ function deldir($dir) {
  * direct=1 中间开始裁剪  direct=0 左上角开始裁剪
  * debug=1 调试状态，每次请求都生成缓存 debug=0 会直接调用已生成的缩略图
  */
-function jzresize($src_image,$out_width = NULL, $out_height = NULL, $mode = 1, $out_image = NULL,  $direct = 0 ,$debug=1 , $img_quality = 90 ) {
+function jzresize($src_image,$out_width = NULL, $out_height = NULL, $mode = 1, $out_image = NULL,  $direct = 0 ,$debug=0 , $img_quality = 90 ) {
 	if(!is_dir('./cache/image')){
 		if(!mkdir('./cache/image',0777)){
 			exit('图片缓存文件夹不存在cache/image');
@@ -1701,44 +1701,31 @@ function jzresize($src_image,$out_width = NULL, $out_height = NULL, $mode = 1, $
 		$new_img_thumbnail_width = $out_width;
 		$new_img_thumbnail_height = $out_height;
 		
-							
 	}else{
 		//比例
-		if($width<$height){
-			$new_img_thumbnail_width = $height * $out_width / $out_height;
-			$new_img_thumbnail_height = $height; 
-			//x:y = w:h
-		}else{
-			$new_img_thumbnail_height = $width * $out_height / $out_width;
-			$new_img_thumbnail_width = $width;
-			
-			
-		}    
-		//$new_img_thumbnail_width = $new_img_thumbnail_width>$width ? $width : $new_img_thumbnail_width;
-		//$new_img_thumbnail_height = $new_img_thumbnail_height>$height ? $height : $new_img_thumbnail_height;
+		$new_img_thumbnail_width = $width;
+		$new_img_thumbnail_height = $width/($out_width/$out_height);
+		if($new_img_thumbnail_height>$height){
+			$new_img_thumbnail_height = $height;
+			$new_img_thumbnail_width = $height*($out_width/$out_height);
+		}
+		
+		
+		
 	}
-	
-	if ($width >= $new_img_thumbnail_width && $height >= $new_img_thumbnail_height) { // 长宽均满足
-        $thumbnail_w = $new_img_thumbnail_width;
-        $thumbnail_h = $new_img_thumbnail_height;
-    } else { // 有一边不满足
-        $scale1 = $width / $new_img_thumbnail_width;
-        $scale2 = $height / $new_img_thumbnail_height;
-        if ($scale1 < $scale2) { // 变化越多的一边取全值，其余一边等比例缩放
-            $thumbnail_w = $width;
-            $thumbnail_h = floor($height * ($width / $new_img_thumbnail_width));
-        } else {
-            $thumbnail_w = floor($new_img_thumbnail_width * ($height / $new_img_thumbnail_height));
-            $thumbnail_h = $height;
-        }
-    }
-	
-	
-	
 	if($direct==1){
 		//正中间裁剪
-		$start_x = $thumbnail_w / 2;
-		$start_y = $thumbnail_h / 2;
+
+		$start_x = ($width - $new_img_thumbnail_width)/2;
+		$start_y = ($height - $new_img_thumbnail_height)/2;
+		
+		if($height-$thumbnail_h<0){
+			$height = $height+$start_y;
+		}
+		if($width-$thumbnail_w<0){
+			$width = $width+$start_x;
+		}
+	
 	}else{
 		//左上角裁剪
 		$start_x = 0;
@@ -1753,7 +1740,7 @@ function jzresize($src_image,$out_width = NULL, $out_height = NULL, $mode = 1, $
 		imagefill($new_img, 0, 0, $color);
 		imagecolortransparent($new_img, $color);
 	}
-	imagecopyresampled($new_img, $img, 0, 0, $start_x, $start_y, $thumbnail_w, $thumbnail_h, $new_img_thumbnail_width, $new_img_thumbnail_height);
+	imagecopyresampled($new_img, $img, 0, 0, $start_x, $start_y, $thumbnail_w, $thumbnail_h, $width, $height);
 	
 	switch ($type) {
 		case 1:

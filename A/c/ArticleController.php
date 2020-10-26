@@ -354,7 +354,7 @@ class ArticleController extends CommonController
 						}
 						
 					}else{
-						if(M('customurl')->find(['aid'=>$this->frparam('id')])){
+						if(M('customurl')->find(['aid'=>$this->frparam('id'),'molds'=>'article'])){
 							M('customurl')->update(['tid'=>$data['tid'],'aid'=>$this->frparam('id')],['url'=>$data['ownurl'],'molds'=>'article']);
 						}else{
 							M('customurl')->add(['molds'=>'article','tid'=>$data['tid'],'url'=>$data['ownurl'],'addtime'=>time(),'aid'=>$this->frparam('id')]);

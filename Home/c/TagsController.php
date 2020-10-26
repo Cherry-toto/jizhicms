@@ -49,7 +49,7 @@ class TagsController extends CommonController
 			$page = new Page();
 			$data = $page->where($sql)->limit($limit)->page($this->frpage)->goCount($sqln)->goSql();
 			foreach($data as $k=>$v){
-				$data[$k]['url'] = gourl($v['id'],$v['htmlurl']);
+				$data[$k]['url'] = gourl($v,$v['htmlurl']);
 				$data[$k]['classname'] = $this->classtypedata[$v['tid']]['classname'];
 			}
 			$pages = $page->pageList(5,'/page/');

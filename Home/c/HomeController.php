@@ -866,7 +866,7 @@ class HomeController extends CommonController
 			$page = new Page();
 			$data = $page->where($sql)->setPage(['limit'=>$this->frparam('limit',0,15)])->page($this->frpage)->goCount($sqln)->goSql();
 			foreach($data as $k=>$v){
-				$data[$k]['url'] = gourl($v['id'],$v['htmlurl']);
+				$data[$k]['url'] = gourl($v,$v['htmlurl']);
 				$data[$k]['classname'] = $this->classtypedata[$v['tid']]['classname'];
 				$data[$k]['title'] = str_replace($word,'<span style="color:#f00;">'.$word.'</span>',$v['title']);
 			}

@@ -315,7 +315,7 @@ class ProductController extends CommonController
 						}
 						
 					}else{
-						if(M('customurl')->find(['aid'=>$this->frparam('id')])){
+						if(M('customurl')->find(['aid'=>$this->frparam('id'),'molds'=>'product'])){
 							M('customurl')->update(['tid'=>$data['tid'],'aid'=>$this->frparam('id')],['url'=>$data['ownurl'],'molds'=>'product']);
 						}else{
 							M('customurl')->add(['molds'=>'product','tid'=>$data['tid'],'url'=>$data['ownurl'],'addtime'=>time(),'aid'=>$this->frparam('id')]);

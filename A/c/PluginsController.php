@@ -648,8 +648,7 @@ class PluginsController extends CommonController
 			$plg = new \A\exts\PluginsController($this->frparam());
 			//转入插件内部处理
 			if($_POST){
-				
-				$plg->setconfigdata($this->frparam());//传入插件内部处理
+				$plg->setconfigdata($_POST);//传入插件内部处理
 				exit;
 				
 			}
@@ -691,6 +690,7 @@ class PluginsController extends CommonController
 				$action = $this->frparam('action',1);
 				// 自己获取这些信息
 				$remote_url  = urldecode($this->frparam('download_url',1));
+				$remote_url = strpos($remote_url,'?')!==false ? $remote_url.'&version='.$this->webconf['web_version'] : $remote_url.'?version='.$this->webconf['web_version'];
 				$file_size   = $this->frparam('filesize',1);
 				$tmp_path    = Cache_Path."/update_".$filepath.".zip";//临时下载文件路径
 				switch ($action) {
@@ -748,24 +748,11 @@ class PluginsController extends CommonController
 				        }
 				        break;
 				    case 'file-upzip':
-
 				    	if (!file_exists($tmp_path)) {//先判断待解压的文件是否存在
 						   JsonReturn(['code'=>1,'msg'=>'下载缓存文件不存在！']);
 						}
 						$path = APP_PATH.'A/exts/';
-						$zip = new \ZipArchive;
-						//$tmp_path = str_replace('/','\\',$tmp_path);
-						$res = $zip->open($tmp_path);
-						if ($res === TRUE) {
-							
-							//解压缩到test文件夹
-							$zip->extractTo(APP_PATH.'A/exts');
-							$zip->close();
-						} else {
-							
-							JsonReturn(['code'=>1,'msg'=>'解压失败：failed, code:' . $res]);
-						}
-					
+						$msg = $this->get_zip_originalsize($tmp_path,$path);
 						if($filepath=='jizhicmsupdate'){
 							$isinstall = true;
 						}else{
@@ -776,7 +763,7 @@ class PluginsController extends CommonController
 							}
 						}
 						
-						JsonReturn(['code'=>0,'msg'=>'解压完成！','isinstall'=>$isinstall]);
+						JsonReturn(['code'=>0,'msg'=>$msg,'isinstall'=>$isinstall]);
 				    	break;
 				    case 'plugin-install':
 				    	$dir = APP_PATH.'A/exts';
@@ -897,7 +884,53 @@ class PluginsController extends CommonController
 		}
 		JsonReturn(array('code'=>1,'msg'=>'参数错误,必须携带插件ID！'));
 	}
+	
+	function get_zip_originalsize($filename, $path) {
+	  //先判断待解压的文件是否存在
+	  if(!file_exists($filename)){
+		 //die("文件 $filename 不存在！");
+		 JsonReturn(['code'=>1,'msg'=>'文件'.$filename.'不存在！']);
+	  }
+	  $starttime = explode(' ',microtime()); //解压开始的时间
 
+	  //将文件名和路径转成windows系统默认的gb2312编码，否则将会读取不到
+	  //$filename = iconv("utf-8","gb2312",$filename);
+	  //$path = iconv("utf-8","gb2312",$path);
+	  //打开压缩包
+	  $resource = zip_open($filename);
+	  $i = 1;
+	  //遍历读取压缩包里面的一个个文件
+	  while ($dir_resource = zip_read($resource)) {
+		//如果能打开则继续
+		if (zip_entry_open($resource,$dir_resource)) {
+		  //获取当前项目的名称,即压缩包里面当前对应的文件名
+		  $file_name = $path.zip_entry_name($dir_resource);
+		  //以最后一个“/”分割,再用字符串截取出路径部分
+		  $file_path = substr($file_name,0,strrpos($file_name, "/"));
+		  //如果路径不存在，则创建一个目录，true表示可以创建多级目录
+		  if(!is_dir($file_path)){
+			mkdir($file_path,0777,true);
+		  }
+		  //如果不是目录，则写入文件
+		  if(!is_dir($file_name)){
+			//读取这个文件
+			$file_size = zip_entry_filesize($dir_resource);
+			//最大读取6M，如果文件过大，跳过解压，继续下一个
+			$file_content = zip_entry_read($dir_resource,$file_size);
+			file_put_contents($file_name,$file_content);
+		  }
+		  //关闭当前
+		  zip_entry_close($dir_resource);
+		}
+	  }
+	  //关闭压缩包
+	  zip_close($resource);
+	  $endtime = explode(' ',microtime()); //解压结束的时间
+	  $thistime = $endtime[0]+$endtime[1]-($starttime[0]+$starttime[1]);
+	  $thistime = round($thistime,3); //保留3为小数
+	  $msg = "解压完毕！本次解压花费：$thistime 秒。";
+	  return $msg;
+	}
 	
 
 	

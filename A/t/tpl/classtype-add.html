@@ -44,7 +44,7 @@
 			   <option value="0">顶级栏目</option>
 			   {foreach $classtypes as $v}
 			   {if($admin['classcontrol']==0 || $admin['isadmin']==1 || strpos($tids,','.$v['id'].',')!==false || $molds['iscontrol']==0)}
-			   <option {if($pid==$v['id'])}selected{/if}  value="{$v['id']}">{fun str_repeat('--', $v['level']), $v['classname']}</option>
+			   <option {if($pid==$v['id'])}selected{/if}  value="{$v['id']}">{fun str_repeat('--', $v['level'])}{$v['classname']}</option>
 			   {/if}
 			   {/foreach}
 			
@@ -91,7 +91,7 @@
 			
 			<div class="layui-form-item">
 				<label for="litpic" class="layui-form-label">
-					<span class="x-red">*</span>图片  
+					<span class="x-red"></span>图片  
 				</label>
 				
 				<div class="layui-input-inline">
@@ -116,7 +116,7 @@
                     </div>
 				 <div class="layui-form-item layui-form-text">
                     <label for="body" class="layui-form-label">
-                        <span class="x-red">*</span>内容
+                        <span class="x-red"></span>内容
                     </label>
                     <div class="layui-input-block" style="clear:both;" >
 					   {include="content"}
@@ -170,7 +170,7 @@
               <label for="htmlurl" class="layui-form-label">
                   <span class="x-red"></span>URL命名
               </label>
-              <div class="layui-input-inline">
+              <div class="layui-input-block">
                   <input type="text" placeholder="请填写文件名，如:index，不填请留空" style="width:350px"  id="htmlurl" name="htmlurl" value="" autocomplete="off" class="layui-input">
               </div>
               <div class="layui-form-mid layui-word-aux">
@@ -220,7 +220,7 @@
               <label for="gourl" class="layui-form-label">
                   <span class="x-red"></span>栏目外链
               </label>
-              <div class="layui-input-inline">
+              <div class="layui-input-block">
                   <input type="text" placeholder="栏目外链，如:htt://xxx.com/abc，不填请留空" style="width:350px"  id="gourl" name="gourl" value="" autocomplete="off" class="layui-input">
               </div>
               <div class="layui-form-mid layui-word-aux">
@@ -231,7 +231,7 @@
 					<label for="ishome" class="layui-form-label">
 						<span class="x-red"></span>发布显示
 					</label>
-					<div class="layui-input-inline">
+					<div class="layui-input-block">
 						<input type="radio" name="ishome" value="0" title="不显示" >
 						<input type="radio" name="ishome" value="1" title="显示" checked>
 					</div>
@@ -253,7 +253,7 @@
 				<label for="iscover" class="layui-form-label">
 					<span class="x-red"></span>模板覆盖
 				</label>
-				<div class="layui-input-inline">
+				<div class="layui-input-block">
 					<input type="radio" name="iscover" value="1" title="覆盖">
 					<input type="radio" name="iscover" value="0" title="不覆盖" checked >
 				</div>
@@ -265,7 +265,7 @@
 			
 			<div class="layui-form-item">
 				<label for="gid" class="layui-form-label">
-					<span class="x-red">*</span>访问限制
+					<span class="x-red"></span>访问限制
 				</label>
 				<div class="layui-input-inline">
 					<select name="gid" id="gid" >

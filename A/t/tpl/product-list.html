@@ -15,10 +15,14 @@
             <a class="layui-btn layui-btn-small" style="line-height:1.6em;margin-top:3px;float:right"  href="javascript:location.replace(location.href);" title="刷新"><i class="iconfont" style="line-height:30px">&#xe6aa;</i></a>
         </div>
         <div class="x-body">
-         <div class="layui-collapse">
+		
+		<div class="layui-card">
+			<div class="layui-card-body">
+			
+			 <div class="layui-collapse">
 		    <div class="layui-colla-item">
 			<h2 class="layui-colla-title">搜索</h2>
-				<div class="layui-colla-content layui-show">
+				<div class="layui-colla-content">
 				<div class="layui-row">
 					<form class="layui-form layui-col-md12 x-so" method="get" id="myform">
 					<div class="layui-input-inline">
@@ -45,7 +49,7 @@
 					  <option value="">请选择栏目</option>
 					   {foreach $classtypes as $v}
 					   {if($v['molds']=='product')}
-					   <option {if($tid==$v['id'])} selected="selected" {/if}value="{$v['id']}">{fun str_repeat('--', $v['level']), $v['classname']}</option>
+					   <option {if($tid==$v['id'])} selected="selected" {/if}value="{$v['id']}">{fun str_repeat('--', $v['level'])}{$v['classname']}</option>
 					   {/if}
 					   {/foreach}
 					
@@ -62,27 +66,32 @@
 		  
 		<table class="layui-hide" lay-data="{id: 'jizhi_table'}" id="jizhi_table" lay-filter="jizhi_table"></table>
 		<input id="select_data" type="hidden" value="" />
+			
+			</div>
+		</div>
+		
+        
 		<script type="text/html" id="rightbar">
 		{if(checkAction('Product/editproduct'))}
-			<button class="layui-btn layui-btn-xs" lay-event="edit"><i class="layui-icon">&#xe642;</i>编辑</button>
+			<a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>
 		{/if}
 		
-			<button class="layui-btn layui-btn-xs layui-btn-normal" lay-event="view"><i class="layui-icon">&#xe615;</i>预览</button>
+			<a class="layui-btn layui-btn-xs layui-btn-normal" lay-event="view">预览</a>
 		{if(checkAction('Product/deleteproduct'))}
-			<button class="layui-btn layui-btn-xs layui-btn-danger" lay-event="delete"><i class="layui-icon">&#xe640;</i>删除</button>
+			<a class="layui-btn layui-btn-xs layui-btn-danger" lay-event="delete">删除</a>
 		{/if}
 		{if(checkAction('Product/copyproduct'))}
-			<button class="layui-btn layui-btn-xs layui-btn-warm" lay-event="copy"><i class="layui-icon">&#xe655;</i>复制</button>
+			<a class="layui-btn layui-btn-xs layui-btn-warm" lay-event="copy">复制</a>
 		{/if}
 			
 		</script>
 		<script type="text/html" id="toolbar">
 		 <div class="layui-btn-container" style="font-size:15px;">
 		 {if(checkAction('Product/deleteAll'))}
-			   <button class="layui-btn layui-btn-danger" onclick="delAll()"><i class="layui-icon">&#xe640;</i>批量删除</button>
+			   <a class="layui-btn layui-btn-danger layui-btn-sm " onclick="delAll()">批量删除</a>
 		 {/if}
 		 {if(checkAction('Product/copyAll'))}
-			   <button class="layui-btn layui-btn-warm" onclick="copyAll()"><i class="layui-icon">&#xe655;</i>批量复制</button>
+			   <a class="layui-btn layui-btn-warm layui-btn-sm " onclick="copyAll()">批量复制</a>
 		 {/if}
 		 {if(checkAction('Product/changeType'))}
 			   <div class="layui-input-inline" style="margin-right: 10px;margin-bottom: 10px;">
@@ -90,7 +99,7 @@
 			   <option value="0">批量修改栏目</option>
 			   {foreach $classtypes as $v}
 			   {if($v['molds']=='product')}
-			   <option   value="{$v['id']}">{fun str_repeat('--', $v['level']), $v['classname']}</option>
+			   <option   value="{$v['id']}">{fun str_repeat('--', $v['level'])}{$v['classname']}</option>
 			   {/if}
 			   {/foreach}
 			   </select>
@@ -118,7 +127,7 @@
 			   </div>
 		 {/if}
 		    {if(checkAction('Product/addproduct'))}
-			   <button class="layui-btn" onclick="x_admin_show('新增{$molds['name']}','{fun U('Product/addproduct')}')"><i class="layui-icon">&#xe608;</i>新增</button>
+			   <a class="layui-btn layui-btn-sm" onclick="x_admin_show('新增{$molds['name']}','{fun U('Product/addproduct')}')">新增{$molds['name']}</a>
 			{/if}  
 			
 		 </div>
@@ -165,7 +174,7 @@
 			  
 			  table.render({
 				elem: '#jizhi_table'
-				,height: 650
+				,height: 700
 				,cellMinWidth: 80
 				,url: window.location.href+'?ajax=1' //数据接口
 				,page: true //开启分页
@@ -186,19 +195,22 @@
 				  
 				}
 				,cols: [[ //表头
-				  {field: 'id', title: 'ID', width:50, sort: true, fixed:'left'}
+				  {field: 'id', title: 'ID', width:60}
 				  ,{type:'checkbox'}
-				  ,{field: 'orders', title: '排序',width: 100, edit:'text',sort: true}
+				  
+				  ,{field: 'new_litpic', title: '缩略图', width:150,templet: '#litpic'} 
+				  ,{field: 'title', title: '标题', edit:'text'}
 				  {if($molds['isclasstype']==1)}
-				  ,{field: 'new_tid', title: '栏目', sort: true}
+				  ,{field: 'new_tid', title: '栏目'}
 				  {/if}
-				  ,{field: 'tuijian', title: '推荐', templet: '#tuijian'}
-				  ,{field: 'title', title: '标题', edit:'text', sort: true}
-				  ,{field: 'new_litpic', title: '缩略图',templet: '#litpic'} 
-				  {foreach $fields_list as $v},{field: '{$v['field']}', title: '{$v['fieldname']}'}{/foreach}
-				  ,{field: 'new_isshow', title: '审核', width: 100,templet: '#isshow'}
-				  ,{field: 'new_addtime', title: '时间'}
-				  ,{field: '', title: '操作',width:280, toolbar: '#rightbar', fixed:'right'}
+				  {foreach $fields_list as $v},{field: '{$v['field']}', title: '{$v['fieldname']}' {if($v['fieldtype']==1 || $v['fieldtype']==2)},edit:'text'{/if} }{/foreach}
+				  ,{field: 'orders', title: '排序', width: 60, edit:'text'}
+				  ,{field: 'tuijian', title: '推荐',width: 60, templet: '#tuijian'}
+				  ,{field: 'new_isshow', title: '审核',width:100, templet: '#isshow'}
+				  ,{field: 'new_addtime', width:160,title: '时间'}
+				  {if(checkAction('Article/editarticle') || checkAction('Article/deletearticle') || checkAction('Article/copyarticle'))}
+				  ,{field: '', title: '操作',width:200, toolbar: '#rightbar', fixed:'right'}
+				  {/if}
 				 
 				]]
 			  });

@@ -1301,17 +1301,32 @@ function checkCollect($tid=0,$id=0){
 }
 //检测是否点赞
 function checkLikes($tid=0,$id=0){
-	if($tid && $id && isset($_SESSION['member'])){
-		if(strpos($_SESSION['member']['likes'],'||'.$tid.'-'.$id.'||')!==false){
-			return true;
+	if(isset($_SESSION['member'])){
+		if($tid && $id){
+			if(strpos($_SESSION['member']['likes'],'||'.$tid.'-'.$id.'||')!==false){
+				return true;
+			}else{
+				return false;
+			}
+			
+			
 		}else{
 			return false;
 		}
-		
-		
 	}else{
-		return false;
+		if($tid && $id && isset($_SESSION['likes'])){
+			if(in_array($tid.'-'.$id,$_SESSION['likes'])){
+				return true;
+			}else{
+				return false;
+			}
+			
+			
+		}else{
+			return false;
+		}
 	}
+	
 	
 }
 
@@ -1600,6 +1615,192 @@ function deldir($dir) {
 	} else {
 		return false;
 	}
+}
+
+
+/**
+ * 图片压缩裁剪
+ * src_image 原图链接  根目录绝对链接，支持远程图片
+ * out_image 生成图链接  写文件名即可
+ * mode=1 按尺寸裁剪 mode=0 按比例裁剪
+ * out_width 生成的宽（比例）
+ * out_height 生成的高（比例）
+ * img_quality 压缩比例（PNG无法压缩）
+ * direct=1 中间开始裁剪  direct=0 左上角开始裁剪
+ * debug=1 调试状态，每次请求都生成缓存 debug=0 会直接调用已生成的缩略图
+ */
+function jzresize($src_image,$out_width = NULL, $out_height = NULL, $mode = 1, $out_image = NULL,  $direct = 0 ,$debug=0 , $img_quality = 90 ) {
+	if(!is_dir('./cache/image')){
+		if(!mkdir('./cache/image',0777)){
+			exit('图片缓存文件夹不存在cache/image');
+		}		
+	}
+	// 检查原图是否存在
+	if(!file_exists('.'.$src_image)){
+		// 检查是否远程图片,并下载
+		if(strpos($src_image,'http')!==false){
+			  $path = 'cache/image';
+			  $ch = curl_init();
+			  curl_setopt($ch, CURLOPT_URL, $src_image);
+			  curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+			  curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 30);
+			  $file = curl_exec($ch);
+			  curl_close($ch);
+			  if($file==false){
+				  exit('无法下载！');
+			  }
+			  $filename = pathinfo($src_image, PATHINFO_BASENAME);
+			  $resource = fopen($path . $filename, 'a');
+			  fwrite($resource, $file);
+			  fclose($resource);
+			  $src_image = '/'.$path . $filename;
+		}else{
+			return '错误链接';//返回空，避免程序停止执行
+		}
+		
+	}
+	// 检查生成图片是否存在
+	if(file_exists('./'.$out_image) && !$debug){
+		return './'.$out_image;
+	}
+	
+	// 处理图片名称
+	if(!$out_image){
+		
+		$imageinfo = pathinfo($src_image);
+		$filename = str_replace('.'.$imageinfo['extension'],'_'.$out_width.'x'.$out_height.'.'.$imageinfo['extension'],$imageinfo['basename']);
+		$out_image = 'cache/image/'.$filename;
+	}
+	
+	$out_image = './'.$out_image;
+	// 将图片拷贝到缓存目录
+	if(!copy('.'.$src_image, $out_image)){
+		return '';
+	}
+	$src_image = $out_image;
+	
+	// 获取图片属性
+	list($width, $height, $type, $attr) = getimagesize($src_image);
+	switch ($type) {
+		case 1:
+			$img = imagecreatefromgif($src_image);
+			break;
+		case 2:
+			$img = imagecreatefromjpeg($src_image);
+			break;
+		case 3:
+			$img = imagecreatefrompng($src_image);
+			break;
+	}
+	
+	$thumbnail_w = $width;
+	$thumbnail_h = $height;
+	// 压缩形式
+	if($mode==1){
+		//尺寸
+		$new_img_thumbnail_width = $out_width;
+		$new_img_thumbnail_height = $out_height;
+		
+	}else{
+		//比例
+		$new_img_thumbnail_width = $width;
+		$new_img_thumbnail_height = $width/($out_width/$out_height);
+		if($new_img_thumbnail_height>$height){
+			$new_img_thumbnail_height = $height;
+			$new_img_thumbnail_width = $height*($out_width/$out_height);
+		}
+		
+		
+		
+	}
+	if($direct==1){
+		//正中间裁剪
+
+		$start_x = ($width - $new_img_thumbnail_width)/2;
+		$start_y = ($height - $new_img_thumbnail_height)/2;
+		
+		if($height-$thumbnail_h<0){
+			$height = $height+$start_y;
+		}
+		if($width-$thumbnail_w<0){
+			$width = $width+$start_x;
+		}
+	
+	}else{
+		//左上角裁剪
+		$start_x = 0;
+		$start_y = 0;
+	}
+	
+	$new_img = imagecreatetruecolor($new_img_thumbnail_width, $new_img_thumbnail_height); // 创建画布
+															  
+	// 创建透明画布,避免黑色
+	if ($type == 1 || $type == 3) {
+		$color = imagecolorallocate($new_img, 255, 255, 255);
+		imagefill($new_img, 0, 0, $color);
+		imagecolortransparent($new_img, $color);
+	}
+	imagecopyresampled($new_img, $img, 0, 0, $start_x, $start_y, $thumbnail_w, $thumbnail_h, $width, $height);
+	
+	switch ($type) {
+		case 1:
+			imagegif($new_img, $out_image, $img_quality);
+			break;
+		case 2:
+			imagejpeg($new_img, $out_image, $img_quality);
+			break;
+		case 3:
+			imagepng($new_img, $out_image); 
+			break;
+		default:
+			imagejpeg($new_img, $out_image, $img_quality);
+	}
+	imagedestroy($new_img);
+	imagedestroy($img);
+	
+	
+	return $out_image;
+}
+
+function jzcachedata($field){
+	$result = getCache('jzcache_'.$field);
+	if(!$result){
+		$res = M('cachedata')->find(['field'=>$field]);
+		
+		if($res['isall'] && $res['tid']){
+			if(isset($_SESSION['terminal'])){
+				$classtypedata = $_SESSION['terminal']=='mobile' ? classTypeDataMobile() : classTypeData();
+			}else{
+				$classtypedata = (isMobile() && $webconf['iswap']==1)?classTypeDataMobile():classTypeData();
+			}
+			foreach($classtypedata as $k=>$v){
+				$classtypedata[$k]['children'] = get_children($v,$classtypedata);
+			}
+		}
+		
+		
+		$tid = $res['tid'] ? ($res['isall']==1 ? ' and tid in ('.implode(',',$classtypedata[$res['tid']]['children']['ids']).') ' : ' and tid='.$res['tid']) : '';
+		$sqls = $res['sqls'] ? ' and '.$res['sqls'] : '';
+		$orderby = $res['orders'] ? ' order by '.$res['orders'] : '';
+		$limit = $res['limits'] ? ' limit '.$res['limits'] : '';
+		if($tid || $sqls){
+			$where = ' where 1=1 '.$tid.htmlspecialchars_decode($sqls,ENT_QUOTES);
+		}else{
+			$where = '';
+		}
+		$sql = "select * from ".DB_PREFIX.$res['molds'].$where.$orderby.$limit;
+		$result = M()->findSql($sql);
+		if($result){
+			foreach($result as $kk=>$vv){
+				if(isset($vv['htmlurl'])){
+					$result[$kk]['url'] = gourl($vv,$vv['htmlurl']);
+				}
+			}
+		}
+		$time = $res['times']*60+time();
+		setCache('jzcache_'.$res['field'],$result,$time);
+	}
+	return $result;
 }
 
 //引入扩展方法文件

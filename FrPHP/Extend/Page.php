@@ -53,12 +53,10 @@ namespace FrPHP\Extend;
 		
 		
 		
-		public function __construct($table){
+		public function __construct($table=''){
 			
 			$this->table = $table;
-			if(!$table){
-				Error_msg('缺少表对象！');
-			}
+
 		}
 		
 		
@@ -128,7 +126,7 @@ namespace FrPHP\Extend;
             
 		}
 		
-		public function pageList($pv=3,$sep=false){
+		public function pageList($pv=5,$sep=false){
 			/**
 				首页url  		home
 				上一页url		prev
@@ -172,34 +170,20 @@ namespace FrPHP\Extend;
 			}
 			
 			$listpage['home'] = $this->url.$file_ext;
-			for($i=1;$i<=$this->allpage;$i++){
-				if($this->allpage >= 2*$this->pv){
-					//需要间隔
-					$start = $this->currentPage+$this->pv;
-					$end = $this->currentPage-$this->pv;
-					if($i>=$end && $i<=$start){
-						if($i==$this->currentPage){
-							$list.='<li class="active" ><a >'.$this->currentPage.'</a></li>';
-							$listpage['current'] = $this->url.$this->sep.$i.$file_ext;
-							$listpage['current_num'] = $this->currentPage;
-						}else{
-							$list .= '<li><a href="'.$this->url.$this->sep.$i.$file_ext.'" data-page="'.$i.'">'.$i.'</a></li>';
-							
-						}
-						
-						$listpage['list'][] = array('url'=>$this->url.$this->sep.$i.$file_ext,'num'=>$i);
-					}
+			$start = $this->currentPage-$this->pv;
+			$start = $start<1 ? 1 : $start;
+			$end = $this->currentPage+$this->pv;
+			$end = $end>$this->allpage ? $this->allpage : $end;
+			while($start<=$end){
+				if($start==$this->currentPage){
+					$list.='<li class="active" ><a >'.$this->currentPage.'</a></li>';
+					$listpage['current'] = $this->url.$this->sep.$start.$file_ext;
+					$listpage['current_num'] = $this->currentPage;
 				}else{
-					if($i==$this->currentPage){
-						$list.='<li class="active" ><a >'.$this->currentPage.'</a></li>';
-						$listpage['current'] = $this->url.$this->sep.$i.$file_ext;
-						$listpage['current_num'] = $this->currentPage;
-					}else{
-						$list .= '<li><a href="'.$this->url.$this->sep.$i.$file_ext.'" data-page="'.$i.'">'.$i.'</a></li>';
-						
-					}
-					$listpage['list'][] = array('url'=>$this->url.$this->sep.$i.$file_ext,'num'=>$i);
+					$list .= '<li><a href="'.$this->url.$this->sep.$start.$file_ext.'" data-page="'.$start.'">'.$start.'</a></li>';
 				}
+				$listpage['list'][] = array('url'=>$this->url.$this->sep.$start.$file_ext,'num'=>$start);
+				$start++;
 			}
 			$listpage['allpage'] = $this->allpage;
 			
@@ -346,7 +330,36 @@ namespace FrPHP\Extend;
 			return $this->datalist;
 		}
 		
+		// SQL处理
+		public function goSql(){
+			if($this->currentPage!=1){
+				$limitsql = (($this->limit*($this->currentPage-1)) - ($this->limit_t)).','.$this->limit;
+				//1-0:1  2-2:3
+			}else{
+				if($this->limit_t!=0){
+					$limitsql = $this->limit_t.','.$this->limit;
+				}else{
+					$limitsql = $this->limit;
+				}
+				
+			}
+			$orderby = $this->order ? ' order by '.$this->order : '';
+			$limit = ' limit '.$limitsql;
+			$sql = $this->sql.' '.$orderby.' '.$limit;
+			$this->datalist = M()->findSql($sql);
+			$this->limit = $this->limit;
+
+			$allpage = ceil($this->sum/$this->limit);
+			if($allpage==0){$allpage=1;}
+			$this->allpage = $allpage;
+			return $this->datalist;
+		}
 		
+		public function goCount($sql){
+			$n = M()->findSql($sql);
+			$this->sum = count($n);
+			return $this;
+		}
 		
 		
 		

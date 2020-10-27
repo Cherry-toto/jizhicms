@@ -282,7 +282,141 @@
                                 <button type="button" lay-filter="del" data="custom_'.$v['field'].'"  lay-submit="" class="layui-btn layui-btn-danger">删除</button>
                              </div>[  '.$v['field'].'  ]';
                              }
-                            echo '</div>';
+                          
+                            break;
+							case 5:
+                            echo '<div class="layui-form-item" id="custom_'.$v['field'].'">
+                                    <label style="width:150px" class="layui-form-label">
+                                        <span class=\'x-red\'>*</span>'.$v['title'].'
+                                    </label>
+                                    <div  class="layui-inline">
+                                       
+                                      <input name="'.$v['field'].'" type="text" class="layui-input" id="'.$v['field'].'" value="'.$v['data'].'" />
+                                    </div>
+                                     <div class="layui-inline">
+                                         
+                                         
+                                          <button type="button" class="layui-btn" id="LAY_'.$v['field'].'_upload">
+                                              <i class="layui-icon">&#xe67c;</i>上传文件
+                                          </button>
+                                     </div>';
+                            if($admin['gid']==1){
+                                echo     '<div class="layui-inline">
+                                        <button type="button" lay-filter="del" data="custom_'.$v['field'].'"  lay-submit=""  class="layui-btn layui-btn-danger">删除</button>
+                                     </div>[  '.$v['field'].'  ]';
+                            }
+                                echo    '</div>
+                        
+                        <script>
+                
+                        layui.use("upload", function(){
+                              var upload_'.$v['field'].' = layui.upload;
+                               
+                              //执行实例
+                              var uploadInst = upload_'.$v['field'].'.render({
+                                elem: "#LAY_'.$v['field'].'_upload" //绑定元素
+                                ,url: "'.U('Common/uploads').'" //上传接口
+                                ,accept:"file"
+								,exts: "'.$this->webconf['fileType'].'"
+                                ,data:{molds:"sysconfig"}
+                                ,done: function(res){
+                                  
+                                    if(res.code==0){
+                                        
+                                         $("#'.$v['field'].'").val(res.url);
+                                    }else{
+                                         layer.alert(res.error, {icon: 5});
+                                    }
+                                }
+                                ,error: function(){
+                                  //请求异常回调
+                                  layer.alert("上传异常！");
+                                }
+                              });
+                            });
+                        </script>';
+                            
+                            break;
+							case 6:
+							echo '<div  class="layui-form-item">
+								<label style="width:150px"  class="layui-form-label">
+									<span class="x-red"></span>'.$v['title'].'
+								</label>
+								<div  class="layui-input-inline">
+								<select name="'.$v['field'].'" id="'.$v['field'].'" class="layui-btn layui-btn-normal">
+								<option value="1" ';
+								if($v['data']==1){
+									echo 'selected';
+								}
+								echo '>开启</option>
+								<option value="0" ';
+								if($v['data']==0){
+									echo 'selected';
+								}
+								echo '>关闭</option>
+								</select>
+								</div>';
+								if($admin['gid']==1){
+								echo '<div class="layui-inline">
+                                <button type="button" lay-filter="del" data="custom_'.$v['field'].'"  lay-submit="" class="layui-btn layui-btn-danger">删除</button>
+								</div>[  '.$v['field'].'  ]';
+								}
+								
+							echo '</div>';
+                            break;
+							case 7:
+							echo '<div  class="layui-form-item">
+								<label style="width:150px"  class="layui-form-label">
+									<span class="x-red"></span>'.$v['title'].'
+								</label>
+								<div  class="layui-input-inline">
+								<select name="'.$v['field'].'" id="'.$v['field'].'" class="layui-btn layui-btn-normal">
+								<option value="1" ';
+								if($v['data']==1){
+									echo 'selected';
+								}
+								echo '>是</option>
+								<option value="0" ';
+								if($v['data']==0){
+									echo 'selected';
+								}
+								echo '>否</option>
+								</select>
+								</div>';
+							if($admin['gid']==1){
+								echo '<div class="layui-inline">
+                                <button type="button" lay-filter="del" data="custom_'.$v['field'].'"  lay-submit="" class="layui-btn layui-btn-danger">删除</button>
+								</div>[  '.$v['field'].'  ]';
+								}
+								
+							echo '</div>';
+                            break;
+							case 8:
+								echo '<div  class="layui-form-item">
+									<label style="width:150px"  class="layui-form-label">
+										<span class="x-red"></span>'.$v['title'].'
+									</label>
+									<div  class="layui-input-inline">
+									<select name="'.$v['field'].'" id="'.$v['field'].'" class="layui-btn layui-btn-normal">
+									<option value="0" >不选</option>';
+								foreach($classtypetree as $vv){
+									if($vv['id']==$v['data']){
+									echo '<option selected value="'.$vv['id'].'">'.str_repeat('--', $vv['level']).$vv['classname'].'</option>';
+									}else{
+									echo '<option value="'.$vv['id'].'">'.str_repeat('--', $vv['level']).$vv['classname'].'</option>';
+									}
+									
+								}
+								
+								echo '</select>
+									</div>';
+									if($admin['gid']==1){
+									echo '<div class="layui-inline">
+									<button type="button" lay-filter="del" data="custom_'.$v['field'].'"  lay-submit="" class="layui-btn layui-btn-danger">删除</button>
+									</div>[  '.$v['field'].'  ]';
+									}
+									
+								echo '</div>';
                             break;
                             
                         }
@@ -314,6 +448,10 @@
 									<option value="2">单行文本</option>
 									<option value="3">多行文本</option>
 									<option value="4">编辑器</option>
+									<option value="5">文件上传</option>
+									<option value="6">下拉开启关闭选项</option>
+									<option value="7">下拉是否选项</option>
+									<option value="8">栏目选项</option>
 									
 									</select>
 									
@@ -571,7 +709,7 @@
                                 class="layui-input">
                             </div>
 							<div class="layui-form-mid layui-word-aux">
-                           0代表不限，单位Kb
+                           0代表不限，单位b
                             </div> 
                         </div>
                         
@@ -722,14 +860,28 @@
                         </div>
                         
                         
-                        
+                        <div  class="layui-form-item">
+                            <label  style="width:150px"  class="layui-form-label">
+                                前台搜索的字段
+                            </label>
+                            <div  style="margin-left: 150px;"   class="layui-input-block">
+                                <input type="text" name="search_words" value="{$config['search_words']}" autocomplete="off" placeholder=""
+                                class="layui-input">
+                            </div>
+							<div class="layui-form-mid layui-word-aux">
+                                可以设置搜索表中的相关字段进行模糊查询,多个字段可用|分割,如：title|body 
+                            </div>
+                        </div>
                         <div  class="layui-form-item">
                             <label  style="width:150px"  class="layui-form-label">
                                 允许前台搜索的表
                             </label>
                             <div  style="margin-left: 150px;"   class="layui-input-block">
-                                <input type="text" name="search_table" value="{$config['search_table']}" autocomplete="off" placeholder="防止数据泄露,填写允许搜索的表名,留空表示不允许搜索,多个表可用|分割,如：article|product "
+                                <input type="text" name="search_table" value="{$config['search_table']}" autocomplete="off" placeholder=""
                                 class="layui-input">
+                            </div>
+							<div class="layui-form-mid layui-word-aux">
+                                 防止数据泄露,填写允许搜索的表名,留空表示不允许搜索,多个表可用|分割,如：article|product
                             </div>
                         </div>
                         
@@ -738,12 +890,26 @@
                                 允许前台发布模块
                             </label>
                             <div  style="margin-left: 150px;"   class="layui-input-block">
-                                <input type="text" name="release_table" value="{$config['release_table']}" autocomplete="off" placeholder="防止数据泄露,填写允许发布模块标识,留空表示不允许发布,多个表可用|分割,如：article|product "
+                                <input type="text" name="release_table" value="{$config['release_table']}" autocomplete="off" placeholder=""
                                 class="layui-input">
                             </div>
+							<div class="layui-form-mid layui-word-aux">
+                                防止数据泄露,填写允许发布模块标识,留空表示不允许发布,多个表可用|分割,如：article|product 
+                            </div>
                         </div>
-						
-                         <div class="layui-form-item" pane>
+						<div  class="layui-form-item">
+                            <label  style="width:150px"  class="layui-form-label">
+                                TAG包含模型
+                            </label>
+                            <div  style="margin-left: 150px;"   class="layui-input-block">
+                                <input type="text" name="tag_table" value="{$config['tag_table']}" autocomplete="off" placeholder=""
+                                class="layui-input">
+                            </div>
+							<div class="layui-form-mid layui-word-aux">
+                                在tag列表上查询的相关模型,多个模型标识可用|分割,如：article|product 
+                            </div>
+                        </div>
+                        <div class="layui-form-item" pane>
                             <label for="isopenhomepower" style="width:150px" class="layui-form-label">
                                 <span class="x-red"></span>是否开启前台权限
                             </label>
@@ -756,7 +922,7 @@
                             </div> 
                             
                         </div>
-                         <div class="layui-form-item" pane>
+                        <div class="layui-form-item" pane>
                             <label for="autocheckmessage" style="width:150px" class="layui-form-label">
                                 <span class="x-red"></span>是否留言自动审核
                             </label>
@@ -782,6 +948,36 @@
                             </div>
                             <div class="layui-form-mid layui-word-aux">
                              开启后评论自动审核（显示）
+                            </div> 
+                            
+                            
+                        </div>
+						<div class="layui-form-item" pane>
+                            <label for="closehomevercode" style="width:150px" class="layui-form-label">
+                                <span class="x-red"></span>前台验证码
+                            </label>
+                            <div  style="margin-left: 150px;" class="layui-input-inline">
+                                <input type="radio" name="closehomevercode" value="1" title="开启" {if($config['closehomevercode']==1)}checked{/if}>
+								<input type="radio" name="closehomevercode" value="0" title="关闭" {if($config['closehomevercode']==0)}checked{/if}>
+                                
+                            </div>
+                            <div class="layui-form-mid layui-word-aux">
+                            关闭后，登录注册不需要验证码
+                            </div> 
+                            
+                            
+                        </div>
+						<div class="layui-form-item" pane>
+                            <label for="closeadminvercode" style="width:150px" class="layui-form-label">
+                                <span class="x-red"></span>后台验证码
+                            </label>
+                            <div  style="margin-left: 150px;" class="layui-input-inline">
+                                <input type="radio" name="closeadminvercode" value="1" title="开启" {if($config['closeadminvercode']==1)}checked{/if}>
+								<input type="radio" name="closeadminvercode" value="0" title="关闭" {if($config['closeadminvercode']==0)}checked{/if}>
+                                
+                            </div>
+                            <div class="layui-form-mid layui-word-aux">
+                            关闭后，后台管理员登录不需要验证码
                             </div> 
                             
                             
@@ -1388,7 +1584,9 @@
 							</select>
                         </div>
                      
-						
+						<label style="width:150px" class="layui-form-label">
+                            <span class='x-red'>*</span>是否关闭
+                        </label>
 						<div  class="layui-input-inline">
 								<input type="radio" name="invite_award_open" value="0" title="关闭" {if($config['invite_award_open']==0)}checked{/if}>
 								<input type="radio" name="invite_award_open" value="1" title="开启" {if($config['invite_award_open']==1)}checked{/if}>

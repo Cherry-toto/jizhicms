@@ -57,7 +57,7 @@
                     <label for="isshow" class="layui-form-label">
                         <span class="x-red"></span>是否显示
                     </label>
-                    <div class="layui-input-inline">
+                    <div class="layui-input-block">
                         <input type="radio" name="isshow" value="0" title="不显示">
 						<input type="radio" name="isshow" value="1" title="显示" checked>
                     </div>
@@ -104,7 +104,7 @@
 				
 				
                 //发异步，把数据提交给php
-				$.post("{fun U('Extmolds/addmolds',array('molds'=>$molds['biaoshi']))}",data.field,function(r){
+				$.post("{fun U('Links/addlinks',array('molds'=>$molds['biaoshi']))}",data.field,function(r){
 					//console.log(r);return false;
 					var r = JSON.parse(r);
 					if(r.code==0){
@@ -113,7 +113,7 @@
 						}, function(){
 						   
 						   {if($webconf['admintpl']=='tpl')}
-						   window.location.href="{fun U('Extmolds/index',['molds'=>$molds['biaoshi']])}";
+						   window.location.href="{fun U('Links/index',['molds'=>$molds['biaoshi']])}";
 						  {else}
 						   parent.location.reload();
 						   parent.layer.close(index);

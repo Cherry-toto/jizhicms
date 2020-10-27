@@ -58,7 +58,7 @@ class CommentController extends CommonController
 				$w['aid'] = $this->frparam('aid',0,0);
 				$w['zid'] = $this->frparam('zid',0,0);
 				$w['pid'] = $this->frparam('pid',0,0);
-				$w['body'] = $this->frparam('body',1,null);
+				$w['body'] = $this->frparam('body',4,null);
 				$w['reply'] = null;
 				if(!$w['body']){
 					if($this->frparam('ajax')){

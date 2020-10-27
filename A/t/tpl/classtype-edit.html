@@ -43,7 +43,7 @@
 			   <option value="0">顶级栏目</option>
 			   {foreach $classtypes as $v}
 			   {if($admin['classcontrol']==0 || $admin['isadmin']==1 || strpos($tids,','.$v['id'].',')!==false || $molds['iscontrol']==0)}
-			   <option {if($data['pid']==$v['id'])} selected="selected" {/if}  value="{$v['id']}">{fun str_repeat('--', $v['level']), $v['classname']}</option>
+			   <option {if($data['pid']==$v['id'])} selected="selected" {/if}  value="{$v['id']}">{fun str_repeat('--', $v['level'])}{$v['classname']}</option>
 			   {/if}
 			   {/foreach}
 			
@@ -59,7 +59,7 @@
                   autocomplete="off" class="layui-input">
               </div>
               <div class="layui-form-mid layui-word-aux">
-                  <span class="x-red">*</span>
+                  <span class="x-red"></span>
               </div>
           </div>
 		   <div class="layui-form-item">
@@ -71,12 +71,12 @@
                   autocomplete="off" class="layui-input">
               </div>
               <div class="layui-form-mid layui-word-aux">
-                  <span class="x-red">*</span>
+                  <span class="x-red"></span>
               </div>
           </div>
 		  <div class="layui-form-item">
               <label for="keywords" class="layui-form-label">
-                  <span class="x-red">*</span>关键词
+                  <span class="x-red"></span>关键词
               </label>
               <div  style="width:500px"  class="layui-input-inline">
                   <input type="text" id="keywords" name="keywords" value="{$data['keywords']}" 
@@ -88,7 +88,7 @@
           </div>
 		 <div class="layui-form-item">
 				<label for="litpic" class="layui-form-label">
-					<span class="x-red">*</span>图片  
+					<span class="x-red"></span>图片  
 				</label>
 				
 				<div class="layui-input-inline">
@@ -113,7 +113,7 @@
                     </div>
 				 <div class="layui-form-item layui-form-text">
                     <label for="body" class="layui-form-label">
-                        <span class="x-red">*</span>内容
+                        <span class="x-red"></span>内容
                     </label>
                     <div class="layui-input-block" style="clear:both;" >
 					   {include="content"}
@@ -134,14 +134,14 @@
 				
 				 <div class="layui-form-item">
 					  <label for="orders" class="layui-form-label">
-						  <span class="x-red">*</span>排序
+						  <span class="x-red"></span>排序
 					  </label>
 					  <div class="layui-input-inline">
 						  <input type="number" id="orders" name="orders" value="{$data['orders']}"
 						  autocomplete="off" class="layui-input">
 					  </div>
 					  <div class="layui-form-mid layui-word-aux">
-						  <span class="x-red">*</span>
+						  <span class="x-red"></span>
 					  </div>
 				  </div>
 					<div class="layui-form-item">
@@ -168,7 +168,7 @@
               <label for="htmlurl" class="layui-form-label">
                   <span class="x-red"></span>URL命名
               </label>
-              <div class="layui-input-inline">
+              <div class="layui-input-block">
                   <input type="text" placeholder="请填写完整文件名，如:index，不填请留空" style="width:350px"  id="htmlurl" name="htmlurl" value="{$data['htmlurl']}" autocomplete="off" class="layui-input">
               </div>
               <div class="layui-form-mid layui-word-aux">
@@ -215,7 +215,7 @@
               <label for="gourl" class="layui-form-label">
                   <span class="x-red"></span>栏目外链
               </label>
-              <div class="layui-input-inline">
+              <div class="layui-input-block">
                   <input type="text" placeholder="栏目外链，如:htt://xxx.com/abc，不填请留空" style="width:350px"  id="gourl" name="gourl" value="{$data['gourl']}" autocomplete="off" class="layui-input">
               </div>
               <div class="layui-form-mid layui-word-aux">
@@ -226,7 +226,7 @@
 				<label for="ishome" class="layui-form-label">
 					<span class="x-red"></span>发布显示
 				</label>
-				<div class="layui-input-inline">
+				<div class="layui-input-block">
 					<input type="radio" name="ishome" value="0" title="不显示" {if($data['ishome']==0)}checked{/if}>
 					<input type="radio" name="ishome" value="1" title="显示" {if($data['ishome']==1)}checked{/if}>
 				</div>
@@ -251,7 +251,7 @@
 				<label for="iscover" class="layui-form-label">
 					<span class="x-red"></span>模板覆盖
 				</label>
-				<div class="layui-input-inline">
+				<div class="layui-input-block">
 					<input type="radio" name="iscover" value="0" title="不覆盖" checked>
 					<input type="radio" name="iscover" value="1" title="覆盖" >
 				</div>
@@ -263,7 +263,7 @@
 			
 			<div class="layui-form-item">
 				<label for="gid" class="layui-form-label">
-					<span class="x-red">*</span>访问限制
+					<span class="x-red"></span>访问限制
 				</label>
 				<div class="layui-input-inline">
 					<select name="gid" id="gid" >

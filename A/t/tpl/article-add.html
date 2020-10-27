@@ -55,7 +55,7 @@
 					   {foreach $classtypes as $v}
 					   {if($v['molds']=='article')}
 					   {if($admin['classcontrol']==0 || $admin['isadmin']==1 || strpos($tids,','.$v['id'].',')!==false || $molds['iscontrol']==0)}
-					   <option {if($tid==$v['id'])}selected{/if} value="{$v['id']}">{fun str_repeat('--', $v['level']), $v['classname']}</option>
+					   <option {if($tid==$v['id'])}selected{/if} value="{$v['id']}">{fun str_repeat('--', $v['level'])}{$v['classname']}</option>
 					   {/if}
 					   {/if}
 					   {/foreach}
@@ -160,7 +160,7 @@
                     <label for="tjsx" class="layui-form-label">
                         <span class="x-red"></span>推荐属性
                     </label>
-                    <div class="layui-input-inline">
+                    <div class="layui-input-block">
                         <input type="checkbox" name="istop" value="1" title="置顶">
 						<input type="checkbox" name="ishot" value="1" title="热点" >
 						<input type="checkbox" name="istuijian" value="1" title="推荐" >
@@ -178,17 +178,17 @@
                     </div>
                 </div>
 				
-				<div class="layui-form-item" pane>
+				 <div class="layui-form-item" pane>
                     <label for="isshow" class="layui-form-label">
-                        <span class="x-red"></span>是否显示
+                        <span class="x-red"></span>是否审核
                     </label>
-                    <div class="layui-input-inline">
-                        <input type="radio" name="isshow" value="0" title="不显示">
-						<input type="radio" name="isshow" value="1" title="显示" checked>
+                    <div class="layui-input-block">
+                        <input type="radio" name="isshow" value="0" title="未审">
+						<input type="radio" name="isshow" value="1" title="已审" checked>
                     </div>
 					 
 					
-                </div>
+                 </div>
 				
 				 <div class="layui-form-item">
                     <label for="addtime" class="layui-form-label">

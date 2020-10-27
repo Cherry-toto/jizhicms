@@ -262,7 +262,7 @@ class AdminController extends CommonController
 			
 			
             
-			if($data['pass']!=''){
+			if($data['pass']){
 				if($data['pass']!=$data['repass']){
 					JsonReturn(array('code'=>1,'msg'=>'两次密码不同！'));
 				}
@@ -275,7 +275,7 @@ class AdminController extends CommonController
           
            
 			
-			if($data['tel']!=''){
+			if($data['tel']){
 				if(M('level')->find("tel='".$data['tel']."' and id!=".$data['id'])){
 					JsonReturn(array('code'=>1,'msg'=>'手机号已被注册！'));
 				}	
@@ -285,7 +285,7 @@ class AdminController extends CommonController
 				JsonReturn(array('code'=>1,'msg'=>'昵称已被使用！'));
 			}
 			
-			if($data['email']!=''){
+			if($data['email']){
 				if(M('level')->find("email='".$data['email']."' and id!=".$data['id'])){
 					JsonReturn(array('code'=>1,'msg'=>'邮箱已被使用！'));
 				}
@@ -309,7 +309,7 @@ class AdminController extends CommonController
         $this->groups = M('level_group')->findAll();
 		$token = getRandChar(10);
 		$_SESSION['token'] = $token;
-		setCache('admin_'.$this->admin['id'].'_token',$token,60);
+		setCache('admin_'.$this->admin['id'].'_token',$token,5*60);
 		$this->token = $token;
 		$this->display('admin-edit');
 	}
@@ -348,7 +348,7 @@ class AdminController extends CommonController
 				JsonReturn(array('code'=>1,'msg'=>'两次密码不同！'));
 			}
 			$data['pass'] = md5(md5($data['pass']).'YF');
-			if($data['tel']!=''){
+			if($data['tel']){
 				if(M('level')->find("tel='".$data['tel']."'")){
 					JsonReturn(array('code'=>1,'msg'=>'手机号已被注册！'));
 				}
@@ -357,7 +357,7 @@ class AdminController extends CommonController
 			if(M('level')->find("name='".$data['name']."'")){
 				JsonReturn(array('code'=>1,'msg'=>'昵称已被使用！'));
 			}
-			if($data['email']!=''){
+			if($data['email']){
 				if(M('level')->find("email='".$data['email']."' ")){
 					JsonReturn(array('code'=>1,'msg'=>'邮箱已被使用！'));
 				}
@@ -381,7 +381,7 @@ class AdminController extends CommonController
 		
 		$token = getRandChar(10);
 		$_SESSION['token'] = $token;
-		setCache('admin_'.$this->admin['id'].'_token',$token,60);
+		setCache('admin_'.$this->admin['id'].'_token',$token,60*5);
 		$this->token = $token;
 		$this->display('admin-add');
 	

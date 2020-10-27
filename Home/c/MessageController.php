@@ -78,6 +78,34 @@ class MessageController extends CommonController
 				}
 				
 			}
+			// 不为空检测
+			$sql = " molds='message' and isshow=1 ";
+			$fields_list = M('Fields')->findAll($sql,'orders desc,id asc');
+			if($fields_list){
+				foreach($fields_list as $v){
+					if($v['ismust']==1){
+						if($w[$v['field']]==''){
+							if(in_array($v['fieldtype'],array(6,10))){
+								if($w[$v['field'].'_urls']==''){
+									
+									if($this->frparam('ajax')){
+										JsonReturn(['code'=>1,'msg'=>$v['fieldname'].'不能为空！']);
+									}else{
+										Error($v['fieldname'].'不能为空！');
+									}
+								}
+							}else{
+								if($this->frparam('ajax')){
+									JsonReturn(['code'=>1,'msg'=>$v['fieldname'].'不能为空！']);
+								}else{
+									Error($v['fieldname'].'不能为空！');
+								}
+							}
+							
+						}
+					}
+				}
+			}
 			
 			
 			

@@ -226,7 +226,7 @@ class HomeController extends CommonController
 			}
 			$limit = $limit<=0 ? 15 : $limit;
 			$data = $page->where($sql)->orderby($orders)->limit($limit)->page($this->frpage)->go();
-			$pages = $page->pageList(3,'-');
+			$pages = $page->pageList(5,'-');
 			
 			$this->pages = $pages;//组合分页
 			
@@ -293,28 +293,28 @@ class HomeController extends CommonController
 					$isgo = true;
 					$res['level'] = $v['level'];
 					$newarray[]=$v;
-				}
-				if($v['id']==$res['id'] && $v['level']==0){
-					break;
-				}
-				if($v['level']==0 && $v['id']!=$res['id'] && $v['id']!=$res['pid']){
-					if(!$istop && $isgo && $parent['level']!=0){
-						$newarray[]=$v;
-						$istop = true;
+					if($v['level']==0){
+						break;
 					}
-					$isgo = false;
+					$parent = $this->classtypedata[$v['pid']];
+					continue;
 				}
-				if($isgo &&  $v['id']!=$res['id'] && $res['level']>$v['level']){
-					if(isset($parent['pid'])){
-						if($parent['level']!=$v['level']){
-							$newarray[]=$v;
+				
+				if($isgo){
+					if($parent['id']==$v['id']){
+						$res['level'] = $v['level'];
+						$newarray[]=$v;
+						if($parent['level']==0){
+							break;
 						}
-						
-					}else{
-						$newarray[]=$v;
+						$parent = $this->classtypedata[$v['pid']];
+						continue;
 					}
-					$parent = $v;
+					
+					
+					
 				}
+	
 			}
 			$newarray2 = array_reverse($newarray);
 			$positions='<a href="'.get_domain().'">首页</a>';
@@ -346,7 +346,14 @@ class HomeController extends CommonController
 			$url = ($position!==FALSE) ? substr($request_url,0,$position) : $request_url;
 			$url = substr($url,1,strlen($url)-1);
 			$html = str_ireplace(File_TXT,'',$url);
-			$filepath = APP_PATH.APP_HOME.'/'.HOME_VIEW.'/'.$this->template.'/page/'.$html.'.html';
+			$indexdata = file_get_contents(APP_PATH.'index.php');
+			$rr = preg_match("/define\('TPL_PATH',[\'|\"](.*?)[\'|\"]\)/",$indexdata,$matches);
+			if($rr){
+				$tplpath = $matches[1];
+			}else{
+				$tplpath = 'Home';
+			}
+			$filepath = APP_PATH.$tplpath.'/'.HOME_VIEW.'/'.$this->template.'/page/'.$html.'.html';
 			if(file_exists($filepath)){
 				$this->display($this->template.'/page/'.$html);
 				exit;
@@ -424,15 +431,14 @@ class HomeController extends CommonController
 			
 			//只适合article和product
 			if($molds=='article' || $molds=='product'){
-				$sql.=" or (istop=1 and isshow=1) ";
-			
+				
 				$data = $page->where($sql)->orderby('istop desc,orders desc,id desc')->limit($limit)->page($this->frpage)->go();
 			}else{
 				$data = $page->where($sql)->orderby('orders desc,id desc')->limit($limit)->page($this->frpage)->go();
 			}
 			
 			
-			$pages = $page->pageList(3,'-');
+			$pages = $page->pageList(5,'-');
 			$this->pages = $pages;//组合分页
 			foreach($data as $k=>$v){
 				if(isset($v['htmlurl']) && !isset($v['url'])){
@@ -724,15 +730,26 @@ class HomeController extends CommonController
 				
 			}
 			$this->word = $word;
-			$sql =  " isshow=1 and title like '%".$word."%'  ";
-			if($tid){
+			
+			$search_words = (isset($this->webconf['search_words'])&& $this->webconf['search_words']) ? explode('|',$this->webconf['search_words']) : ['title'];
+			$sql = ' isshow=1 ';
+			$sq = [];
+			foreach($search_words as $v){
+				$sq[]= " ".$v." like '%".$word."%' ";
+			}
+			if(count($sq)){
+				$sql.=" and (".implode(' or ',$sq).") ";
+			}
+			if($this->frparam('isall') && $tid){
+				$sql.= ' and tid in ('.implode(',',$this->classtypedata[$tid]['children']['ids']).') ';
+			}else if($tid){
 				$sql.=' and tid in('.$tid.') ';
 			}
 			
 			$page = new Page($molds);
 			$page->typeurl = 'search';
 			$data = $page->where($sql)->orderby('id desc')->limit($this->frparam('limit',0,15))->page($this->frparam('page',0,1))->go();
-			$pages = $page->pageList(3,'&page=');
+			$pages = $page->pageList(5,'&page=');
 			
 			$this->pages = $pages;//组合分页
 			
@@ -821,56 +838,47 @@ class HomeController extends CommonController
 				Error('请输入关键词搜索！');
 			}
 			$this->word = $word;
-			$sqlx =  "  isshow=1 and title like '%".$word."%'  ";
-			if($tid){
-				$sqlx.=' and tid in('.$tid.') ';
+			
+			$search_words = (isset($this->webconf['search_words'])&& $this->webconf['search_words']) ? explode('|',$this->webconf['search_words']) : ['title'];
+			$sql = ' isshow=1 ';
+			$sq = [];
+			foreach($search_words as $v){
+				$sq[]= " ".$v." like '%".$word."%' ";
 			}
-		
-			$lists = [];
+			if(count($sq)){
+				$sql.=" and (".implode(' or ',$sq).") ";
+			}
+			if($this->frparam('isall') && $tid){
+				$sql.= ' and tid in ('.implode(',',$this->classtypedata[$tid]['children']['ids']).') ';
+			}else if($tid){
+				$sql.=' and tid in('.$tid.') ';
+			}
+			$sqlx = [];
+			$sqln = [];
 			foreach($allow_table as $v){
-				$list_a = M($v)->findAll($sqlx);
-				if($list_a){
-					$sql = [];
-					$sql[] = " molds = '".$v."' and isshow=1 ";
-					$sql[] = " isajax=0 ";//查询出不允许访问的字段，进行限制
-					$sql = implode(' and ',$sql);
-					$fields_list = M('Fields')->findAll($sql,'orders desc,id asc');
-					if($fields_list){
-						$noallow = [];
-						foreach($fields_list as $vv){
-							$noallow[]=$vv['field'];
-						}
-						$newdata = [];
-						foreach($list_a as $vs){
-							foreach($vs as $kk=>$vv){
-								if(in_array($kk,$noallow)){
-									unset($vs[$kk]);
-								}
-							}
-							$newdata[]=$vs;
-						}
-						
-						$list_a = $newdata;
-					}
-					
-					$lists = count($lists)>0 ? array_merge($lists,$list_a) : $list_a;
-				}
+				$list_a = M($v)->findAll($sql);
+				$sqlx[] = ' select id,tid,title,tags,keywords,molds,htmlurl,description,addtime,userid,member_id from '.DB_PREFIX.$v." where ".$sql;
+				$sqln[] = ' select id from '.DB_PREFIX.$v." where ".$sql;
 			}
 			
-			$arraypage = new \ArrayPage($lists);
-			$data = $arraypage->query(['page'=>$this->frparam('page',0,1),'word'=>$word,'molds'=>$molds,'tid'=>$tid])->setPage(['limit'=>$this->frparam('limit',0,15)])->go();
-			
+			$sql = implode(' union all ',$sqlx);
+			$sqln = implode(' union all ',$sqln);
+			$page = new Page();
+			$data = $page->where($sql)->setPage(['limit'=>$this->frparam('limit',0,15)])->page($this->frpage)->goCount($sqln)->goSql();
 			foreach($data as $k=>$v){
-				if(isset($v['htmlurl']) && !isset($v['url'])){
-					$data[$k]['url'] = gourl($v,$v['htmlurl']);
-				}
-				
+				$data[$k]['url'] = gourl($v,$v['htmlurl']);
 				$data[$k]['classname'] = $this->classtypedata[$v['tid']]['classname'];
-				$data[$k]['title'] = str_replace($word,'<b style="color:#f00">'.$word.'</b>',$v['title']);
+				$data[$k]['title'] = str_replace($word,'<span style="color:#f00;">'.$word.'</span>',$v['title']);
 			}
-			$this->lists = $data;
-			$this->pages = $arraypage->pageList();
-			$this->pagelist = $arraypage->listpage;
+			$pages = $page->pageList(5,'&page=');
+			$this->pages = $pages;//组合分页
+			$this->lists = $data;//列表数据
+			$this->sum = $page->sum;//总数据
+			$this->pagelist = $page->listpage;//分页数组-自定义分页可用
+			$this->listpage = $page->listpage;//分页数组-自定义分页可用
+			$this->prevpage = $page->prevpage;//上一页
+			$this->nextpage = $page->nextpage;//下一页
+			$this->allpage = $page->allpage;//总页数
 			if($this->frparam('ajax') && $this->webconf['isajax']){
 				if($this->frparam('ajax_tpl')){
 					$this->display($this->template.'/ajax_searchall_list');
@@ -900,8 +908,16 @@ class HomeController extends CommonController
         $url = $position === false ? $url : substr($url, 0, $position);
 		$r = M('customurl')->find(['url'=>$url]);
 		if($r){
-			$this->type = $this->classtypedata[$r['tid']];
-			$this->jizhi_details($r['aid']);
+			if(isset($this->classtypedata[$r['tid']])){
+				$this->type = $this->classtypedata[$r['tid']];
+				$this->jizhi_details($r['aid']);
+			}else if($r['molds']=='tags'){
+				$param = [];
+				$param['id'] = $r['aid'];
+				$tags = new TagsController($param);
+				$tags->index();
+			}
+			
 			exit;
 		}
 		$this->display($this->template.'/404');
@@ -1020,41 +1036,58 @@ class HomeController extends CommonController
 			}
 			foreach($model as $k=>$v){
 				$list = M($v)->findAll(['isshow'=>1]);
+				if(count($list)>1000){
+					continue;
+				}
 				//栏目
 				if($v=='classtype' && $list){
 					foreach($list as $s){
-						$l.='<url>
+						if($this->classtypedata[$s['id']]['url']){
+							$l.='<url>
 							  <loc>'.$this->classtypedata[$s['id']]['url'].'</loc>
 							  <lastmod>'.date('Y-m-d').'T08:00:00+00:00</lastmod>
 							  <changefreq>always</changefreq>
 							  <priority>0.80</priority>
 							</url>';
+						}
+						
 						if($this->webconf['iswap']==1){
-							$l.='<url>
-							  <loc>'.$classtypedataMobile[$s['id']]['url'].'</loc>
-							  <lastmod>'.date('Y-m-d').'T08:00:00+00:00</lastmod>
-							  <changefreq>always</changefreq>
-							  <priority>0.80</priority>
-							</url>';
+							if($classtypedataMobile[$s['id']]['url']){
+								$l.='<url>
+								  <loc>'.$classtypedataMobile[$s['id']]['url'].'</loc>
+								  <lastmod>'.date('Y-m-d').'T08:00:00+00:00</lastmod>
+								  <changefreq>always</changefreq>
+								  <priority>0.80</priority>
+								</url>';
+							}
+							
 						}	
 					}
 				}else if($list){
 					foreach($list as $s){
 						$s['addtime'] = isset($s['addtime']) ? $s['addtime'] : time();
 					//文章-商品
-						$l.='<url>
-						  <loc>'.gourl($s,$s['htmlurl']).'</loc>
-						  <lastmod>'.date('Y-m-d',$s['addtime']).'T08:00:00+00:00</lastmod>
-						   <changefreq>always</changefreq>
-							  <priority>0.80</priority>
-						</url>';
-						if($this->webconf['iswap']==1){
+						$url = gourl($s,$s['htmlurl']);
+						if($url){
 							$l.='<url>
-							  <loc>'.gourl($s,$s['htmlurl']).'</loc>
+							  <loc>'.$url.'</loc>
 							  <lastmod>'.date('Y-m-d',$s['addtime']).'T08:00:00+00:00</lastmod>
 							   <changefreq>always</changefreq>
-							  <priority>0.80</priority>
+								  <priority>0.80</priority>
 							</url>';
+						}
+						
+						if($this->webconf['iswap']==1){
+							$murl = $this->murl($s,$s['htmlurl']);
+							if($murl){
+								$l.='<url>
+								  <loc>'.$murl.'</loc>
+								  <lastmod>'.date('Y-m-d',$s['addtime']).'T08:00:00+00:00</lastmod>
+								   <changefreq>always</changefreq>
+								  <priority>0.80</priority>
+								</url>';
+							}
+							
 						}	
 					
 					}
@@ -1072,6 +1105,30 @@ class HomeController extends CommonController
 			
 		}
 		
+	}
+	function murl($id,$htmlurl=null,$molds='article'){
+		if(is_array($id)){
+			$value = $id;
+			if($value['target']){
+				return $value['target'];
+			}else{
+				if($value['ownurl']){
+					return get_domain().'/'.$value['ownurl'];
+					
+				}
+			}
+			$id = $value['id'];
+		}
+		if(!$id){Error_msg('缺少ID！');}
+		$htmlpath = $this->webconf['iswap']==1 ? $this->webconf['mobile_html'] : $this->webconf['pc_html'];
+		$htmlpath = ($htmlpath=='' || $htmlpath=='/') ? '' : '/'.$htmlpath; 
+		if($htmlurl!=null){
+			return get_domain().$htmlpath.'/'.$htmlurl.'/'.$id.'.html';
+		}
+		
+		$tid = M($molds)->getField(array('id'=>$id),'tid');
+		$htmlurl = M('classtype')->getField(array('id'=>$tid),'htmlurl');
+		return get_domain().$htmlpath.'/'.$htmlurl.'/'.$id.'.html';
 	}
 	
 	//生成RSS

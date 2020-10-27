@@ -15,10 +15,14 @@
             <a class="layui-btn layui-btn-small" style="line-height:1.6em;margin-top:3px;float:right"  href="javascript:location.replace(location.href);" title="刷新"><i class="iconfont" style="line-height:30px">&#xe6aa;</i></a>
         </div>
         <div class="x-body">
+		
+		<div class="layui-card">
+			<div class="layui-card-body">
+			
          <div class="layui-collapse">
 		    <div class="layui-colla-item">
 			<h2 class="layui-colla-title">搜索</h2>
-				<div class="layui-colla-content layui-show">
+				<div class="layui-colla-content">
 				<div class="layui-row">
 					<form class="layui-form layui-col-md12 x-so" method="get" id="myform">
 					<div class="layui-input-inline">
@@ -37,7 +41,7 @@
 					  <option value="">请选择栏目</option>
 					   {foreach $classtypes as $v}
 					  
-					   <option {if($tid==$v['id'])} selected="selected" {/if}value="{$v['id']}">{fun str_repeat('--', $v['level']), $v['classname']}</option>
+					   <option {if($tid==$v['id'])} selected="selected" {/if}value="{$v['id']}">{fun str_repeat('--', $v['level'])}{$v['classname']}</option>
 					 
 					   {/foreach}
 					
@@ -45,7 +49,7 @@
 					</div>
 					  <input type="text" name="body" value="{$body}" placeholder="请输入评论内容" autocomplete="off" class="layui-input">
 					  {$fields_search}
-					  <button class="layui-btn"  lay-submit="" lay-filter="search"><i class="layui-icon">&#xe615;</i></button>
+					  <button class="layui-btn"  lay-submit="" lay-filter="search">搜索</button>
 					</form>
 				</div>
 				</div>
@@ -54,20 +58,22 @@
 		  
 		<table class="layui-hide" lay-data="{id: 'jizhi_table'}" id="jizhi_table" lay-filter="jizhi_table"></table>
 		<input id="select_data" type="hidden" value="" />
+			</div>
+		</div>
+		
+		
+		
 		<script type="text/html" id="rightbar">
 		{if(checkAction('Comment/editcomment'))}
-			<button class="layui-btn layui-btn-xs" lay-event="edit"><i class="layui-icon">&#xe642;</i>查看</button>
+			<a class="layui-btn layui-btn-xs" lay-event="edit">查看</a>
 		
 		{/if}
 		{if(checkAction('Comment/deletecomment'))}
-			<button class="layui-btn layui-btn-xs layui-btn-danger" lay-event="delete"><i class="layui-icon">&#xe640;</i>删除</button>
+			<a class="layui-btn layui-btn-xs layui-btn-danger" lay-event="delete">删除</a>
 		{/if}	
 		</script>
 		<script type="text/html" id="toolbar">
 		 <div class="layui-btn-container" style="font-size:15px;">
-		 {if(checkAction('Comment/deleteAll'))}
-			   <button class="layui-btn layui-btn-danger" onclick="delAll()"><i class="layui-icon">&#xe640;</i>批量删除</button>
-		 {/if}	 
 		  {if(checkAction('Comment/checkAll'))}	
 		  <div class="layui-input-inline" style="margin-right: 10px;margin-bottom: 10px;width:150px;">
 			   <select class="layui-btn" id="change_isshow"  lay-filter="change_isshow" >
@@ -77,9 +83,11 @@
 			   </select>
 			   </div>
 		  {/if}
-  
+		 {if(checkAction('Comment/deleteAll'))}
+			   <a class="layui-btn  layui-btn-sm layui-btn-danger" onclick="delAll()">批量删除</a>
+		 {/if}	 
 		 {if(checkAction('Comment/addcomment'))}	   
-			   <button class="layui-btn" onclick="x_admin_show('添加评论','{fun U('Comment/addcomment')}')"><i class="layui-icon">&#xe608;</i>添加评论</button>
+			   <a class="layui-btn layui-btn-sm" onclick="x_admin_show('添加评论','{fun U('Comment/addcomment')}')">添加评论</a>
 		 {/if}
 			
 		 </div>
@@ -99,28 +107,6 @@
 		<a onclick="x_all_show('查看用户','{{d.new_user}}')"><button class="layui-btn layui-btn-xs" >{{d.new_username}}</button></a>
 		{else}
 		{{d.new_username}}
-		{/if}
-		{{#  } }}
-		</script>
-		<script type="text/html" id="zid">
-		{{#  if(d.new_zid == ''){ }}
-		-
-		{{#  } else  { }}
-		{if(checkAction('Comment/editcomment'))}	
-		<a onclick="x_all_show('查看主回复评论','{{d.new_zid}}')"><button class="layui-btn layui-btn-xs" >查看</button></a>
-		{else}
-		{{d.zid}}
-		{/if}
-		{{#  } }}
-		</script>
-		<script type="text/html" id="pid">
-		{{#  if(d.new_pid == ''){ }}
-		-
-		{{#  } else  { }}
-		{if(checkAction('Comment/editcomment'))}
-		<a onclick="x_all_show('查看回复评论','{{d.new_pid}}');"><button class="layui-btn layui-btn-xs" >查看</button></a>
-		{else}
-		{{d.pid}}
 		{/if}
 		{{#  } }}
 		</script>
@@ -145,7 +131,7 @@
 			  
 			  table.render({
 				elem: '#jizhi_table'
-				,height: 650
+				,height: 700
 				,cellMinWidth: 80
 				,url: window.location.href+'?ajax=1' //数据接口
 				,page: true //开启分页
@@ -166,17 +152,13 @@
 				  
 				}
 				,cols: [[ //表头
-				  {field: 'id', title: 'ID', width:50, sort: true, fixed:'left'}
+				  {field: 'id', title: 'ID', width:60}
 				  ,{type:'checkbox'}
-				  ,{field: 'new_username', title: '用户名',width: 150,templet:'#user', sort: true}
-				  ,{field: 'new_tid', title: '所属栏目', sort: true}
-				  ,{field: 'new_aid', title: '所属文章',width:100,templet:'#aid' }
-				  ,{field: 'new_zid', title: '主回复帖子',width:100,templet:'#zid'}
-				  ,{field: 'new_pid', title: '回复帖子',width:100,templet:'#pid'}
+				  ,{field: 'new_username', title: '用户名',width: 150,templet:'#user'}
+				  ,{field: 'new_tid', title: '所属栏目'}
+				  ,{field: 'new_aid', title: '所属文章',templet:'#aid' }
 				  ,{field: 'body', title: '评论内容'} 
-				  {foreach $fields_list as $v},{field: '{$v['field']}',width:150, title: '{$v['fieldname']}'}{/foreach}
-				  ,{field: 'likes', title: '喜欢点赞', width: 100,sort: true}
-				
+				  {foreach $fields_list as $v},{field: '{$v['field']}', title: '{$v['fieldname']}'}{/foreach}
 				  ,{field: 'new_isshow', title: '显示', width: 100,templet: '#isshow'}
 				  ,{field: 'new_addtime', title: '评论时间',width:160}
 				 
@@ -306,6 +288,7 @@
 				
 				form.on('submit(search)', function(data){
 					//data.field
+					data.field.page=1;
 					table.reload('jizhi_table', {
 					  url: window.location.href+'?ajax=1'
 					  ,where: data.field //设定异步数据接口的额外参数

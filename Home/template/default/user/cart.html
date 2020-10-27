@@ -328,10 +328,11 @@
     });
     if(discount_type==1){
       //现金折扣
-      alldiscount = floatObj.subtract(allmoney,discount);
+     // alldiscount = floatObj.subtract(allmoney,discount);
+	 alldiscount = discount;
     }else if(discount_type==2){
       //百分比折扣
-	  discount = 1-discount;
+	  discount = (1-discount).toFixed(2);
       alldiscount = floatObj.multiply(allmoney,discount);
     }
     var summary1 = floatObj.subtract(allmoney,alldiscount);//减去折扣

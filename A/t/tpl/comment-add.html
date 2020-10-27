@@ -37,7 +37,7 @@
 				<div class="layui-tab-item layui-show">
 				 <div class="layui-form-item">
                     <label for="userid" class="layui-form-label">
-                        <span class="x-red">*</span>用户ID
+                        <span class="x-red"></span>用户ID
                     </label>
                     <div class="layui-input-inline">
                         <input type="number" id="userid" value=""  name="userid" 
@@ -46,20 +46,20 @@
                 </div>
 				<div class="layui-form-item">
                     <label for="tid" class="layui-form-label">
-                        <span class="x-red">*</span>评论栏目
+                        <span class="x-red"></span>评论栏目
                     </label>
                     <div class="layui-input-inline">
 						<select name="tid" lay-search="" id="tid" >
 						<option value="0">选择栏目</option>
 					   {foreach $classtypes as $v}
-					   <option   value="{$v['id']}">{fun str_repeat('--', $v['level']), $v['classname']}</option>
+					   <option   value="{$v['id']}">{fun str_repeat('--', $v['level'])}{$v['classname']}</option>
 					   {/foreach}
 					   </select>
                     </div>
                 </div>
 				<div class="layui-form-item">
                     <label for="aid" class="layui-form-label">
-                        <span class="x-red">*</span>文章ID
+                        <span class="x-red"></span>文章ID
                     </label>
                     <div class="layui-input-inline">
                         <input type="number" id="aid" value=""   name="aid" 
@@ -75,7 +75,7 @@
                         autocomplete="off" class="layui-input">
                     </div>
 					<div class="layui-form-mid layui-word-aux">
-						<span class="x-red">*</span>同属于一个评论的ID，如果没有评论中的评论，则为0
+						<span class="x-red"></span>同属于一个评论的ID，如果没有评论中的评论，则为0
 					</div>
                 </div>
 				<div class="layui-form-item">
@@ -87,14 +87,14 @@
                         autocomplete="off" class="layui-input">
                     </div>
 					<div class="layui-form-mid layui-word-aux">
-					  <span class="x-red">*</span>回复帖子ID
+					  <span class="x-red"></span>回复帖子ID
 				    </div>
                 </div>
              
 				
 				 <div class="layui-form-item layui-form-text">
                     <label for="body" class="layui-form-label">
-                        <span class="x-red">*</span>评论内容
+                        <span class="x-red"></span>评论内容
                     </label>
                     <div class="layui-input-block" style="clear:both;" >
 					{include="content"}
@@ -103,7 +103,7 @@
 				
 				 <div class="layui-form-item layui-form-text">
                     <label for="reply" class="layui-form-label">
-                        <span class="x-red">*</span>管理员回复
+                        <span class="x-red"></span>管理员回复
                     </label>
                     <div class="layui-input-block" style="clear:both;" >
 					<textarea  name="reply" class="layui-textarea"></textarea>
@@ -158,7 +158,7 @@
 				
 				 <div class="layui-form-item">
                     <label for="addtime" class="layui-form-label">
-                        <span class="x-red">*</span>更新时间
+                        <span class="x-red"></span>更新时间
                     </label>
                     <div class="layui-input-inline">
                       <input class="layui-input" value="{fun date('Y-m-d H:i:s')}" name="addtime" placeholder="文件日期" id="LAY_demorange_s">

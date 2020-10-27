@@ -101,7 +101,7 @@
 				
 				 <div class="layui-form-item">
                     <label for="url" class="layui-form-label">
-                        <span class="x-red">*</span>跳转链接
+                        <span class="x-red"></span>跳转链接
                     </label>
                     <div class="layui-input-inline">
                         <input type="text" id="url" value="{$data['url']}" style="width:500px;"  name="url" 
@@ -135,7 +135,7 @@
 				
 				 <div class="layui-form-item">
                     <label for="addtime" class="layui-form-label">
-                        <span class="x-red">*</span>更新时间
+                        <span class="x-red"></span>更新时间
                     </label>
                     <div class="layui-input-inline">
                       <input class="layui-input" value="{if($data)}{fun date('Y-m-d H:i:s',$data['addtime'])}{else}{fun date('Y-m-d H:i:s')}{/if}" name="addtime" placeholder="文件日期" id="LAY_demorange_s">

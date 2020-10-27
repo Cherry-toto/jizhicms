@@ -16,3 +16,28 @@ function deleteImage_auto(elm,field){
 	$(elm).prev().attr("src", "{__Tpl_style__}/style/images/nopic.jpg");
 	$('#'+field).val("");
 }
+
+function goleft(a){
+	var arr = $(".upload-icon-img").toArray();
+	var str = $(a).parent().parent().parent().attr('class');
+	var index = $('.'+str+' .upload-icon-img').index($(a).closest('.upload-icon-img'));
+	var temp;
+	if(index-1>=0){
+		temp = arr[index];
+		arr[index] = arr[index-1];
+		arr[index-1] = temp;
+		$(a).parent().parent().parent().html(arr)
+	}
+}
+function goright(a){
+	var arr = $(".upload-icon-img").toArray();
+	var str = $(a).parent().parent().parent().attr('class');
+	var index = $('.'+str+' .upload-icon-img').index($(a).closest('.upload-icon-img'));
+	var temp;
+	if(index+1<arr.length){
+		temp = arr[index];
+		arr[index] = arr[index+1];
+		arr[index+1] = temp;
+		$(a).parent().parent().parent().html(arr)
+	}
+}

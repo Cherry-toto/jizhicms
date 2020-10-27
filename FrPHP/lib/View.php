@@ -130,27 +130,27 @@ class View
 		//include标签
 		preg_match_all('/\{include=\"(.*?)\"\}/si',$content,$i);
 		foreach($i[0] as $k=>$v){
-			$content=str_ireplace($v,$this->template_html_include(strtolower($i[1][$k])),$content);
+			$content=str_ireplace($v,$this->template_html_include($i[1][$k]),$content);
 		}
 		//loop标签
 		preg_match_all('/\{loop (.*?)\}/si',$content,$i);
 		$this->check_template_err(substr_count($content, '{/loop}'),count($i[0]),'loop');
 		foreach($i[0] as $k=>$v){
-			$content=str_ireplace($v,$this->template_html_loop(strtolower($i[1][$k])),$content);
+			$content=str_ireplace($v,$this->template_html_loop($i[1][$k]),$content);
 		}
 		$content=str_ireplace('{/loop}','<?php } ?>',$content);
 		//foreach循环
 		preg_match_all('/\{foreach(.*?)\}/si',$content,$i);
 		$this->check_template_err(substr_count($content, '{/foreach}'),count($i[0]),'foreach');
 		foreach($i[0] as $k=>$v){
-			$content=str_ireplace($v,$this->template_html_foreach(strtolower($i[1][$k])),$content);
+			$content=str_ireplace($v,$this->template_html_foreach($i[1][$k]),$content);
 		}
 		$content=str_ireplace('{/foreach}','<?php } ?>',$content);
 		//screen标签
 		preg_match_all('/\{screen (.*?)\}/si',$content,$i);
 		$this->check_template_err(substr_count($content, '{/screen}'),count($i[0]),'screen');
 		foreach($i[0] as $k=>$v){
-			$content=str_ireplace($v,$this->template_html_screen(strtolower($i[1][$k])),$content);
+			$content=str_ireplace($v,$this->template_html_screen($i[1][$k]),$content);
 		}
 		$content=str_ireplace('{/screen}','<?php } ?>',$content);
 		//for循环
@@ -208,8 +208,8 @@ class View
 			$prefix = '.html';
 		}
 		if(APP_URL=='/index.php'){
-			$includefile = str_replace('//','/',APP_PATH . APP_HOME .'/'.HOME_VIEW.'/'.get_template().'/'.$filename. $prefix);
-			$file = get_template().'/'.$filename. $prefix;
+			$includefile = str_replace('//','/',APP_PATH . APP_HOME .'/'.HOME_VIEW.'/'.TEMPLATE.'/'.$filename. $prefix);
+			$file = TEMPLATE.'/'.$filename. $prefix;
 		}else{
 			$includefile = str_replace('//','/',APP_PATH . APP_HOME .'/'.HOME_VIEW.'/'.Tpl_template.'/'. Tpl_common .'/'.$filename. $prefix);
 			$file = Tpl_common .'/'.$filename. $prefix;
@@ -478,11 +478,11 @@ class View
 			if(strpos($notempty,'|')!==false){
 				$notempty = explode('|',$notempty);
 				foreach($notempty as $v){
-					$w.=' (and trim('.$v.') !="" or trim('.$v.') is not null) ';
+					$w.=' (and trim('.$v.') !="" && trim('.$v.') is not null) ';
 				}
 				
 			}else{
-				$w.=' and (trim('.$notempty.') !="" or trim('.$notempty.') is not null)  ';
+				$w.=' and (trim('.$notempty.') !="" && trim('.$notempty.') is not null)  ';
 			}
 			
 		}

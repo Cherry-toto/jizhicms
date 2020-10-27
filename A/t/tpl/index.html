@@ -9,33 +9,37 @@
 		font-size: 18px;
 		margin-right: 10px;
 	}
+
+
   </style>
 </head>
 <body>
     <!-- 顶部开始 -->
     <div class="container">
         <div class="logo"><a href="{fun U('Index/index')}">{fun webConf('web_name')}</a></div>
-		{if($left_num>0)}
         <div class="left_open">
             <i title="展开左侧栏" class="iconfont">&#xe699;</i>
         </div>
-		{/if}
-		{if($left_num>0)}
+		{if($top_num>0)}
         <ul class="layui-nav left fast-add" lay-filter="">
 		 {if(is_array($top_layout))}
 		 {foreach $top_layout as $v}
-          <li class="layui-nav-item">
-            <a href="javascript:;"><i class="iconfont">{fun htmlspecialchars_decode($v['icon'])}</i><cite>{$v['name']}</cite></a>
-            <dl class="layui-nav-child"> 
-			
-			{foreach $v['nav'] as $vv}
-			{if($vv!=0)}
-			<dd class="top-nav"><a x_href="{fun U($actions[$vv]['fc'])}" class="top_nav">{$actions[$vv]['name']}</a></dd>
-            {/if}        
-            {/foreach}  
-              
-            </dl>
-          </li>
+			<li class="layui-nav-item">
+				<a href="javascript:;"><i class="iconfont">{fun htmlspecialchars_decode($v['icon'])}</i><cite>{$v['name']}</cite></a>
+				<dl class="layui-nav-child"> 
+				
+				{foreach $v['nav'] as $vv}
+				{if($vv)}
+					{if(strpos($vv,'class')!==false)}
+					<dd class="top-nav"><a x_href="{$classnav[$vv]['act']}" class="top_nav">{$classnav[$vv]['classname']}</a></dd>	
+					{else}
+					<dd class="top-nav"><a x_href="{fun U($actions[$vv]['fc'])}" class="top_nav">{$actions[$vv]['name']}</a></dd>
+					{/if}
+				{/if}        
+				{/foreach}  
+				  
+				</dl>
+			</li>
 		 {/foreach} 
 		 {/if}
 		  
@@ -43,7 +47,7 @@
 		{/if}
         <ul class="layui-nav right" lay-filter="">
 			<li class="layui-nav-item">
-            <a class="top_nav_right"  x_href="{fun U('index/cleanCache')}"><i class="layui-icon layui-icon-delete jzicon"></i>清理缓存</a>
+            <a class="top_nav_right"  x_href="{fun U('index/cleanCache')}"><i class="layui-icon layui-icon-refresh-3 jzicon"></i>清理缓存</a>
             
           </li>
           <li class="layui-nav-item">
@@ -65,23 +69,33 @@
     <div class="left-nav layui-side layui-bg-black">
       <div id="side-nav" class="layui-side-scroll">
         <ul id="nav" class="layui-nav-tree">
+			<li>
+                <a  _href="{fun U('Index/welcome')}">
+                    <i class="layui-icon layui-icon-home"></i>
+                    <cite>后台首页</cite>
+                    
+                </a>
+               
+            </li>
+		
+				
 		{if(is_array($left_layout))}
 		{foreach $left_layout as $v}
             <li>
                 <a href="javascript:;">
                     <i class="iconfont">{fun htmlspecialchars_decode($v['icon'])}</i>
                     <cite>{$v['name']}</cite>
-                    <i class="iconfont nav_right">&#xe697;</i>
+                    <i class="iconfont nav_right">&#xe6a7;</i>
                 </a>
                 <ul class="sub-menu">
 				{foreach $v['nav'] as $vv}
-				{if($vv!=0)}
+				{if($vv)}
                     <li>
-                        <a _href="{fun U($actions[$vv]['fc'])}">
-                            <i class="iconfont">&#xe6a7;</i>
-                            <cite>{$actions[$vv]['name']}</cite>
-                            
-                        </a>
+						{if(strpos($vv,'class')!==false)}
+						<a _href="{$classnav[$vv]['act']}" ><cite>{$classnav[$vv]['classname']}</cite></a>
+						{else}
+                        <a _href="{fun U($actions[$vv]['fc'])}"><cite>{$actions[$vv]['name']}</cite></a>
+						{/if}
                     </li >
 				{/if}
                 {/foreach}    
@@ -106,7 +120,7 @@
           </ul>
           <div class="layui-tab-content">
             <div class="layui-tab-item layui-show">
-                <iframe src="{fun U('Index/welcome')}" name="x-iframe" frameborder="0" scrolling="yes" class="x-iframe"></iframe>
+                <iframe src="{fun U('Index/welcome')}" name="x-iframe" frameborder="0" scrolling="auto" class="x-iframe"></iframe>
             </div>
           </div>
         </div>

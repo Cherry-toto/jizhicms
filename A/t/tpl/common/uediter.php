@@ -2,14 +2,17 @@
 
 $rd = getRandChar(6);	
 if(APP_CONTROLLER=='Sys'){
-	return '<div class="layui-form-item layui-form-text"  id="custom_'.$v['field'].'">
-			<label class="layui-form-label">
-				<span class=\'x-red\'>*</span>'.$v['title'].'
-			</label>
-			<div class="layui-input-block" style="width:100%;">
-			<script id="'.$v['field'].$rd.'" name="'.$v['field'].'" type="text/plain" style="width:100%;height:400px;">'.$v['data'].'</script>	
-			</div><script>
-			$(document).ready(function(){
+	return '<div class="layui-collapse">
+		  <div class="layui-colla-item">
+			<h2 class="layui-colla-title">'.$v['title'].'</h2>
+			<div class="layui-colla-content">
+				<div  style="width:100%;">
+					<script id="'.$v['field'].$rd.'" name="'.$v['field'].'" type="text/plain" style="width:100%;height:400px;">'.$v['data'].'</script>	
+				</div>
+			</div>
+		</div>
+	</div>
+	<script>$(document).ready(function(){
 			var ue_'.$v['field'].$rd.' = UE.getEditor("'.$v['field'].$rd.'",{
 				toolbars : [['.$config['ueditor_config'].']]
 				}		

@@ -45,7 +45,7 @@ class ExtmoldsController extends Controller
 		 $this->admin = $_SESSION['admin'];
 		
 		  $webconf = webConf();
-		  $template = get_template();
+		  $template = TEMPLATE;
 		  $this->webconf = $webconf;
 		  $this->template = $template;
 		  $this->tpl = Tpl_style.$template.'/';
@@ -128,7 +128,7 @@ class ExtmoldsController extends Controller
 				}
 				
 				$v['new_isshow'] = $v['isshow']==1 ? '已审' : ($v['isshow']==2 ? '退回' : '未审');
-				$v['view_url'] = $v['htmlurl']!='' ? get_domain().'/'.$v['htmlurl'].'/'.$v['id'] : '';
+				$v['view_url'] = gourl($v,$v['htmlurl']);
 				$v['edit_url'] = U('Extmolds/editmolds',array('id'=>$v['id'],'molds'=>$molds));
 				
 				foreach($this->fields_list as $vv){
@@ -177,8 +177,32 @@ class ExtmoldsController extends Controller
 			}
 			$data['userid'] = $this->admin['id'];
 			$data['molds'] = $molds;
+			if($data['tags']){
+				$data['tags'] = ','.$data['tags'].',';
+			}
 			$r = M($molds)->add($data);
 			if($r){
+				//tags处理
+				if($data['tags']){
+					$tags = explode(',',$data['tags']);
+					foreach($tags as $v){
+						if($v!=''){
+							$r = M('tags')->find(['keywords'=>$v]);
+							if(!$r){
+								$w['keywords'] = $v;
+								$w['newname'] = '';
+								$w['url'] = '';
+								$w['num'] = -1;
+								$w['isshow'] = 1;
+								$w['number'] = 1;
+								$w['target'] = '_blank';
+								M('tags')->add($w);
+							}else{
+								M('tags')->goInc(['keywords'=>$v],'number',1);
+							}
+						}
+					}
+				}
 				if(isset($data['ownurl'])){
 					M('customurl')->add(['molds'=>$molds,'tid'=>$data['tid'],'url'=>$data['ownurl'],'addtime'=>time(),'aid'=>$r]);
 				}
@@ -221,12 +245,12 @@ class ExtmoldsController extends Controller
 						if($customurl['aid']!=$this->frparam('id')){
 							JsonReturn(array('code'=>1,'msg'=>'已存在相同的自定义URL！'));
 						}else if($customurl['url']!=$data['ownurl']){
-							M('customurl')->update(['molds'=>$molds,'tid'=>$data['tid'],'aid'=>$this->frparam('id')],['url'=>$data['ownurl']]);
+							M('customurl')->update(['tid'=>$data['tid'],'aid'=>$this->frparam('id')],['url'=>$data['ownurl'],'molds'=>$molds]);
 						}
 						
 					}else{
-						if(M('customurl')->find(['aid'=>$this->frparam('id')])){
-							M('customurl')->update(['molds'=>$molds,'tid'=>$data['tid'],'aid'=>$this->frparam('id')],['url'=>$data['ownurl']]);
+						if(M('customurl')->find(['aid'=>$this->frparam('id'),'molds'=>$molds])){
+							M('customurl')->update(['tid'=>$data['tid'],'aid'=>$this->frparam('id')],['url'=>$data['ownurl'],'molds'=>$molds]);
 						}else{
 							M('customurl')->add(['molds'=>$molds,'tid'=>$data['tid'],'url'=>$data['ownurl'],'addtime'=>time(),'aid'=>$this->frparam('id')]);
 						}
@@ -235,8 +259,49 @@ class ExtmoldsController extends Controller
 				}else{
 					M('customurl')->delete(['molds'=>$molds,'aid'=>$this->frparam('id')]);
 				}
-				
+				if($data['tags']){
+					$data['tags'] = ','.$data['tags'].',';
+				}
 				if(M($molds)->update(array('id'=>$this->frparam('id')),$data)){
+					$old_tags = M($molds)->getField(['id'=>$this->frparam('id')],'tags');
+					if($old_tags!=$data['tags']){
+						
+						$a = $old_tags.$data['tags'];
+						$new = [];
+						$a = explode(',',$a);
+						foreach($a as $v){
+							if($v!='' && !in_array($v,$new)){
+								
+								$r = M('tags')->find(['keywords'=>$v]);
+								if(!$r){
+									$w['keywords'] = $v;
+									$w['newname'] = '';
+									$w['url'] = '';
+									$w['num'] = -1;
+									$w['isshow'] = 1;
+									$w['number'] = 1;
+									$w['target'] = '_blank';
+									M('tags')->add($w);
+								}else{
+									
+									if(strpos(','.$v.',',$old_tags)===false){
+										M('tags')->goInc(['keywords'=>$v],'number');
+									}else if(strpos(','.$v.',',$data['tags'])===false){
+										M('tags')->goDec(['keywords'=>$v],'number');
+									}
+									
+									
+								}
+								
+								$new[]=$v;
+							}
+						}
+						
+						
+						
+						
+					}
+					
 					if($this->webconf['release_award_open']==1 && $data['isshow']==1){
 						$award = round($this->webconf['release_award'],2);
 						$max_award = round($this->webconf['release_max_award'],2);

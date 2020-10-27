@@ -55,8 +55,10 @@
 						<option value="0">不限栏目</option>
 						{/if}
 					   {foreach $classtypes as $v}
+					   {if($v['molds']=='article')}
 					   {if($admin['classcontrol']==0 || $admin['isadmin']==1 || strpos($tids,','.$v['id'].',')!==false || $molds['iscontrol']==0)}
-					   <option {if($data['tid']==$v['id'])} selected="selected" {/if}  value="{$v['id']}">{fun str_repeat('--', $v['level']), $v['classname']}</option>
+					   <option {if($data['tid']==$v['id'])} selected="selected" {/if}  value="{$v['id']}">{fun str_repeat('--', $v['level'])}{$v['classname']}</option>
+					   {/if}
 					   {/if}
 					   {/foreach}
 					   
@@ -157,7 +159,7 @@
                     <label for="tjsx" class="layui-form-label">
                         <span class="x-red"></span>推荐属性
                     </label>
-                    <div class="layui-input-inline">
+                    <div class="layui-input-block">
                         <input type="checkbox" name="istop" value="1" title="置顶" {if($data['istop']==1)}checked{/if}>
 						<input type="checkbox" name="ishot" value="1" title="热点" {if($data['ishot']==1)}checked{/if}>
 						<input type="checkbox" name="istuijian" value="1" title="推荐" {if($data['istuijian']==1)}checked{/if}>
@@ -178,7 +180,7 @@
                     <label for="isshow" class="layui-form-label">
                         <span class="x-red"></span>是否审核
                     </label>
-                    <div class="layui-input-inline">
+                    <div class="layui-input-block">
                         <input type="radio" name="isshow" value="0" title="未审" {if($data['isshow']==0)}checked{/if}>
 						<input type="radio" name="isshow" value="1" title="已审" {if($data['isshow']==1)}checked{/if}>
 						<input type="radio" name="isshow" value="2" title="退回" {if($data['isshow']==2)}checked{/if}>

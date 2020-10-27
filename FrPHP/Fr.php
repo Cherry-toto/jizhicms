@@ -62,7 +62,6 @@ class FrPHP
 		if(file_exists($ext_fun)){
 			require($ext_fun);
 		}
-		
 		//引入扩展函数
 		$Extend = scandir(CORE_PATH.'/Extend');
 		//var_dump($Extend);
@@ -166,7 +165,11 @@ class FrPHP
 
 			}
 			
-			
+			$position = strpos($url,'?');
+			if($position!==false){
+				$param = substr($url,$position+1);
+				parse_str($param,$_GET);
+			}
 			
 		}else{
 			$open_url_route = [];
@@ -191,7 +194,7 @@ class FrPHP
 			$url = str_replace('/'.$terminal_path.'/','/',$url);
 			
 		}else{
-			if(isMobile() && $webconfig['iswap']==1){
+			if($webconfig['iswap']==1){
 				$webconfig['mobile_html'] = $webconfig['mobile_html']=='' ? '/' : $webconfig['mobile_html'];
 				$url = str_replace('/'.$webconfig['mobile_html'].'/','/',$url);
 			}else{
@@ -206,7 +209,8 @@ class FrPHP
         $controllerName = DefaultController;
         $actionName = DefaultAction;
         $param = array();
-
+		$tpl = get_template();
+		define('TEMPLATE',$tpl);
        // $url = urldecode($url);
         // 清除?之后的内容
         $position = strpos($url, '?');

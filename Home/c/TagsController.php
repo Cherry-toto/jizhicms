@@ -31,99 +31,35 @@ class TagsController extends CommonController
 				}
 			}
 			$this->tagname = $keywords;
-			$this->tags = M('tags')->find(['keywords'=>$keywords,'isshow'=>1]);
+			$sql = "keywords='".$keywords."' and isshow=1 and newname is null ";
+			$this->tags = M('tags')->find($sql);
 			if(!$this->tags){
 				Error('标签未找到或已删除！');
 			}
-			$lists_1 = M('article')->findAll(" tags like '%,".$keywords.",%' and isshow=1");
-			$lists_2 = M('product')->findAll(" tags like '%,".$keywords.",%' and isshow=1");
-			if($lists_1){
-				
-				$sql = [];
-				$sql[] = " molds = 'article' and isshow=1 ";
-				$sql[] = " isajax=0 ";//查询出不允许访问的字段，进行限制
-				$sql = implode(' and ',$sql);
-				
-				$fields_list = M('Fields')->findAll($sql,'orders desc,id asc');
-				if($fields_list){
-					$noallow = [];
-					foreach($fields_list as $v){
-						$noallow[]=$v['field'];
-					}
-					$newdata = [];
-					foreach($lists_1 as $v){
-						foreach($v as $kk=>$vv){
-							if(in_array($kk,$noallow)){
-								unset($v[$kk]);
-							}
-						}
-						$newdata[]=$v;
-					}
-					
-					$lists_1 = $newdata;
-				}
-				
-				
+			
+			$tables = isset($this->webconf['tag_table']) ? ($this->webconf['tag_table'] ? explode('|',$this->webconf['tag_table']) : ['article','product']) : ['article','product'];
+			$sqlx = [];
+			$sqln = [];
+			foreach($tables as $v){
+				$sqlx[] = " select id,tid,title,tags,keywords,molds,htmlurl,description,addtime,userid,member_id from ".DB_PREFIX.$v." where tags like '%,".$keywords.",%' and isshow=1 ";
+				$sqln[] = " select id from ".DB_PREFIX.$v." where tags like '%,".$keywords.",%' and isshow=1 ";
 			}
-			if($lists_2){
-				
-				$sql = [];
-				$sql[] = " molds = 'product' and isshow=1 ";
-				$sql[] = " isajax=0 ";//查询出不允许访问的字段，进行限制
-				$sql = implode(' and ',$sql);
-				
-				$fields_list = M('Fields')->findAll($sql,'orders desc,id asc');
-				if($fields_list){
-					$noallow = [];
-					foreach($fields_list as $v){
-						$noallow[]=$v['field'];
-					}
-					$newdata = [];
-					foreach($lists_2 as $v){
-						foreach($v as $kk=>$vv){
-							if(in_array($kk,$noallow)){
-								unset($v[$kk]);
-							}
-						}
-						$newdata[]=$v;
-					}
-					
-					$lists_2 = $newdata;
-				}
-				
-				
+			$sql = implode(' union all ',$sqlx);
+			$sqln = implode(' union all ',$sqln);
+			$page = new Page();
+			$data = $page->where($sql)->limit($limit)->page($this->frpage)->goCount($sqln)->goSql();
+			foreach($data as $k=>$v){
+				$data[$k]['url'] = gourl($v,$v['htmlurl']);
+				$data[$k]['classname'] = $this->classtypedata[$v['tid']]['classname'];
 			}
-			
-			
-			
-			$lists = ($lists_1 && count($lists_1) > 0) ? array_merge($lists_1,$lists_2) : array_merge($lists_2,$lists_1);
-			if($lists){
-				$arraypage = new \ArrayPage($lists);
-				if($keywords){
-					$param = ['page'=>$this->frparam('page',0,1),'tagname'=>$keywords];
-				}else{
-					$param = ['page'=>$this->frparam('page',0,1),'id'=>$id];
-				}
-				$limit = $this->frparam('limit',0,10);
-				$data = $arraypage->query($param)->setPage(['limit'=>$limit])->go();
-				
-				foreach($data as $k=>$v){
-					$data[$k]['url'] = gourl($v['id'],$v['htmlurl']);
-					$data[$k]['classname'] = $this->classtypedata[$v['tid']]['classname'];
-				}
-				
-				$this->pages = $arraypage->pageList();
-				$this->sum = $arraypage->sum;//总数据
-				$this->listpage = $arraypage->listpage;//分页数组-自定义分页可用
-				$this->prevpage = $arraypage->prevpage;//上一页
-				$this->nextpage = $arraypage->nextpage;//下一页
-				$this->allpage = $arraypage->allpage;//总页数
-				$this->lists = $data;
-			}else{
-				$this->pages = [];
-				$this->lists = [];
-			}
-			
+			$pages = $page->pageList(5,'/page/');
+			$this->pages = $pages;//组合分页
+			$this->lists = $data;//列表数据
+			$this->sum = $page->sum;//总数据
+			$this->listpage = $page->listpage;//分页数组-自定义分页可用
+			$this->prevpage = $page->prevpage;//上一页
+			$this->nextpage = $page->nextpage;//下一页
+			$this->allpage = $page->allpage;//总页数
 			
 			if($this->frparam('ajax')){
 				if($this->frparam('ajax_tpl')){
@@ -138,7 +74,7 @@ class TagsController extends CommonController
 			$this->display($this->template.'/tags-details');
 		}else{
 
-			$sql = 'isshow=1';
+			$sql = ' isshow=1 and newname is null ';
 			$page = new Page('tags');
 			
 			//手动设置分页条数

@@ -22,7 +22,7 @@ class UserController extends Controller
 		
 		$webconf = webConf();
 		$webcustom = get_custom();
-		$template = get_template();
+		$template = TEMPLATE;
 		$this->webconf = $webconf;
 		$this->webcustom = $webcustom;
 		$this->template = $template;
@@ -78,6 +78,25 @@ class UserController extends Controller
 			$this->islogin = false;
 			
 		}
+		$jznav = getCache('jznav');
+		if(!$jznav){
+			$nav = M('menu')->findAll(['isshow'=>1]);
+			$jznav = [];
+			if($nav){
+				foreach($nav as $v){
+					$menulist = unserialize($v['nav']);
+					foreach($menulist as $vv){
+						if($vv['status']==1){
+							$vv['url'] = $vv['tid'] ? $this->classtypedata[$vv['tid']]['url'] : $vv['gourl'];
+							$vv['title'] = $vv['title'] ? $vv['title'] : ($vv['tid'] ? $this->classtypedata[$vv['tid']]['classname'] : '');
+							$jznav[$v['id']][]=$vv;
+						}
+					}
+				}
+			}
+			setCache('jznav',$jznav);
+		}
+		$this->jznav = $jznav;
 	}
 	
 	function close(){
@@ -489,7 +508,7 @@ class UserController extends Controller
 		
 	}
 	function likesAction(){
-		$this->checklogin();
+		
 		if(!isset($_SESSION['return_url'])){
 			$referer = ($_SERVER['HTTP_REFERER']=='') ? U('user/likes') : $_SERVER['HTTP_REFERER'];
 			$_SESSION['return_url'] = $referer;
@@ -503,6 +522,33 @@ class UserController extends Controller
 			}
 			Error('参数错误！');
 		}
+		if(!$this->islogin){
+			if(isset($_SESSION['likes'])){
+				$likes = $_SESSION['likes'];
+			}else{
+				$likes = [];
+			}
+			$lk = $tid.'-'.$id;
+			if(in_array($lk,$likes)){
+				$newlikes = [];
+				foreach($likes as $v){
+					if($v!=$lk){
+						$newlikes[]=$v;
+					}
+				}
+				$msg = '已取消点赞！';
+				$likes = $newlikes;
+			}else{
+				$msg = '点赞成功！';
+				$likes[]=$lk;
+			}
+			$_SESSION['likes'] = $likes;
+			if($this->frparam('ajax')){
+				JsonReturn(['code'=>0,'msg'=>$msg,'url'=>$_SESSION['return_url']]);
+			}
+			Success($msg,$_SESSION['return_url']);
+		}
+		
 		$likes = explode('||',$this->member['likes']);
 		$new = [];
 		$add = $tid.'-'.$id;
@@ -638,7 +684,7 @@ class UserController extends Controller
 				if($v!=''){
 					$d = explode('-',$v);
 					//tid-id
-					if($d!=''){
+					if(is_array($d) && isset($this->classtypedata[$d[0]])){
 						$xdata=M($this->classtypedata[$d[0]]['molds'])->find(['id'=>$d[1]]);
 						if($xdata){
 							$lists[]=$xdata;
@@ -649,7 +695,7 @@ class UserController extends Controller
 		}
 		
 		$arraypage = new \ArrayPage($lists);
-		$data = $arraypage->query(['page'=>$this->frparam('page',0,1)])->setPage(['limit'=>10])->go();
+		$data = $arraypage->query(['page'=>$this->frparam('page',0,1)])->setPage(['limit'=>$this->frparam('limit',0,10)])->go();
 		foreach($data as $k=>$v){
 			$data[$k]['url'] = gourl($v['id'],$v['htmlurl']);
 			if(isset($this->classtypedata[$v['tid']])){
@@ -825,14 +871,13 @@ class UserController extends Controller
 		$this->checklogin();
 		$lists = [];
 		if($this->member['collection']!=''){
-			//$ids = substr($this->member['collection'],1,strlen($this->member['collection'])-2);
 			$collection = explode('||',$this->member['collection']);
 
 			foreach($collection as $v){
 				if($v!=''){
 					$d = explode('-',$v);
 					//tid-id
-					if($d!=''){
+					if(is_array($d) && isset($this->classtypedata[$d[0]])){
 						$xdata=M($this->classtypedata[$d[0]]['molds'])->find(['id'=>$d[1]]);
 						if($xdata){
 							$lists[] = $xdata;
@@ -843,7 +888,7 @@ class UserController extends Controller
 		}
 		
 		$arraypage = new \ArrayPage($lists);
-		$data = $arraypage->query(['page'=>$this->frparam('page',0,1)])->setPage(['limit'=>10])->go();
+		$data = $arraypage->query(['page'=>$this->frparam('page',0,1)])->setPage(['limit'=>$this->frparam('limit',0,10)])->go();
 		foreach($data as $k=>$v){
 			$data[$k]['url'] = gourl($v['id'],$v['htmlurl']);
 			if(isset($this->classtypedata[$v['tid']])){
@@ -1067,7 +1112,7 @@ class UserController extends Controller
 			unset($w['target']);
 			unset($w['ownurl']);
 			foreach($w as $k=>$v){
-				$w[$k] = format_param($v,1);
+				$w[$k] = format_param($v,4);
 			}
 			$w['molds'] = $this->frparam('molds',1);
 			//违禁词检测
@@ -2053,7 +2098,8 @@ class UserController extends Controller
     		$paytype = $this->frparam('paytype',0,1);
     		$w['userid'] = $this->member['id'];
     		$w['paytype'] = $paytype;
-    		if($paytype==1){
+			$buytarget = $this->frparam('buytarget',0,1);
+    		if($buytarget==1){
     			$w['ptype'] = 2;
     		}else{
     			$w['ptype'] = 3;

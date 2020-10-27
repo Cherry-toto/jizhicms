@@ -11,6 +11,8 @@
     </head>
     <body>
     <div class="x-body layui-anim layui-anim-up">
+		<div class="layui-card">
+		<div class="layui-card-body">
       <blockquote class="layui-elem-quote">{if($webconf['iswap']==1)}手机端已开启，sitemap将包含手机端URL，请注意【手机静态目录-[ {$webconf['mobile_html']} ]】{if($webconf['mobile_html']!='/')}，如果不生成静态文件，请改为[ / ]{/if}{else}手机端未开启，sitemap不会包含手机端URL{/if}</blockquote>
         <fieldset class="layui-elem-field">
             <legend>网站地图</legend>
@@ -120,7 +122,8 @@
                 </div>
             </div>
         </fieldset>
-       
+       </div>
+	   </div>
        
     </div>
         <script>

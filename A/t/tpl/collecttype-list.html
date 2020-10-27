@@ -18,11 +18,12 @@
         <i class="iconfont" style="line-height:30px">&#xe6aa;</i></a>
     </div>
     <div class="x-body">
-     
-     
-      <xblock>
+     	<div class="layui-card">
+			<div class="layui-card-body">
+			  <xblock>
+	  <a class="layui-btn layui-btn-sm"  onclick="x_admin_show('返回列表','{fun U('Collect/index')}')" >返回列表</a>
 	  {if(checkAction('Collect/collectTypeAdd'))}
-		<button class="layui-btn"  onclick="x_admin_show('添加分类','{fun U('Collect/collectTypeAdd')}')" ><i class="layui-icon">&#xe608;</i>添加分类</button>
+		<a class="layui-btn layui-btn-sm"  onclick="x_admin_show('添加分类','{fun U('Collect/collectTypeAdd')}')" >添加分类</a>
 	  {/if}
         <span class="x-right" style="line-height:40px"></span>
       </xblock>
@@ -45,10 +46,10 @@
 			
             <td class="td-manage">
 			{if(checkAction('Collect/collectTypeEdit'))}
-              <button class="layui-btn layui-btn layui-btn-xs"  onclick="x_admin_show('编辑','{fun U('Collect/collectTypeEdit',array('id'=>$v['id']))}')" ><i class="layui-icon">&#xe642;</i>编辑</button>
+              <a class="layui-btn layui-btn layui-btn-xs"  onclick="x_admin_show('编辑','{fun U('Collect/collectTypeEdit',array('id'=>$v['id']))}')" >编辑</a>
 			{/if}
 			{if(checkAction('Collect/collectTypeDelete'))}
-              <button class="layui-btn-danger layui-btn layui-btn-xs"  onclick="collectType_del(this,'{$v['id']}')" href="javascript:;" ><i class="layui-icon">&#xe640;</i>删除</button>
+              <a class="layui-btn-danger layui-btn layui-btn-xs"  onclick="collectType_del(this,'{$v['id']}')" href="javascript:;" >删除</a>
 			{/if}  
             </td>
           </tr>
@@ -56,10 +57,13 @@
          
         </tbody>
       </table>
+			</div>
+		</div>
+     
+    
     </div>
-    <style type="text/css">
-      
-    </style>
+    
+	
     <script>
       layui.use(['form'], function(){
         form = layui.form;

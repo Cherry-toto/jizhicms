@@ -14,6 +14,8 @@
             <a class="layui-btn layui-btn-small" style="line-height:1.6em;margin-top:3px;float:right"  href="javascript:location.replace(location.href);" title="刷新"><i class="iconfont" style="line-height:30px">&#xe6aa;</i></a>
         </div>
         <div class="x-body">
+		<div class="layui-card">
+		  <div class="layui-card-body">
           <div class="layui-row">
 			<div class="layui-collapse">
 		    <div class="layui-colla-item">
@@ -26,9 +28,6 @@
 					  <option value="">筛选上传入口</option>
 					   <option {if($path=='Admin')} selected="selected" {/if}value="Admin">后台</option>
 					   <option {if($path=='Home')} selected="selected" {/if}value="Home">前台</option>
-					   
-					   
-					
 					  </select>
 					</div>
 					<div class="layui-input-inline">
@@ -47,7 +46,7 @@
 					  <option value="">筛选栏目</option>
 					   {foreach $classtypes as $v}
 					 
-					   <option {if($tid==$v['id'])} selected="selected" {/if}value="{$v['id']}">{fun str_repeat('--', $v['level']), $v['classname']}</option>
+					   <option {if($tid==$v['id'])} selected="selected" {/if}value="{$v['id']}">{fun str_repeat('--', $v['level'])}{$v['classname']}</option>
 					  
 					   {/foreach}
 					
@@ -63,12 +62,12 @@
 		  
 		  </div>
           <xblock>
-		  <button class="layui-btn layui-btn-danger" onclick="delAll()"><i class="layui-icon"></i>批量删除</button>
+		  <a class="layui-btn layui-btn-danger layui-btn-sm" onclick="delAll()">批量删除</a>
 		  
 		
 		   <span class="x-right" style="line-height:40px">共有数据：{$sum} 条</span>
 		  </xblock>
-           <div style="width:100%;  overflow:scroll;overflow-y: hidden">
+          
         <table border="1" rules="all" style="width:100%; height:100px; text-align:center;white-space:nowrap" class="layui-table layui-form">
                 <thead>
                     <tr>
@@ -140,20 +139,20 @@
                             {fun date('Y-m-d H:i:s',$v['addtime'])} 
                         </td>
                         <td class="td-manage">
-							<button class="layui-btn-danger layui-btn layui-btn-xs"  onclick="article_del(this,'{$v['id']}')" href="javascript:;" ><i class="layui-icon">&#xe640;</i>删除</button>
+							<button class="layui-btn-danger layui-btn layui-btn-xs"  onclick="article_del(this,'{$v['id']}')" href="javascript:;" >删除</button>
                         </td>
 						
                     </tr>
 					{/foreach}
                 </tbody>
             </table>
-		</div>
 		 
             <div class="page">
 				{$pages}
 			  </div>
         </div>
-     
+        </div>
+        </div>
        <script>
 	  
 	   

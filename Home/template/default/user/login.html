@@ -165,7 +165,7 @@ function checklogin(){
   }
   if($("#jz_login").is(":checked")){
     $("#isremember").val(1);
-    setCookie('jizhi_username',$("#tel").val());//设置用户名
+    setCookie('jizhi_username',$("#tel").val(),7);//设置用户名
     setCookie('jizhi_login_token',$("#token").val(),7);//设置7天有效期
   }else{
     $("#isremember").val(0);

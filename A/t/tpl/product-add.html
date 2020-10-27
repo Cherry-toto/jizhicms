@@ -55,7 +55,7 @@
 					   {foreach $classtypes as $v}
 					   {if($v['molds']=='product')}
 					   {if($admin['classcontrol']==0 || $admin['isadmin']==1 || strpos($tids,','.$v['id'].',')!==false || $molds['iscontrol']==0)}
-					   <option {if($tid==$v['id'])}selected{/if} value="{$v['id']}">{fun str_repeat('--', $v['level']), $v['classname']}</option>
+					   <option {if($tid==$v['id'])}selected{/if} value="{$v['id']}">{fun str_repeat('--', $v['level'])}{$v['classname']}</option>
 					   {/if}
 					   {/if}
 					   {/foreach}
@@ -354,9 +354,9 @@
 					if(res.code==0){
 						var fileurl = $("#pictures").val();
 						{if($webconf['ispicsdes']==1)}
-						$(".preview_pictures").append('<div class="upload-icon-img layui-input-inline" ><div class="upload-pre-item"><img src="' + res.url + '" class="img" width="200px" height="200px" ><input name="pictures_urls[]" type="text" class="layui-input"  value="' + res.url + '" /><input name="pictures_des[]" type="text" class="layui-input"  placeholder="文字描述" value="" /><i  class="layui-icon delete_file" ></i></div></div>');
+						$(".preview_pictures").append('<div class="upload-icon-img layui-input-inline" ><div class="upload-pre-item"><img src="' + res.url + '" class="img" width="200px" height="200px" ><input name="pictures_urls[]" type="text" class="layui-input"  value="' + res.url + '" /><input name="pictures_des[]" type="text" class="layui-input"  placeholder="文字描述" value="" /><a class="layui-btn layui-btn-sm layui-btn-radius layui-btn-danger delete_file">删除</a><a class="layui-btn layui-btn-sm layui-btn-radius imgorder " onclick="goleft(this)">左移</a><a class="layui-btn layui-btn-sm layui-btn-radius imgorder " onclick="goright(this)">右移</a></div></div>');
 						{else}
-						$(".preview_pictures").append('<div class="upload-icon-img layui-input-inline" ><div class="upload-pre-item"><img src="' + res.url + '" class="img" width="200px" height="200px" ><input name="pictures_urls[]" type="text" class="layui-input"  value="' + res.url + '" /><i  class="layui-icon delete_file" ></i></div></div>');
+						$(".preview_pictures").append('<div class="upload-icon-img layui-input-inline" ><div class="upload-pre-item"><img src="' + res.url + '" class="img" width="200px" height="200px" ><input name="pictures_urls[]" type="text" class="layui-input"  value="' + res.url + '" /><a class="layui-btn layui-btn-sm layui-btn-radius layui-btn-danger delete_file">删除</a><a class="layui-btn layui-btn-sm layui-btn-radius imgorder " onclick="goleft(this)">左移</a><a class="layui-btn layui-btn-sm layui-btn-radius imgorder " onclick="goright(this)">右移</a></div></div>');
 						{/if}
 					}else{
 						 layer.alert(res.error, {icon: 5});

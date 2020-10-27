@@ -50,7 +50,7 @@
                   autocomplete="off" class="layui-input">
               </div>
 			  <div class="layui-form-mid layui-word-aux">
-                  <span class="x-red">*</span>将会成为您的登入名
+                  <span class="x-red">*</span>必须唯一
               </div>
           </div>
           <div class="layui-form-item">
@@ -62,14 +62,14 @@
                   autocomplete="off" class="layui-input">
               </div>
 			  <div class="layui-form-mid layui-word-aux">
-                  <span class="x-red">*</span>将会成为您的登入名
+                  <span class="x-red">*</span>必须唯一
               </div>
           </div>
 		  
 		  {if($admin['isadmin'])}
 		 
           <div class="layui-form-item">
-              <label class="layui-form-label"><span class="x-red">*</span>分组</label>
+              <label class="layui-form-label"><span class="x-red"></span>分组</label>
               <div class="layui-input-inline">
 			  
                 <select class="layui-input" name="gid" lay-verify="required">
@@ -94,7 +94,15 @@
                   autocomplete="off" class="layui-input">
               </div>
           </div>
-		  
+		  <div class="layui-form-item">
+              <label for="money" class="layui-form-label">
+                  钱包
+              </label>
+              <div class="layui-input-inline">
+                  <input type="text" id="money" name="money" value="0" 
+                  autocomplete="off" class="layui-input">
+              </div>
+          </div>
 		   <div class="layui-form-item">
 				<label for="litpic" class="layui-form-label">
 					头像  

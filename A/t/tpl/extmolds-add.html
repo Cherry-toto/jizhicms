@@ -4,6 +4,8 @@
     <head>
        <meta charset="UTF-8">
         {include="style"}
+		<link rel="stylesheet" type="text/css" href="{__Tpl_style__}/style/tags/jquery.tagsinput.css" />
+		<script type="text/javascript" charset="utf-8" src="{__Tpl_style__}/style/tags/jquery.tagsinput.js"></script>
         {include="edit"}
 		
     </head>
@@ -12,7 +14,7 @@
 	 <div class="x-nav">
             <span class="layui-breadcrumb">
               <a><cite>首页</cite></a>
-              <a><cite>扩展模块管理</cite></a>
+              <a><cite>扩展模型管理</cite></a>
               <a><cite>新增{$molds['name']}</cite></a>
             </span>
             <a class="layui-btn layui-btn-small" style="line-height:1.6em;margin-top:3px;float:right"  href="javascript:location.replace(location.href);" title="刷新"><i class="iconfont" style="line-height:30px">&#xe6aa;</i></a>
@@ -43,7 +45,7 @@
 					   {foreach $classtypes as $v}
 					   {if($v['molds']==$molds['biaoshi'])}
 					   {if($admin['classcontrol']==0 || $admin['isadmin']==1 || strpos($tids,','.$v['id'].',')!==false || $molds['iscontrol']==0)}
-					   <option {if($tid==$v['id'])}selected{/if} value="{$v['id']}">{fun str_repeat('--', $v['level']), $v['classname']}</option>
+					   <option {if($tid==$v['id'])}selected{/if} value="{$v['id']}">{fun str_repeat('--', $v['level'])}{$v['classname']}</option>
 					   {/if}
 					   {/if}
 					   {/foreach}
@@ -59,7 +61,15 @@
 				 <span id="ext_fields"></span>
 				
 				
-				
+				 <div class="layui-form-item layui-form-text">
+                    <label for="tags" class="layui-form-label">
+                        <span class="x-red"></span>TAG标签 [ 按Enter回车自动添加 ]
+                    </label>
+                    <div class="layui-input-block">
+                       
+						 <input id="tags" type="text" name="tags" class="tags" value=""  autocomplete="off" class="layui-input"  />
+                    </div>
+                 </div>
 				 <div class="layui-form-item" pane>
                     <label for="isshow" class="layui-form-label">
                         <span class="x-red"></span>是否审核
@@ -100,6 +110,12 @@
       
         <script>
 		{include="fields"}
+			$(function() {
+			  $('#tags').tagsInput({
+					width:'auto',
+					defaultText:'添加一个标签',
+			  });	
+			})
             layui.use(['laydate','form','layer','upload'], function(){
                 $ = layui.jquery;
               var form = layui.form

@@ -184,10 +184,7 @@ class FieldsController extends CommonController
 		$this->display('fields-add');
 	}
 	
-
-	
-	
-	public function editFields(){
+	function editFields(){
 		
 		if($this->frparam('go',1)==1){
 
@@ -366,12 +363,17 @@ class FieldsController extends CommonController
 	}
 	
 	function get_fields(){
-		$tid = $this->frparam('tid');
+		$tid = $this->frparam('tid',0,0);
 		$sql = array();
-		if($tid!=0){
+		$molds = strtolower($this->frparam('molds',1));
+		if(in_array($molds,['tags','message','comment','orders','admin','collect_type','fields','buylog','link_type','links','layout','level_group','level','member_group','molds','pictures','plugins','power','ruler','sysconfig','task','collect','member','menu'])){
+			if($tid!=0){
+				$sql[] = " tids like '%,".$tid.",%' "; 
+			}
+		}else{
 			$sql[] = " tids like '%,".$tid.",%' "; 
 		}
-		$molds = $this->frparam('molds',1);
+		
 		$id = $this->frparam('id');
 		if($id){
 			$data = M($molds)->find(array('id'=>$id));
@@ -390,11 +392,14 @@ class FieldsController extends CommonController
 			switch($v['fieldtype']){
 				case 1:
 				$l .= '<div class="layui-form-item">
-                    <label for="'.$v['field'].'" class="layui-form-label">
-                        <span class="x-red"></span>'.$v['fieldname'].'
+                    <label for="'.$v['field'].'" class="layui-form-label">';
+				if($v['ismust']==1){
+				$l .= '<span class="x-red">*</span>';	
+				}
+                $l .= $v['fieldname'].'
                     </label>
-                    <div class="layui-input-block">
-                        <input type="text" id="'.$v['field'].'" value="'.$data[$v['field']].'" name="'.$v['field'].'" ';
+                    <div class="layui-input-inline">
+                        <input type="text" id="'.$v['field'].'" style="width:500px;" value="'.$data[$v['field']].'" name="'.$v['field'].'" ';
 				if($v['ismust']==1){
 					$l.=' required="" lay-verify="required" ';
 				}		
@@ -408,8 +413,11 @@ class FieldsController extends CommonController
 				break;
 				case 2:
 				$l .= '<div class="layui-form-item  layui-form-text">
-                    <label for="'.$v['field'].'" class="layui-form-label">
-                        <span class="x-red"></span>'.$v['fieldname'].'
+                    <label for="'.$v['field'].'" class="layui-form-label">';
+				if($v['ismust']==1){
+				$l .= '<span class="x-red">*</span>';	
+				}
+                $l .= $v['fieldname'].'
                     </label>
                     <div class="layui-input-block">
                         <textarea  class="layui-textarea" id="'.$v['field'].'"  name="'.$v['field'].'" ';
@@ -430,8 +438,11 @@ class FieldsController extends CommonController
 				break;
 				case 4:
 				$l .= '<div class="layui-form-item">
-                    <label for="'.$v['field'].'" class="layui-form-label">
-                        <span class="x-red"></span>'.$v['fieldname'].'
+                    <label for="'.$v['field'].'" class="layui-form-label">';
+				if($v['ismust']==1){
+				$l .= '<span class="x-red">*</span>';	
+				}
+                $l .= $v['fieldname'].'
                     </label>
                     <div class="layui-input-block">
                         <input type="number" id="'.$v['field'].'" value="'.$data[$v['field']].'" name="'.$v['field'].'" ';
@@ -448,8 +459,11 @@ class FieldsController extends CommonController
 				break;
 				case 14:
 				$l .= '<div class="layui-form-item">
-                    <label for="'.$v['field'].'" class="layui-form-label">
-                        <span class="x-red"></span>'.$v['fieldname'].'
+                    <label for="'.$v['field'].'" class="layui-form-label">';
+				if($v['ismust']==1){
+				$l .= '<span class="x-red">*</span>';	
+				}
+                $l .= $v['fieldname'].'
                     </label>
                     <div class="layui-input-block">
                         <input type="text" id="'.$v['field'].'" value="'.$data[$v['field']].'" name="'.$v['field'].'" ';
@@ -467,8 +481,11 @@ class FieldsController extends CommonController
 				case 11:
 				$laydate = ($data[$v['field']]=='' || $data[$v['field']]==0)?time():$data[$v['field']];
 				$l .= '<div class="layui-form-item">
-                    <label for="'.$v['field'].'" class="layui-form-label">
-                        <span class="x-red"></span>'.$v['fieldname'].'
+                    <label for="'.$v['field'].'" class="layui-form-label">';
+				if($v['ismust']==1){
+				$l .= '<span class="x-red">*</span>';	
+				}
+                $l .= $v['fieldname'].'
                     </label>
                     <div class="layui-input-block">
                         <input id="laydate_'.$v['field'].'" value="'.date('Y-m-d H:i:s',$laydate).'" name="'.$v['field'].'" ';
@@ -487,8 +504,11 @@ layui.use("laydate", function(){
 				break;
 				case 5:
 				$l .= '<div class="layui-form-item">
-                    <label for="'.$v['field'].'" class="layui-form-label">
-						<span class="x-red">*</span>'.$v['fieldname'].'  
+                    <label for="'.$v['field'].'" class="layui-form-label">';
+				if($v['ismust']==1){
+				$l .= '<span class="x-red">*</span>';	
+				}
+                $l .= $v['fieldname'].'  
                     </label>
 					
 					
@@ -561,9 +581,9 @@ layui.use("laydate", function(){
 						foreach(explode('||',$data[$v['field']]) as $vv){
 							if($this->webconf['ispicsdes']==1){
 								$pic = explode('|',$vv);
-								$l.='<div class="upload-icon-img layui-input-inline" ><div class="upload-pre-item"><img src="'.$pic[0].'" class="img" width="200px" height="200px" ><input name="'.$v['field'].'_urls[]" type="text" class="layui-input"  value="'.$pic[0].'" /><input name="'.$v['field'].'_des[]" type="text" class="layui-input" placeholder="文字描述"  value="'.$pic[1].'" /><i  class="layui-icon delete_file" >&#xe640;</i></div></div>';
+								$l.='<div class="upload-icon-img layui-input-inline" ><div class="upload-pre-item"><img src="'.$pic[0].'" class="img" width="200px" height="200px" ><input name="'.$v['field'].'_urls[]" type="text" class="layui-input"  value="'.$pic[0].'" /><input name="'.$v['field'].'_des[]" type="text" class="layui-input" placeholder="文字描述"  value="'.$pic[1].'" /><a class="layui-btn layui-btn-sm layui-btn-radius layui-btn-danger delete_file">删除</a><a class="layui-btn layui-btn-sm layui-btn-radius imgorder " onclick="goleft(this)">左移</a><a class="layui-btn layui-btn-sm layui-btn-radius imgorder " onclick="goright(this)">右移</a></div></div>';
 							}else{
-								$l.='<div class="upload-icon-img layui-input-inline" ><div class="upload-pre-item"><img src="'.$vv.'" class="img" width="200px" height="200px" ><input name="'.$v['field'].'_urls[]" type="text" class="layui-input"  value="'.$vv.'" /><i  class="layui-icon delete_file" >&#xe640;</i></div></div>';
+								$l.='<div class="upload-icon-img layui-input-inline" ><div class="upload-pre-item"><img src="'.$vv.'" class="img" width="200px" height="200px" ><input name="'.$v['field'].'_urls[]" type="text" class="layui-input"  value="'.$vv.'" /><a class="layui-btn layui-btn-sm layui-btn-radius layui-btn-danger delete_file">删除</a><a class="layui-btn layui-btn-sm layui-btn-radius imgorder " onclick="goleft(this)">左移</a><a class="layui-btn layui-btn-sm layui-btn-radius imgorder " onclick="goright(this)">右移</a></div></div>';
 							}
 							
 						}
@@ -592,9 +612,9 @@ layui.use("laydate", function(){
 							layer.closeAll("loading"); //关闭loading
 							if(res.code==0){';
 							if($this->webconf['ispicsdes']==1){
-								$l.='$(".preview_'.$v['field'].'").append(\'<div class="upload-icon-img layui-input-inline" ><div class="upload-pre-item"><img src="\' + res.url + \'" class="img" width="200px" height="200px" ><input name="'.$v['field'].'_urls[]" type="text" class="layui-input"  value="\' + res.url + \'" /><input name="'.$v['field'].'_des[]" type="text" class="layui-input"  placeholder="文字描述" value="" /><i  class="layui-icon delete_file" >&#xe640;</i></div></div>\');';
+								$l.='$(".preview_'.$v['field'].'").append(\'<div class="upload-icon-img layui-input-inline" ><div class="upload-pre-item"><img src="\' + res.url + \'" class="img" width="200px" height="200px" ><input name="'.$v['field'].'_urls[]" type="text" class="layui-input"  value="\' + res.url + \'" /><input name="'.$v['field'].'_des[]" type="text" class="layui-input"  placeholder="文字描述" value="" /><a class="layui-btn layui-btn-sm layui-btn-radius layui-btn-danger delete_file">删除</a><a class="layui-btn layui-btn-sm layui-btn-radius imgorder " onclick="goleft(this)">左移</a><a class="layui-btn layui-btn-sm layui-btn-radius imgorder " onclick="goright(this)">右移</a></div></div>\');';
 							}else{
-								$l.='$(".preview_'.$v['field'].'").append(\'<div class="upload-icon-img layui-input-inline" ><div class="upload-pre-item"><img src="\' + res.url + \'" class="img" width="200px" height="200px" ><input name="'.$v['field'].'_urls[]" type="text" class="layui-input"  value="\' + res.url + \'" /><i  class="layui-icon delete_file" >&#xe640;</i></div></div>\');';
+								$l.='$(".preview_'.$v['field'].'").append(\'<div class="upload-icon-img layui-input-inline" ><div class="upload-pre-item"><img src="\' + res.url + \'" class="img" width="200px" height="200px" ><input name="'.$v['field'].'_urls[]" type="text" class="layui-input"  value="\' + res.url + \'" /><a class="layui-btn layui-btn-sm layui-btn-radius layui-btn-danger delete_file">删除</a><a class="layui-btn layui-btn-sm layui-btn-radius imgorder " onclick="goleft(this)">左移</a><a class="layui-btn layui-btn-sm layui-btn-radius imgorder " onclick="goright(this)">右移</a></div></div>\');';
 							}
 							
 							
@@ -614,8 +634,11 @@ layui.use("laydate", function(){
 				break;
 				case 7:
 				$l .= '<div class="layui-form-item">
-                    <label for="'.$v['field'].'" class="layui-form-label">
-                        <span class="x-red">*</span>'.$v['fieldname'].'  
+                    <label for="'.$v['field'].'" class="layui-form-label">';
+				if($v['ismust']==1){
+				$l .= '<span class="x-red">*</span>';	
+				}
+                $l .= $v['fieldname'].'  
                     </label>
                     <div class="layui-input-inline">
 						<select name="'.$v['field'].'" lay-search="" id="'.$v['field'].'" ><option value="">请选择</option>';
@@ -642,8 +665,11 @@ layui.use("laydate", function(){
 				break;
 				case 12:
 				$l .= '<div class="layui-form-item" pane>
-                    <label for="'.$v['field'].'" class="layui-form-label">
-                        <span class="x-red">*</span>'.$v['fieldname'].'  
+                    <label for="'.$v['field'].'" class="layui-form-label">';
+				if($v['ismust']==1){
+				$l .= '<span class="x-red">*</span>';	
+				}
+                $l .= $v['fieldname'].'  
                     </label>
                     <div class="layui-input-inline">';
 				foreach(explode(',',$v['body']) as $vv){
@@ -668,8 +694,11 @@ layui.use("laydate", function(){
 				break;
 				case 8:
 				$l .= '<div class="layui-form-item">
-						<label for="'.$v['field'].'" class="layui-form-label">
-							<span class="x-red">*</span>'.$v['fieldname'].'  
+						<label for="'.$v['field'].'" class="layui-form-label">';
+				if($v['ismust']==1){
+				$l .= '<span class="x-red">*</span>';	
+				}
+                $l .= $v['fieldname'].'  
 						</label>
 						<div class="layui-input-block">';
 				foreach(explode(',',$v['body']) as $vv){
@@ -695,8 +724,11 @@ layui.use("laydate", function(){
 				break;
 				case 9:
 				$l .= '<div class="layui-form-item">
-                    <label for="'.$v['field'].'" class="layui-form-label">
-						<span class="x-red">*</span>'.$v['fieldname'].'  
+                    <label for="'.$v['field'].'" class="layui-form-label">';
+				if($v['ismust']==1){
+				$l .= '<span class="x-red">*</span>';	
+				}
+                $l .= $v['fieldname'].'  
                     </label>
 					
                     <div class="layui-input-inline">
@@ -766,9 +798,9 @@ layui.use("laydate", function(){
 						foreach(explode('||',$data[$v['field']]) as $vv){
 							if($this->webconf['ispicsdes']==1){
 								$pic = explode('|',$vv);
-								$l.='<div class="upload-icon-img layui-input-inline" ><div class="upload-pre-item"><input name="'.$v['field'].'_urls[]" type="text" class="layui-input"  value="'.$pic[0].'" /><input name="'.$v['field'].'_des[]" type="text" class="layui-input" placeholder="文字描述"  value="'.$pic[1].'" /><i  class="layui-icon delete_file" >&#xe640;</i></div></div>';
+								$l.='<div class="upload-icon-img layui-input-inline" ><div class="upload-pre-item"><input name="'.$v['field'].'_urls[]" type="text" class="layui-input"  value="'.$pic[0].'" /><input name="'.$v['field'].'_des[]" type="text" class="layui-input" placeholder="文字描述"  value="'.$pic[1].'" /><a class="layui-btn layui-btn-sm layui-btn-radius layui-btn-danger delete_file">删除</a><a class="layui-btn layui-btn-sm layui-btn-radius imgorder " onclick="goleft(this)">左移</a><a class="layui-btn layui-btn-sm layui-btn-radius imgorder " onclick="goright(this)">右移</a></div></div>';
 							}else{
-								$l.='<div class="upload-icon-img layui-input-inline" ><div class="upload-pre-item"><input name="'.$v['field'].'_urls[]" type="text" class="layui-input"  value="'.$vv.'" /><i  class="layui-icon delete_file" >&#xe640;</i></div></div>';
+								$l.='<div class="upload-icon-img layui-input-inline" ><div class="upload-pre-item"><input name="'.$v['field'].'_urls[]" type="text" class="layui-input"  value="'.$vv.'" /><a class="layui-btn layui-btn-sm layui-btn-radius layui-btn-danger delete_file">删除</a><a class="layui-btn layui-btn-sm layui-btn-radius imgorder " onclick="goleft(this)">左移</a><a class="layui-btn layui-btn-sm layui-btn-radius imgorder " onclick="goright(this)">右移</a></div></div>';
 							}
 							
 						}
@@ -797,9 +829,9 @@ layui.use("laydate", function(){
 							layer.closeAll("loading"); //关闭loading
 							if(res.code==0){';
 							if($this->webconf['ispicsdes']==1){
-								$l.='$(".preview_'.$v['field'].'").append(\'<div class="upload-icon-img layui-input-inline" ><div class="upload-pre-item"><input name="'.$v['field'].'_urls[]" type="text" class="layui-input"  value="\' + res.url + \'" /><input name="'.$v['field'].'_des[]" type="text" class="layui-input" placeholder="文字描述"  value="" /><i  class="layui-icon delete_file" >&#xe640;</i></div></div>\');';
+								$l.='$(".preview_'.$v['field'].'").append(\'<div class="upload-icon-img layui-input-inline" ><div class="upload-pre-item"><input name="'.$v['field'].'_urls[]" type="text" class="layui-input"  value="\' + res.url + \'" /><input name="'.$v['field'].'_des[]" type="text" class="layui-input" placeholder="文字描述"  value="" /><a class="layui-btn layui-btn-sm layui-btn-radius layui-btn-danger delete_file">删除</a><a class="layui-btn layui-btn-sm layui-btn-radius imgorder " onclick="goleft(this)">左移</a><a class="layui-btn layui-btn-sm layui-btn-radius imgorder " onclick="goright(this)">右移</a></div></div>\');';
 							}else{
-								$l.='$(".preview_'.$v['field'].'").append(\'<div class="upload-icon-img layui-input-inline" ><div class="upload-pre-item"><input name="'.$v['field'].'_urls[]" type="text" class="layui-input"  value="\' + res.url + \'" /><i  class="layui-icon delete_file" >&#xe640;</i></div></div>\');';
+								$l.='$(".preview_'.$v['field'].'").append(\'<div class="upload-icon-img layui-input-inline" ><div class="upload-pre-item"><input name="'.$v['field'].'_urls[]" type="text" class="layui-input"  value="\' + res.url + \'" /><a class="layui-btn layui-btn-sm layui-btn-radius layui-btn-danger delete_file">删除</a><a class="layui-btn layui-btn-sm layui-btn-radius imgorder " onclick="goleft(this)">左移</a><a class="layui-btn layui-btn-sm layui-btn-radius imgorder " onclick="goright(this)">右移</a></div></div>\');';
 							}
 							
 							$l.='
@@ -819,8 +851,11 @@ layui.use("laydate", function(){
 				case 13:
 				//tid,field
 				$l .= '<div class="layui-form-item">
-                    <label for="'.$v['field'].'" class="layui-form-label">
-                        <span class="x-red">*</span>'.$v['fieldname'].'  
+                    <label for="'.$v['field'].'" class="layui-form-label">';
+				if($v['ismust']==1){
+				$l .= '<span class="x-red">*</span>';	
+				}
+                $l .= $v['fieldname'].'  
                     </label>
                     <div class="layui-input-inline">
 						<select name="'.$v['field'].'" lay-search="" id="'.$v['field'].'" >';
@@ -856,10 +891,6 @@ layui.use("laydate", function(){
 		echo $l;
 	}
 	
-	
-	
-	
-	
 	function deleteFields(){
 		$id = $this->frparam('id');
 		if($id){
@@ -881,9 +912,6 @@ layui.use("laydate", function(){
 		}
 	}
 	
-	
-	
-	//修改排序
 	function changeOrders(){
 		
 		$w['orders'] = $this->frparam('orders',0,0);
@@ -894,7 +922,30 @@ layui.use("laydate", function(){
 		JsonReturn(array('code'=>0,'info'=>'修改成功！'));
 	}
 	
-	
+	function changeTid(){
+		$ids = $this->frparam('data',1);
+		if(!$ids){
+			JsonReturn(['code'=>1,'msg'=>'请选择字段！']);
+		}
+		$tid = $this->frparam('tid');
+		if(!$tid){
+			JsonReturn(['code'=>1,'msg'=>'请选择栏目！']);
+		}
+		$sql = 'id in('.$ids.') ';
+		$lists = M('fields')->findAll($sql);
+		foreach($lists as $v){
+			if(strpos($v['tids'],','.$tid.',')===false){
+				if($v['tids']){
+					$v['tids'] .= $tid.',';
+				}else{
+					$v['tids'] = ','.$tid.',';
+				}
+				M('fields')->update(['id'=>$v['id']],['tids'=>$v['tids']]);
+			}
+		}
+		
+		JsonReturn(['code'=>0,'msg'=>'操作成功！']);
+	}
 	
 	
 	

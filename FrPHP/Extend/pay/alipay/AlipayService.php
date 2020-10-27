@@ -72,6 +72,56 @@ class AlipayService
         $commonConfigs["sign"] = $this->generateSign($commonConfigs, $commonConfigs['sign_type']);
         return $this->buildRequestForm($commonConfigs);
     }
+	/**
+     * 发起订单
+     * @return array
+     */
+    public function dmfPay()
+    {
+        //请求参数
+        $requestConfigs = array(
+            'out_trade_no'=>$this->outTradeNo,
+            'total_amount'=>$this->totalFee, //单位 元
+            'subject'=>$this->orderName,  //订单标题
+            'timeout_express'=>'2h'       //该笔订单允许的最晚付款时间，逾期将关闭交易。取值范围：1m～15d。m-分钟，h-小时，d-天，1c-当天（1c-当天的情况下，无论交易何时创建，都在0点关闭）。 该参数数值不接受小数点， 如 1.5h，可转换为 90m。
+        );
+        $commonConfigs = array(
+            //公共参数
+            'app_id' => $this->appId,
+            'method' => 'alipay.trade.precreate',             //接口名称
+            'format' => 'JSON',
+            'charset'=>$this->charset,
+            'sign_type'=>'RSA2',
+            'timestamp'=>date('Y-m-d H:i:s'),
+            'version'=>'1.0',
+            'notify_url' => $this->notifyUrl,
+            'biz_content'=>json_encode($requestConfigs),
+        );
+        $commonConfigs["sign"] = $this->generateSign($commonConfigs, $commonConfigs['sign_type']);
+        $result = $this->curlPost('https://openapi.alipay.com/gateway.do?charset='.$this->charset,$commonConfigs);
+        return json_decode($result,true);
+    }
+	public function curlPost($url = '', $postData = '', $options = array())
+    {
+        if (is_array($postData)) {
+            $postData = http_build_query($postData);
+        }
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($ch, CURLOPT_POST, 1);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $postData);
+        curl_setopt($ch, CURLOPT_TIMEOUT, 30); //设置cURL允许执行的最长秒数
+        if (!empty($options)) {
+            curl_setopt_array($ch, $options);
+        }
+        //https请求 不验证证书和host
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
+        $data = curl_exec($ch);
+        curl_close($ch);
+        return $data;
+    }
     /**
      * 建立请求，以表单HTML形式构造（默认）
      * @param $para_temp 请求参数数组

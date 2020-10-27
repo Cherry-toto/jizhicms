@@ -61,11 +61,14 @@ class ClasstypeController extends CommonController
 			if(in_array(strtolower($htmlurl),array('message','user','comment','home','common','order','tags','wechat','login'))){
 				JsonReturn(array('status'=>0,'info'=>'URL链接命名不能是：message,user,comment,home,common,order,tags,wechat,login,jzpay'));
 			}
-			
+			if(stripos($htmlurl,'.php')!==false){
+				JsonReturn(array('status'=>0,'info'=>'非法URL'));
+			}
 
 			$w['pid'] = $this->frparam('pid');
 			$w['orders'] = $this->frparam('orders');
 			$w['classname'] = $this->frparam('classname',1);
+			$w['seo_classname'] = $this->frparam('seo_classname',1) ? $this->frparam('seo_classname',1) : $this->frparam('classname',1);
 			$w['molds'] = $this->frparam('molds',1);
 			$w['description'] = $this->frparam('description',1);
 			$w['keywords'] = $this->frparam('keywords',1);
@@ -133,6 +136,9 @@ class ClasstypeController extends CommonController
 			
 			if(in_array(strtolower($htmlurl),array('message','user','comment','home','common','order','tags','wechat','login'))){
 				JsonReturn(array('status'=>0,'info'=>'URL链接命名不能是：message,user,comment,home,common,order,tags,wechat,login,jzpay'));
+			}
+			if(stripos($htmlurl,'.php')!==false){
+				JsonReturn(array('status'=>0,'info'=>'非法URL'));
 			}
 			$w['pid'] = $this->frparam('pid');
 			$w['orders'] = $this->frparam('orders');
@@ -320,6 +326,9 @@ class ClasstypeController extends CommonController
 					}else{
 						$html = $d[1];
 					}
+					if(stripos($html,'.php')!==false){
+						JsonReturn(array('code'=>1,'info'=>'非法URL'));
+					}
 					$w['htmlurl'] = $html;
 					$w['lists_num'] = $this->frparam('lists_num',0,10);
 					$w['lists_html'] = $this->frparam('lists_html',1);
@@ -381,9 +390,15 @@ class ClasstypeController extends CommonController
 			}
 		}
 		$m = M('molds')->find(['biaoshi'=>$molds]);
-		$fileArray[] = ['html'=>$m['list_html'],'value'=>str_replace('.html','',$m['list_html'])];
-		$fileArray[] = ['html'=>$m['details_html'],'value'=>str_replace('.html','',$m['details_html'])];
-
+		if(!count($fileArray)){
+			$fileArray[] = ['html'=>$m['list_html'],'value'=>str_replace('.html','',$m['list_html'])];
+			$fileArray[] = ['html'=>$m['details_html'],'value'=>str_replace('.html','',$m['details_html'])];
+			
+		}
+		
+		
+		
+		
 		JsonReturn(['code'=>0,'data'=>$fileArray,'path'=>$dir,'lists_html'=>str_replace('.html','',$m['list_html']),'details_html'=>str_replace('.html','',$m['details_html'])]);
 
 	}

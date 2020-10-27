@@ -45,7 +45,7 @@
 				<select name="pid" lay-search="" id="pid"  lay-filter="pid">
 			   <option value="0">顶级栏目</option>
 			   {foreach $classtypes as $v}
-			   <option   value="{$v['id']}">{fun str_repeat('--', $v['level']), $v['classname']}</option>
+			   <option   value="{$v['id']}">{fun str_repeat('--', $v['level'])}{$v['classname']}</option>
 			   {/foreach}
 			
 			   </select>

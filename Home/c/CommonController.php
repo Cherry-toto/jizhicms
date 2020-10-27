@@ -20,7 +20,7 @@ class CommonController extends Controller
 	function _init(){
 
 		$webconf = webConf();
-		$template = get_template();
+		$template = TEMPLATE;
 		$this->webconf = $webconf;
 		$this->template = $template;
 		
@@ -69,7 +69,25 @@ class CommonController extends Controller
 			$this->islogin = false;
 		}
 		
-		
+		$jznav = getCache('jznav');
+		if(!$jznav){
+			$nav = M('menu')->findAll(['isshow'=>1]);
+			$jznav = [];
+			if($nav){
+				foreach($nav as $v){
+					$menulist = unserialize($v['nav']);
+					foreach($menulist as $vv){
+						if($vv['status']==1){
+							$vv['url'] = $vv['tid'] ? $this->classtypedata[$vv['tid']]['url'] : $vv['gourl'];
+							$vv['title'] = $vv['title'] ? $vv['title'] : ($vv['tid'] ? $this->classtypedata[$vv['tid']]['classname'] : '');
+							$jznav[$v['id']][]=$vv;
+						}
+					}
+				}
+			}
+			setCache('jznav',$jznav);
+		}
+		$this->jznav = $jznav;
     
     }
 	
@@ -84,11 +102,14 @@ class CommonController extends Controller
 	
 	
 	function vercode(){
-		if($this->frparam('code_name',1)){
-			frvercode(4,$this->frparam('code_name',1));
-		}else{
-			 frvercode();
-		}
+		$w = $this->frparam('w',0,160);
+		$h = $this->frparam('h',0,50);
+		$n = $this->frparam('n',0,4);
+		//frcode
+		$name = $this->frparam('name',1,$this->frparam('code_name',1,'frcode'));
+		
+		$imagecode=new \Imagecode($w,$h,$n,$name,APP_PATH."FrPHP/Extend/AdobeGothicStd-Bold.ttf");
+		$imagecode->imageout();
 		 
 	}
 	function checklogin(){
@@ -631,13 +652,13 @@ class CommonController extends Controller
 		            <label for="'.$v['field'].'">'.$v['fieldname'].'：</label>
 		            <span class="view_img_'.$v['field'].'">';
 		            if($data[$v['field']]){
-		            	foreach(explode('||',$data[$v['field']]) as $v){
-		            		if($v!=''){
+		            	foreach(explode('||',$data[$v['field']]) as $s){
+		            		if($s!=''){
 								if($this->webconf['ispicsdes']==1){
-									$pic = explode('|',$v);
+									$pic = explode('|',$s);
 									$l .= '<span><img src="'.$pic[0].'" height="100"  /><input name="'.$v['field'].'_urls[]" type="text" value="'.$pic[0].'"><input name="'.$v['field'].'_des[]" type="text" placeholder="文字描述"  value="'.$pic[1].'" ><button type="button" onclick="deleteImage_auto(this)">删除</button></span>';
 								}else{
-									$l .= '<span><img src="'.$v.'" height="100"  /><input name="'.$v['field'].'_urls[]" type="text" value="'.$v.'"><button type="button" onclick="deleteImage_auto(this)">删除</button></span>';
+									$l .= '<span><img src="'.$s.'" height="100"  /><input name="'.$v['field'].'_urls[]" type="text" value="'.$s.'"><button type="button" onclick="deleteImage_auto(this)">删除</button></span>';
 								}
 		            			 
 		            		}
@@ -770,13 +791,13 @@ class CommonController extends Controller
 		            <label for="'.$v['field'].'">'.$v['fieldname'].'：</label>
 		            <span class="view_img_'.$v['field'].'">';
 		            if($data[$v['field']]){
-		            	foreach(explode('||',$data[$v['field']]) as $v){
-		            		if($v!=''){
+		            	foreach(explode('||',$data[$v['field']]) as $s){
+		            		if($s!=''){
 								if($this->webconf['ispicsdes']==1){
-									$pic = explode('|',$v);
+									$pic = explode('|',$s);
 									$l .= '<span><input name="'.$v['field'].'_urls[]" type="text" value="'.$pic[0].'"><input name="'.$v['field'].'_des[]" type="text" placeholder="文字描述"  value="'.$pic[1].'" ><button type="button" onclick="deleteImage_auto(this)">删除</button></span>';
 								}else{
-									$l .= '<span><input name="'.$v['field'].'_urls[]" type="text" value="'.$v.'"><button type="button" onclick="deleteImage_auto(this)">删除</button></span>';
+									$l .= '<span><input name="'.$v['field'].'_urls[]" type="text" value="'.$s.'"><button type="button" onclick="deleteImage_auto(this)">删除</button></span>';
 								}
 		            			 
 		            		}
@@ -872,6 +893,22 @@ class CommonController extends Controller
 	function error($msg){
 		$this->display($this->template.'/404');
 		exit;
+	}
+	
+	//更新session的过期时间
+    function updateactive(){
+	  $cache_time = (int)webConf('cache_time');
+	  $cache_time = $cache_time==0 ? 3600 : $cache_time;
+	  setcookie('PHPSESSID', $_COOKIE['PHPSESSID'], time() + $cache_time);
+	  
+    }
+	
+	//递增递减
+	function gohits($id=0,$molds='article',$i=1){
+		$n = M($molds)->getField(['id'=>$id],'hits');
+		$num = $n+$i;
+		M($molds)->update(['id'=>$id],['hits'=>$num]);
+		JsonReturn(['code'=>0,'msg'=>'success','data'=>$num]);
 	}
 
 }

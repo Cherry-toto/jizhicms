@@ -15,7 +15,8 @@
             <a class="layui-btn layui-btn-small" style="line-height:1.6em;margin-top:3px;float:right"  href="javascript:location.replace(location.href);" title="刷新"><i class="iconfont" style="line-height:30px">&#xe6aa;</i></a>
         </div>
         <div class="x-body">
-            
+            <div class="layui-card">
+		    <div class="layui-card-body">
             <xblock>
 			 {if(checkAction('Index/backup'))}
 			<button class="layui-btn" onclick="beifen();"><i class="layui-icon">&#xe608;</i>备份数据库</button>
@@ -68,7 +69,8 @@
 				{/foreach}
                 </tbody>
             </table>
-
+			</div>
+			</div>
             
         </div>
        

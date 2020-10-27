@@ -65,7 +65,7 @@
 		  {if($admin['isadmin'])}
 		 
           <div class="layui-form-item">
-              <label class="layui-form-label"><span class="x-red">*</span>分组</label>
+              <label class="layui-form-label"><span class="x-red"></span>分组</label>
               <div class="layui-input-inline">
 			  
                 <select class="layui-input" name="gid" lay-verify="required">
@@ -86,6 +86,15 @@
               </label>
               <div class="layui-input-inline">
                   <input type="text" id="L_jifen" name="jifen" value="{$data['jifen']}" 
+                  autocomplete="off" class="layui-input">
+              </div>
+          </div>
+		  <div class="layui-form-item">
+              <label for="money" class="layui-form-label">
+                  钱包
+              </label>
+              <div class="layui-input-inline">
+                  <input type="text" id="money" name="money" value="{$data['money']}" 
                   autocomplete="off" class="layui-input">
               </div>
           </div>

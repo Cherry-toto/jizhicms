@@ -12,9 +12,9 @@
     </head>
     <body>
     <div class="x-body layui-anim layui-anim-up">
-      
+       <div class="layui-card">
+	   <div class="layui-card-body">
         <fieldset class="layui-elem-field">
-            <legend>清理缓存</legend>
             <div class="layui-field-box">
                 <div class="layui-col-md12">
                     <form class="layui-form " action="">
@@ -40,7 +40,7 @@
 						</div>
 						
 						<div class="layui-input-inline  cache-s">
-							<input lay-skin="primary"  type="checkbox" name="cache_data[]" value="login"   checked>
+							<input lay-skin="primary"  type="checkbox" name="cache_data[]" value="login"   >
 						</div>
 						<div class="layui-form-mid layui-word-aux">
 							  文件夹cache/tmp，主要是服务器session文件缓存，当前session将不会被清空
@@ -53,7 +53,7 @@
 							 {$logcache} kb
 						</div>
 						<div class="layui-input-inline  cache-s">
-							<input lay-skin="primary"  type="checkbox" name="cache_data[]" value="log"   checked>
+							<input lay-skin="primary"  type="checkbox" name="cache_data[]" value="log"   >
 						</div>
 						<div class="layui-form-mid layui-word-aux">
 							  文件夹cache/log，包括错误日志、支付日志、登录日志等
@@ -74,6 +74,19 @@
 						</div>
 					  </div>
 					  
+					  <div class="layui-form-item" >
+						<label class="layui-form-label">缩略图缓存</label>
+						<div class="layui-form-mid layui-word-aux  cache-s">
+							 {$imagecache} kb
+						</div>
+						<div class="layui-input-inline  cache-s">
+							<input lay-skin="primary"  type="checkbox" name="cache_data[]" value="image"   >
+						</div>
+						<div class="layui-form-mid layui-word-aux">
+							  文件夹image，主要是程序执行时生成的自定义缩略图
+						</div>
+					  </div>
+					  
 					
 					  <div class="layui-form-item">
 						<div class="layui-input-block">
@@ -85,7 +98,8 @@
                 </div>
             </div>
         </fieldset>
-       
+        </div>
+		</div>
        
     </div>
         <script>

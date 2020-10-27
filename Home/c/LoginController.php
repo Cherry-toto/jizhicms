@@ -27,7 +27,7 @@ class LoginController extends Controller
 			exit;
 		}
 		$webconf = webConf();
-		$template = get_template();
+		$template = TEMPLATE;
 		$this->webconf = $webconf;
 		$this->template = $template;
 		if(isset($_SESSION['terminal'])){
@@ -53,6 +53,25 @@ class LoginController extends Controller
 		}else{
 			$this->islogin = false;
 		}
+		$jznav = getCache('jznav');
+		if(!$jznav){
+			$nav = M('menu')->findAll(['isshow'=>1]);
+			$jznav = [];
+			if($nav){
+				foreach($nav as $v){
+					$menulist = unserialize($v['nav']);
+					foreach($menulist as $vv){
+						if($vv['status']==1){
+							$vv['url'] = $vv['tid'] ? $this->classtypedata[$vv['tid']]['url'] : $vv['gourl'];
+							$vv['title'] = $vv['title'] ? $vv['title'] : ($vv['tid'] ? $this->classtypedata[$vv['tid']]['classname'] : '');
+							$jznav[$v['id']][]=$vv;
+						}
+					}
+				}
+			}
+			setCache('jznav',$jznav);
+		}
+		$this->jznav = $jznav;
 
     
     }
@@ -68,14 +87,17 @@ class LoginController extends Controller
 		if($_POST){
 			$data['username'] = str_replace("'",'',$this->frparam('tel',1));//进行二次过滤校验
 			$data['password'] = str_replace("'",'',$this->frparam('password',1));
-			$vercode = strtolower($this->frparam('vercode',1));
-			if(!$vercode || md5(md5($vercode))!=$_SESSION['login_vercode']){
-				$xdata = array('code'=>1,'msg'=>'验证码错误！');
-				if($this->frparam('ajax')){
-					JsonReturn($xdata);
+			if(!isset($this->webconf['closehomevercode']) || $this->webconf['closehomevercode']!=1){
+				$vercode = strtolower($this->frparam('vercode',1));
+				if(!$vercode || md5(md5($vercode))!=$_SESSION['login_vercode']){
+					$xdata = array('code'=>1,'msg'=>'验证码错误！');
+					if($this->frparam('ajax')){
+						JsonReturn($xdata);
+					}
+					Error('验证码错误！');
 				}
-				Error('验证码错误！');
 			}
+			
 			if($data['username']=='' || $data['password']==''){
 				$xdata = array('code'=>1,'msg'=>'账户密码不能为空！');
 				if($this->frparam('ajax')){
@@ -201,14 +223,17 @@ class LoginController extends Controller
 			  }
 			
 		  }
-		  $vercode = strtolower($this->frparam('vercode',1));
-		  if(!$vercode || md5(md5($vercode))!=$_SESSION['reg_vercode']){
-				$xdata = array('code'=>1,'msg'=>'验证码错误！');
-				if($this->frparam('ajax')){
-					JsonReturn($xdata);
+		  if(!isset($this->webconf['closehomevercode']) || $this->webconf['closehomevercode']!=1){
+			    $vercode = strtolower($this->frparam('vercode',1));
+			    if(!$vercode || md5(md5($vercode))!=$_SESSION['reg_vercode']){
+					$xdata = array('code'=>1,'msg'=>'验证码错误！');
+					if($this->frparam('ajax')){
+						JsonReturn($xdata);
+					}
+					Error('验证码错误！');
 				}
-				Error('验证码错误！');
-			}
+		  }
+		 
 		  $w['email'] = $this->frparam('email',1,'');
 		  $w['password'] = $this->frparam('password',1);
 		  $w['repassword'] = $this->frparam('repassword',1);

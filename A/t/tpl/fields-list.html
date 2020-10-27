@@ -16,12 +16,24 @@
             <a class="layui-btn layui-btn-small" style="line-height:1.6em;margin-top:3px;float:right"  href="javascript:location.replace(location.href);" title="刷新"><i class="iconfont" style="line-height:30px">&#xe6aa;</i></a>
         </div>
         <div class="x-body">
-        
-          <xblock>
-		 {if(checkAction('Fields/addFields'))}	
-		 <button class="layui-btn" onclick="x_admin_show('{$molds['name']}-新增字段','{fun U('Fields/addFields',array('molds'=>$molds['biaoshi']))}')"><i class="layui-icon"></i>新增字段</button>
-		 {/if}
-		   <span class="x-right" style="line-height:40px">共有数据：{$sum} 条</span>
+        <div class="layui-card">
+			<div class="layui-card-body">
+			<xblock>
+		    <form class="layui-form " method="get" id="myform"> 
+			   <div class="layui-input-inline" >
+			   <select class="layui-btn-sm" id="change_tid" lay-search=""  lay-filter="change_tid" >
+			   <option value="0">批量绑定栏目</option>
+			   {foreach $classtypetree as $v}
+			   <option   value="{$v['id']}">{fun str_repeat('--', $v['level'])}{$v['classname']}</option>
+			   {/foreach}
+			   </select>
+			   </div>
+			   {if(checkAction('Fields/addFields'))}	
+			   <a class="layui-btn layui-btn-sm" onclick="x_admin_show('{$molds['name']}-新增字段','{fun U('Fields/addFields',array('molds'=>$molds['biaoshi']))}')">新增字段</a>
+			   {/if}
+		    </form>	
+			
+	        <span class="x-right" style="line-height:40px">共有数据：{$sum} 条</span>
 		  </xblock>
             <table class="layui-table">
                 <thead>
@@ -30,6 +42,9 @@
                         <th>
                             ID
                         </th>
+						<th>
+						  <div class="layui-unselect header layui-form-checkbox" lay-skin="primary"><i class="layui-icon">&#xe605;</i></div>
+						</th>
 						<th>
                             排序
                         </th>
@@ -63,6 +78,9 @@
                         <td>
                             {$v['id']}
                         </td>
+						<td>
+						<div class="layui-unselect layui-form-checkbox" lay-skin="primary" data-id="{$v['id']}"><i class="layui-icon">&#xe605;</i></div>
+						</td>
                         <td>
                             <input data-id="{$v['id']}" class="layui-input orderchange" type="number" name="orders" value="{$v['orders']}">
                         </td>
@@ -75,25 +93,26 @@
                         </td>
 						 <td>
                             {if($v['ismust']==0)}
-							<span class="layui-btn layui-btn-normal layui-btn-mini">非必填</span>
+							
+							<span class="layui-badge layui-bg-gray">非必填</span>
 							{else}
-							<span class="layui-btn layui-btn-danger">必填项</span>
+							<span class="layui-badge">必填项</span>
 							{/if}
               
                         </td>
 						 <td>
                             {if($v['isshow']==0)}
-							<span class="layui-btn layui-btn-normal layui-btn-mini layui-btn-disabled">不显示</span>
+							<span class="layui-badge layui-bg-gray">不显示</span>
 							{else}
-							<span class="layui-btn layui-btn-normal layui-btn-mini ">显示</span>
+							<span class="layui-badge layui-bg-green">显示</span>
 							{/if}
               
                         </td>
 						 <td>
                             {if($v['islist']==0)}
-							<span class="layui-btn layui-btn-normal layui-btn-mini layui-btn-disabled">不显示</span>
+							<span class="layui-badge layui-bg-gray">不显示</span>
 							{else}
-							<span class="layui-btn layui-btn-normal layui-btn-mini ">显示</span>
+							<span class="layui-badge layui-bg-green">显示</span>
 							{/if}
               
                         </td>
@@ -101,10 +120,10 @@
 					
                         <td class="td-manage">
                         {if(checkAction('Fields/editFields'))}	
-							 <button class="layui-btn layui-btn layui-btn-xs"  onClick="x_admin_show('编辑','{fun U('Fields/editFields',array('id'=>$v['id']))}')" ><i class="layui-icon">&#xe642;</i>编辑</button>
+							 <a class="layui-btn layui-btn layui-btn-xs"  onClick="x_admin_show('编辑','{fun U('Fields/editFields',array('id'=>$v['id']))}')" >编辑</a>
 						{/if}	 
 						{if(checkAction('Fields/deleteFields'))}	
-							 <button class="layui-btn-danger layui-btn layui-btn-xs"  onClick="molds_del(this,'{$v['id']}')" href="javascript:;" ><i class="layui-icon">&#xe640;</i>删除</button>
+							 <a class="layui-btn-danger layui-btn layui-btn-xs"  onClick="molds_del(this,'{$v['id']}')" href="javascript:;" >删除</a>
 						{/if}
                         </td>
 						
@@ -116,24 +135,44 @@
             <div class="page">
 				{$pages}
 			  </div>
+			</div>
+		</div>
+          
         </div>
-     
        <script>
 	   $(document).ready(function(){
 			
 	   
 	   });
 	   
-	    layui.use(['laydate','element','laypage','layer'], function(){
+	    layui.use(['laydate','element','table','form','laypage','layer'], function(){
                 $ = layui.jquery;//jquery
-              laydate = layui.laydate;//日期插件
-              lement = layui.element;//面包导航
-            //  laypage = layui.laypage;//分页
-              layer = layui.layer;//弹出层
-
-              //以上模块根据需要引入
-             
-             
+             var  laydate = layui.laydate;//日期插件
+             var  lement = layui.element;//面包导航
+             var  layer = layui.layer;//弹出层
+			 var  form = layui.form;
+			 var  table = layui.table;
+			
+              form.on('select(change_tid)', function(data){
+			  
+			  	var datax = tableCheck.getData();
+				if(datax==''){
+					alert('请选择对象！');return false;
+				}
+				$.post("{fun U('changeTid')}",{data:datax.join(','),tid:data.value},function(r){
+						if(r.code==0){
+							layer.msg(r.msg,{icon: 1,time:1000});
+						}else{
+							layer.msg(r.msg,{icon: 5,time:1000});
+						}
+				},'json')
+			  
+				  console.log(datax); 
+				  console.log(data.elem); //得到select原始DOM对象
+				  console.log(data.value); //得到被选中的值
+				  console.log(data.othis); //得到美化后的DOM对象
+				});
+							 
               
             });
 		 /*删除*/

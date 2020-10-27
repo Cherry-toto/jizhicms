@@ -33,7 +33,7 @@
 				
 				<div class="layui-form-item">
                     <label for="title" class="layui-form-label">
-                        <span class="x-red">*</span>问题描述
+                        <span class="x-red"></span>问题描述
                     </label>
                     <div class="layui-input-block">
                         <input type="text" id="title" value="{$data['title']}"  name="title" 
@@ -43,7 +43,7 @@
 				
 				<div class="layui-form-item">
                     <label for="user" class="layui-form-label">
-                        <span class="x-red">*</span>用户昵称
+                        <span class="x-red"></span>用户昵称
                     </label>
                     <div class="layui-input-block">
                         <input type="text" id="user" value="{$data['user']}"  name="user" 
@@ -53,13 +53,13 @@
 				{if($molds['isclasstype']==1)}
 				<div class="layui-form-item">
                     <label for="tid" class="layui-form-label">
-                        <span class="x-red">*</span>留言栏目
+                        <span class="x-red"></span>留言栏目
                     </label>
                     <div class="layui-input-block">
 						<select name="tid" lay-search="" {if($molds['ismust']==1)}lay-verify="required"{/if} id="tid" >
 						<option value="0">不指定栏目</option>
 					   {foreach $classtypes as $v}
-					   <option {if($data['tid']==$v['id'])} selected="selected" {/if}  value="{$v['id']}">{fun str_repeat('--', $v['level']), $v['classname']}</option>
+					   <option {if($data['tid']==$v['id'])} selected="selected" {/if}  value="{$v['id']}">{fun str_repeat('--', $v['level'])}{$v['classname']}</option>
 					   {/foreach}
 					   </select>
                     </div>
@@ -67,10 +67,18 @@
 				{else}
 				<input type="hidden" name="tid" value="{$data['tid']}" />
 				{/if}
-				
+				<div class="layui-form-item">
+                    <label for="email" class="layui-form-label">
+                        <span class="x-red"></span>邮箱
+                    </label>
+                    <div class="layui-input-block">
+                        <input type="text" id="email" value="{$data['email']}"  name="email" 
+                        autocomplete="off" class="layui-input">
+                    </div>
+                </div>
 				<div class="layui-form-item">
                     <label for="tel" class="layui-form-label">
-                        <span class="x-red">*</span>联系电话
+                        <span class="x-red"></span>联系电话
                     </label>
                     <div class="layui-input-block">
                         <input type="text" id="tel" value="{$data['tel']}"  name="tel" 
@@ -84,7 +92,7 @@
 				
 				<div class="layui-form-item">
                     <label for="ip" class="layui-form-label">
-                        <span class="x-red">*</span>留言IP
+                        <span class="x-red"></span>留言IP
                     </label>
                     <div class="layui-input-block">
                         <input type="text" id="ip" value="{$data['ip']}"   name="ip" 
@@ -95,7 +103,7 @@
 				
 				<div class="layui-form-item layui-form-text">
 					<label  class="layui-form-label">
-						<span class='x-red'>*</span>留言内容
+						<span class='x-red'></span>留言内容
 					</label>
 					<div class="layui-input-block" style="clear:both;">
 						{include="content"}
@@ -116,7 +124,7 @@
 				
 				 <div class="layui-form-item">
                     <label for="addtime" class="layui-form-label">
-                        <span class="x-red">*</span>提交时间
+                        <span class="x-red"></span>提交时间
                     </label>
                     <div class="layui-input-block">
                       <input class="layui-input" value="{if($data)}{fun date('Y-m-d H:i:s',$data['addtime'])}{else}{fun date('Y-m-d H:i:s')}{/if}" name="addtime" placeholder="文件日期" id="addtime">

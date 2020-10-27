@@ -19,7 +19,7 @@ class LoginController extends Controller
 {
 	public function _init(){
 		  $webconf = webConf();
-		  $template = get_template();
+		  $template = TEMPLATE;
 		  $this->webconf = $webconf;
 		  $this->template = $template;
 		  $this->tpl = Tpl_style.$template.'/';
@@ -38,10 +38,13 @@ class LoginController extends Controller
 				$xdata = array('code'=>1,'msg'=>'账户密码不能为空！');
 				JsonReturn($xdata);
 			}
-			if(md5(md5(strtolower($this->frparam('vercode',1))))!=$_SESSION['frcode']){
-				$xdata = array('code'=>1,'msg'=>'验证码错误！');
-				JsonReturn($xdata);
+			if(!isset($this->webconf['closeadminvercode']) || $this->webconf['closeadminvercode']!=1){
+				if(md5(md5(strtolower($this->frparam('vercode',1))))!=$_SESSION['frcode']){
+					$xdata = array('code'=>1,'msg'=>'验证码错误！');
+					JsonReturn($xdata);
+				}
 			}
+			
 			$where['pass'] = md5(md5($data['password']).'YF');
 			$where['name'] = $data['username'];
 			
@@ -97,7 +100,14 @@ class LoginController extends Controller
 	}
 
   function vercode(){
-	  frvercode();
+		$w = $this->frparam('w',0,160);
+		$h = $this->frparam('h',0,50);
+		$n = $this->frparam('n',0,4);
+		//frcode
+		$name = $this->frparam('name',1,$this->frparam('code_name',1,'frcode'));
+		
+		$imagecode=new \Imagecode($w,$h,$n,$name,APP_PATH."FrPHP/Extend/AdobeGothicStd-Bold.ttf");
+		$imagecode->imageout();
   }
   
   

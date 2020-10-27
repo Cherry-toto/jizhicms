@@ -16,12 +16,21 @@
         </div>
         <div class="x-body">
           
-          <xblock>
-		  {if(checkAction('Member/addrulers'))}
-		  <button class="layui-btn" onclick="x_admin_show('添加权限','{fun U('Member/addrulers')}')"><i class="layui-icon"></i>添加权限</button>
-		  {/if}
-		  {if($webconf['isopenhomepower']==0)}<button class="layui-btn">温馨提示：前台权限已关闭，设置权限不会生效。</button>{else}<button class="layui-btn layui-btn-danger">温馨提示：前台权限已开启，权限设置将直接影响前台访问，请谨慎操作！</button>{/if}
-		  </xblock>
+		<div class="layui-card">
+			<div class="layui-card-body">
+			
+			<xblock>
+			<form class="layui-form" action="">
+			  {if(checkAction('Member/addrulers'))}
+			  <a class="layui-btn layui-btn-sm" onclick="x_admin_show('添加权限','{fun U('Member/addrulers')}')">添加权限</a>
+			  {/if}
+			  {if($webconf['isopenhomepower']==0)}<a class="layui-btn layui-btn-sm">温馨提示：前台权限已关闭，设置权限不会生效。</a>{else}<a class="layui-btn layui-btn-sm layui-btn-danger">温馨提示：前台权限已开启，权限设置将直接影响前台访问，请谨慎操作！</a>{/if}
+			  <div class="layui-input-inline" style="float: right;">
+				  <input type="checkbox" value="1" name="switch" lay-filter="type"  lay-text="展开|折叠" checked lay-skin="switch">
+				
+			  </div>
+			</form>
+		    </xblock>
             <table class="layui-table">
                 <thead>
                     <tr>
@@ -62,15 +71,15 @@
 			
             <td class="td-manage">
 			 {if(checkAction('Member/editrulers'))}
-              <button class="layui-btn layui-btn layui-btn-xs"  onclick="x_admin_show('编辑','{fun U('Member/editrulers',array('id'=>$v['id']))}')" ><i class="layui-icon">&#xe642;</i>编辑</button>
+              <a class="layui-btn layui-btn layui-btn-xs"  onclick="x_admin_show('编辑','{fun U('Member/editrulers',array('id'=>$v['id']))}')" >编辑</a>
 			 {/if}
 			  {if(checkAction('Member/addrulers'))}
 				{if($v['pid']==0)}
-				<button class="layui-btn layui-btn-warm layui-btn-xs"  onclick="x_admin_show('添加子功能','{fun U('Member/addrulers',array('pid'=>$v['id']))}')" ><i class="layui-icon">&#xe642;</i>添加子功能</button>
+				<a class="layui-btn layui-btn-warm layui-btn-xs"  onclick="x_admin_show('添加子功能','{fun U('Member/addrulers',array('pid'=>$v['id']))}')" >添加子功能</a>
 				{/if}
 			  {/if}
 			  {if(checkAction('Member/deleterulers'))}
-              <button class="layui-btn-danger layui-btn layui-btn-xs"  onclick="ruler_del(this,'{$v['id']}')" href="javascript:;" ><i class="layui-icon">&#xe640;</i>删除</button>
+              <a class="layui-btn-danger layui-btn layui-btn-xs"  onclick="ruler_del(this,'{$v['id']}')" href="javascript:;" >删除</a>
 			  {/if}
             </td>
           </tr>
@@ -79,6 +88,11 @@
         </tbody>
             </table>
 			
+			
+			</div>
+		</div>  
+		  
+         
             
         </div>
      
@@ -98,7 +112,24 @@
 					$("#myform").submit();
 				
 			 });
-             
+             form.on('switch(type)', function(data){
+				if(!data.elem.checked){
+					$(".x-cate tr").each(function(){
+						if($(this).attr('fid')!=0){
+							$(this).css('display','none');
+						}
+					});
+					$(".x-show").attr('status','true').html('&#xe623;');
+				}else{
+					
+					$(".x-cate tr").each(function(){
+						if($(this).attr('fid')!=0){
+							$(this).css('display','table-row');
+						}
+					});
+					$(".x-show").attr('status','false').html('&#xe625;');
+				}
+			});  
               
             });
 		 /*删除*/

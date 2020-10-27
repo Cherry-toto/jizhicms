@@ -131,10 +131,8 @@ body{
 }
 xblock{
     display: block;
-    margin-bottom: 10px;
     padding: 5px;
     line-height: 22px;
-    /* border-left: 5px solid #009688; */
     border-radius: 0 2px 2px 0;
     background-color: #f2f2f2;
 }
@@ -186,7 +184,9 @@ xblock{
     display: inline-block;
     background: #fff url() 0 0 no-repeat;
     color: #888;
-    padding: 10px;
+    padding: 5px 10px;
+	height: 20px;
+    line-height: 20px;
     min-width: 15px;
     border: 1px solid #E2E2E2;
 
@@ -221,16 +221,16 @@ xblock{
 /*头部*/
 .container{
     width: 100%;
-    height: 45px;
+    height: 60px;
     background-color: #009688;
     border-bottom: 1px solid rgba(255, 255, 255, 0.2);
 }
 .container .logo a{
     float: left;
     color: #fff;
-    font-size: 16px;
+    font-size: 18px;
     padding-left: 30px;
-    line-height: 45px;
+    line-height: 60px;
     width: 170px;
 }
 .container .right{
@@ -239,7 +239,7 @@ xblock{
 
 }
 .container .left_open{
-    height: 45px;
+    height: 60px;
     float: left;
 }
 .container .left_open i{
@@ -251,7 +251,7 @@ xblock{
     line-height: 32px;
     border-radius: 3px;
     text-align: center;
-    margin-top: 7px;
+    margin-top: 15px;
     cursor: pointer;
 }
 .container .left_open i:hover{
@@ -264,7 +264,7 @@ xblock{
 
 }
 .container .layui-nav-item{
-    line-height: 45px;
+    line-height: 60px;
 }
 .container .layui-nav-item a i.iconfont{
     padding-right:10px;
@@ -273,7 +273,7 @@ xblock{
     top: 20px;
 }
 .container .layui-nav-child{
-    top: 50px;
+    top: 60px;
 }
 .container .layui-nav-child i{
     margin-right: 10px;
@@ -288,7 +288,7 @@ xblock{
 }
 .left-nav{
     position: absolute;
-    top: 46px;
+    top: 60px;
     left: 0;
     z-index: 2;
     background-color: #393D49;
@@ -362,12 +362,12 @@ li.open a {
      /*background: #fff url() 0 0 no-repeat;*/
 }
 .left-nav #nav li .sub-menu li a{
-    padding: 12px 15px 12px 45px;
+    padding: 12px 15px 12px 60px;
     font-size: 14px;
     cursor: pointer;
 }
 .left-nav #nav li .sub-menu li .sub-menu li a{
-    padding-left: 45px;
+    padding-left: 60px;
 }
 .left-nav #nav li .sub-menu li a:hover{
   /*  color: #009688;*/
@@ -382,7 +382,7 @@ li.open a {
 .left-nav #nav li .nav_right{
     float: right;
     font-size: 16px;
-    padding-right: 0;
+   padding-right: 10px;
 }
 .x-slide_left {
     width: 17px;
@@ -396,7 +396,7 @@ li.open a {
 }
 .page-content{
     position: absolute;
-    top: 46px;
+    top: 60px;
     right: 0;
     bottom: 42px;
     left: 200px;
@@ -405,7 +405,7 @@ li.open a {
 }
 .page-content-bg{
     position: absolute;
-    top: 46px;
+    top: 60px;
     right: 0;
     bottom: 42px;
     left: 221px;
@@ -518,7 +518,6 @@ table th, table td {
 .footer .copyright{
     margin-left: 10px;
 }
-.delete_file{font-size:2rem;}
 
 @media screen and (max-width: 768px){
     .fast-add{
@@ -659,4 +658,121 @@ table th, table td {
     overflow: hidden;
     color: #666;
     margin-bottom: 10px;
+}
+
+.container .layui-nav-more  { top:30px;}
+.layui-nav-bar {height: 3px;}
+.page-content .layui-tab-content,.x-body {background: #f7fcff!important ;}
+.page-content .tab {background: #f7fcff!important ;}
+.layui-bg-black {	background: #333951!important ;}
+.left-nav { top:60px!important ;border: none!important;}
+.left-nav #nav li .sub-menu {background: #333951!important ;}
+ul.sub-menu li:hover {background: #02072c!important ;}
+.container .logo a{	background: #212844 ;}
+.left-nav #nav li a {color: #fff;}
+
+.container{    background-color: #212844;}
+.container .left_open {margin-left: 20px;}
+.page-content .layui-tab-title  { padding-top: 10px;padding-left: 15px;}
+.layui-tab-title li {background: #d8e1f4;border-top-left-radius: 6px!important;border-top-right-radius: 6px!important;border: none;margin-right: 8px;}
+.layui-tab-title .layui-this:after {border-top-left-radius: 6px!important;border-top-right-radius: 6px!important;}
+.layui-tab-title .layui-this {background: #f6f7f9!important;}
+.x-nav {background:  #f6f7f9!important;}
+.page-content .layui-tab-title{background: #28304e;}
+.page-content  { top:60px;bottom: 0;}
+.x-admin-backlog-body p cite {color: #2b9ef7;}
+.page-content .layui-tab-content {top:50px}
+.left-nav #nav .current {background: #02072c;}
+.layui-form-onswitch {background: #10d0b7;border-color: #10d0b7;}
+xblock  {background: none;}
+xblock .layui-form-item {margin-bottom: 0;}
+xblock .layui-form-item .layui-form-switch {margin-top: 6px;}
+
+.layui-bg-green {background: #10d0bb!important;}
+.active a {background-color: #2b9ef7!important;}
+.layui-btn-primary ,.layui-btn-primary:hover{color: #fff!important;}
+.layui-table-cell .layui-badge {background: #f76f63 !important;}
+.layui-table-cell .layui-bg-black {background: #b690f3 !important;}
+.layui-table-cell .layui-bg-green {background: #10d0bb !important;}
+
+.layui-laypage .layui-laypage-curr .layui-laypage-em {background-color: #2b9ef7!important;}
+
+.layui-form-item .layui-input-inline {
+	float: left;
+	margin-right: 10px;
+}
+#jizhitj{
+	position: fixed;
+	bottom: 10px;
+	z-index: 9999;
+	width: 100%;
+	margin-bottom: 10px;
+}
+.layui-form-select dl {
+	z-index: 999999;
+}
+#jizhitj .layui-btn{padding:0 40px;border-radius: 6px;}
+
+.x-body	.layui-tab-content {background: #fff;padding:20px 30px;}
+.x-body	.layui-tab-title .layui-this {background: #fff !important;}
+.x-body	.layui-tab-title  {border: none!important;}
+.x-body .layui-tab-content	,.layui-card {box-shadow: 2px 2px 10px rgba(0,0,0,.1)!important;}
+.x-body .layui-fluid {padding: 0;}
+.x-nav .layui-btn {    line-height: 38px!important;margin-top: 0!important;}
+.layui-card .layui-card  {box-shadow:none!important;}
+.x-so {margin-bottom: 0;}
+.layui-collapse {margin-bottom: 20px;background: #fff;}
+
+.layui-btn {background: #2b9ef7;}
+.layui-btn-warm {background: #fdad4e;}
+.layui-btn-danger {background: #f46f5e;}
+.layui-btn-normal {background: #10d0bb;}
+.layui-colla-title,.layui-table tbody tr:hover, .layui-table thead tr, .layui-table-click, .layui-table-header, .layui-table-hover, .layui-table-mend, .layui-table-patch, .layui-table-tool, .layui-table-total, .layui-table-total tr, .layui-table[lay-even] tr:nth-child(even) {background: #f7f8fa;}
+.x-admin-backlog-body {border-radius: 6px!important;}
+.x-admin-backlog-body:hover {background: #2b9ef7;color: #fff;}
+.x-admin-backlog-body:hover p cite {color: #fff;}
+.layui-tab-brief>.layui-tab-title .layui-this {color: #000;}
+.layui-tab-brief>.layui-tab-title .layui-this::after {display: none;}
+.layui-btn-primary {border: none;}
+.layui-form-select dl dd.layui-this {background: #2b9ef7;}
+.layui-input:focus, .layui-textarea:focus {    border-color: #2b9ef7!important;}
+.layui-colla-item input {margin-left: 5px;}
+.layui-colla-item br {display: none;}
+.layui-tab-title li .layui-tab-close {    color: #848484;}
+.login-bg {    
+	position: relative;
+	/* 美女大图背景
+	background: url(http://api.btstu.cn/sjbz/?lx=meizi) no-repeat center; background-size: cover;
+ */
+    background: -webkit-gradient(linear, left bottom, left top, from(#3a485a), to(#607089));
+    background: linear-gradient(0deg, #3a485a 0%, #607089 100%);
+	/* 灰色渐变大背景 */
+}
+/* 美女大图虚化 */
+.login-bg:after{    content: "";    width:100%;    height:100%;    position: absolute;    left:0;    top:0;    background: inherit;    filter: blur(10px);    z-index: 2;}
+
+.login {z-index: 999;position: relative;-webkit-box-shadow: 0px 20px 80px 0px rgba(0,0,0,0.3);    box-shadow: 0px 20px 80px 0px rgba(0,0,0,0.3);}
+.login #darkbannerwrap {background: none;}
+.login .message { padding: 0 10px; margin:0;text-align: center;background: none;color: #000;font-weight: bold;font-size: 22px;}
+.login hr {background: none;	}
+.login input[type=text], .login input[type=file], .login input[type=password], .login input[type=email], select {border-radius: 6px;}
+.login input[type=submit] {background: #2b9ef7;}
+.login { min-height: 300px;border-radius: 6px;}
+ul#nav {
+    margin-top: 16px;
+}
+.layui-table-tool .layui-input{
+    height: 32px;
+    line-height: 32px;
+    border-width: 1px;
+    border-style: solid;
+    background-color: #fff;
+    border-radius: 2px;
+	font-size:12px;
+}
+.active a{   
+	background: #f00;
+    color: #fff;}
+.upload-icon-img {
+    padding-right: 8px;
 }

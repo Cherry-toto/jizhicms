@@ -748,7 +748,6 @@ class PluginsController extends CommonController
 				        }
 				        break;
 				    case 'file-upzip':
-
 				    	if (!file_exists($tmp_path)) {//先判断待解压的文件是否存在
 						   JsonReturn(['code'=>1,'msg'=>'下载缓存文件不存在！']);
 						}

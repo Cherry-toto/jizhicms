@@ -61,7 +61,9 @@ class ClasstypeController extends CommonController
 			if(in_array(strtolower($htmlurl),array('message','user','comment','home','common','order','tags','wechat','login'))){
 				JsonReturn(array('status'=>0,'info'=>'URL链接命名不能是：message,user,comment,home,common,order,tags,wechat,login,jzpay'));
 			}
-			
+			if(stripos($htmlurl,'.php')!==false){
+				JsonReturn(array('status'=>0,'info'=>'非法URL'));
+			}
 
 			$w['pid'] = $this->frparam('pid');
 			$w['orders'] = $this->frparam('orders');
@@ -134,6 +136,9 @@ class ClasstypeController extends CommonController
 			
 			if(in_array(strtolower($htmlurl),array('message','user','comment','home','common','order','tags','wechat','login'))){
 				JsonReturn(array('status'=>0,'info'=>'URL链接命名不能是：message,user,comment,home,common,order,tags,wechat,login,jzpay'));
+			}
+			if(stripos($htmlurl,'.php')!==false){
+				JsonReturn(array('status'=>0,'info'=>'非法URL'));
 			}
 			$w['pid'] = $this->frparam('pid');
 			$w['orders'] = $this->frparam('orders');
@@ -320,6 +325,9 @@ class ClasstypeController extends CommonController
 						$html = $classtypetree[$w['pid']]['htmlurl'].'/'.$d[1];
 					}else{
 						$html = $d[1];
+					}
+					if(stripos($html,'.php')!==false){
+						JsonReturn(array('code'=>1,'info'=>'非法URL'));
 					}
 					$w['htmlurl'] = $html;
 					$w['lists_num'] = $this->frparam('lists_num',0,10);

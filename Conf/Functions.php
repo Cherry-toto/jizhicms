@@ -1659,10 +1659,7 @@ function jzresize($src_image,$out_width = NULL, $out_height = NULL, $mode = 1, $
 		}
 		
 	}
-	// 检查生成图片是否存在
-	if(file_exists('./'.$out_image) && !$debug){
-		return './'.$out_image;
-	}
+	
 	
 	// 处理图片名称
 	if(!$out_image){
@@ -1670,6 +1667,11 @@ function jzresize($src_image,$out_width = NULL, $out_height = NULL, $mode = 1, $
 		$imageinfo = pathinfo($src_image);
 		$filename = str_replace('.'.$imageinfo['extension'],'_'.$out_width.'x'.$out_height.'.'.$imageinfo['extension'],$imageinfo['basename']);
 		$out_image = 'cache/image/'.$filename;
+	}
+	
+	// 检查生成图片是否存在
+	if(file_exists('./'.$out_image) && !$debug){
+		return './'.$out_image;
 	}
 	
 	$out_image = './'.$out_image;

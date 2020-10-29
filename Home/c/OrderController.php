@@ -710,14 +710,18 @@ class OrderController extends Controller
 				$result = $aliPay->dmfPay();
 				$result = $result['alipay_trade_precreate_response'];
 				if($result['code'] && $result['code']=='10000'){
-					//生成二维码
 					$url = U('common/qrcode').'?data='.$result['qr_code'];
-					echo '<img src="'.$url.'" style="width:300px;"><br>';
-					
+					//echo '<img src="'.$url.'" style="width:300px;"><br>';
+					$this->url = $url;
+					$this->payAmount = $payAmount;
+					$this->order = $order;
+					$this->orderno = $order['orderno'];
+					$this->display($this->template.'/paytpl/dmf');
+					exit;
 				}else{
 					echo $result['msg'].' : '.$result['sub_msg'];
 				}
-				exit;
+				
 			}else {
 				
 				//交易提醒

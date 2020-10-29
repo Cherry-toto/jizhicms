@@ -591,10 +591,13 @@ class MypayController extends Controller
 					$result = $aliPay->dmfPay();
 					$result = $result['alipay_trade_precreate_response'];
 					if($result['code'] && $result['code']=='10000'){
-						//生成二维码
 						$url = U('common/qrcode').'?data='.$result['qr_code'];
-						echo '<img src="'.$url.'" style="width:300px;"><br>';
-						
+						$this->url = $url;
+						$this->payAmount = $payAmount;
+						$this->order = $order;
+						$this->orderno = $order['orderno'];
+						$this->display($this->template.'/paytpl/dmf');
+						exit;
 					}else{
 						echo $result['msg'].' : '.$result['sub_msg'];
 					}
@@ -760,6 +763,115 @@ class MypayController extends Controller
 			exit;
 		}
 		echo 'error';exit();
+		
+	}
+	
+	public function alipay_check_order(){
+		/*** 请填写以下配置信息 ***/
+		$appid = $this->webconf['alipay_partner'];  //https://open.alipay.com 账户中心->密钥管理->开放平台密钥，填写对应应用的APPID
+		$outTradeNo = $this->frparam('orderno',1);     //要查询的商户订单号。注：商户订单号与支付宝交易号不能同时为空
+		$tradeNo = $this->frparam('tradeno',1,NULL);     //要查询的支付宝交易号。注：商户订单号与支付宝交易号不能同时为空
+		$signType = 'RSA2';       //签名算法类型，使用RSA2
+		//商户私钥，填写对应签名算法类型的私钥，如何生成密钥参考：https://docs.open.alipay.com/291/105971和https://docs.open.alipay.com/200/105310
+		$rsaPrivateKey=$this->webconf['alipay_private_key'];
+		extendFile('pay/alipay/AlipayService.php');
+		$aliPay = new \AlipayService();
+		$aliPay->setAppid($appid);
+		$aliPay->setRsaPrivateKey($rsaPrivateKey);
+		
+		 //请求参数
+        $requestConfigs = array(
+            'out_trade_no'=>$outTradeNo,
+            'trade_no'=>$tradeNo,
+        );
+        $commonConfigs = array(
+            //公共参数
+            'app_id' => $appid,
+            'method' => 'alipay.trade.query',             //接口名称
+            'format' => 'JSON',
+            'charset'=>'utf8',
+            'sign_type'=>'RSA2',
+            'timestamp'=>date('Y-m-d H:i:s'),
+            'version'=>'1.0',
+            'biz_content'=>json_encode($requestConfigs),
+        );
+        $commonConfigs["sign"] = $aliPay->generateSign($commonConfigs, $commonConfigs['sign_type']);
+        $result = $aliPay->curlPost('https://openapi.alipay.com/gateway.do?charset=utf8',$commonConfigs);
+        $result = json_decode($result,true);
+		$msg = '';
+		$code = 1;
+		if($result['alipay_trade_query_response']['code']!='10000'){
+			$msg = $result['alipay_trade_query_response']['msg'].'：'.$result['alipay_trade_query_response']['sub_code'].' '.$result['alipay_trade_query_response']['sub_msg'];
+		}else{
+			switch($result['alipay_trade_query_response']['trade_status']){
+				case 'WAIT_BUYER_PAY':
+					$msg = '交易创建，等待买家付款';
+					break;
+				case 'TRADE_CLOSED':
+					$msg = '未付款交易超时关闭，或支付完成后全额退款';
+					break;
+				case 'TRADE_SUCCESS':
+					$msg = '支付成功';
+					$code = 0;
+					
+					$out_trade_no = $outTradeNo;
+					$orderno = $out_trade_no;
+					$paytime = time();
+					$order = M('orders')->find(['orderno'=>$orderno]);
+					
+					if($order['ispay']==1){
+						//跳转对应查询详情
+						
+						JsonReturn(['code'=>$code,'msg'=>$msg]);
+					}
+					
+					$r = M('orders')->update(['orderno'=>$orderno],['ispay'=>1,'isshow'=>2,'paytime'=>$paytime]);
+					
+					//检查是否金币或积分充值
+					if($order['ptype']==2){
+							//金币充值
+							M('member')->goInc(['id'=>$order['userid']],'money',$order['jifen']);
+							$ww['userid'] = $order['userid'];
+							$ww['amount'] = $order['jifen'];
+							$ww['money'] = $order['money'];
+							$ww['type'] = 1;
+							$ww['msg'] = '在线充值';
+							$ww['orderno'] = $order['orderno'];
+							$ww['buytype'] = 'money';
+							$ww['addtime'] = time();
+							M('buylog')->add($ww);
+						}else if($order['ptype']==3){
+							//积分
+							M('member')->goInc(['id'=>$order['userid']],'jifen',$order['jifen']);
+							$ww['userid'] = $order['userid'];
+							$ww['amount'] = $order['jifen'];
+							$ww['money'] = $order['money'];
+							$ww['type'] = 1;
+							$ww['msg'] = '在线充值';
+							$ww['orderno'] = $order['orderno'];
+							$ww['buytype'] = 'jifen';
+							$ww['addtime'] = time();
+							M('buylog')->add($ww);
+						}
+
+					//支付成功后处理...
+					//$this->overpay($order['orderno']);
+					
+					
+					
+					
+					break;
+				case 'TRADE_FINISHED':
+					$msg = '交易结束，不可退款';
+					break;
+				default:
+					$msg = '未知状态';
+					break;
+			}
+		}
+		
+		JsonReturn(['code'=>$code,'msg'=>$msg]);
+		
 		
 	}
 	

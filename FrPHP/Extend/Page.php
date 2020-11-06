@@ -103,7 +103,8 @@ namespace FrPHP\Extend;
 						if(isset($param['page'])){
 							unset($param['page']);
 						}
-						
+						unset($param['ajax']);
+						unset($param['ajax_tpl']);
 						$url = get_domain().'/search?'.http_build_query($param);
 						
 					break;
@@ -185,7 +186,7 @@ namespace FrPHP\Extend;
 				$listpage['list'][] = array('url'=>$this->url.$this->sep.$start.$file_ext,'num'=>$start);
 				$start++;
 			}
-			$listpage['allpage'] = $this->allpage;
+			$listpage['allpage'] = $this->url.$this->sep.$this->allpage;
 			
 			$prev = '<li><a href="'.$this->url.$this->sep.($this->currentPage-1).$file_ext.'" class="layui-laypage-prev" data-page="'.($this->currentPage-1).'"><em>&lt;</em></a></li>';
 			

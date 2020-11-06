@@ -382,7 +382,7 @@ class SysController extends CommonController
 				$time = $data['times']*60+time();
 				setCache('jzcache_'.$data['field'],$result,$time);
 				
-				JsonReturn(array('code'=>0,'msg'=>'添加成功！继续添加~','url'=>U('index/addcache')));
+				JsonReturn(array('code'=>0,'msg'=>'添加成功！继续添加~','url'=>U('sys/addcache')));
 				exit;
 			}else{
 				JsonReturn(array('code'=>1,'msg'=>'添加失败！'));

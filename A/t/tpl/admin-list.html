@@ -216,8 +216,6 @@
 				
 				
 				form.on('submit(search)', function(data){
-					//data.field
-					data.field.page=1;
 					table.reload('jizhi_table', {
 					  url: window.location.href+'?ajax=1'
 					  ,where: data.field //设定异步数据接口的额外参数

@@ -529,6 +529,14 @@ class UserController extends Controller
 				$likes = [];
 			}
 			$lk = $tid.'-'.$id;
+			$u = M('member')->find(['username'=>'jzcustomer']);
+			if(!$u){
+				$w = [];
+				$w['username'] = 'jzcustomer';
+				$r = M('member')->add($w);
+				$u['id'] = $r;
+				$u['likes'] = '';
+			}
 			if(in_array($lk,$likes)){
 				$newlikes = [];
 				foreach($likes as $v){
@@ -538,11 +546,40 @@ class UserController extends Controller
 				}
 				$msg = '已取消点赞！';
 				$likes = $newlikes;
+				$ulikes = explode('||',$u['likes']);
+				$isdo = 0;
+				$ulk = [];
+				foreach($ulikes as $k=>$v){
+					if($v){
+						if($v==$lk && !$isdo){
+							$isdo = 1;
+							continue;
+						}
+						$ulk[]=$v;
+						
+						
+					}
+					
+				}
+				if(count($ulk)){
+					$u['likes'] = implode('||',$ulk);
+				}else{
+					$u['likes'] = '';
+				}
+				
+				
 			}else{
 				$msg = '点赞成功！';
 				$likes[]=$lk;
+				if($u['likes']){
+					$u['likes'] .= '||'.$lk;
+				}else{
+					$u['likes'] = $lk;
+				}
+				
 			}
 			$_SESSION['likes'] = $likes;
+			M('member')->update(['id'=>$u['id']],['likes'=>$u['likes']]);
 			if($this->frparam('ajax')){
 				JsonReturn(['code'=>0,'msg'=>$msg,'url'=>$_SESSION['return_url']]);
 			}

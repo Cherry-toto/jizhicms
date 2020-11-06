@@ -402,7 +402,7 @@ class View
 			}
 		}
 		if($sql){
-			$sql = " and '.".$sql.".'";
+			$sql = " and ('.".$sql.".' ) ";
 		}
 		unset($a['table']);unset($a['orderby']);unset($a['limit']);unset($a['as']);unset($a['like']);unset($a['fields']);unset($a['isall']);unset($a['notin']);unset($a['notempty']);unset($a['empty']);unset($a['day']);unset($a['in']);unset($a['sql']);unset($a['jzpage']);
 		$pages='';

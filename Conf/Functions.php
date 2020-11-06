@@ -1630,8 +1630,8 @@ function deldir($dir) {
  * debug=1 调试状态，每次请求都生成缓存 debug=0 会直接调用已生成的缩略图
  */
 function jzresize($src_image,$out_width = NULL, $out_height = NULL, $mode = 1, $out_image = NULL,  $direct = 0 ,$debug=0 , $img_quality = 90 ) {
-	if(!is_dir('./cache/image')){
-		if(!mkdir('./cache/image',0777)){
+	if(!is_dir(APP_PATH.'cache/image')){
+		if(!mkdir(APP_PATH.'cache/image',0777)){
 			exit('图片缓存文件夹不存在cache/image');
 		}		
 	}
@@ -1670,13 +1670,13 @@ function jzresize($src_image,$out_width = NULL, $out_height = NULL, $mode = 1, $
 	}
 	
 	// 检查生成图片是否存在
-	if(file_exists('./'.$out_image) && !$debug){
-		return './'.$out_image;
+	if(file_exists(APP_PATH.$out_image) && !$debug){
+		return '/'.$out_image;
 	}
 	
-	$out_image = './'.$out_image;
+	//$out_image = $out_image;
 	// 将图片拷贝到缓存目录
-	if(!copy('.'.$src_image, $out_image)){
+	if(!copy(APP_PATH.$src_image, $out_image)){
 		return '';
 	}
 	$src_image = $out_image;

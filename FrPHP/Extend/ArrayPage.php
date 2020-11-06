@@ -107,9 +107,9 @@
 					$listpage['current'] = $this->url.$start;
 					$listpage['current_num'] = $this->currentPage;
 				}else{
-					$list .= '<li><a href="'.$this->url.$this->sep.$start.'" data-page="'.$start.'">'.$start.'</a></li>';
+					$list .= '<li><a href="'.$this->url.$start.'" data-page="'.$start.'">'.$start.'</a></li>';
 				}
-				$listpage['list'][] = array('url'=>$this->url.$this->sep.$start,'num'=>$start);
+				$listpage['list'][] = array('url'=>$this->url.$start,'num'=>$start);
 				$start++;
 			}
 			

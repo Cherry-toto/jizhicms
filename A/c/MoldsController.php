@@ -67,6 +67,11 @@ class MoldsController extends CommonController
 				$sql = "CREATE TABLE IF NOT EXISTS `".DB_PREFIX.$data['biaoshi']."` (
 				`id` int(11) unsigned NOT NULL auto_increment,
 				`tid` int(11) DEFAULT 0,
+				`title` varchar(255) DEFAULT NULL,
+				`litpic` varchar(255) DEFAULT NULL,
+				`keywords` varchar(255) DEFAULT NULL,
+				`description` varchar(500) DEFAULT NULL,
+				`body` text DEFAULT NULL,
 				`molds` varchar(50) DEFAULT '".$data['biaoshi']."',
 				`userid` int(11) DEFAULT 0,
 				`orders` int(11) DEFAULT 0,
@@ -86,6 +91,71 @@ class MoldsController extends CommonController
 				) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1";
 				
 				$x = M()->runSql($sql);
+				$w['field'] = 'title';
+				$w['molds'] = $data['biaoshi'];
+				$w['fieldname'] = '标题';
+				$w['tips'] = '默认为空';
+				$w['fieldtype'] = 1;
+				$w['fieldlong'] = 255;
+				$w['ismust'] = 0;
+				$w['isshow'] = 1;
+				$w['isadmin'] = 1;
+				$w['issearch'] = 1;
+				$w['islist'] = 1;
+				$w['vdata'] = '';
+				M('fields')->add($w);
+				$w['field'] = 'keywords';
+				$w['molds'] = $data['biaoshi'];
+				$w['fieldname'] = '关键词';
+				$w['tips'] = '每个词用英文逗号(,)拼接';
+				$w['fieldtype'] = 1;
+				$w['fieldlong'] = 255;
+				$w['ismust'] = 0;
+				$w['isshow'] = 1;
+				$w['isadmin'] = 1;
+				$w['issearch'] = 0;
+				$w['islist'] = 0;
+				$w['vdata'] = '';
+				M('fields')->add($w);
+				$w['field'] = 'litpic';
+				$w['molds'] = $data['biaoshi'];
+				$w['fieldname'] = '缩略图';
+				$w['tips'] = '可留空';
+				$w['fieldtype'] = 5;
+				$w['fieldlong'] = 255;
+				$w['ismust'] = 0;
+				$w['isshow'] = 1;
+				$w['isadmin'] = 1;
+				$w['issearch'] = 0;
+				$w['islist'] = 1;
+				$w['vdata'] = '';
+				M('fields')->add($w);
+				$w['field'] = 'description';
+				$w['molds'] = $data['biaoshi'];
+				$w['fieldname'] = '简介';
+				$w['tips'] = '可留空';
+				$w['fieldtype'] = 2;
+				$w['fieldlong'] = 500;
+				$w['ismust'] = 0;
+				$w['isshow'] = 1;
+				$w['isadmin'] = 1;
+				$w['issearch'] = 0;
+				$w['islist'] = 0;
+				$w['vdata'] = '';
+				M('fields')->add($w);
+				$w['field'] = 'body';
+				$w['molds'] = $data['biaoshi'];
+				$w['fieldname'] = '内容';
+				$w['tips'] = '可留空';
+				$w['fieldtype'] = 3;
+				$w['fieldlong'] = 500;
+				$w['ismust'] = 0;
+				$w['isshow'] = 1;
+				$w['isadmin'] = 1;
+				$w['issearch'] = 0;
+				$w['islist'] = 0;
+				$w['vdata'] = '';
+				M('fields')->add($w);
 				$w['field'] = 'member_id';
 				$w['molds'] = $data['biaoshi'];
 				$w['fieldname'] = '发布会员';
@@ -217,7 +287,7 @@ class MoldsController extends CommonController
 					M('Ruler')->add($ruler);
 					
 					//写入左侧导航栏
-					$dao = M('layout')->find(['id'=>1]);
+					$dao = M('layout')->find(array('gid'=>$_SESSION['admin']['gid']));
 					$left_layout = json_decode($dao['left_layout'],1);
 					$left_layout[]=[
 						"name" => $data['name'].'模型',

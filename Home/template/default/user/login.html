@@ -94,11 +94,13 @@
             <input type="password" value="" id="password" name="password" placeholder="请输入您的密码">
             <a style="color:#f00" href="{fun U('forget')}">忘记密码？</a>
           </div>
+		  {if($webconf['closehomevercode']!=1)}
           <div class="form-control">
             <label for="">验证码：</label>
             <input type="text" value="" name="vercode" id="yzm" placeholder="请输入验证码">
             <img src="{fun U('common/vercode',['code_name'=>'login_vercode'])}" onclick="this.src=this.src+'?'+Math.random()" style="height:50px;"/>
           </div>
+		  {/if}
           <div class="form-group">
               <div style="margin-left: 80px;height: 50px;">
               
@@ -159,10 +161,12 @@ function checklogin(){
     alert('账号密码不能为空~');
     return false;
   }
+  {if($webconf['closehomevercode']!=1)}
   if($.trim($("#yzm").val())==''){
     alert('验证码不能为空~');
     return false;
   }
+  {/if}
   if($("#jz_login").is(":checked")){
     $("#isremember").val(1);
     setCookie('jizhi_username',$("#tel").val(),7);//设置用户名

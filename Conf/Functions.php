@@ -563,10 +563,13 @@ function classTypeDataMobile(){
 				 break;
 				 case 8:
 				 $r = implode(',',format_param($data[$v['field']],2));
-				 if($r!=''){
+				 if($r){
 					 $r = ','.$r.',';
 				 } 
-			 
+				 $data[$v['field']] = $r;
+				 break;
+				 case 15:
+				 $r = implode('||',format_param($data[$v['field']],2));
 				 $data[$v['field']] = $r;
 				 break;
 				
@@ -623,6 +626,7 @@ function classTypeDataMobile(){
 			 case 9:
 			 case 10:
 			 case 14:
+			 case 15:
 			 $fields_search .= '<input type="text" name="'.$v['field'].'" value="'.format_param($data[$v['field']],1).'" placeholder="请输入'.$v['fieldname'].'" autocomplete="off" class="layui-input">';
 			 if(array_key_exists($v['field'],$data)){
 				 if(format_param($data[$v['field']],1)!=''){

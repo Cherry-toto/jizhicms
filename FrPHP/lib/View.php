@@ -408,7 +408,9 @@ class View
 		$pages='';
 		$w = ' 1=1 ';
 		$ispage=false;
-		
+		if(stripos($jzpage.'$')!==false){
+			$jzpage = "'.$jzpage.'";
+		}
 		foreach($a as $k=>$v){
 			if(strpos($v,'$')===FALSE){
 				//$v = str_ireplace("'",'',$v);

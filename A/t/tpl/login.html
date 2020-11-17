@@ -17,9 +17,11 @@
             <hr class="hr15">
             <input name="password" lay-verify="required" placeholder="密码"  type="password" class="layui-input">
             <hr class="hr15">
+			{if($webconf['closeadminvercode']!=1)}
 			<input name="vercode" style="width:50%;float:left;" lay-verify="required" placeholder="验证码"  type="text" class="layui-input">
 			<img  src="{fun U('vercode')}" style="width:40%;float:right;" onclick="this.src=this.src+'?'+Math.random()" />
             <hr class="hr15">
+			{/if}
             <input value="登录" lay-submit lay-filter="login" style="width:100%;" type="submit">
             <hr class="hr20" >
         </form>

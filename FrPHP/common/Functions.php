@@ -599,11 +599,11 @@ function setCache($str,$data,$timeout=-1){
 	//设置
 	$rdata['frcache_time'] = $timeout;
 	$rdata['frcache_data'] = $data;
-	$str = get_domain().$str;
+	$s = md5(md5($str.'frphp'.$str));
 	$s = md5($str).'frphp'.md5($str);
-	$cache_file_data = APP_PATH.'cache/data/'.$s.'.php';
-	if(!file_exists(APP_PATH.'cache/data')){
-		mkdir (APP_PATH.'cache/data',0777,true);
+	$cache_file_data = Cache_Path.'/data/'.$s.'.php';
+	if(!file_exists(Cache_Path.'/data')){
+		mkdir (Cache_Path.'/data',0777,true);
 	}
 	//如果为null,则直接删除缓存
 	if(!isset($data)){
@@ -615,13 +615,11 @@ function setCache($str,$data,$timeout=-1){
 	
 	$res = json_encode($rdata,JSON_UNESCAPED_UNICODE);
 	$res = '<?php die();?>'.$res;
-	$f = @fopen($cache_file_data,'w');
-	$r = @fwrite($f,$res);
-	@fclose($f);
-	if($r!==false){
+	$r = file_put_contents($cache_file_data,$res);
+	if($r){
 		return true;
 	}else{
-		Error_msg('数据缓存失败，'.APP_PATH.'cache/data文件夹的读写权限设置为777！');
+		Error_msg('数据缓存失败，'.Cache_Path.'/data文件夹的读写权限设置为777！');
 	}
 
 	
@@ -633,8 +631,8 @@ function getCache($str=false){
 	}
 	$str = get_domain().$str;
 	//获取
-	$s = md5($str).'frphp'.md5($str);
-	$cache_file_data = APP_PATH.'cache/data/'.$s.'.php';
+	$s = md5(md5($str.'frphp'.$str));
+	$cache_file_data = Cache_Path.'/data/'.$s.'.php';
 	if(!file_exists($cache_file_data)){
 		return false;
 	}

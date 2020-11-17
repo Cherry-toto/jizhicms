@@ -353,6 +353,9 @@ class PluginsController extends CommonController
 	//打包下载
 	function output(){
 		$filepath = $this->frparam('filepath',1);
+		if(strpos($filepath,'.')!==false){
+			JsonReturn(array('code'=>1,'msg'=>'参数存在安全隐患！'));
+		}
 		if(!$filepath){
 			Error('链接错误！');
 		}
@@ -419,6 +422,9 @@ class PluginsController extends CommonController
 	//安装下载
 	function action_do(){
 		$filepath = $this->frparam('path',1);
+		if(strpos($filepath,'.')!==false){
+			JsonReturn(array('code'=>1,'msg'=>'参数存在安全隐患！'));
+		}
 		$type = $this->frparam('type');
 		$dir = APP_PATH.APP_HOME.'/exts';
 		if($filepath){
@@ -666,7 +672,9 @@ class PluginsController extends CommonController
 	//安装说明
 	function desc(){
 		$filepath = $this->frparam('filepath',1);
-		
+		if(strpos($filepath,'.')!==false){
+			JsonReturn(array('code'=>1,'msg'=>'参数存在安全隐患！'));
+		}
 		if($filepath){
 			//忽略Notice报错
 			error_reporting(E_ALL^E_NOTICE);
@@ -685,6 +693,9 @@ class PluginsController extends CommonController
 	//更新插件
 	function update(){
 		$filepath = $this->frparam('filepath',1);
+		if(strpos($filepath,'.')!==false){
+			JsonReturn(array('code'=>1,'msg'=>'参数存在安全隐患！'));
+		}
 		if($filepath){
 			if($this->frparam('action',1)){
 				$action = $this->frparam('action',1);

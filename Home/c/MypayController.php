@@ -650,6 +650,7 @@ class MypayController extends Controller
 			//同步回调一般不处理业务逻辑，显示一个付款成功的页面，或者跳转到用户的财务记录页面即可。
 			//echo '<h1>付款成功</h1>';
 			$out_trade_no = htmlspecialchars($_GET['out_trade_no']);
+			$out_trade_no = format_param($out_trade_no,1);
 			$orderno = $out_trade_no;
 			$paytime = time();
 			$order = M('orders')->find(['orderno'=>$orderno]);
@@ -715,6 +716,7 @@ class MypayController extends Controller
 			//程序执行完后必须打印输出“success”（不包含引号）。如果商户反馈给支付宝的字符不是success这7个字符，支付宝服务器会不断重发通知，直到超过24小时22分钟。一般情况下，25小时以内完成8次通知（通知的间隔频率一般是：4m,10m,10m,1h,2h,6h,15h）；
 			//echo 'success';exit();
 			$out_trade_no = htmlspecialchars($_GET['out_trade_no']);
+			$out_trade_no = format_param($out_trade_no,1);
 			$orderno = $out_trade_no;
 			$paytime = time();
 			$order = M('orders')->find(['orderno'=>$orderno]);
@@ -897,6 +899,7 @@ class MypayController extends Controller
 			//具体详细请看微信文档：https://pay.weixin.qq.com/wiki/doc/api/jsapi.php?chapter=9_7&index=8
 			
 			$out_trade_no = htmlspecialchars($result['out_trade_no']);
+			$out_trade_no = format_param($out_trade_no,1);
 			$orderno = $out_trade_no;
 			$paytime = time();
 			$order = M('orders')->find(['orderno'=>$orderno]);
@@ -963,6 +966,7 @@ class MypayController extends Controller
 			$result = $wxPay->notify();
 			if($result){
 				$out_trade_no = htmlspecialchars($result['out_trade_no']);
+				$out_trade_no = format_param($out_trade_no,1);
 				$orderno = $out_trade_no;
 				$paytime = time();
 				
@@ -1013,9 +1017,6 @@ class MypayController extends Controller
 		exit('订单号错误或订单被删除！');
 		
 	}
-	
-	
-	
 	
 	public function check_wechat_order(){
 		extendFile('pay/wechat/WxpayCheckOrder.php');
@@ -1085,7 +1086,6 @@ class MypayController extends Controller
 		
 		
 	}
-	
 	
 	private function overpay($orderno){
 		$order = M('orders')->find(['orderno'=>$orderno,'ispay'=>1]);

@@ -600,7 +600,6 @@ function setCache($str,$data,$timeout=-1){
 	$rdata['frcache_time'] = $timeout;
 	$rdata['frcache_data'] = $data;
 	$s = md5(md5($str.'frphp'.$str));
-	$s = md5($str).'frphp'.md5($str);
 	$cache_file_data = Cache_Path.'/data/'.$s.'.php';
 	if(!file_exists(Cache_Path.'/data')){
 		mkdir (Cache_Path.'/data',0777,true);

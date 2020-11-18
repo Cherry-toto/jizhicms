@@ -599,6 +599,7 @@ function setCache($str,$data,$timeout=-1){
 	//设置
 	$rdata['frcache_time'] = $timeout;
 	$rdata['frcache_data'] = $data;
+	$str = get_domain().$str;
 	$s = md5(md5($str.'frphp'.$str));
 	$cache_file_data = Cache_Path.'/data/'.$s.'.php';
 	if(!file_exists(Cache_Path.'/data')){

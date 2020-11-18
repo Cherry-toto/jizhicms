@@ -243,7 +243,7 @@ class WechatController extends Controller
 					//获取用户信息，并存入数据库
 					$openid = $fromUsername;
 					//查询是否已有账号
-					
+					$openid = format_param($openid,1);
 					$islive = M('member')->find(array('openid'=>$openid));
 					if(!$islive){
 						$access_token = $this->getAccessToken();

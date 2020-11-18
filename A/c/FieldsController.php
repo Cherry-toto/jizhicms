@@ -84,6 +84,7 @@ class FieldsController extends CommonController
 				}
 				break;
 				case 3:
+				case 15:
 				$sql .= "TEXT CHARACTER SET utf8 default ";
 				$sql .= ' NULL ';
 				
@@ -258,6 +259,7 @@ class FieldsController extends CommonController
 					}
 					break;
 					case 3:
+					case 15:
 					$sql .= "TEXT CHARACTER SET utf8 default ";
 					$sql .= ' NULL ';
 					
@@ -366,7 +368,8 @@ class FieldsController extends CommonController
 		$tid = $this->frparam('tid',0,0);
 		$sql = array();
 		$molds = strtolower($this->frparam('molds',1));
-		if(in_array($molds,['tags','message','comment','orders','admin','collect_type','fields','buylog','link_type','links','layout','level_group','level','member_group','molds','pictures','plugins','power','ruler','sysconfig','task','collect','member','menu'])){
+		$moldsdata = M('molds')->find(['biaoshi'=>$molds]);
+		if($moldsdata['ismust']!=1 || in_array($molds,['tags','message','comment','orders','admin','collect_type','fields','buylog','link_type','links','layout','level_group','level','member_group','molds','pictures','plugins','power','ruler','sysconfig','task','collect','member','menu'])){
 			if($tid!=0){
 				$sql[] = " tids like '%,".$tid.",%' "; 
 			}
@@ -882,6 +885,44 @@ layui.use("laydate", function(){
 							});
 							 
 						</script>';
+				break;
+				case 15:
+				$l .= '<fieldset class="layui-elem-field">
+				  <legend>'.$v['fieldname'].'</legend>
+				  <div class="layui-field-box">
+					  <div class="layui-input-block" id="'.$v['field'].'_space">';
+				if($data[$v['field']]){
+					$rs = explode('||',$data[$v['field']]);
+					foreach($rs as $vv){
+						$l.='<div class="layui-input-block"><input type="text"  style="width:500px;" value="'.$vv.'" name="'.$v['field'].'[]" autocomplete="off" class="layui-input layui-input-inline"><button type="button" class="layui-btn layui-btn-danger layui-btn-sm  layui-input-inline" id="'.$v['field'].'_del">删除</button></div>';
+					}
+				}else{
+					$l .='<div class="layui-input-block">
+							<input type="text"  style="width:500px;" value="'.$data[$v['field']].'" name="'.$v['field'].'[]" autocomplete="off" class="layui-input">
+						</div>';
+				}
+				$l	.=  '</div>
+					  <div class="layui-form-mid layui-word-aux">
+						  <button type="button" class="layui-btn" id="'.$v['field'].'_add">新增</button>'.$v['tips'].'
+				      </div>
+				  </div>
+				</fieldset>
+				<script>
+				$(document).ready(function(){
+					$("#'.$v['field'].'_add").click(function(){
+						var html = \'<div class="layui-input-block"><input type="text"  style="width:500px;" value="" name="'.$v['field'].'[]" autocomplete="off" class="layui-input layui-input-inline"><button type="button" class="layui-btn layui-btn-danger layui-btn-sm  layui-input-inline" id="'.$v['field'].'_del">删除</button></div>\';
+						
+						$("#'.$v['field'].'_space").append(html);
+						
+						
+					});
+					$(document).on("click","#'.$v['field'].'_del",function(){
+						$(this).parent().remove();
+					})
+					
+					
+				})
+				</script>';
 				break;
 				
 				

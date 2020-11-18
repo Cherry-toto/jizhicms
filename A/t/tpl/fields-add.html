@@ -4,7 +4,11 @@
     <head>
        <meta charset="UTF-8">
         {include="style"}
-		
+		<style>
+		.layui-form-item .layui-input-inline {
+			width: 210px;
+		}
+		</style>
     </head>
     
     <body>
@@ -178,6 +182,13 @@
 							{/loop}
 							</select><input type="text"  placeholder="列表显示字段" class="layui-input" name="molds_list_field" id="molds_list_field" value=""></div></td>
 							<td>可以直接调用关联模块内容列表，列表显示对应字段内容</td>
+						   </tr>
+						   <tr>
+							<td><input type="radio" name="fieldtype" value="15" /></div></td>
+							<td>多行录入<br/>txt</div></td>
+							<td>不限</div></td>
+							<td>无</div></td>
+							<td>可以在页面动态新增内容输入框</td>
 						   </tr>
 						   
 						</tbody>

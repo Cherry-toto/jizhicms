@@ -731,6 +731,17 @@ class HomeController extends CommonController
 			}
 			$this->word = $word;
 			
+			if(strpos($tid,',')!==false){
+				$tid_arr = explode(',',$tid);
+				$tids = [];
+				foreach($tid_arr as $v){
+					$tids[]=format_param($v,0);
+				}
+				$tid = implode(',',$tids);
+			}else{
+				$tid = format_param($tid,0);
+			}
+			
 			$search_words = (isset($this->webconf['search_words'])&& $this->webconf['search_words']) ? explode('|',$this->webconf['search_words']) : ['title'];
 			$sql = ' isshow=1 ';
 			$sq = [];
@@ -838,6 +849,16 @@ class HomeController extends CommonController
 				Error('请输入关键词搜索！');
 			}
 			$this->word = $word;
+			if(strpos($tid,',')!==false){
+				$tid_arr = explode(',',$tid);
+				$tids = [];
+				foreach($tid_arr as $v){
+					$tids[]=format_param($v,0);
+				}
+				$tid = implode(',',$tids);
+			}else{
+				$tid = format_param($tid,0);
+			}
 			
 			$search_words = (isset($this->webconf['search_words'])&& $this->webconf['search_words']) ? explode('|',$this->webconf['search_words']) : ['title'];
 			$sql = ' isshow=1 ';
@@ -906,21 +927,27 @@ class HomeController extends CommonController
 		$url = substr(REQUEST_URI,1);
 		$position = strpos($url, '?');
         $url = $position === false ? $url : substr($url, 0, $position);
+		$cache_file = APP_PATH.'cache/data/'.md5(frencode($url));
+		$this->cache_file = $cache_file;
+		$this->start_cache($cache_file);		
 		$r = M('customurl')->find(['url'=>$url]);
 		if($r){
 			if(isset($this->classtypedata[$r['tid']])){
 				$this->type = $this->classtypedata[$r['tid']];
 				$this->jizhi_details($r['aid']);
+				$this->end_cache($this->cache_file);
 			}else if($r['molds']=='tags'){
 				$param = [];
 				$param['id'] = $r['aid'];
 				$tags = new TagsController($param);
 				$tags->index();
+				$this->end_cache($this->cache_file);
 			}
 			
 			exit;
 		}
 		$this->display($this->template.'/404');
+		$this->end_cache($this->cache_file);
 		exit;
 	}
 	
@@ -1037,7 +1064,10 @@ class HomeController extends CommonController
 			foreach($model as $k=>$v){
 				$list = M($v)->findAll(['isshow'=>1]);
 				if(count($list)>1000){
-					continue;
+					M('sysconfig')->update(['field'=>'isautositemap'],['data'=>0]);
+					setCache('webconfig',null);
+					$this->jizhi();
+					exit;
 				}
 				//栏目
 				if($v=='classtype' && $list){

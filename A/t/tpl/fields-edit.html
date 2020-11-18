@@ -4,7 +4,11 @@
     <head>
        <meta charset="UTF-8">
         {include="style"}
-		
+		<style>
+		.layui-form-item .layui-input-inline {
+			width: 210px;
+		}
+		</style>
     </head>
     
     <body>
@@ -193,6 +197,14 @@
 							</div></td>
 							<td>关联模块内容ID</td>
 						   </tr>
+						    <tr>
+							<td><input type="radio" name="fieldtype" {if($data['fieldtype']==15)} checked {/if} value="15" /></div></td>
+							<td>多行录入<br/>txt</div></td>
+							<td>不限</div></td>
+							<td>无</div></td>
+							<td>可以在页面动态新增内容输入框</td>
+						   </tr>
+						   
 						</tbody>
 					  </table>
 				    </div>

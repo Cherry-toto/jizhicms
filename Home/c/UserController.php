@@ -1788,284 +1788,291 @@ class UserController extends Controller
     //个人中心公共页
     function active(){
     	$username = $this->frparam('uname',1);
-    	if($username){
-			$this->user = M('member')->find(['username'=>$username]);
-			if(!$this->user){
-				Error('用户未找到！');
-			}
-			//统计评论数
-			$this->comment_num = M('comment')->getCount(['userid'=>$this->user['id'],'isshow'=>1]);
-			//统计点赞数
-			if($this->user['likes']!=''){
-				//,1,2,3,4,
-				$this->likes_num = substr_count($this->user['likes'],'||')-1;
+    	$uid = $this->frparam('uid');
+    	if($username || $uid){
+			if($username){
+				$this->user = M('member')->find(['username'=>$username]);
 			}else{
-				$this->likes_num = 0;
+				$this->user = M('member')->find(['id'=>$uid]);
 			}
-			//统计收藏
-			if($this->user['collection']!=''){
-				//,1,2,3,4,
-			$this->collect_num = substr_count($this->user['collection'],'||')-1;
-			}else{
-				$this->collect_num = 0;
-			}
-			//发布文章统计
-			$this->article_num = M('article')->getCount(['member_id'=>$this->user['id']]);
-			$this->product_num = M('product')->getCount(['member_id'=>$this->user['id']]);
-			
-			$this->type = $this->frparam('type',0,1);
-			
-			switch($this->type){
-				
-				case 1:
-					$molds = $this->frparam('molds',1,'article');
-					if($molds!='article'){
-						Error('链接错误！');
-					}
-					$this->molds = $molds;
-					$this->moldsname = M('molds')->getField(['biaoshi'=>$molds],'name');
-					$page = new Page($molds);
-					$this->type = $this->frparam('type');
-					$sql = 'member_id='.$this->user['id'].' and isshow=1  ';
-					
-					
-					$data = $page->where($sql)->orderby('addtime desc')->page($this->frparam('page',0,1))->go();
-					$page->file_ext = '';
-					$pages = $page->pageList(5,'?page=');
-					
-					foreach($data as $k=>$v){
-						if(isset($this->classtypedata[$v['tid']])){
-							$data[$k]['classname'] = $this->classtypedata[$v['tid']]['classname'];
-						}else{
-							$data[$k]['classname'] = '[ 未分类 ]';
-						}
-						
-						$data[$k]['date'] = date('Y-m-d H:i:s',$v['addtime']);
-						
-						$data[$k]['url'] = gourl($v['id'],$v['htmlurl']);
-						
-					}
-					$this->pages = $pages;
-					$this->lists = $data;//列表数据
-					$this->sum = $page->sum;//总数据
-					$this->listpage = $page->listpage;//分页数组-自定义分页可用
-					$this->prevpage = $page->prevpage;//上一页
-					$this->nextpage = $page->nextpage;//下一页
-					$this->allpage = $page->allpage;//总页数
-					if($this->frparam('ajax')){
-
-						JsonReturn(['code'=>0,'data'=>$data]);
-					}
-				break;
-				case 2:
-					$molds = $this->frparam('molds',1,'article');
-					if($molds!='product'){
-						Error('链接错误！');
-					}
-					$this->molds = $molds;
-					$this->moldsname = M('molds')->getField(['biaoshi'=>$molds],'name');
-					$page = new Page($molds);
-					$this->type = $this->frparam('type');
-					$sql = 'member_id='.$this->user['id'].' and isshow=1  ';
-					
-					
-					$data = $page->where($sql)->orderby('addtime desc')->page($this->frparam('page',0,1))->go();
-					$page->file_ext = '';
-					$pages = $page->pageList(5,'?page=');
-					
-					foreach($data as $k=>$v){
-						if(isset($this->classtypedata[$v['tid']])){
-							$data[$k]['classname'] = $this->classtypedata[$v['tid']]['classname'];
-						}else{
-							$data[$k]['classname'] = '[ 未分类 ]';
-						}
-						
-						$data[$k]['date'] = date('Y-m-d H:i:s',$v['addtime']);
-						
-						$data[$k]['url'] = gourl($v['id'],$v['htmlurl']);
-						
-					}
-					$this->pages = $pages;
-					$this->lists = $data;//列表数据
-					$this->sum = $page->sum;//总数据
-					$this->listpage = $page->listpage;//分页数组-自定义分页可用
-					$this->prevpage = $page->prevpage;//上一页
-					$this->nextpage = $page->nextpage;//下一页
-					$this->allpage = $page->allpage;//总页数
-					if($this->frparam('ajax')){
-
-						JsonReturn(['code'=>0,'data'=>$data]);
-					}
-				break;
-				case 3:
-					$this->frpage = $this->frparam('page',0,1);
-					$page = new Page('member');
-					$member_id = $this->user['id'];
-					$follow = M('member')->getField(['id'=>$member_id],'follow');
-					if($follow!=''){
-						//,1,2,2,4,
-						$ids = trim($follow,',');
-
-					}else{
-						$ids = 0;
-					}
-					$sql = " id in(".$ids.") " ;
-					$data = $page->where($sql)->orderby('fans desc,regtime desc,id desc')->limit(12)->page($this->frpage)->go();
-					$pages = $page->pageList(5,'?page=');
-					$this->pages = $pages;//组合分页
-					$this->lists = $data;//列表数据
-					$this->sum = $page->sum;//总数据
-					$this->listpage = $page->listpage;//分页数组-自定义分页可用
-					$this->prevpage = $page->prevpage;//上一页
-					$this->nextpage = $page->nextpage;//下一页
-					$this->allpage = $page->allpage;//总页数
-				break;
-				case 4:
-					$this->frpage = $this->frparam('page',0,1);
-					$page = new Page('member');
-					$member_id = $this->user['id'];
-					$sql = " follow like '%,".$member_id.",%'" ;
-					$data = $page->where($sql)->orderby('fans desc,regtime desc,id desc')->limit(15)->page($this->frpage)->go();
-					$pages = $page->pageList(3,'?page=');
-					$this->pages = $pages;//组合分页
-					$this->lists = $data;//列表数据
-					$this->sum = $page->sum;//总数据
-					$this->listpage = $page->listpage;//分页数组-自定义分页可用
-					$this->prevpage = $page->prevpage;//上一页
-					$this->nextpage = $page->nextpage;//下一页
-					$this->allpage = $page->allpage;//总页数
-				break;
-				case 5:
-					$lists = [];
-					if($this->user['collection']!=''){
-						
-						$collection = explode('||',$this->user['collection']);
-
-						foreach($collection as $v){
-							if($v!=''){
-								$d = explode('-',$v);
-								//tid-id
-								if($d!=''){
-									$xdata=M($this->classtypedata[$d[0]]['molds'])->find(['id'=>$d[1]]);
-									if($xdata){
-										$lists[] = $xdata;
-									}
-								}
-							}
-						}
-					}
-					
-					$arraypage = new \ArrayPage($lists);
-					$data = $arraypage->query(['page'=>$this->frparam('page',0,1),'uname'=>$username,'type'=>$this->frparam('type',0,1)])->setPage(['limit'=>10])->go();
-					foreach($data as $k=>$v){
-						$data[$k]['url'] = gourl($v['id'],$v['htmlurl']);
-						if(isset($this->classtypedata[$v['tid']])){
-							$data[$k]['classname'] = $this->classtypedata[$v['tid']]['classname'];
-						}else{
-							$data[$k]['classname'] = '[ 已被删除 ]';
-						}
-						
-						
-					}
-					$this->lists = $data;
-					$this->pages = $arraypage->pageList();
-					$this->listpage = $arraypage->listpage;//分页数组-自定义分页可用
-					$this->prevpage = $arraypage->prevpage;//上一页
-					$this->nextpage = $arraypage->nextpage;//下一页
-					$this->allpage = $arraypage->allpage;//总页数
-					if($this->frparam('ajax')){
-						
-						JsonReturn(['code'=>0,'data'=>$data]);
-					}
-				break;
-				case 6:
-					$page = new Page('Comment');
-					$sql = 'userid='.$this->user['id'].' and isshow=1 ';
-					$data = $page->where($sql)->orderby('addtime desc')->limit(5)->page($this->frparam('page',0,1))->go();
-					$page->file_ext = '';
-					$pages = $page->pageList(5,'?page=');
-					$pages = $page->pageList();
-					$this->pages = $pages;
-					
-					$this->sum = $page->sum;
-					foreach($data as $k=>$v){
-						if(isset($this->classtypedata[$v['tid']])){
-							$xmolds = M($this->classtypedata[$v['tid']]['molds'])->find(['id'=>$v['aid']]);
-							if($xmolds){
-								$data[$k]['title'] = $xmolds['title'];
-								$data[$k]['date'] = date('Y/m/d H:i:s',$v['addtime']);
-								$data[$k]['url'] =  gourl($xmolds['id'],$xmolds['htmlurl']);
-								$data[$k]['body'] = newstr($v['body'],60);
-								$data[$k]['comment_num'] =  get_comment_num($v['tid'],$v['aid']);
-								
-							}
-						}
-						
-						
-					}
-					$this->lists = $data;//列表数据
-					$this->sum = $page->sum;//总数据
-					$this->listpage = $page->listpage;//分页数组-自定义分页可用
-					$this->prevpage = $page->prevpage;//上一页
-					$this->nextpage = $page->nextpage;//下一页
-					$this->allpage = $page->allpage;//总页数
-					if($this->frparam('ajax')){
-						JsonReturn(['code'=>0,'data'=>$data]);
-					}
-		
-				break;
-				case 7:
-					$lists = [];
-					if($this->user['likes']!=''){
-				
-						$likes = explode('||',$this->user['likes']);
-
-						foreach($likes as $v){
-							if($v!=''){
-								$d = explode('-',$v);
-								//tid-id
-								if($d!=''){
-									$xdata=M($this->classtypedata[$d[0]]['molds'])->find(['id'=>$d[1]]);
-									if($xdata){
-										$lists[]=$xdata;
-									}
-								}
-							}
-						}
-					}
-					
-					$arraypage = new \ArrayPage($lists);
-					$data = $arraypage->query(['page'=>$this->frparam('page',0,1),'uname'=>$username,'type'=>$this->frparam('type',0,1)])->setPage(['limit'=>10])->go();
-					foreach($data as $k=>$v){
-						$data[$k]['url'] = gourl($v['id'],$v['htmlurl']);
-						if(isset($this->classtypedata[$v['tid']])){
-							$data[$k]['classname'] = $this->classtypedata[$v['tid']]['classname'];
-						}else{
-							$data[$k]['classname'] = '[ 已被删除 ]';
-						}
-						
-						
-					}
-					$this->lists = $data;
-					$this->pages = $arraypage->pageList();
-					$this->listpage = $arraypage->listpage;//分页数组-自定义分页可用
-					$this->prevpage = $arraypage->prevpage;//上一页
-					$this->nextpage = $arraypage->nextpage;//下一页
-					$this->allpage = $arraypage->allpage;//总页数
-					if($this->frparam('ajax')){
-						JsonReturn(['code'=>0,'data'=>$data]);
-					}
-				break;
-			}
-			
-			
-    		$this->display($this->template.'/user/people');
-    	}else{
+		}else{
     		if($this->frparam('ajax')){
 				JsonReturn(['code'=>1,'msg'=>'链接错误！','data'=>'']);
 			}
 			Error('链接错误！');
     	}
+
+		if(!$this->user){
+			Error('用户未找到！');
+		}
+		//统计评论数
+		$this->comment_num = M('comment')->getCount(['userid'=>$this->user['id'],'isshow'=>1]);
+		//统计点赞数
+		if($this->user['likes']!=''){
+			//,1,2,3,4,
+			$this->likes_num = substr_count($this->user['likes'],'||')-1;
+		}else{
+			$this->likes_num = 0;
+		}
+		//统计收藏
+		if($this->user['collection']!=''){
+			//,1,2,3,4,
+		$this->collect_num = substr_count($this->user['collection'],'||')-1;
+		}else{
+			$this->collect_num = 0;
+		}
+		//发布文章统计
+		$this->article_num = M('article')->getCount(['member_id'=>$this->user['id']]);
+		$this->product_num = M('product')->getCount(['member_id'=>$this->user['id']]);
+		
+		$this->type = $this->frparam('type',0,1);
+		
+		switch($this->type){
+			
+			case 1:
+				$molds = $this->frparam('molds',1,'article');
+				if($molds!='article'){
+					Error('链接错误！');
+				}
+				$this->molds = $molds;
+				$this->moldsname = M('molds')->getField(['biaoshi'=>$molds],'name');
+				$page = new Page($molds);
+				$this->type = $this->frparam('type');
+				$sql = 'member_id='.$this->user['id'].' and isshow=1  ';
+				
+				
+				$data = $page->where($sql)->orderby('addtime desc')->page($this->frparam('page',0,1))->go();
+				$page->file_ext = '';
+				$pages = $page->pageList(5,'?page=');
+				
+				foreach($data as $k=>$v){
+					if(isset($this->classtypedata[$v['tid']])){
+						$data[$k]['classname'] = $this->classtypedata[$v['tid']]['classname'];
+					}else{
+						$data[$k]['classname'] = '[ 未分类 ]';
+					}
+					
+					$data[$k]['date'] = date('Y-m-d H:i:s',$v['addtime']);
+					
+					$data[$k]['url'] = gourl($v['id'],$v['htmlurl']);
+					
+				}
+				$this->pages = $pages;
+				$this->lists = $data;//列表数据
+				$this->sum = $page->sum;//总数据
+				$this->listpage = $page->listpage;//分页数组-自定义分页可用
+				$this->prevpage = $page->prevpage;//上一页
+				$this->nextpage = $page->nextpage;//下一页
+				$this->allpage = $page->allpage;//总页数
+				if($this->frparam('ajax')){
+
+					JsonReturn(['code'=>0,'data'=>$data]);
+				}
+			break;
+			case 2:
+				$molds = $this->frparam('molds',1,'article');
+				if($molds!='product'){
+					Error('链接错误！');
+				}
+				$this->molds = $molds;
+				$this->moldsname = M('molds')->getField(['biaoshi'=>$molds],'name');
+				$page = new Page($molds);
+				$this->type = $this->frparam('type');
+				$sql = 'member_id='.$this->user['id'].' and isshow=1  ';
+				
+				
+				$data = $page->where($sql)->orderby('addtime desc')->page($this->frparam('page',0,1))->go();
+				$page->file_ext = '';
+				$pages = $page->pageList(5,'?page=');
+				
+				foreach($data as $k=>$v){
+					if(isset($this->classtypedata[$v['tid']])){
+						$data[$k]['classname'] = $this->classtypedata[$v['tid']]['classname'];
+					}else{
+						$data[$k]['classname'] = '[ 未分类 ]';
+					}
+					
+					$data[$k]['date'] = date('Y-m-d H:i:s',$v['addtime']);
+					
+					$data[$k]['url'] = gourl($v['id'],$v['htmlurl']);
+					
+				}
+				$this->pages = $pages;
+				$this->lists = $data;//列表数据
+				$this->sum = $page->sum;//总数据
+				$this->listpage = $page->listpage;//分页数组-自定义分页可用
+				$this->prevpage = $page->prevpage;//上一页
+				$this->nextpage = $page->nextpage;//下一页
+				$this->allpage = $page->allpage;//总页数
+				if($this->frparam('ajax')){
+
+					JsonReturn(['code'=>0,'data'=>$data]);
+				}
+			break;
+			case 3:
+				$this->frpage = $this->frparam('page',0,1);
+				$page = new Page('member');
+				$member_id = $this->user['id'];
+				$follow = M('member')->getField(['id'=>$member_id],'follow');
+				if($follow!=''){
+					//,1,2,2,4,
+					$ids = trim($follow,',');
+
+				}else{
+					$ids = 0;
+				}
+				$sql = " id in(".$ids.") " ;
+				$data = $page->where($sql)->orderby('fans desc,regtime desc,id desc')->limit(12)->page($this->frpage)->go();
+				$pages = $page->pageList(5,'?page=');
+				$this->pages = $pages;//组合分页
+				$this->lists = $data;//列表数据
+				$this->sum = $page->sum;//总数据
+				$this->listpage = $page->listpage;//分页数组-自定义分页可用
+				$this->prevpage = $page->prevpage;//上一页
+				$this->nextpage = $page->nextpage;//下一页
+				$this->allpage = $page->allpage;//总页数
+			break;
+			case 4:
+				$this->frpage = $this->frparam('page',0,1);
+				$page = new Page('member');
+				$member_id = $this->user['id'];
+				$sql = " follow like '%,".$member_id.",%'" ;
+				$data = $page->where($sql)->orderby('fans desc,regtime desc,id desc')->limit(15)->page($this->frpage)->go();
+				$pages = $page->pageList(3,'?page=');
+				$this->pages = $pages;//组合分页
+				$this->lists = $data;//列表数据
+				$this->sum = $page->sum;//总数据
+				$this->listpage = $page->listpage;//分页数组-自定义分页可用
+				$this->prevpage = $page->prevpage;//上一页
+				$this->nextpage = $page->nextpage;//下一页
+				$this->allpage = $page->allpage;//总页数
+			break;
+			case 5:
+				$lists = [];
+				if($this->user['collection']!=''){
+					
+					$collection = explode('||',$this->user['collection']);
+
+					foreach($collection as $v){
+						if($v!=''){
+							$d = explode('-',$v);
+							//tid-id
+							if($d!=''){
+								$xdata=M($this->classtypedata[$d[0]]['molds'])->find(['id'=>$d[1]]);
+								if($xdata){
+									$lists[] = $xdata;
+								}
+							}
+						}
+					}
+				}
+				
+				$arraypage = new \ArrayPage($lists);
+				$data = $arraypage->query(['page'=>$this->frparam('page',0,1),'uname'=>$username,'type'=>$this->frparam('type',0,1)])->setPage(['limit'=>10])->go();
+				foreach($data as $k=>$v){
+					$data[$k]['url'] = gourl($v['id'],$v['htmlurl']);
+					if(isset($this->classtypedata[$v['tid']])){
+						$data[$k]['classname'] = $this->classtypedata[$v['tid']]['classname'];
+					}else{
+						$data[$k]['classname'] = '[ 已被删除 ]';
+					}
+					
+					
+				}
+				$this->lists = $data;
+				$this->pages = $arraypage->pageList();
+				$this->listpage = $arraypage->listpage;//分页数组-自定义分页可用
+				$this->prevpage = $arraypage->prevpage;//上一页
+				$this->nextpage = $arraypage->nextpage;//下一页
+				$this->allpage = $arraypage->allpage;//总页数
+				if($this->frparam('ajax')){
+					
+					JsonReturn(['code'=>0,'data'=>$data]);
+				}
+			break;
+			case 6:
+				$page = new Page('Comment');
+				$sql = 'userid='.$this->user['id'].' and isshow=1 ';
+				$data = $page->where($sql)->orderby('addtime desc')->limit(5)->page($this->frparam('page',0,1))->go();
+				$page->file_ext = '';
+				$pages = $page->pageList(5,'?page=');
+				$pages = $page->pageList();
+				$this->pages = $pages;
+				
+				$this->sum = $page->sum;
+				foreach($data as $k=>$v){
+					if(isset($this->classtypedata[$v['tid']])){
+						$xmolds = M($this->classtypedata[$v['tid']]['molds'])->find(['id'=>$v['aid']]);
+						if($xmolds){
+							$data[$k]['title'] = $xmolds['title'];
+							$data[$k]['date'] = date('Y/m/d H:i:s',$v['addtime']);
+							$data[$k]['url'] =  gourl($xmolds['id'],$xmolds['htmlurl']);
+							$data[$k]['body'] = newstr($v['body'],60);
+							$data[$k]['comment_num'] =  get_comment_num($v['tid'],$v['aid']);
+							
+						}
+					}
+					
+					
+				}
+				$this->lists = $data;//列表数据
+				$this->sum = $page->sum;//总数据
+				$this->listpage = $page->listpage;//分页数组-自定义分页可用
+				$this->prevpage = $page->prevpage;//上一页
+				$this->nextpage = $page->nextpage;//下一页
+				$this->allpage = $page->allpage;//总页数
+				if($this->frparam('ajax')){
+					JsonReturn(['code'=>0,'data'=>$data]);
+				}
+	
+			break;
+			case 7:
+				$lists = [];
+				if($this->user['likes']!=''){
+			
+					$likes = explode('||',$this->user['likes']);
+
+					foreach($likes as $v){
+						if($v!=''){
+							$d = explode('-',$v);
+							//tid-id
+							if($d!=''){
+								$xdata=M($this->classtypedata[$d[0]]['molds'])->find(['id'=>$d[1]]);
+								if($xdata){
+									$lists[]=$xdata;
+								}
+							}
+						}
+					}
+				}
+				
+				$arraypage = new \ArrayPage($lists);
+				$data = $arraypage->query(['page'=>$this->frparam('page',0,1),'uname'=>$username,'type'=>$this->frparam('type',0,1)])->setPage(['limit'=>10])->go();
+				foreach($data as $k=>$v){
+					$data[$k]['url'] = gourl($v['id'],$v['htmlurl']);
+					if(isset($this->classtypedata[$v['tid']])){
+						$data[$k]['classname'] = $this->classtypedata[$v['tid']]['classname'];
+					}else{
+						$data[$k]['classname'] = '[ 已被删除 ]';
+					}
+					
+					
+				}
+				$this->lists = $data;
+				$this->pages = $arraypage->pageList();
+				$this->listpage = $arraypage->listpage;//分页数组-自定义分页可用
+				$this->prevpage = $arraypage->prevpage;//上一页
+				$this->nextpage = $arraypage->nextpage;//下一页
+				$this->allpage = $arraypage->allpage;//总页数
+				if($this->frparam('ajax')){
+					JsonReturn(['code'=>0,'data'=>$data]);
+				}
+			break;
+		}
+		
+		
+		$this->display($this->template.'/user/people');
+    	
     }
 
     //消息提醒设置

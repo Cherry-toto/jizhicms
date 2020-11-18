@@ -179,6 +179,8 @@ class ExtmoldsController extends Controller
 			$data['molds'] = $molds;
 			if($data['tags']){
 				$data['tags'] = ','.$data['tags'].',';
+			}else if($this->frparam('keywords',1)){
+				$data['tags'] = ','.str_replace('，',',',$this->frparam('keywords',1)).',';
 			}
 			$r = M($molds)->add($data);
 			if($r){
@@ -250,7 +252,7 @@ class ExtmoldsController extends Controller
 						
 					}else{
 						if(M('customurl')->find(['aid'=>$this->frparam('id'),'molds'=>$molds])){
-							M('customurl')->update(['tid'=>$data['tid'],'aid'=>$this->frparam('id')],['url'=>$data['ownurl'],'molds'=>$molds]);
+							M('customurl')->update(['aid'=>$this->frparam('id'),'molds'=>$molds],['url'=>$data['ownurl'],'molds'=>$molds,'tid'=>$data['tid']]);
 						}else{
 							M('customurl')->add(['molds'=>$molds,'tid'=>$data['tid'],'url'=>$data['ownurl'],'addtime'=>time(),'aid'=>$this->frparam('id')]);
 						}
@@ -261,9 +263,12 @@ class ExtmoldsController extends Controller
 				}
 				if($data['tags']){
 					$data['tags'] = ','.$data['tags'].',';
+				}else if($this->frparam('keywords',1)){
+					$data['tags'] = ','.str_replace('，',',',$this->frparam('keywords',1)).',';
 				}
+				$old_tags = M($molds)->getField(['id'=>$this->frparam('id')],'tags');
 				if(M($molds)->update(array('id'=>$this->frparam('id')),$data)){
-					$old_tags = M($molds)->getField(['id'=>$this->frparam('id')],'tags');
+					
 					if($old_tags!=$data['tags']){
 						
 						$a = $old_tags.$data['tags'];

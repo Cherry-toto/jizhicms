@@ -1139,10 +1139,14 @@ class IndexController extends CommonController
 					continue;
 				}
 				if($v['ownurl']){
-					continue;
+					$htmlurl = $v['ownurl'];
+				}else{
+					$htmlurl = $v['htmlurl'];
 				}
+				
+				
 				//检测htmlurl是否为空
-				if(trim($v['htmlurl'])==''){
+				if(trim($htmlurl)==''){
 					JsonReturn(['code'=>1,'msg'=>$modelname.'模块未绑定栏目，无法生存HTML！']);
 				}
 				
@@ -1157,39 +1161,45 @@ class IndexController extends CommonController
 					
 				}
 				
-				if(strpos($v['htmlurl'],'/')!==false){
-					$filepath = explode('/',$v['htmlurl']);
+				if(strpos($htmlurl,'/')!==false){
+					$filepath = explode('/',$htmlurl);
 					//array_pop($filepath);
 					$dir = APP_PATH.$terminal_path.implode('/',$filepath);
 					$create_dir = APP_PATH.$terminal_path;
 					foreach($filepath as $vv){
-						$create_dir.=$vv;
-						if(!is_dir($create_dir)){
-							
-							$r = mkdir($create_dir,0777,true);
-							if(!$r){
-								JsonReturn(['code'=>1,'msg'=>'系统创建 [ '.str_replace('/','\\',$create_dir).' ] 目录失败!']);
+						if(strpos($vv,'.')===false){
+							$create_dir.=$vv;
+							if(!is_dir($create_dir)){
+								
+								$r = mkdir($create_dir,0777,true);
+								if(!$r){
+									JsonReturn(['code'=>1,'msg'=>'系统创建 [ '.str_replace('/','\\',$create_dir).' ] 目录失败!']);
+								}
+								
 							}
-							
+							$create_dir.='/';
 						}
-						$create_dir.='/';
+						
 						
 					}
 				}else{
-					if(!is_dir(APP_PATH.$terminal_path.$v['htmlurl'])){
-						$r = mkdir(APP_PATH.$terminal_path.$v['htmlurl'],0777,true);
+					if(!is_dir(APP_PATH.$terminal_path.$htmlurl) && strpos($htmlurl,'.')===false){
+						$r = mkdir(APP_PATH.$terminal_path.$htmlurl,0777,true);
 						if(!$r){
-							JsonReturn(['code'=>1,'msg'=>'系统创建 [ '.str_replace('/','\\',APP_PATH.$terminal_path.$v['htmlurl']).' ] 目录失败！']);
+							JsonReturn(['code'=>1,'msg'=>'系统创建 [ '.str_replace('/','\\',APP_PATH.$terminal_path.$htmlurl).' ] 目录失败！']);
 						}
 					}
+				
 				}
 				
-				
-				
-				$url = APP_PATH.$terminal_path.$v['htmlurl'].'/'.$v['id'].'.html';
-				$filename = APP_PATH.$terminal_path.$v['htmlurl'].'/'.$v['id'].'.html';
-
-				$urls[] = ['url'=>$www.'/'.$v['htmlurl'].'/'.$v['id'].'.html','html'=>$filename];
+				if($v['ownurl']){
+					$url = get_domain().'/'.$v['ownurl'];
+					$filename = APP_PATH.$terminal_path.$htmlurl;
+				}else{
+					$url = $www.'/'.$v['htmlurl'].'/'.$v['id'].'.html';
+					$filename = APP_PATH.$terminal_path.$v['htmlurl'].'/'.$v['id'].'.html';
+				}
+				$urls[] = ['url'=>$url,'html'=>$filename];
 
 				
 				

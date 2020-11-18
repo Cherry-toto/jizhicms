@@ -185,7 +185,7 @@ class ProductController extends CommonController
 			$data['ishot'] = $this->frparam('ishot',0,0);
 			$data['istuijian'] = $this->frparam('istuijian',0,0);
 			$data = get_fields_data($data,'product');
-			$data['tags'] = $data['tags'] ? $data['tags'] : $data['keywords'];
+			$data['tags'] = $data['tags'] ? $data['tags'] : str_replace('，',',',$data['keywords']);
 			if($data['tags']!=''){
 				$data['tags'] = ','.$data['tags'].',';
 			}
@@ -245,6 +245,7 @@ class ProductController extends CommonController
 			$data['body'] = $this->frparam('body',4);
 			$data['price'] = $this->frparam('price',3);
 			$data['title'] = $this->frparam('title',1);
+			$data['tid'] = $this->frparam('tid',0,0);
 			$data['keywords'] = $this->frparam('keywords',1);
 			$data['seo_title'] = $this->frparam('seo_title',1) ? $this->frparam('seo_title',1) : $this->frparam('title',1);
 			$data['description'] = ($this->frparam('description',1)=='') ? newstr(strip_tags($data['body']),160) : $this->frparam('description',1);
@@ -296,7 +297,7 @@ class ProductController extends CommonController
 			$data['ishot'] = $this->frparam('ishot',0,0);
 			$data['istuijian'] = $this->frparam('istuijian',0,0);
 			$data = get_fields_data($data,'product');
-			$data['tags'] = $data['tags'] ? $data['tags'] : $data['keywords'];
+			$data['tags'] = $data['tags'] ? $data['tags'] : str_replace('，',',',$data['keywords']);
 			if($data['tags']!=''){
 				$data['tags'] = ','.$data['tags'].',';
 			}
@@ -316,7 +317,7 @@ class ProductController extends CommonController
 						
 					}else{
 						if(M('customurl')->find(['aid'=>$this->frparam('id'),'molds'=>'product'])){
-							M('customurl')->update(['tid'=>$data['tid'],'aid'=>$this->frparam('id')],['url'=>$data['ownurl'],'molds'=>'product']);
+							M('customurl')->update(['aid'=>$this->frparam('id'),'molds'=>'product'],['url'=>$data['ownurl'],'molds'=>'product','tid'=>$data['tid']]);
 						}else{
 							M('customurl')->add(['molds'=>'product','tid'=>$data['tid'],'url'=>$data['ownurl'],'addtime'=>time(),'aid'=>$this->frparam('id')]);
 						}

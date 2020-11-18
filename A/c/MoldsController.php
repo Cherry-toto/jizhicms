@@ -287,7 +287,10 @@ class MoldsController extends CommonController
 					M('Ruler')->add($ruler);
 					
 					//写入左侧导航栏
-					$dao = M('layout')->find(array('gid'=>$_SESSION['admin']['gid']));
+					$dao = M('Layout')->find(array('gid'=>$_SESSION['admin']['gid']));
+					if(!$dao){
+						$dao = M('Layout')->find(array('isdefault'=>1));
+					}
 					$left_layout = json_decode($dao['left_layout'],1);
 					$left_layout[]=[
 						"name" => $data['name'].'模型',

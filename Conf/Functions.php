@@ -1589,7 +1589,7 @@ function jz_follow($id=0){
 		if($follow!=''){
 			$follow = trim($follow,',');
 			$num = substr_count($follow,',');
-			return $num;
+			return $num+1;
 		}else{
 			return 0;
 		}

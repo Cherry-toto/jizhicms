@@ -983,6 +983,37 @@ class IndexController extends CommonController
 			if($count>=$max){
 				setCache('tohtmlurl',false);
 				if($clearhtml){
+					
+					$terminal_path = $_SESSION['terminal']=='pc' ? $this->webconf['pc_html'] : $this->webconf['mobile_html'];
+					$terminal_path = ($terminal_path=='' || $terminal_path=='/') ? '' : $terminal_path.'/';
+					$notpath = ['/','a','public','home','frphp','cache','conf','backup','static'];
+					foreach($this->classtypedata as $vv){
+						$path = strtolower($vv['htmlurl']);
+						
+						if($vv['htmlurl'] && !in_array($path,$notpath) && strpos($path,'.')===false){
+							$this->removeDir(APP_PATH.$terminal_path.$vv['htmlurl']);
+							
+							//检查分页
+							$sql = 'tid in('.implode(",",$this->classtypedata[$vv['id']]["children"]["ids"]).') ';
+							$count = M($vv['molds'])->getCount($sql);
+							$pagenum = ceil($count/$vv['lists_num']);
+							if($pagenum>1){
+								for($i=1;$i<=$pagenum;$i++){
+									$filename = $vv['htmlurl'].'-'.$i;
+									if(file_exists(APP_PATH.$terminal_path.$filename)){
+										rmdir(APP_PATH.$terminal_path.$filename);
+									}
+									
+								}
+								
+							}
+					
+							
+							
+						}
+						
+					}
+					
 					echo '静态HTML页面已全部清理完毕！<br/>';
 					$end_time = time();
 					$start_time = getCache('start_time');
@@ -1015,7 +1046,25 @@ class IndexController extends CommonController
 		
 		$this->display('tohtml');
 	}
-	
+	function removeDir($dirName) 
+	{ 
+		if(! is_dir($dirName)) 
+		{ 
+			return false; 
+		} 
+		$handle = @opendir($dirName); 
+		while(($file = @readdir($handle)) !== false) 
+		{ 
+			if($file != '.' && $file != '..') 
+			{ 
+				$dir = $dirName . '/' . $file; 
+				is_dir($dir) ? $this->removeDir($dir) : @unlink($dir); 
+			} 
+		} 
+		closedir($handle); 
+		  
+		return rmdir($dirName) ; 
+	} 
 	
 	function html_classtype($sql,$limit=null){
 		$terminal_path = $_SESSION['terminal']=='pc' ? $this->webconf['pc_html'] : $this->webconf['mobile_html'];

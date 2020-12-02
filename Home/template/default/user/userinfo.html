@@ -24,7 +24,7 @@
           <div class="form-control">
             <label for="">头像：</label>
               <span class="view_img">{if($member['litpic'])}<img src="{$member['litpic']}" height="100" style="border-radius: 50%;" />{/if}</span><br/>
-              <input name="litpic" type="hidden" id="fileurl" value="" /><br/>
+              <input name="litpic" type="hidden" id="fileurl" value="{$member['litpic']}" /><br/>
               <input type="file" class="btn btn-primary rounded btn-block" name="file" id="fileid">
           </div>
           <div class="form-control">

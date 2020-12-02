@@ -1642,13 +1642,13 @@ class UserController extends Controller
 				Error('您没有关注该用户，无法操作！'.$uid);
 			}
 			$follow = explode(',',$follow);
-			$f = '';
+			$f = [];
 			foreach ($follow as $key => $value) {
 				if($value!='' && (int)$value!=$uid){
 					$f[]=$value;
 				}
 			}
-			if($f==''){
+			if(!count($f)){
 				$follow = '';
 			}else{
 				$follow = ','.implode(',',$f).',';

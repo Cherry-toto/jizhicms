@@ -211,7 +211,7 @@ class AdminController extends CommonController
 				$v['group'] = get_info_table('level_group',['id'=>$v['gid']],'name');
 				$v['new_logintime'] = $v['logintime']!=0 ? date('Y-m-d H:i:s',$v['logintime']) : '-';
 				$v['new_regtime'] = $v['regtime']!=0 ? date('Y-m-d H:i:s',$v['regtime']) : '-';
-				$v['edit_url'] = U('Admin/adminedit',array('id'=>frencode($v['id'])));
+				$v['edit_url'] = U('Admin/adminedit',array('id'=>$v['id']));
 				foreach($this->fields_list as $vv){
 					$v[$vv['field']] = format_fields($vv,$v[$vv['field']]);
 				}
@@ -231,7 +231,7 @@ class AdminController extends CommonController
 	
 	public function adminedit(){
 		$this->fields_biaoshi = 'level';
-		$id = frdecode($this->frparam('id',1));
+		$id = $this->frparam('id',1);
 		if($this->frparam('go')==1){
 			$data = $this->frparam();
 			$data = get_fields_data($data,'level');
@@ -309,7 +309,7 @@ class AdminController extends CommonController
         $this->groups = M('level_group')->findAll();
 		$token = getRandChar(10);
 		$_SESSION['token'] = $token;
-		setCache('admin_'.$this->admin['id'].'_token',$token,5*60);
+		setCache('admin_'.$this->admin['id'].'_token',$token);
 		$this->token = $token;
 		$this->display('admin-edit');
 	}
@@ -381,7 +381,7 @@ class AdminController extends CommonController
 		
 		$token = getRandChar(10);
 		$_SESSION['token'] = $token;
-		setCache('admin_'.$this->admin['id'].'_token',$token,60*5);
+		setCache('admin_'.$this->admin['id'].'_token',$token);
 		$this->token = $token;
 		$this->display('admin-add');
 	

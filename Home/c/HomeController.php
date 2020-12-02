@@ -188,10 +188,20 @@ class HomeController extends CommonController
 				}
 				
 			}
-			
+			$children = $this->classtypedata[$res['id']]['children']['ids'];
+			$child = [];
+			foreach($children as $v){
+				if($this->classtypedata[$v]['gid']!=0){
+					if($this->islogin && $this->member['gid']>=$this->classtypedata[$v]['gid']){
+						$child[]=$v;
+					}
+				}else{
+					$child[]=$v;
+				}
+			}
 			$sql = ' isshow=1 ';
 			$molds = $res['molds'];
-			$sql .= ' and tid in ('.implode(',',$this->classtypedata[$res['id']]['children']['ids']).') ';
+			$sql .= ' and tid in ('.implode(',',$child).') ';
 			$page = new Page($molds);
 			
 			//手动设置分页条数
@@ -231,7 +241,7 @@ class HomeController extends CommonController
 			$this->pages = $pages;//组合分页
 			
 			foreach($data as $k=>$v){
-				if(isset($v['htmlurl']) && !isset($v['url'])){
+				if(!isset($v['url'])){
 					$data[$k]['url'] = gourl($v,$v['htmlurl']);
 				}
 				
@@ -878,7 +888,7 @@ class HomeController extends CommonController
 			$sqln = [];
 			foreach($allow_table as $v){
 				$list_a = M($v)->findAll($sql);
-				$sqlx[] = ' select id,tid,title,tags,keywords,molds,htmlurl,description,addtime,userid,member_id from '.DB_PREFIX.$v." where ".$sql;
+				$sqlx[] = ' select id,tid,litpic,title,tags,keywords,molds,htmlurl,description,addtime,userid,member_id from '.DB_PREFIX.$v." where ".$sql;
 				$sqln[] = ' select id from '.DB_PREFIX.$v." where ".$sql;
 			}
 			

@@ -149,4 +149,42 @@ class MessageController extends CommonController
 
 		
 	}
+	
+	function details(){
+		$id = $this->frparam('id');
+		if(!$id){
+			$error = '链接错误';
+			if($this->frparam('ajax')){
+				JsonReturn(['code'=>1,'msg'=>$error]);
+			}
+			Error($error);
+		}
+		if($this->webconf['autocheckmessage']==1){
+			$msg = M('message')->find(['id'=>$id]);
+		}else{
+			$msg = M('message')->find(['id'=>$id,'isshow'=>1]);
+		}
+		if(!$msg){
+			$error = '留言未找到或者未审核';
+			if($this->frparam('ajax')){
+				JsonReturn(['code'=>1,'msg'=>$error]);
+			}
+			Error($error);
+		}
+		$this->data = $msg;
+		
+		if($this->classtypedata[$msg['tid']]){
+			$this->type = $this->classtypedata[$msg['tid']];
+			$details_html = $this->type['details_html'];
+		}else{
+			$details_html =  M('molds')->getField(['biaoshi'=>'message'],'details_html');
+		}
+		$this->display($this->template.'/message/'.$details_html);
+		
+		
+	}
+	
+	
+	
+	
 }

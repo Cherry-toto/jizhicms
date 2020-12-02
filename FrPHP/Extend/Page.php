@@ -75,13 +75,9 @@ namespace FrPHP\Extend;
 					$url = get_domain().APP_URL.'/'.APP_CONTROLLER.'/'.APP_ACTION.'?'.http_build_query($_GET);
 				}
 			}else{
-				//$url = str_ireplace('.html','',$request_uri);
-				//$position = strpos($url, '-');
-				//$url = $position === false ? $url : substr($url, 0, $position);
-				
+			
 				switch($this->typeurl){
 					case 'screen':
-						//$url = str_ireplace('.html','',$request_uri);
 					$url = get_domain().'/screen-'.$_GET['molds'].'-'.$_GET['tid'].'-'.$_GET['jz_screen']; 
 						if(strpos($url,'page')!==false){
 							$urls = explode('-page-',$url);
@@ -109,6 +105,7 @@ namespace FrPHP\Extend;
 						
 					break;
 					default:
+						
 						$url = str_ireplace('.html','',$request_uri);
 						
 					
@@ -116,12 +113,14 @@ namespace FrPHP\Extend;
 					
 				}
 				
-				
+				if($this->typeurl!='search'){
+					$position = strpos($url, '?');
+					$url = $position === false ? $url : substr($url, 0, $position);
+					$url = (strripos($url,'/')+1 == strlen($url)) ? substr($url,0,strripos($url,'/')) : $url; 
+				}
 			}
 			
-			if(File_TXT_HIDE && !CLASS_HIDE_SLASH){
-				$url = (strripos($url,'/')+1 == strlen($url)) ? substr($url,0,strripos($url,'/')) : $url; 
-			}
+			
 			
 			return $url;
             
@@ -162,13 +161,32 @@ namespace FrPHP\Extend;
 				}
 
 			}
+			
 			$this->url = $url;
 			$list = '';
-			//$file_ext = $this->file_ext;
-			$file_ext = File_TXT_HIDE ? '' : File_TXT;
-			if($file_ext==''){
-				$file_ext = CLASS_HIDE_SLASH ? $file_ext : $file_ext.'/';
+			$request_uri = $_SERVER["REQUEST_URI"];    
+            if(strpos($request_uri,APP_URL)!==false){
+				$file_ext = '';
+			}else{
+				$file_ext = File_TXT_HIDE ? '' : File_TXT;
+				if($file_ext=='' && $this->typeurl==''){
+					$file_ext = CLASS_HIDE_SLASH ? $file_ext : $file_ext.'/';
+				}
+				if(strpos($url,'?')===false){
+					$param = $_REQUEST;
+					if(isset($param['page'])){
+						unset($param['page']);
+					}
+					unset($param['ajax']);
+					unset($param['ajax_tpl']);
+					unset($param['s']);
+					if(count($param)){
+						$file_ext.='?'.http_build_query($param);
+					}
+					
+				}
 			}
+			
 			
 			$listpage['home'] = $this->url.$file_ext;
 			$start = $this->currentPage-$this->pv;

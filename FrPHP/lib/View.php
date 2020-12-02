@@ -207,11 +207,16 @@ class View
 		}else{
 			$prefix = '.html';
 		}
+		 if(defined('TPL_PATH')){
+			$path = TPL_PATH;
+		}else{
+			$path = APP_HOME;
+		}
 		if(APP_URL=='/index.php'){
-			$includefile = str_replace('//','/',APP_PATH . APP_HOME .'/'.HOME_VIEW.'/'.TEMPLATE.'/'.$filename. $prefix);
+			$includefile = str_replace('//','/',APP_PATH . $path .'/'.HOME_VIEW.'/'.TEMPLATE.'/'.$filename. $prefix);
 			$file = TEMPLATE.'/'.$filename. $prefix;
 		}else{
-			$includefile = str_replace('//','/',APP_PATH . APP_HOME .'/'.HOME_VIEW.'/'.Tpl_template.'/'. Tpl_common .'/'.$filename. $prefix);
+			$includefile = str_replace('//','/',APP_PATH . $path .'/'.HOME_VIEW.'/'.Tpl_template.'/'. Tpl_common .'/'.$filename. $prefix);
 			$file = Tpl_common .'/'.$filename. $prefix;
 		}
 		if(!is_file($includefile)){
@@ -408,7 +413,7 @@ class View
 		$pages='';
 		$w = ' 1=1 ';
 		$ispage=false;
-		if(stripos($jzpage.'$')!==false){
+		if(stripos($jzpage,'$')!==false){
 			$jzpage = "'.$jzpage.'";
 		}
 		foreach($a as $k=>$v){
@@ -539,10 +544,12 @@ class View
 		}
 		$txt.='$'.$as.'_n=0;foreach($'.$as.'_data as $'.$as.'_key=> $'.$as.'){
 			$'.$as.'_n++;
-			if(isset($'.$as.'[\'htmlurl\']) && !isset($'.$as.'[\'url\'])){
+			if(!isset($'.$as.'[\'url\'])){
 				
 				if($'.$as.'_table==\'classtype\'){
 					$'.$as.'[\'url\'] = $classtypedata[$'.$as.'[\'id\']][\'url\'];
+				}else if($'.$as.'_table==\'message\'){
+					$'.$as.'[\'url\'] = U(\'message/details\',[\'id\'=>$'.$as.'[\'id\']]);
 				}else{
 					$'.$as.'[\'url\'] = gourl($'.$as.',$'.$as.'[\'htmlurl\']);
 				}

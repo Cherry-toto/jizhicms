@@ -437,7 +437,7 @@ class SysController extends CommonController
 						}
 					}
 				}
-				$time = $data['times']*60+time();
+				$time = $data['times']*60;
 				setCache('jzcache_'.$data['field'],$result,$time);
 				JsonReturn(array('code'=>0,'msg'=>'修改成功！','url'=>U('sys/datacache')));
 				exit;

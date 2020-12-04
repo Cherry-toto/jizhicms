@@ -865,6 +865,43 @@ class CommonController extends Controller
                     <label>'.$must.$v['tips'].'</label>
                 </div>';
 				break;
+				case 15:
+				$l .= '<div class="form-control">
+		            <label for="'.$v['field'].'">'.$v['fieldname'].'：</label>
+		            <span class="view_img_'.$v['field'].'">';
+		            if($data[$v['field']]){
+		            	foreach(explode('||',$data[$v['field']]) as $s){
+		            		if($s){
+								$l .= '<div class="form-control"><input name="'.$v['field'].'[]" type="text" value="'.$s.'"><button type="button" class="'.$v['field'].'_del">删除</button></div>';
+		            			 
+		            		}
+		            	}
+		           
+		            }
+		            $l .= '</span>
+		        </div>
+				<div class="form-control">
+		            <label ></label>
+					<button type="button" class="layui-btn" id="'.$v['field'].'_add">新增</button>
+					<label>'.$v['tips'].'</label>
+		        </div>
+				<script>
+				$(document).ready(function(){
+					$("#'.$v['field'].'_add").click(function(){
+						var html = \'<div class="form-control"><input type="text"  style="width:500px;" value="" name="'.$v['field'].'[]" autocomplete="off" ><button type="button" class="'.$v['field'].'_del" >删除</button></div>\';
+						
+						$(".view_img_'.$v['field'].'").append(html);
+						
+						
+					});
+					$(document).on("click",".'.$v['field'].'_del",function(){
+						$(this).parent().remove();
+					})
+					
+					
+				})
+				</script>';
+				break;
 			}
 			
 		}

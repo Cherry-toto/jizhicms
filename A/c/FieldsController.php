@@ -894,7 +894,7 @@ layui.use("laydate", function(){
 				if($data[$v['field']]){
 					$rs = explode('||',$data[$v['field']]);
 					foreach($rs as $vv){
-						$l.='<div class="layui-input-block"><input type="text"  style="width:500px;" value="'.$vv.'" name="'.$v['field'].'[]" autocomplete="off" class="layui-input layui-input-inline"><button type="button" class="layui-btn layui-btn-danger layui-btn-sm  layui-input-inline" id="'.$v['field'].'_del">删除</button></div>';
+						$l.='<div class="layui-input-block"><input type="text"  style="width:500px;" value="'.$vv.'" name="'.$v['field'].'[]" autocomplete="off" class="layui-input layui-input-inline"><button type="button" class="layui-btn layui-btn-danger layui-btn-sm  layui-input-inline '.$v['field'].'_del" >删除</button></div>';
 					}
 				}else{
 					$l .='<div class="layui-input-block">
@@ -910,13 +910,13 @@ layui.use("laydate", function(){
 				<script>
 				$(document).ready(function(){
 					$("#'.$v['field'].'_add").click(function(){
-						var html = \'<div class="layui-input-block"><input type="text"  style="width:500px;" value="" name="'.$v['field'].'[]" autocomplete="off" class="layui-input layui-input-inline"><button type="button" class="layui-btn layui-btn-danger layui-btn-sm  layui-input-inline" id="'.$v['field'].'_del">删除</button></div>\';
+						var html = \'<div class="layui-input-block"><input type="text"  style="width:500px;" value="" name="'.$v['field'].'[]" autocomplete="off" class="layui-input layui-input-inline"><button type="button" class="layui-btn layui-btn-danger layui-btn-sm  layui-input-inline '.$v['field'].'_del" >删除</button></div>\';
 						
 						$("#'.$v['field'].'_space").append(html);
 						
 						
 					});
-					$(document).on("click","#'.$v['field'].'_del",function(){
+					$(document).on("click",".'.$v['field'].'_del",function(){
 						$(this).parent().remove();
 					})
 					

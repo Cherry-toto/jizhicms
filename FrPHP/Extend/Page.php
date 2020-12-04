@@ -180,6 +180,11 @@ namespace FrPHP\Extend;
 					unset($param['ajax']);
 					unset($param['ajax_tpl']);
 					unset($param['s']);
+					if($this->typeurl=='screen'){
+						unset($param['tid']);
+						unset($param['jz_screen']);
+						unset($param['molds']);
+					}
 					if(count($param)){
 						$file_ext.='?'.http_build_query($param);
 					}

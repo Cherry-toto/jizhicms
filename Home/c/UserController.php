@@ -562,7 +562,7 @@ class UserController extends Controller
 					
 				}
 				if(count($ulk)){
-					$u['likes'] = implode('||',$ulk);
+					$u['likes'] = '||'.implode('||',$ulk).'||';
 				}else{
 					$u['likes'] = '';
 				}
@@ -572,9 +572,9 @@ class UserController extends Controller
 				$msg = '点赞成功！';
 				$likes[]=$lk;
 				if($u['likes']){
-					$u['likes'] .= '||'.$lk;
+					$u['likes'] .= $lk.'||';
 				}else{
-					$u['likes'] = $lk;
+					$u['likes'] = '||'.$lk.'||';
 				}
 				
 			}

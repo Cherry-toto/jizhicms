@@ -24,7 +24,7 @@ class HomeController extends CommonController
 	function index(){
 		//检查缓存
 		$url = current_url();
-		$cache_file = APP_PATH.'cache/data/'.md5(frencode($url));
+		$cache_file = APP_PATH.'cache/data/'.md5($url);
 		$this->cache_file = $cache_file;
 		$this->start_cache($cache_file);
 		$this->display($this->template.'/index');
@@ -48,7 +48,7 @@ class HomeController extends CommonController
 		}
 		
 		//检查缓存
-		$cache_file = APP_PATH.'cache/data/'.md5(frencode($url));
+		$cache_file = APP_PATH.'cache/data/'.md5($request_url);
 		$this->cache_file = $cache_file;
 		if(!$this->frparam('ajax')){
 			$this->start_cache($cache_file);
@@ -428,10 +428,23 @@ class HomeController extends CommonController
 			
 		}
 		if($isclass){
+			
+			$children = $this->classtypedata[$res['id']]['children']['ids'];
+			$child = [];
+			foreach($children as $v){
+				if($this->classtypedata[$v]['gid']!=0){
+					if($this->islogin && $this->member['gid']>=$this->classtypedata[$v]['gid']){
+						$child[]=$v;
+					}
+				}else{
+					$child[]=$v;
+				}
+			}
 			$sql = ' isshow=1 ';
 			$molds = $res['molds'];
-			$sql .= ' and tid in ('.implode(',',$this->classtypedata[$res['id']]['children']['ids']).') ';
+			$sql .= ' and tid in ('.implode(',',$child).') ';
 			$page = new Page($molds);
+			
 			
 			//手动设置分页条数
 			$limit = $res['lists_num'];
@@ -579,7 +592,7 @@ class HomeController extends CommonController
 			$this->error('缺少ID！');
 		}
 		
-		$details = M($this->type['molds'])->find(array('id'=>$id,'isshow'=>1));
+		$details = M($this->type['molds'])->find(array('id'=>$id,'isshow'=>1,'tid'=>$this->type['id']));
 		if(!$details){
 			$this->error('未找到相应内容！');
 			exit;
@@ -895,6 +908,7 @@ class HomeController extends CommonController
 			$sql = implode(' union all ',$sqlx);
 			$sqln = implode(' union all ',$sqln);
 			$page = new Page();
+			$page->typeurl = 'search';
 			$data = $page->where($sql)->setPage(['limit'=>$this->frparam('limit',0,15)])->page($this->frpage)->goCount($sqln)->goSql();
 			foreach($data as $k=>$v){
 				$data[$k]['url'] = gourl($v,$v['htmlurl']);
@@ -937,7 +951,7 @@ class HomeController extends CommonController
 		$url = substr(REQUEST_URI,1);
 		$position = strpos($url, '?');
         $url = $position === false ? $url : substr($url, 0, $position);
-		$cache_file = APP_PATH.'cache/data/'.md5(frencode($url));
+		$cache_file = APP_PATH.'cache/data/'.md5(REQUEST_URI);
 		$this->cache_file = $cache_file;
 		$this->start_cache($cache_file);		
 		$r = M('customurl')->find(['url'=>$url]);

@@ -348,6 +348,8 @@ class View
 		if(isset($a['day'])){$day=$a['day'];}else{$day=false;}
 		if(isset($a['jzpage'])){$jzpage=trim($a['jzpage'],"'");}else{$jzpage='page';}
 		if(isset($a['sql'])){$sql=trim($a['sql'],"'");}else{$sql='';}
+		if(isset($a['jzcache'])){$jzcache=trim($a['jzcache'],"'");}else{$jzcache=false;}
+		if(isset($a['jzcachetime'])){$jzcachetime=trim($a['jzcachetime'],"'");}else{$jzcachetime=30*60;}
 		if(isset($a['orderby'])){
 			$order=$a['orderby'];
 			if(strpos($a['orderby'],'$')!==FALSE){$order=trim($a['orderby'],"'");}
@@ -409,7 +411,7 @@ class View
 		if($sql){
 			$sql = " and ('.".$sql.".' ) ";
 		}
-		unset($a['table']);unset($a['orderby']);unset($a['limit']);unset($a['as']);unset($a['like']);unset($a['fields']);unset($a['isall']);unset($a['notin']);unset($a['notempty']);unset($a['empty']);unset($a['day']);unset($a['in']);unset($a['sql']);unset($a['jzpage']);
+		unset($a['table']);unset($a['orderby']);unset($a['limit']);unset($a['as']);unset($a['like']);unset($a['fields']);unset($a['isall']);unset($a['notin']);unset($a['notempty']);unset($a['empty']);unset($a['day']);unset($a['in']);unset($a['sql']);unset($a['jzpage']);unset($a['jzcache']);unset($a['jzcachetime']);
 		$pages='';
 		$w = ' 1=1 ';
 		$ispage=false;
@@ -527,6 +529,7 @@ class View
 			
 			$txt .="
 			\$pagenum = (int)\$_REQUEST['".$jzpage."'] ? (int)\$_REQUEST['".$jzpage."']  : 1; 
+			unset(\$_REQUEST['".$jzpage."']);
 			\$".$as."_page = new FrPHP\Extend\Page(\$".$as."_table);
 			\$".$as."_page->typeurl = 'tpl';
 			\$".$as."_data = \$".$as."_page->where(\$".$as."_w)->fields(\$".$as."_fields)->orderby(\$".$as."_order)->limit(\$".$as."_limit)->page(\$pagenum)->go();
@@ -539,12 +542,21 @@ class View
 		}else{
 			
 			$txt .= "
-			$".$as."_data = M(\$".$as."_table)->findAll(\$".$as."_w,\$".$as."_order,\$".$as."_fields,\$".$as."_limit);";
+			if(\$jzcache){
+				\$cachestr = md5(\$".$as."_table.\$".$as."_w.\$".$as."_order.\$".$as."_fields.\$".$as."_limit);
+				\$cachedata = getCache(\$cachestr);
+				if(!\$cachedata){
+					$".$as."_data = M(\$".$as."_table)->findAll(\$".$as."_w,\$".$as."_order,\$".$as."_fields,\$".$as."_limit);
+					setCache(\$cachestr,\$".$as."_data,\$jzcachetime);
+				}
+			}else{
+				$".$as."_data = M(\$".$as."_table)->findAll(\$".$as."_w,\$".$as."_order,\$".$as."_fields,\$".$as."_limit);
+			}";
 			
 		}
 		$txt.='$'.$as.'_n=0;foreach($'.$as.'_data as $'.$as.'_key=> $'.$as.'){
 			$'.$as.'_n++;
-			if(!isset($'.$as.'[\'url\'])){
+			if(!array_key_exists(\'url\',$'.$as.')){
 				
 				if($'.$as.'_table==\'classtype\'){
 					$'.$as.'[\'url\'] = $classtypedata[$'.$as.'[\'id\']][\'url\'];

@@ -94,8 +94,12 @@
 		 {if(checkAction('Article/copyAll'))}	
 			   <a class="layui-btn layui-btn-warm layui-btn-sm" title="批量复制" onclick="copyAll()">批量复制</a>
 		 {/if}
-		 {if(checkAction('Article/addarticle'))}	
+		 {if(checkAction('Article/addarticle'))}
+				{if($tid)}
+				<a class="layui-btn layui-btn-sm" title="新增" onclick="x_admin_show('新增{$molds['name']}','{fun U('Article/addarticle',['tid'=>$tid])}')">新增{$molds['name']}</a>
+				{else}
 			   <a class="layui-btn layui-btn-sm" title="新增" onclick="x_admin_show('新增{$molds['name']}','{fun U('Article/addarticle')}')">新增{$molds['name']}</a>
+			   {/if}
 		 {/if} 
 		 {if(checkAction('Article/changeType'))}	
 			   <div class="layui-input-inline" style="margin-right: 10px;margin-bottom: 10px;">

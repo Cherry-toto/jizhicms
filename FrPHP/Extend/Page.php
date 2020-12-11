@@ -95,13 +95,15 @@ namespace FrPHP\Extend;
 						
 					break;
 					case 'search':
+						$this->file_ext = '';
 						$param = $_REQUEST;
 						if(isset($param['page'])){
 							unset($param['page']);
 						}
 						unset($param['ajax']);
 						unset($param['ajax_tpl']);
-						$url = get_domain().'/search?'.http_build_query($param);
+						$urlparse = parse_url($request_uri);
+						$url = get_domain().$urlparse['path'].'?'.http_build_query($param);
 						
 					break;
 					default:
@@ -168,7 +170,7 @@ namespace FrPHP\Extend;
             if(strpos($request_uri,APP_URL)!==false){
 				$file_ext = '';
 			}else{
-				$file_ext = File_TXT_HIDE ? '' : File_TXT;
+				$file_ext = File_TXT_HIDE ? '' : $this->file_ext;
 				if($file_ext=='' && $this->typeurl==''){
 					$file_ext = CLASS_HIDE_SLASH ? $file_ext : $file_ext.'/';
 				}
@@ -186,7 +188,11 @@ namespace FrPHP\Extend;
 						unset($param['molds']);
 					}
 					if(count($param)){
-						$file_ext.='?'.http_build_query($param);
+						if(strpos($this->sep,'?')!==false){
+							$file_ext.='&'.http_build_query($param);
+						}else{
+							$file_ext.='?'.http_build_query($param);
+						}
 					}
 					
 				}

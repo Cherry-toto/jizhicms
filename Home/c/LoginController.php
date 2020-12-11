@@ -97,7 +97,7 @@ class LoginController extends Controller
 					Error('验证码错误！');
 				}
 			}
-			
+			$_SESSION['login_vercode'] = getRandChar(32);
 			if($data['username']=='' || $data['password']==''){
 				$xdata = array('code'=>1,'msg'=>'账户密码不能为空！');
 				if($this->frparam('ajax')){

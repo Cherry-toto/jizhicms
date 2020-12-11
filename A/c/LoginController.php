@@ -44,7 +44,7 @@ class LoginController extends Controller
 					JsonReturn($xdata);
 				}
 			}
-			
+			$_SESSION['frcode'] = getRandChar(32);
 			$where['pass'] = md5(md5($data['password']).'YF');
 			$where['name'] = $data['username'];
 			

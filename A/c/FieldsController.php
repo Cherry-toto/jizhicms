@@ -401,8 +401,8 @@ class FieldsController extends CommonController
 				}
                 $l .= $v['fieldname'].'
                     </label>
-                    <div class="layui-input-inline">
-                        <input type="text" id="'.$v['field'].'" style="width:500px;" value="'.$data[$v['field']].'" name="'.$v['field'].'" ';
+                    <div class="layui-input-inline"  style="width:500px;">
+                        <input type="text" id="'.$v['field'].'" value="'.$data[$v['field']].'" name="'.$v['field'].'" ';
 				if($v['ismust']==1){
 					$l.=' required="" lay-verify="required" ';
 				}		
@@ -447,7 +447,7 @@ class FieldsController extends CommonController
 				}
                 $l .= $v['fieldname'].'
                     </label>
-                    <div class="layui-input-block">
+                    <div class="layui-input-inline">
                         <input type="number" id="'.$v['field'].'" value="'.$data[$v['field']].'" name="'.$v['field'].'" ';
 				if($v['ismust']==1){
 					$l.=' required="" lay-verify="required" ';

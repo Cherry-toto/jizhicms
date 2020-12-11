@@ -441,8 +441,8 @@ class ClasstypeController extends CommonController
 					$new_htmlurl = $htl_new;
 				}
 				//更新栏目及其内容HTML
-				M('classtype')->update(['id'=>$v],['htmlurl'=>$new_htmlurl]);
-				M($classtypetree[$v]['molds'])->update(array('tid'=>$v),array('htmlurl'=>$new_htmlurl,'pid'=>$pid));
+				M('classtype')->update(['id'=>$v],['htmlurl'=>$new_htmlurl,'pid'=>$pid]);
+				M($classtypetree[$v]['molds'])->update(array('tid'=>$v),array('htmlurl'=>$new_htmlurl,'tid'=>$pid));
 				
 				foreach($children as $vv){
 					$html = substr($vv['htmlurl'],strlen($old_htmlurl));

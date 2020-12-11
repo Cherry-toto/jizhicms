@@ -127,7 +127,11 @@
 			   </div>
 		 {/if}
 		    {if(checkAction('Product/addproduct'))}
+			{if($tid)}
+				<a class="layui-btn layui-btn-sm" onclick="x_admin_show('新增{$molds['name']}','{fun U('Product/addproduct',['tid'=>$tid])}')">新增{$molds['name']}</a>
+			{else}
 			   <a class="layui-btn layui-btn-sm" onclick="x_admin_show('新增{$molds['name']}','{fun U('Product/addproduct')}')">新增{$molds['name']}</a>
+			{/if}
 			{/if}  
 			
 		 </div>

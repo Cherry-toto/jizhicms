@@ -109,7 +109,11 @@
 		  </div>
 		 {/if}
 		 {if(checkAction('Extmolds/addmolds/molds/'.$molds['biaoshi']))}
+			{if($tid)}
+				<a class="layui-btn layui-btn-sm" onclick="x_admin_show('新增{$molds['name']}','{fun U('Extmolds/addmolds',array('molds'=>$molds['biaoshi'],'tid'=>$tid))}')"><i class="layui-icon">&#xe608;</i>新增</a>
+			{else}
 			   <a class="layui-btn layui-btn-sm" onclick="x_admin_show('新增{$molds['name']}','{fun U('Extmolds/addmolds',array('molds'=>$molds['biaoshi']))}')"><i class="layui-icon">&#xe608;</i>新增</a>
+			{/if}
 		 {/if}	  
 			
 		 </div>

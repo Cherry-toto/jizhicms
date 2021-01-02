@@ -7,7 +7,7 @@
 // +----------------------------------------------------------------------
 // | Author: 留恋风 <2581047041@qq.com>
 // +----------------------------------------------------------------------
-// | Date：2018/08
+// | Date：2020/01/01
 // +----------------------------------------------------------------------
 
 
@@ -16,52 +16,10 @@ namespace Home\c;
 use FrPHP\lib\Controller;
 use FrPHP\Extend\Page;
  
-class WechatController extends Controller
+class WechatController extends CommonController
 {
 	public function _init(){
-		$webconf = webConf();
-		$template = TEMPLATE;
-		$this->webconf = $webconf;
-		$this->template = $template;
-		$classtypedata = classTypeData();
-		foreach($classtypedata as $k=>$v){
-			$classtypedata[$k]['children'] = get_children($v,$classtypedata);
-		}
-		$this->classtypedata = $classtypedata;
-		$this->common = Tpl_style.'common/';
-		$this->tpl = Tpl_style.$template.'/';
-		$this->frpage = $this->frparam('page');
-		$customconf = get_custom();
-		$this->customconf = $customconf;
-		if(isset($_SESSION['member'])){
-			$this->islogin = true;
-			$this->member = $_SESSION['member'];
-			
-			
-			
-		}else{
-			$this->islogin = false;
-		}
-		
-		$jznav = getCache('jznav');
-		if(!$jznav){
-			$nav = M('menu')->findAll(['isshow'=>1]);
-			$jznav = [];
-			if($nav){
-				foreach($nav as $v){
-					$menulist = unserialize($v['nav']);
-					foreach($menulist as $vv){
-						if($vv['status']==1){
-							$vv['url'] = $vv['tid'] ? $this->classtypedata[$vv['tid']]['url'] : $vv['gourl'];
-							$vv['title'] = $vv['title'] ? $vv['title'] : ($vv['tid'] ? $this->classtypedata[$vv['tid']]['classname'] : '');
-							$jznav[$v['id']][]=$vv;
-						}
-					}
-				}
-			}
-			setCache('jznav',$jznav);
-		}
-		$this->jznav = $jznav;
+		parent::_init();
 	}
 	
 	

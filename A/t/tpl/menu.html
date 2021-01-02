@@ -34,7 +34,7 @@
 		
 		</xblock>
       
-        <table border="1" rules="all" style="width:100%; height:100px; white-space:nowrap" class="layui-table layui-form">
+        <table border="1" rules="all" style="width:100%; height:100px;" class="layui-table layui-form">
         <thead>
           <tr>
             <th width="70">ID</th>
@@ -67,7 +67,7 @@
 			</td>
             
 			
-            <td class="td-manage">
+            <td class="td-manage" style="width: 90px;">
 			{if(checkAction('index/editmenu'))}
               <a class="layui-btn layui-btn layui-btn-xs"  onclick="x_admin_show('编辑','{fun U('index/editmenu',array('id'=>$v['id']))}')" >编辑</a>
 			{/if}

@@ -22,10 +22,7 @@ class ProductController extends CommonController
 	
 	function productlist(){
 		
-		$classtypedata = classTypeData();
-		foreach($classtypedata as $k=>$v){
-			$classtypedata[$k]['children'] = get_children($v,$classtypedata);
-		}
+		$classtypedata = $this->classtypedata;
 		$this->molds = M('molds')->find(['biaoshi'=>'product']);
 		$this->tid=  $this->frparam('tid');
 		$this->title = $this->frparam('title',1);

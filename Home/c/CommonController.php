@@ -27,17 +27,19 @@ class CommonController extends Controller
 		if($this->webconf['closeweb']){
 			$this->close();
 		}
-		
+		$m = 1;
 		if(isset($_SESSION['terminal'])){
-			$classtypedata = $_SESSION['terminal']=='mobile' ? classTypeDataMobile() : classTypeData();
+			$m = $_SESSION['terminal']=='mobile' ? 1 : 0;
 		}else{
-			$classtypedata = (isMobile() && $webconf['iswap']==1)?classTypeDataMobile():classTypeData();
+			$m = (isMobile() && $webconf['iswap']==1) ? 1 : 0;
+		}
+		if($m){
+			$classtypedata = classTypeDataMobile();
+		}else{
+			$classtypedata = classTypeData();
 		}
 		$this->classtypetree = $classtypedata;
-		foreach($classtypedata as $k=>$v){
-			$classtypedata[$k]['children'] = get_children($v,$classtypedata);
-		}
-		$this->classtypedata = $classtypedata;
+		$this->classtypedata = getclasstypedata($classtypedata,$m);
 		$this->common = Tpl_style.'common/';
 		$this->tpl = Tpl_style.$template.'/';
 		$this->frpage = $this->frparam('page',0,1);
@@ -941,11 +943,31 @@ class CommonController extends Controller
     }
 	
 	//递增递减
-	function gohits($id=0,$molds='article',$i=1){
-		$n = M($molds)->getField(['id'=>$id],'hits');
-		$num = $n+$i;
-		M($molds)->update(['id'=>$id],['hits'=>$num]);
-		JsonReturn(['code'=>0,'msg'=>'success','data'=>$num]);
+	function gohits(){
+		$id = $this->frparam('id');
+		$molds = strtolower($this->frparam('molds',1,'article'));
+		$moldslist = getCache('moldslist');
+		if(!$moldslist){
+			$list = M('molds')->findAll();
+			$moldslist = [];
+			foreach($list as $v){
+				$moldslist[]=$v['biaoshi'];
+			}
+			setCache('moldslist',$moldslist);
+		}
+		if(in_array($molds,$moldslist)){
+			$i = $this->frparam('num',0,1);
+			$n = M($molds)->getField(['id'=>$id],'hits');
+			$num = $n+$i;
+			M($molds)->update(['id'=>$id],['hits'=>$num]);
+			if($this->frparam('ajax')){
+				JsonReturn(['code'=>0,'msg'=>'success','data'=>$num]);
+			}else{
+				echo $num;
+			}
+		}
+		
+		
 	}
 
 }

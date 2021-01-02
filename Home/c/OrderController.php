@@ -16,55 +16,17 @@ namespace Home\c;
 use FrPHP\lib\Controller;
 use FrPHP\Extend\Page;
 
-class OrderController extends Controller
+class OrderController extends CommonController
 {
 	function _init(){
-		
-		$webconf = webConf();
-		$webcustom = get_custom();
-		$template = TEMPLATE;
-		$this->webconf = $webconf;
-		$this->webcustom = $webcustom;
-		$this->template = $template;
-		$classtypedata = classTypeData();
-		
-		foreach($classtypedata as $k=>$v){
-			$classtypedata[$k]['children'] = get_children($v,$classtypedata);
-		}
-		$this->classtypedata = $classtypedata;
-		
-		$this->tpl = Tpl_style.$template.'/';
-		$this->common = Tpl_style.'common/';
-		//檢測用戶是否登錄
-		if(isset($_SESSION['member'])){
-			$this->islogin = true;
-			$this->member = $_SESSION['member'];
-		}else{
-			$this->islogin = false;
+		parent::_init();
+		if(!$this->islogin){
 			if($this->frparam('ajax')){
 				JsonReturn(['code'=>1,'msg'=>'您还未登录，请重新登录！']);
 			}
 			Error('您还未登录，请重新登录！',U('Login/index'));
 		}
-		$jznav = getCache('jznav');
-		if(!$jznav){
-			$nav = M('menu')->findAll(['isshow'=>1]);
-			$jznav = [];
-			if($nav){
-				foreach($nav as $v){
-					$menulist = unserialize($v['nav']);
-					foreach($menulist as $vv){
-						if($vv['status']==1){
-							$vv['url'] = $vv['tid'] ? $this->classtypedata[$vv['tid']]['url'] : $vv['gourl'];
-							$vv['title'] = $vv['title'] ? $vv['title'] : ($vv['tid'] ? $this->classtypedata[$vv['tid']]['classname'] : '');
-							$jznav[$v['id']][]=$vv;
-						}
-					}
-				}
-			}
-			setCache('jznav',$jznav);
-		}
-		$this->jznav = $jznav;
+		
 	}
 	
 	
@@ -783,7 +745,7 @@ class OrderController extends Controller
 			$this->returnUrl = $returnUrl;
 			$jsApiParameters = json_encode($jsApiParameters);
 			$this->jsApiParameters = $jsApiParameters;
-			$this->order = $order;
+			$this->order = M('orders')->find(['orderno'=>$outTradeNo]);
 			$this->display($this->template.'/paytpl/wechat_pay');
 			exit;
 

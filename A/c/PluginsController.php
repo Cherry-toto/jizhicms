@@ -20,7 +20,7 @@ class PluginsController extends CommonController
 	
 	public function index(){
 		//检查更新链接是否可以访问
-		$api = 'http://api.jizhicms.cn/plugins.php';
+		$api = 'http://api.jizhicms.cn/plugins.php?version='.$this->webconf['web_version'];
 		$ch = curl_init();
 		$timeout = 3;
 		curl_setopt($ch,CURLOPT_FOLLOWLOCATION,1);
@@ -42,7 +42,7 @@ class PluginsController extends CommonController
 		}else{
 			$isok = false;
 		}
-		$this->title = $this->frparam('title',1);
+		$this->title = $this->frparam('title',1,'');
 		if($this->frparam('isdown')){
 			$isdown = $this->frparam('isdown');
 			switch($isdown){
@@ -56,6 +56,9 @@ class PluginsController extends CommonController
 					$dir = APP_PATH.APP_HOME.'/exts';
 					foreach($data as $k=>$v){
 						//已下载该插件
+						if(!file_exists($dir.'/'.$v['filepath'].'/config.php')){
+							continue;
+						}
 						$config = require_once($dir.'/'.$v['filepath'].'/config.php');
 						$data[$k]['isinstall'] = true;
 						if($isok && array_key_exists($v['filepath'],$allplugins) && version_compare($config['version'],$allplugins[$v['filepath']]['version'],'<')){
@@ -107,6 +110,9 @@ class PluginsController extends CommonController
 					
 					foreach($data as $k=>$v){
 						//已下载该插件
+						if(!file_exists($dir.'/'.$v.'/config.php')){
+							continue;
+						}
 						$config = require_once($dir.'/'.$v.'/config.php');
 						$data[$k] = ['name'=>$config['name'],'filepath'=>$v,'description'=>$config['desc'],'version'=>$config['version'],'author'=>$config['author'],'update_time'=>strtotime($config['update_time']),'module'=>$config['module'],'isopen'=>0,'config'=>'','isinstall'=>false];
 						
@@ -227,6 +233,9 @@ class PluginsController extends CommonController
 			foreach($allplugins as $k=>$v){
 				if(in_array($k,$fileArray)){
 					//已下载该插件
+					if(!file_exists($dir.'/'.$k.'/config.php')){
+						continue;
+					}
 					$config = require_once($dir.'/'.$k.'/config.php');
 					if(isset($plugins[$k])){
 						$lists[$k] = $plugins[$k];
@@ -262,6 +271,9 @@ class PluginsController extends CommonController
 			foreach($fileArray as $v){
 				if(!isset($lists[$v])){
 					//已下载该插件
+					if(!file_exists($dir.'/'.$v.'/config.php')){
+						continue;
+					}
 					$config = require_once($dir.'/'.$v.'/config.php');
 					if(isset($plugins[$v])){
 						$lists[$v] = $plugins[$v];
@@ -282,6 +294,9 @@ class PluginsController extends CommonController
 
 				//检查是否安装
 				if(strpos($v,'.')===false){
+					if(!file_exists($dir.'/'.$v.'/config.php')){
+						continue;
+					}
 					$config = require_once($dir.'/'.$v.'/config.php');
 					if(isset($plugins[$v])){
 						$lists[$k] = $plugins[$v];
@@ -441,7 +456,7 @@ class PluginsController extends CommonController
 				}
 
 				$config = require_once($dir.'/'.$filepath.'/config.php');
-				$w = ['name'=>$config['name'],'filepath'=>$filepath,'description'=>$config['desc'],'version'=>$config['version'],'author'=>$config['author'],'update_time'=>strtotime($config['update_time']),'module'=>$config['module'],'isopen'=>0,'config'=>'','addtime'=>time()];
+				$w = ['name'=>format_param($config['name'],1),'filepath'=>$filepath,'description'=>format_param($config['desc'],1),'version'=>$config['version'],'author'=>format_param($config['author'],1),'update_time'=>strtotime($config['update_time']),'module'=>$config['module'],'isopen'=>0,'config'=>'','addtime'=>time()];
 				if(M('plugins')->find(['filepath'=>$w['filepath']])){
 					JsonReturn(array('code'=>1,'msg'=>'插件已安装，请勿重复操作！'));
 				}

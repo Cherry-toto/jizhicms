@@ -23,10 +23,7 @@ class ArticleController extends CommonController
 	//内容管理
 	function articlelist(){
 		$page = new Page('Article');
-		$classtypedata = classTypeData();
-		foreach($classtypedata as $k=>$v){
-			$classtypedata[$k]['children'] = get_children($v,$classtypedata);
-		}
+		$classtypedata = $this->classtypedata;
 		$this->fields_list = M('Fields')->findAll(array('molds'=>'article','islist'=>1),'orders desc');
 		$this->isshow = $this->frparam('isshow');
 		$this->tid=  $this->frparam('tid');

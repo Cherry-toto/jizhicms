@@ -150,9 +150,17 @@ class IndexController extends CommonController
 		$this->article_num = M('article')->getCount();
 		$this->product_num = M('product')->getCount();
 		$this->message_num = M('message')->getCount();
-        $classtypedata = (isMobile() && $this->webconf['iswap']==1)?classTypeDataMobile():classTypeData();
-        $this->classtypedata = $classtypedata;
-		$this->display('welcome');
+		if(defined('TPL_PATH')){
+			$path = TPL_PATH;
+		}else{
+			$path = APP_HOME;
+		}
+		$includefile = str_replace('//','/',APP_PATH . $path .'/'.HOME_VIEW.'/'.Tpl_template.'/custom.html');
+		if(file_exists($includefile)){
+			$this->display('custom');
+		}else{
+			$this->display('welcome');
+		}
 	}
 	
 	function beifen(){
@@ -672,9 +680,8 @@ class IndexController extends CommonController
 			$mobile_html = trim($mobile_html);
 			
 			 $classtypedataMobile = classTypeDataMobile();
-			 foreach($classtypedataMobile as $k=>$v){
-				$classtypedataMobile[$k]['children'] = get_children($v,$classtypedataMobile);
-			 }
+			 $classtypedataMobile = getclasstypedata($classtypedataMobile,1);
+			 
 			foreach($model as $k=>$v){
 				if($isshow[$k]==1){
 					$list = M($v)->findAll(['isshow'=>1]);
@@ -797,16 +804,9 @@ class IndexController extends CommonController
 			if($this->frparam('clearhtml')){
 				setCache('clearhtml',1);
 			}
-			
-			if(isset($_SESSION['terminal'])){
-				$classtypedata = $_SESSION['terminal']=='mobile' ? classTypeDataMobile() : classTypeData();
-			}else{
-				$classtypedata = (isMobile() && $webconf['iswap']==1)?classTypeDataMobile():classTypeData();
-			}
-		
-			foreach($classtypedata as $k=>$v){
-				$classtypedata[$k]['children'] = get_children($v,$classtypedata);
-			}
+
+			$classtypedata = $this->classtypedata;
+
 			//echo '提交成功！';
 			if($type==1){
 				//有选择的更新HTML
@@ -1046,6 +1046,7 @@ class IndexController extends CommonController
 		
 		$this->display('tohtml');
 	}
+	
 	function removeDir($dirName) 
 	{ 
 		if(! is_dir($dirName)) 
@@ -1074,14 +1075,9 @@ class IndexController extends CommonController
 		
 		
 		$lists = M('classtype')->findAll($sql,' id asc ',null,$limit);
-		if(isset($_SESSION['terminal'])){
-			$classtypedata = $_SESSION['terminal']=='mobile' ? classTypeDataMobile() : classTypeData();
-		}else{
-			$classtypedata = (isMobile() && $webconf['iswap']==1)?classTypeDataMobile():classTypeData();
-		}
-		foreach($classtypedata as $k=>$v){
-			$classtypedata[$k]['children'] = get_children($v,$classtypedata);
-		}
+		
+		$classtypedata = $this->classtypedata;
+
 		$urls = [];
 		if($lists){
 			//更新静态注意事项：

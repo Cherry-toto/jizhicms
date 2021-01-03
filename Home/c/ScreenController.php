@@ -64,17 +64,16 @@ class ScreenController extends CommonController
 				}
 				$isgo = false;
 			}
-			if($isgo &&  $v['id']!=$res['id'] && $res['level']>$v['level']){
-				
-				if(isset($parent['pid'])){
-					if($parent['level']!=$v['level']){
+			if($isgo &&  $v['id']!=$res['id'] && $res['level']>$v['level'] ){
+				if(count($parent['pid'])){
+					if($parent['level']>$v['level'] && $parent['pid']!=$v['pid']){
 						$newarray[]=$v;
+						$parent = $v;
 					}
-					
 				}else{
 					$newarray[]=$v;
+					$parent = $v;
 				}
-				$parent = $v;
 			}
 		}
 		$newarray2 = array_reverse($newarray);
@@ -82,10 +81,9 @@ class ScreenController extends CommonController
 		foreach($newarray2 as $v){
 			$positions.='  &gt;  <a href="'.$v['url'].'">'.$v['classname'].'</a>';
 		}
-		
 		$this->positions_data = $newarray2;
 		$this->positions = $positions;
-		
+	
 		//解析jz_screen
 		//检测是否有page分页参数
 		$this->frpage = 1;

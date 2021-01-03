@@ -85,16 +85,20 @@ class SysController extends CommonController
 			   } 
 		   }
 		   $config = include(APP_PATH.'Conf/config.php');
-		   if($this->frparam('isdebug')){
-		   		$config['APP_DEBUG'] = true;
-		   }else{
-		   		$config['APP_DEBUG'] = false;
+		   if(checkAction('Sys/high-level')){
+			   if($this->frparam('isdebug')){
+					$config['APP_DEBUG'] = true;
+			   }else{
+					$config['APP_DEBUG'] = false;
+			   }
+			   if($this->frparam('hideclasspath')){
+					$config['File_TXT_HIDE'] = true;
+			   }else{
+					$config['File_TXT_HIDE'] = false;
+			   }
 		   }
-		   if($this->frparam('hideclasspath')){
-		   		$config['File_TXT_HIDE'] = true;
-		   }else{
-		   		$config['File_TXT_HIDE'] = false;
-		   }
+		   
+		   
 		   $ress = file_put_contents(APP_PATH.'Conf/config.php', '<?php return ' . var_export($config, true) . '; ?>');
 
 		   if($this->webconf['pc_html']!=$this->frparam('pc_html',1) || $this->webconf['mobile_html']!=$this->frparam('mobile_html',1)){
@@ -165,6 +169,21 @@ class SysController extends CommonController
 			if(!$res){
 				JsonReturn(['code'=>0,'data'=>array(),'count'=>0]);
 			}
+			if($this->admin['isadmin']!=1){
+				$admins = M('level')->findAll(['gid'=>1]);
+				$ids = [];
+				foreach($admins as $v){
+					$ids[]=$v['id'];
+				}
+				$new = [];
+				foreach($res as $v){
+					if(!in_array($v['data']['id'],$ids)){
+						$new[]=$v;
+					}
+				}
+				$res = $new;
+			}
+			
 			rsort($res);
 			$page = new \ArrayPage($res);
 			
@@ -178,6 +197,7 @@ class SysController extends CommonController
 				$limit = 10;
 			}
 			$count = count($res);
+			
 			
 			$lists = $page->query(['page'=>$this->frparam('page',0,1)])->setPage(['limit'=>$limit])->go();
 			foreach($lists as $k=>$v){
@@ -379,7 +399,7 @@ class SysController extends CommonController
 						}
 					}
 				}
-				$time = $data['times']*60+time();
+				$time = $data['times']*60;
 				setCache('jzcache_'.$data['field'],$result,$time);
 				
 				JsonReturn(array('code'=>0,'msg'=>'添加成功！继续添加~','url'=>U('sys/addcache')));

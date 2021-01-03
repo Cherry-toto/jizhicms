@@ -24,7 +24,9 @@
 			   <select class="layui-btn-sm" id="change_tid" lay-search=""  lay-filter="change_tid" >
 			   <option value="0">批量绑定栏目</option>
 			   {foreach $classtypetree as $v}
+			   {if($molds['biaoshi']==$v['molds'])}
 			   <option   value="{$v['id']}">{fun str_repeat('--', $v['level'])}{$v['classname']}</option>
+			   {/if}
 			   {/foreach}
 			   </select>
 			   </div>

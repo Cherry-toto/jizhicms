@@ -21,10 +21,7 @@ class LinksController extends CommonController
 	
 	public function index(){
 		
-		$classtypedata = classTypeData();
-		foreach($classtypedata as $k=>$v){
-			$classtypedata[$k]['children'] = get_children($v,$classtypedata);
-		}
+		$classtypedata = $this->classtypedata;
 		$molds = 'links';
 		if($molds==''){
 			Error('模块为空，请选择模块！');

@@ -20,7 +20,6 @@ class FieldsController extends CommonController
 {
 	
 	function index(){
-		$page = new Page('Fields');
 		$sql = '1=1';
 		if($this->frparam('molds',1)==''){
 			Error('请选择模块！');
@@ -28,11 +27,10 @@ class FieldsController extends CommonController
 		
 		$sql = ['molds'=>$this->frparam('molds',1)];
 		$this->molds = M('Molds')->find(array('biaoshi'=>$this->frparam('molds',1)));
-		$data = $page->where($sql)->orderby('orders desc,id asc')->page($this->frparam('page',0,1))->go();
-		$pages = $page->pageList();
-		$this->pages = $pages;
+		$this->pages = '';
+		$data = M('fields')->findAll();
 		$this->lists = $data;
-		$this->sum = $page->sum;
+		$this->sum = count($data);
 		
 		$this->display('fields-list');
 		

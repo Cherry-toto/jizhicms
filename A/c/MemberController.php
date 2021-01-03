@@ -96,6 +96,7 @@ class MemberController extends CommonController
 			$data = get_fields_data($data,'member');
 			$data['username'] = $this->frparam('username',1);
 			$data['money'] = $this->frparam('money',3);
+			$data['gid'] = $this->frparam('gid');
 			$data['jifen'] = $this->frparam('jifen');
 			$data['email'] = $this->frparam('email',1);
 			$data['litpic'] = $this->frparam('litpic',1);
@@ -136,6 +137,7 @@ class MemberController extends CommonController
 			$data['email'] = $this->frparam('email',1);
 			$data['money'] = $this->frparam('money',3);
 			$data['jifen'] = $this->frparam('jifen');
+			$data['gid'] = $this->frparam('gid');
 			$data['litpic'] = $this->frparam('litpic',1);
 			$data['address'] = $this->frparam('address',1);
 			$data['province'] = $this->frparam('province',1);

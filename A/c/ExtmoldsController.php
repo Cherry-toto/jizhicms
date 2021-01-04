@@ -52,6 +52,20 @@ class ExtmoldsController extends Controller
 		  $customconf = get_custom();
 		  $this->customconf = $customconf;
 		  $this->classtypetree =  get_classtype_tree();
+		  $m = 1;
+			if(isset($_SESSION['terminal'])){
+				$m = $_SESSION['terminal']=='mobile' ? 1 : 0;
+			}else{
+				$m = (isMobile() && $webconf['iswap']==1) ? 1 : 0;
+			}
+			if($m){
+				$classtypedata = classTypeDataMobile();
+			}else{
+				$classtypedata = classTypeData();
+			}
+			
+			$this->classtypedata = getclasstypedata($classtypedata,$m);
+	  
 		  if($_SESSION['admin']['isadmin']!=1){
 			$tids = $_SESSION['admin']['tids'];
 			foreach ($this->classtypetree as $k => $v) {

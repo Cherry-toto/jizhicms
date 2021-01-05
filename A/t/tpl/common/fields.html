@@ -18,8 +18,8 @@ function deleteImage_auto(elm,field){
 }
 
 function goleft(a){
-	var arr = $(".upload-icon-img").toArray();
 	var str = $(a).parent().parent().parent().attr('class');
+	var arr = $("."+str+" .upload-icon-img").toArray();
 	var index = $('.'+str+' .upload-icon-img').index($(a).closest('.upload-icon-img'));
 	var temp;
 	if(index-1>=0){
@@ -30,8 +30,8 @@ function goleft(a){
 	}
 }
 function goright(a){
-	var arr = $(".upload-icon-img").toArray();
 	var str = $(a).parent().parent().parent().attr('class');
+	var arr = $("."+str+" .upload-icon-img").toArray();
 	var index = $('.'+str+' .upload-icon-img').index($(a).closest('.upload-icon-img'));
 	var temp;
 	if(index+1<arr.length){

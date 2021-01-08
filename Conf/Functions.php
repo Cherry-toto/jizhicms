@@ -608,7 +608,7 @@ function classTypeDataMobile(){
  
  
  //新增字段-后台列表搜索获取
- function molds_search($molds=null,$data){
+ function molds_search($molds=null,$data=null){
 	 if($molds==null){
 		 Error('缺少模块标识！');
 	 }

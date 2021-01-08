@@ -342,10 +342,9 @@ class FrPHP
 			
 			}
 		}
-		//$dispatch = new $controller($controllerName, $actionName ,$param);
 		$dispatch = new $controller($param);
-        call_user_func_array(array($dispatch, $actionName), $param);
-
+		$dispatch->$actionName($param);
+       
 		
 		
 		

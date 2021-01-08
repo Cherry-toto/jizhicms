@@ -239,8 +239,9 @@ class UserController extends CommonController
     }
     //订单详情
     function orderdetails(){
+		$this->checklogin();
     	$orderno = $this->frparam('orderno',1);
-		$order = M('orders')->find(['orderno'=>$orderno]);
+		$order = M('orders')->find(['orderno'=>$orderno,'userid'=>$this->member['id']]);
 		if($orderno && $order){
 			/*
 			if($order['isshow']!=1){
@@ -285,8 +286,9 @@ class UserController extends CommonController
     }
 	//支付页面
 	function payment(){
+		$this->checklogin();
 		$orderno = $this->frparam('orderno',1);
-		$order = M('orders')->find(['orderno'=>$orderno]);
+		$order = M('orders')->find(['orderno'=>$orderno,'userid'=>$this->member['id']]);
 		if($this->frparam('go') && $orderno && $order){
 			if($order['isshow']!=1){
 				//超时或者已支付

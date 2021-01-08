@@ -104,6 +104,8 @@ class SysController extends CommonController
 		   if($this->webconf['pc_html']!=$this->frparam('pc_html',1) || $this->webconf['mobile_html']!=$this->frparam('mobile_html',1)){
 			   setCache('classtype',null);
 			   setCache('mobileclasstype',null);
+			   setCache('classtypedatamobile',null);
+			   setCache('classtypedatapc',null);
 		   }
 		   setCache('webconfig',null);
 		   setCache('customconfig',null);

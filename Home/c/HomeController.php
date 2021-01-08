@@ -238,6 +238,7 @@ class HomeController extends CommonController
 				break;
 			}
 			$limit = $limit<=0 ? 15 : $limit;
+			$this->currentpage = $this->frpage;
 			$data = $page->where($sql)->orderby($orders)->limit($limit)->page($this->frpage)->go();
 			$pages = $page->pageList(5,'-');
 			
@@ -452,7 +453,7 @@ class HomeController extends CommonController
 			if($this->frparam('limit')){
 				$limit = $this->frparam('limit');
 			}
-			
+			$this->currentpage = $this->frpage;
 			//只适合article和product
 			if($molds=='article' || $molds=='product'){
 				
@@ -784,6 +785,7 @@ class HomeController extends CommonController
 			
 			$page = new Page($molds);
 			$page->typeurl = 'search';
+			$this->currentpage = $this->frparam('page',0,1);
 			$data = $page->where($sql)->orderby('id desc')->limit($this->frparam('limit',0,15))->page($this->frparam('page',0,1))->go();
 			$pages = $page->pageList(5,'&page=');
 			
@@ -911,6 +913,7 @@ class HomeController extends CommonController
 			$sqln = implode(' union all ',$sqln);
 			$page = new Page();
 			$page->typeurl = 'search';
+			$this->currentpage = $this->frpage;
 			$data = $page->where($sql)->setPage(['limit'=>$this->frparam('limit',0,15)])->page($this->frpage)->goCount($sqln)->goSql();
 			foreach($data as $k=>$v){
 				$data[$k]['url'] = gourl($v,$v['htmlurl']);

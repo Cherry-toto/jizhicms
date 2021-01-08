@@ -108,6 +108,8 @@ class ClasstypeController extends CommonController
 				setCache('classtypetree',null);
 				setCache('classtype',null);
 				setCache('mobileclasstype',null);
+				setCache('classtypedatamobile',null);
+				setCache('classtypedatapc',null);
 				JsonReturn(array('status'=>1,'info'=>'添加栏目成功，继续添加~','url'=>U('addclass',array('pid'=>$w['pid'],'biaoshi'=>$w['molds']))));
 			}else{
 				JsonReturn(array('status'=>0,'info'=>'新增失败！'));
@@ -219,6 +221,8 @@ class ClasstypeController extends CommonController
 				setCache('classtypetree',null);
 				setCache('classtype',null);
 				setCache('mobileclasstype',null);
+				setCache('classtypedatamobile',null);
+				setCache('classtypedatapc',null);
 				JsonReturn(array('status'=>1));
 			}else{
 				JsonReturn(array('status'=>0,'info'=>'您未做任何修改，不能提交！'));
@@ -242,6 +246,8 @@ class ClasstypeController extends CommonController
 		setCache('classtypetree',null);
 		setCache('classtype',null);
 		setCache('mobileclasstype',null);
+		setCache('classtypedatamobile',null);
+		setCache('classtypedatapc',null);
 		JsonReturn(array('code'=>0,'info'=>'修改成功！'));
 		
 	}
@@ -258,6 +264,8 @@ class ClasstypeController extends CommonController
 				setCache('classtypetree',null);
 				setCache('classtype',null);
 				setCache('mobileclasstype',null);
+				setCache('classtypedatamobile',null);
+				setCache('classtypedatapc',null);
 				JsonReturn(array('status'=>1));
 			}else{
 				JsonReturn(array('status'=>0,'info'=>'删除失败！'));
@@ -281,6 +289,8 @@ class ClasstypeController extends CommonController
 		setCache('classtypetree',null);
 		setCache('classtype',null);
 		setCache('mobileclasstype',null);
+		setCache('classtypedatamobile',null);
+		setCache('classtypedatapc',null);
 	}
 	
 	function get_pinyin(){
@@ -314,6 +324,7 @@ class ClasstypeController extends CommonController
 					$w['molds'] = $molds;
 					$w['classname'] = $d[0];
 					$w['pid'] = $pid;
+					$d[1] = str_replace(' ','-',$d[1]);
 					if($this->webconf['islevelurl'] && $w['pid']!=0){
 						//层级
 						$html = $classtypetree[$w['pid']]['htmlurl'].'/'.$d[1];
@@ -338,6 +349,8 @@ class ClasstypeController extends CommonController
 			setCache('classtypetree',null);
 			setCache('classtype',null);
 			setCache('mobileclasstype',null);
+			setCache('classtypedatamobile',null);
+			setCache('classtypedatapc',null);
 			JsonReturn(['code'=>0,'msg'=>'success']);
 		}
 		$this->molds = M('molds')->find(['biaoshi'=>'classtype']);
@@ -455,6 +468,8 @@ class ClasstypeController extends CommonController
 		setCache('classtypetree',null);
 		setCache('classtype',null);
 		setCache('mobileclasstype',null);
+		setCache('classtypedatamobile',null);
+		setCache('classtypedatapc',null);
 		JsonReturn(array('code'=>0,'msg'=>'操作成功！'));
 	}
 	

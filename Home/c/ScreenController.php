@@ -205,7 +205,7 @@ class ScreenController extends CommonController
 				$orders = 'istop desc,addtime asc';
 			break;
 		}
-
+		$this->currentpage = $this->frpage;
 		$data = $page->where($sql)->orderby($orders)->limit($limit)->page($this->frpage)->go();
 		$pages = $page->pageList(3,'-page-');
 		

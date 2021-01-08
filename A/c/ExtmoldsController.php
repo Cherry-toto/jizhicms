@@ -139,7 +139,12 @@ class ExtmoldsController extends Controller
 				}
 				
 				$v['new_isshow'] = $v['isshow']==1 ? '已审' : ($v['isshow']==2 ? '退回' : '未审');
-				$v['view_url'] = gourl($v,$v['htmlurl']);
+				if($molds=='tags'){
+					$v['view_url'] = get_domain().'/tags/index/id/'.$v['id'];
+				}else{
+					$v['view_url'] = gourl($v,$v['htmlurl']);
+				}
+				
 				$v['edit_url'] = U('Extmolds/editmolds',array('id'=>$v['id'],'molds'=>$molds));
 				
 				foreach($this->fields_list as $vv){

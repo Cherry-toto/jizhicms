@@ -47,6 +47,7 @@ class TagsController extends CommonController
 			$sql = implode(' union all ',$sqlx);
 			$sqln = implode(' union all ',$sqln);
 			$page = new Page();
+			$this->currentpage = $this->frpage;
 			$data = $page->where($sql)->limit($this->frparam('limit',0,15))->page($this->frpage)->goCount($sqln)->goSql();
 			foreach($data as $k=>$v){
 				$data[$k]['url'] = gourl($v,$v['htmlurl']);

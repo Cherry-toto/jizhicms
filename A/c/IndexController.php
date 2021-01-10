@@ -1071,7 +1071,7 @@ class IndexController extends CommonController
 		$terminal_path = $_SESSION['terminal']=='pc' ? $this->webconf['pc_html'] : $this->webconf['mobile_html'];
 		$terminal_path = ($terminal_path=='' || $terminal_path=='/') ? '' : $terminal_path.'/';
 		
-		$www = get_domain().'/index.php';
+		$www = get_domain();
 		
 		
 		$lists = M('classtype')->findAll($sql,' id asc ',null,$limit);
@@ -1171,7 +1171,7 @@ class IndexController extends CommonController
 		
 		
 		$lists = M($model)->findAll($sql,' id asc ',null,$limit);
-		$www = get_domain().'/index.php';
+		$www = get_domain();
 		$urls=[];//存储更新url链接
 		if($lists && is_array($lists)){
 			//更新静态注意事项：

@@ -339,10 +339,23 @@ class View
 			}
 			
 		}
-		if(isset($a['limit'])){$limit=trim($a['limit'],"'");}else{$limit='null';}
+		if(isset($a['limit'])){
+			if(strpos($a['limit'],'$')!==false){
+				$limit=trim($a['limit'],"'");
+			}else{
+				$limit=$a['limit'];
+			}
+		}else{$limit='null';}
 		if(isset($a['notempty'])){$notempty=trim($a['notempty'],"'");}else{$notempty=false;}
 		if(isset($a['empty'])){$empty=trim($a['empty'],"'");}else{$empty=false;}
-		if(isset($a['fields'])){$fields=trim($a['fields'],"'");}else{$fields='null';}
+		if(isset($a['fields'])){
+			if(strpos($a['fields'],'$')!==false){
+				$fields=trim($a['fields'],"'");
+			}else{
+				$fields=$a['fields'];
+			}
+			
+		}else{$fields='null';}
 		if(isset($a['isall'])){$isall=trim($a['isall'],"'");}else{$isall=false;}
 		if(isset($a['as'])){$as=$a['as'];}else{$as='v';}
 		if(isset($a['day'])){$day=$a['day'];}else{$day=false;}

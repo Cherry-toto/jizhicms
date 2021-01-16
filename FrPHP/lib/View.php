@@ -428,9 +428,15 @@ class View
 		$pages='';
 		$w = ' 1=1 ';
 		$ispage=false;
-		if(stripos($jzpage,'$')!==false){
-			$jzpage = "'.$jzpage.'";
+		if($jzpage!='page'){
+			if(stripos($jzpage,'$')!==false){
+				$jzpage = "'.$jzpage.'";
+			}
+			$pagenum = "\$pagenum = (int)\$_REQUEST['".$jzpage."'] ? (int)\$_REQUEST['".$jzpage."']  : 1; ";
+		}else{
+			$pagenum = "\$pagenum = \$frpage;";
 		}
+		
 		foreach($a as $k=>$v){
 			if(strpos($v,'$')===FALSE){
 				//$v = str_ireplace("'",'',$v);
@@ -541,10 +547,10 @@ class View
 		if($ispage){
 			
 			$txt .="
-			\$pagenum = (int)\$_REQUEST['".$jzpage."'] ? (int)\$_REQUEST['".$jzpage."']  : 1; 
-			unset(\$_REQUEST['".$jzpage."']);
+			".$pagenum."
 			\$".$as."_page = new FrPHP\Extend\Page(\$".$as."_table);
 			\$".$as."_page->typeurl = 'tpl';
+			\$".$as."_page->paged = '".$jzpage."';
 			\$".$as."_data = \$".$as."_page->where(\$".$as."_w)->fields(\$".$as."_fields)->orderby(\$".$as."_order)->limit(\$".$as."_limit)->page(\$pagenum)->go();
 			\$".$as."_pages = \$".$as."_page->pageList(3,'?".$jzpage."=');
 			\$".$as."_sum = \$".$as."_page->sum;

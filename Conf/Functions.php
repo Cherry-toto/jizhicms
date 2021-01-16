@@ -1441,8 +1441,13 @@ function htmldecode($data){
 //计算点赞数
 function jz_zan($tid,$id){
 	
-	$sql = " likes like '%||".$tid.'-'.$id."||%' ";
+	$sql = " likes like '%||".$tid.'-'.$id."||%' and username!='jzcustomer' ";
 	$count = M('member')->getCount($sql);
+	$custom = M('member')->find(['username'=>'jzcustomer']);
+	if($custom){
+		$likes_num = substr_count($custom['likes'],'|'.$tid.'-'.$id.'|');
+		$count+=$likes_num;
+	}
 	return $count;
 	
 }
@@ -1633,7 +1638,7 @@ function deldir($dir) {
  * direct=1 中间开始裁剪  direct=0 左上角开始裁剪
  * debug=1 调试状态，每次请求都生成缓存 debug=0 会直接调用已生成的缩略图
  */
-function jzresize($src_image,$out_width = NULL, $out_height = NULL, $mode = 1, $out_image = NULL,  $direct = 0 ,$debug=0 , $img_quality = 90) {
+function jzresize($src_image,$out_width = NULL, $out_height = NULL, $mode = 1, $out_image = NULL,  $direct = 0 ,$debug=0 , $img_quality = 90 ) {
 	if(!is_dir(APP_PATH.'cache/image')){
 		if(!mkdir(APP_PATH.'cache/image',0777)){
 			exit('图片缓存文件夹不存在cache/image');
@@ -1731,25 +1736,7 @@ function jzresize($src_image,$out_width = NULL, $out_height = NULL, $mode = 1, $
 		if($width-$thumbnail_w<0){
 			$width = $width+$start_x;
 		}
-
-				$scale_tumnb    = $new_img_thumbnail_width / $new_img_thumbnail_height;
-				$dst_x=0;
-				$dst_y=0;
-				$thumbnail_w=$new_img_thumbnail_width;
-				$thumbnail_h=$new_img_thumbnail_height;
-				if ($width / $new_img_thumbnail_width > $height / $new_img_thumbnail_height)
-				{//上下留白,截左右
-					$scr_w  = $height * $scale_tumnb;
-					$scr_h = $height;
-				}
-				else
-				{//左右留白,截上下
-					$scr_w  = $width;
-					$scr_h  = $width / $scale_tumnb;
-				}
-				$start_x = ($width  - $scr_w)  / 2;
-				$start_y = ($height - $scr_h) / 2;
-		
+	
 	}else{
 		//左上角裁剪
 		$start_x = 0;
@@ -1764,9 +1751,8 @@ function jzresize($src_image,$out_width = NULL, $out_height = NULL, $mode = 1, $
 		imagefill($new_img, 0, 0, $color);
 		imagecolortransparent($new_img, $color);
 	}
-	//imagecopyresampled($new_img, $img, $dst_x, $dst_y, $start_x, $start_y, $thumbnail_w, $thumbnail_h, $width, $height);
-	  imagecopyresampled($new_img, $img, $dst_x, $dst_y, $start_x, $start_y, $thumbnail_w, $thumbnail_h, $scr_w, $scr_h);
-
+	imagecopyresampled($new_img, $img, 0, 0, $start_x, $start_y, $thumbnail_w, $thumbnail_h, $width, $height);
+	
 	switch ($type) {
 		case 1:
 			imagegif($new_img, $out_image, $img_quality);
@@ -1784,7 +1770,7 @@ function jzresize($src_image,$out_width = NULL, $out_height = NULL, $mode = 1, $
 	imagedestroy($img);
 	
 	
-	return $out_image;
+	return '/'.$out_image;
 }
 
 function jzcachedata($field){

@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html>
 <head>
 	<meta charset="UTF-8">
 	{include="style"}
@@ -19,7 +19,7 @@
             <hr class="hr15">
 			{if($webconf['closeadminvercode']!=1)}
 			<input name="vercode" style="width:50%;float:left;" lay-verify="required" placeholder="验证码"  type="text" class="layui-input">
-			<img  src="{fun U('vercode')}" style="width:40%;float:right;" onclick="this.src=this.src+'?'+Math.random()" />
+			<img id="vercodeimg"  src="{fun U('vercode')}" style="width:40%;float:right;" onclick="this.src=this.src+'?'+Math.random()" />
             <hr class="hr15">
 			{/if}
             <input value="登录" lay-submit lay-filter="login" style="width:100%;" type="submit">
@@ -42,9 +42,11 @@
               form.on('submit(login)', function(data){
            
 				$.post("{fun U('Login/index')}",data.field,function(res){
-				    //console.log(res);return false;
+				    
 					 var res = JSON.parse(res);
 					 if(res.code==1){
+						var src = '{fun U('vercode')}?'+Math.random();
+						$("#vercodeimg").attr('src',src);
 						layer.msg(res.msg);
 					 }else{
 						layer.msg(res.msg, {icon: 6,time: 2000},function(){

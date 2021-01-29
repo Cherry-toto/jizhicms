@@ -95,6 +95,11 @@
 				          <td>可写</td>
 				        </tr>
 						<tr>
+				          <th>资源文件夹/static/</th>
+				          <td><?php echo new_is_writeable('../static')?'满足':'不支持';?></td>
+				          <td>可写</td>
+				        </tr>
+						<tr>
 				          <th>备份文件夹/backup/</th>
 				          <td><?php echo new_is_writeable('../backup')?'满足':'不支持';?></td>
 				          <td>可写</td>

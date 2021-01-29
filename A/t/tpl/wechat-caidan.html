@@ -151,7 +151,7 @@
 	    layui.use(['laydate','element','form','laypage','layer'], function(){
                 $ = layui.jquery;//jquery
               laydate = layui.laydate;//日期插件
-              lement = layui.element();//面包导航
+              lement = layui.element;//面包导航
             //  laypage = layui.laypage;//分页
               layer = layui.layer;//弹出层
 			  form = layui.form;
@@ -162,34 +162,33 @@
               
             });
 		 function admin_del(obj){
-                layer.confirm('确认要删除吗？',function(index){
+            layer.confirm('确认要删除吗？',function(){
 					if($(obj).parents("tr").attr('data')!=''){
 						$("#menu_data").val(parseInt($('#menu_data').val())-1);
 					}
 					$(obj).parents("tr").remove();
 					
-					layer.close();		
-					layer.msg(r.msg,{icon: 1,time:1000});
+					layer.closeAll();
 					
 				
                    
                 });
             }
 		function add_caidan(obj){
-		var cids = $(obj).parents("tr").attr("data");
-		if(cids!=''){
-			var cid = parseInt($('#menu_data').val())+1;
-			$("#menu_data").val(cid);
-			var html = '<tr data="'+cid+'">'+$(obj).parents("tr").html()+'</tr>';
+			var cids = $(obj).parents("tr").attr("data");
+			if(cids!=''){
+				var cid = parseInt($('#menu_data').val())+1;
+				$("#menu_data").val(cid);
+				var html = '<tr data="'+cid+'">'+$(obj).parents("tr").html()+'</tr>';
+				
+				$(obj).parents("tr").before(html);
+			}else{
+				var cid = cids;
+				var html = '<tr data="'+cid+'">'+$(obj).parents("tr").html()+'</tr>';
+				
+				$(obj).parents("tr").after(html);
+			}
 			
-			$(obj).parents("tr").before(html);
-		}else{
-			var cid = cids;
-			var html = '<tr data="'+cid+'">'+$(obj).parents("tr").html()+'</tr>';
-			
-			$(obj).parents("tr").after(html);
-		}
-		
 			
 		}
 		function add_caidan_2(obj){

@@ -98,7 +98,7 @@
           <div class="form-control">
             <label for="">验证码：</label>
             <input type="text" value="" name="vercode" id="yzm" placeholder="请输入验证码">
-            <img src="{fun U('common/vercode',['code_name'=>'login_vercode'])}" onclick="this.src=this.src+'?'+Math.random()" style="height:50px;"/>
+            <img src="{fun U('common/vercode',['code_name'=>'login_vercode','r'=>rand(111,999)])}" onclick="this.src=this.src+'?'+Math.random()" style="height:50px;"/>
           </div>
 		  {/if}
           <div class="form-group">

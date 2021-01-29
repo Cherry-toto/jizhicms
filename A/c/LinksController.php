@@ -99,10 +99,7 @@ class LinksController extends CommonController
 			
 			$data = $this->frparam();
 			$data['tid'] = $this->frparam('tid',0,0);
-			if($data['tid']){
-				$pclass = get_info_table('classtype',array('id'=>$data['tid']));
-				$data['htmlurl'] = $pclass['htmlurl'];
-			}
+			
 			
 			$data = get_fields_data($data,$molds);
 			
@@ -145,10 +142,7 @@ class LinksController extends CommonController
 			
 			$data = $this->frparam();
 			$data['tid'] = $this->frparam('tid',0,0);
-			if($data['tid']){
-				$pclass = get_info_table('classtype',array('id'=>$data['tid']));
-				$data['htmlurl'] = $pclass['htmlurl'];
-			}
+			
 			$data = get_fields_data($data,$molds);
 			if($this->frparam('id')){
 				

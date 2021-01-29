@@ -103,11 +103,11 @@
                                     <ul class="pagination">
 									
 									{if($listpage['list'])}
-                                        <li class="page-item {if($listpage['prev'])}disabled{/if}"><a class="page-link" href="{$listpage['prev']}" aria-label="Previous"><span aria-hidden="true">«</span></a></li>
+                                        <li class="page-item {if(!$listpage['prev'])}disabled{/if}"><a class="page-link" href="{$listpage['prev']}" aria-label="Previous"><span aria-hidden="true">«</span></a></li>
 										{foreach $listpage['list'] as $ss}
                                         <li class="page-item {if($ss['num']==$listpage['current_num'])}active background{/if}"><a href="{$ss['url']}" class="page-link">{$ss['num']}</a></li>
 										{/foreach}
-                                        <li class="page-item {if($listpage['next'])}disabled{/if}"><a class="page-link" href="{$listpage['next']}" aria-label="Next"><span aria-hidden="true">»</span></a></li>
+                                        <li class="page-item {if(!$listpage['next'])}disabled{/if}"><a class="page-link" href="{$listpage['next']}" aria-label="Next"><span aria-hidden="true">»</span></a></li>
 									{/if}
                                     </ul>
                                 </nav>

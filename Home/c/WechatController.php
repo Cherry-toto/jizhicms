@@ -145,7 +145,7 @@ class WechatController extends CommonController
 			$signature = $_GET["signature"];
 			$timestamp = $_GET["timestamp"];
 			$nonce = $_GET["nonce"];
-			$echostr = $_GET["echostr"];
+			$echostr = format_param($_GET["echostr"],1);
 			$token = $this->webconf['wx_login_token'];
 
 			// 1）将token、timestamp、nonce三个参数进行字典序排序

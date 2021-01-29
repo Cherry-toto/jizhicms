@@ -380,27 +380,27 @@ class SysController extends CommonController
 			if(stripos($data['sqls'],'update')!==false || stripos($data['sqls'],'delete')!==false || stripos($data['sqls'],'insert')!==false || stripos($data['sqls'],'drop')!==false || stripos($data['sqls'],'truncate')!==false){
 				JsonReturn(array('code'=>1,'msg'=>'非法操作'));
 			}
-			
-			
-			if(M('cachedata')->add($data)){
-				$tid = $data['tid'] ? ($data['isall']==1 ? ' and tid in ('.implode(',',$this->classtypedata[$data['tid']]['children']['ids']).') ' : ' and tid='.$data['tid']) : '';
-				$sqls = $data['sqls'] ? ' and '.$data['sqls'] : '';
-				$orderby = $data['orders'] ? ' order by '.$data['orders'] : '';
-				$limit = $data['limits'] ? ' limit '.$data['limits'] : '';
-				if($tid || $sqls){
-					$where = ' where 1=1 '.$tid.htmlspecialchars_decode($sqls,ENT_QUOTES);
-				}else{
-					$where = '';
-				}
-				$sql = "select * from ".DB_PREFIX.$data['molds'].$where.$orderby.$limit;
-				$result = M()->findSql($sql);
-				if($result){
-					foreach($result as $k=>$v){
-						if(isset($v['htmlurl'])){
-							$result[$k]['url'] = gourl($v,$v['htmlurl']);
-						}
+			$tid = $data['tid'] ? ($data['isall']==1 ? ' and tid in ('.implode(',',$this->classtypedata[$data['tid']]['children']['ids']).') ' : ' and tid='.$data['tid']) : '';
+			$sqls = $data['sqls'] ? ' and '.$data['sqls'] : '';
+			$orderby = $data['orders'] ? ' order by '.$data['orders'] : '';
+			$limit = $data['limits'] ? ' limit '.$data['limits'] : '';
+			if($tid || $sqls){
+				$where = ' where 1=1 '.$tid.htmlspecialchars_decode($sqls,ENT_QUOTES);
+			}else{
+				$where = '';
+			}
+			$sql = "select * from ".DB_PREFIX.$data['molds'].$where.$orderby.$limit;
+			$result = M()->findSql($sql);
+			if($result){
+				foreach($result as $k=>$v){
+					if(isset($v['htmlurl'])){
+						$result[$k]['url'] = gourl($v,$v['htmlurl']);
 					}
 				}
+			}
+			
+			if(M('cachedata')->add($data)){
+				
 				$time = $data['times']*60;
 				setCache('jzcache_'.$data['field'],$result,$time);
 				
@@ -440,25 +440,26 @@ class SysController extends CommonController
 			if(stripos($data['sqls'],'update')!==false || stripos($data['sqls'],'delete')!==false || stripos($data['sqls'],'insert')!==false || stripos($data['sqls'],'drop')!==false || stripos($data['sqls'],'truncate')!==false){
 				JsonReturn(array('code'=>1,'msg'=>'非法操作'));
 			}
-			if(M('cachedata')->update(['id'=>$id],$data)){
-				$tid = $data['tid'] ? ($data['isall']==1 ? ' and tid in ('.implode(',',$this->classtypedata[$data['tid']]['children']['ids']).') ' : ' and tid='.$data['tid']) : '';
-				$sqls = $data['sqls'] ? ' and '.$data['sqls'] : '';
-				$orderby = $data['orders'] ? ' order by '.$data['orders'] : '';
-				$limit = $data['limits'] ? ' limit '.$data['limits'] : '';
-				if($tid || $sqls){
-					$where = ' where 1=1 '.$tid.htmlspecialchars_decode($sqls,ENT_QUOTES);
-				}else{
-					$where = '';
-				}
-				$sql = "select * from ".DB_PREFIX.$data['molds'].$where.$orderby.$limit;
-				$result = M()->findSql($sql);
-				if($result){
-					foreach($result as $k=>$v){
-						if(isset($v['htmlurl'])){
-							$result[$k]['url'] = gourl($v,$v['htmlurl']);
-						}
+			$tid = $data['tid'] ? ($data['isall']==1 ? ' and tid in ('.implode(',',$this->classtypedata[$data['tid']]['children']['ids']).') ' : ' and tid='.$data['tid']) : '';
+			$sqls = $data['sqls'] ? ' and '.$data['sqls'] : '';
+			$orderby = $data['orders'] ? ' order by '.$data['orders'] : '';
+			$limit = $data['limits'] ? ' limit '.$data['limits'] : '';
+			if($tid || $sqls){
+				$where = ' where 1=1 '.$tid.htmlspecialchars_decode($sqls,ENT_QUOTES);
+			}else{
+				$where = '';
+			}
+			$sql = "select * from ".DB_PREFIX.$data['molds'].$where.$orderby.$limit;
+			$result = M()->findSql($sql);
+			if($result){
+				foreach($result as $k=>$v){
+					if(isset($v['htmlurl'])){
+						$result[$k]['url'] = gourl($v,$v['htmlurl']);
 					}
 				}
+			}
+			if(M('cachedata')->update(['id'=>$id],$data)){
+				
 				$time = $data['times']*60;
 				setCache('jzcache_'.$data['field'],$result,$time);
 				JsonReturn(array('code'=>0,'msg'=>'修改成功！','url'=>U('sys/datacache')));

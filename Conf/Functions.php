@@ -1169,7 +1169,7 @@ function get_comment_user($id){
 //计算评论数量---或者直接comment_num显示
 function get_comment_num($tid,$id=0){
 	if($id==0){ return '缺少ID！';}
-	$count = M('comment')->getCount(['aid'=>$id,'tid'=>$tid]);
+	$count = M('comment')->getCount(['aid'=>$id,'tid'=>$tid,'isshow'=>1]);
 	return $count;
 }
 
@@ -1424,9 +1424,7 @@ function formatTime($sTime, $formt = 'Y-m-d') {
         return intval($dDay/7).'周前';
     } else if( $dDay > 30  && $dDay < 365){
         return intval($dDay/30).'个月前';
-	} else if($dDay >= 365 && $dDay < 3650){
-		return intval($dDay/365).'年前';
-    } else {
+	} else {
         return date($formt, $sTime);
     }
 }
@@ -1659,7 +1657,7 @@ function jzresize($src_image,$out_width = NULL, $out_height = NULL, $mode = 1, $
 				  exit('无法下载！');
 			  }
 			  $filename = pathinfo($src_image, PATHINFO_BASENAME);
-			  $resource = fopen($path . $filename, 'a');
+			  $resource = fopen($path . $filename, 'w');
 			  fwrite($resource, $file);
 			  fclose($resource);
 			  $src_image = '/'.$path . $filename;
@@ -1834,6 +1832,16 @@ function getclasstypedata($array,$m=1){
 function jztpldata(){
 	$tpldata = getCache('tpldata');
 	if(!$tpldata){
+		if(isset($_SESSION['terminal'])){
+			$m = $_SESSION['terminal']=='mobile' ? 1 : 0;
+		}else{
+			$m = (isMobile() && $webconf['iswap']==1) ? 1 : 0;
+		}
+		if($m){
+			$classtypedata = classTypeDataMobile();
+		}else{
+			$classtypedata = classTypeData();
+		}
 		$tpldata = [];
 		$tpl_data = M('tplfields')->findAll();
 		if($tpl_data){
@@ -1896,6 +1904,16 @@ function jztpldata(){
 function jztpldatafield(){
     $tpldata = getCache('tpldata');
     if(!$tpldata){
+		if(isset($_SESSION['terminal'])){
+			$m = $_SESSION['terminal']=='mobile' ? 1 : 0;
+		}else{
+			$m = (isMobile() && $webconf['iswap']==1) ? 1 : 0;
+		}
+		if($m){
+			$classtypedata = classTypeDataMobile();
+		}else{
+			$classtypedata = classTypeData();
+		}
         $tpldata = [];
         $tpls = M('tpl')->findAll();
         $tplarr = [];

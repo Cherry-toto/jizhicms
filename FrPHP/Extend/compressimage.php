@@ -27,6 +27,11 @@ public function thumpImage(){
 $new_width = $this->imageinfo['width'] * $this->percent;
 $new_height = $this->imageinfo['height'] * $this->percent;
 $image_thump = imagecreatetruecolor($new_width,$new_height);//将原图复制带图片载体上面，并且按照一定比例压缩,极大的保持了清晰度
+if($this->imageinfo['type']=='png' || $this->imageinfo['type']=='gif'){
+	$color = imagecolorallocate($image_thump, 255, 255, 255);
+	imagefill($image_thump, 0, 0, $color);
+	imagecolortransparent($image_thump, $color);
+}
 imagecopyresampled($image_thump,$this->image,0,0,0,0,$new_width,$new_height,$this->imageinfo['width'],$this->imageinfo['height']);
 imagedestroy($this->image);
 $this->image = $image_thump;

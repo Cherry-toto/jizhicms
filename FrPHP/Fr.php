@@ -194,13 +194,16 @@ class FrPHP
 			$url = str_replace('/'.$terminal_path.'/','/',$url);
 			
 		}else{
-			if($webconfig['iswap']==1){
-				$webconfig['mobile_html'] = $webconfig['mobile_html']=='' ? '/' : $webconfig['mobile_html'];
-				$url = str_replace('/'.$webconfig['mobile_html'].'/','/',$url);
-			}else{
+			if($webconfig){
+				if($webconfig['iswap']==1){
+					$webconfig['mobile_html'] = $webconfig['mobile_html']=='' ? '/' : $webconfig['mobile_html'];
+					$url = str_replace('/'.$webconfig['mobile_html'].'/','/',$url);
+				}else{
+					
+				}
 				$url = str_replace('/'.$webconfig['pc_html'].'/','/',$url);
 			}
-		
+			
 		}
 		//去除二级目录
 		$url = str_replace(ROOT,'/',$url);

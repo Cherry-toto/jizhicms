@@ -207,8 +207,7 @@ CREATE TABLE `jz_level` (
   `regtime` int(11) NOT NULL DEFAULT '0',
   `logintime` int(11) NOT NULL DEFAULT '0',
   `status` tinyint(1) NOT NULL DEFAULT '1',
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `logintime` (`logintime`)
+  PRIMARY KEY (`id`)
 ) ENGINE=MyISAM AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
 -- ----------------------------
 -- Table structure for jz_level_group

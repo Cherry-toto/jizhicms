@@ -323,6 +323,7 @@ class ClasstypeController extends CommonController
 					}
 					$w['molds'] = $molds;
 					$w['classname'] = $d[0];
+					$w['seo_classname'] = $d[0];
 					$w['pid'] = $pid;
 					$d[1] = str_replace(' ','-',$d[1]);
 					if($this->webconf['islevelurl'] && $w['pid']!=0){
@@ -334,7 +335,7 @@ class ClasstypeController extends CommonController
 					if(stripos($html,'.php')!==false){
 						JsonReturn(array('code'=>1,'info'=>'非法URL'));
 					}
-					$w['htmlurl'] = $html;
+					$w['htmlurl'] = str_replace(' ','-',$html);
 					$w['lists_num'] = $this->frparam('lists_num',0,10);
 					$w['lists_html'] = $this->frparam('lists_html',1);
 					$w['details_html'] = $this->frparam('details_html',1);

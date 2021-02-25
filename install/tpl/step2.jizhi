@@ -160,7 +160,7 @@
 												echo "<option value='".$v."'>".$v."</option>";
 											}?>
 											</select>
-											<label class="normal passwordinfo"><input onclick="godbback()" value="安装备份数据库" type="button" /></label>
+											<label class="normal passwordinfo"><input onclick="godbback()" value="点击安装备份" type="button" /></label>
 										</td>
 									</tr>
 								</thead>

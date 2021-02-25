@@ -793,7 +793,14 @@ class IndexController extends CommonController
 		
 		$maxlimit = 500;
 		$sleep = 2;//最小填0，立即跳转。
+		$opts = array(
+		  'http'=>array(
+			'method'=>"GET",
+			'header'=>"Cookie: PHPSESSID=".$_COOKIE['PHPSESSID']."\r\n"
+		  )
+		);
 
+		$context = stream_context_create($opts);
 		if($_POST){
 			$_SESSION['terminal'] = $this->frparam('terminal',1,'pc');
 			$terminal_path = $_SESSION['terminal']=='pc' ? $this->webconf['pc_html'] : $this->webconf['mobile_html'];
@@ -915,14 +922,7 @@ class IndexController extends CommonController
 
 			$clearhtml = getCache('clearhtml');
 
-			$opts = array(
-			  'http'=>array(
-				'method'=>"GET",
-				'header'=>"Cookie: PHPSESSID=".$_COOKIE['PHPSESSID']."\r\n"
-			  )
-			);
-
-			$context = stream_context_create($opts);
+			
 			$max = count($tohtmlurl);
 			$start_time = getCache('start_time');
 			if(!$start_time){
@@ -951,12 +951,11 @@ class IndexController extends CommonController
 
 
 					}else{
-						$data = curl_http($value['url']);
+						
+						$data = file_get_contents($value['url'],false,$context);
 						$f = @fopen($value['html'],'w');
-						//$r = @fwrite($f,file_get_contents($value['url'],false,$context));
 						$r = @fwrite($f,$data);
 						@fclose($f);
-						//$r = file_put_contents($value['html'],file_get_contents($value['url'],false,$context));
 						if(!$r){
 							echo $value['html'].'生成失败！<br/>';
 						}else{
@@ -1241,7 +1240,7 @@ class IndexController extends CommonController
 					$url = get_domain().'/'.$v['ownurl'];
 					$filename = APP_PATH.$terminal_path.$htmlurl;
 				}else{
-					$url = $www.'/'.$v['htmlurl'].'/'.$v['id'].'.html';
+					$url = gourl($v);
 					$filename = APP_PATH.$terminal_path.$v['htmlurl'].'/'.$v['id'].'.html';
 				}
 				$urls[] = ['url'=>$url,'html'=>$filename];

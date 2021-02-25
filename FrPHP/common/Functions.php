@@ -296,6 +296,10 @@ function get_domain(){
 	{
 		$protocol = "https://";
 	}
+	elseif ( ! empty($_SERVER['HTTP_FROM_HTTPS']) && strtolower($_SERVER['HTTP_FROM_HTTPS']) !== 'off')
+	{
+		$protocol = "https://";
+	}
 	elseif ( ! empty($_SERVER['HTTP_FRONT_END_HTTPS']) && strtolower($_SERVER['HTTP_FRONT_END_HTTPS']) !== 'off')
 	{
 		$protocol = "https://";

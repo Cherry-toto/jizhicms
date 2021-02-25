@@ -710,7 +710,7 @@ layui.use("laydate", function(){
 			 break;
 			 case 13:
 			  $body = explode(',',$v['body']);
-			  $moldsdata = M('molds')->find(['id'=>$body[0]],'');
+			  $moldsdata = M('molds')->find(['id'=>$body[0]]);
 			  $datalist = M($moldsdata['biaoshi'])->findAll();
 			 $fields_search .= '<div class="layui-input-inline">
 			  <select name="'.$v['field'].'" lay-search="" class="layui-inline">

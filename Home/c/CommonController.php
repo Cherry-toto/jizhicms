@@ -27,11 +27,13 @@ class CommonController extends Controller
 		if($this->webconf['closeweb']){
 			$this->close();
 		}
-
+		$m = 1;
 		if(isMobile() && $webconf['iswap']==1){
 			$classtypedata = classTypeDataMobile();
+			$m = 1;
 		}else{
 			$classtypedata = classTypeData();
+			$m = 0;
 		}
 		$this->classtypetree = $classtypedata;
 		$this->classtypedata = getclasstypedata($classtypedata,$m);

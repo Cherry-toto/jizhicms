@@ -195,6 +195,10 @@
                  <select name="lists_html" lay-search="" id="lists_html"  >
               	 </select>
               </div>
+			   <div class="layui-input-inline">
+                  <input type="text" id="lists_html_write" name="lists_html_write" placeholder="手动填写，不填请留空" value="{$data['lists_html']}" 
+                  autocomplete="off" class="layui-input">
+              </div>
               <div class="layui-form-mid layui-word-aux">
                  请将模板文件放到对应的模块文件夹下面，如文章(article)模块，那么就要在当前模板目录的article文件夹下面。默认栏目首页
               </div>
@@ -206,6 +210,10 @@
               <div  style="width:350px"  class="layui-input-inline">
                   <select name="details_html" lay-search="" id="details_html"  >
               	  </select>
+              </div>
+			  <div class="layui-input-inline">
+                  <input type="text" id="details_html_write" name="details_html_write" placeholder="手动填写，不填请留空" value="{$data['details_html']}" 
+                  autocomplete="off" class="layui-input">
               </div>
               <div class="layui-form-mid layui-word-aux">
                  请将模板文件放到对应的模块文件夹下面，如文章(article)模块，那么就要在当前模板目录的article文件夹下面，列表内的详情页。
@@ -401,7 +409,7 @@
 					//请求前的处理
 					},
 					 success:function(r){
-					 	var t = '<option value="">请选择模板页面</option>';var tt = '<option value="">请选择模板页面</option>';
+					 	var t = '<option value="">请选择模板页面/使用自定义</option>';var tt = '<option value="">请选择模板页面/使用自定义</option>';
 						if(r.code==0){
 							var len = r.data.length;
 							if(len>0){

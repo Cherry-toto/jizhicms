@@ -218,17 +218,19 @@
 						 <input id="tags" type="text" name="tags" class="tags" value=""  autocomplete="off" class="layui-input"  />
                     </div>
                 </div>
-				<div class="layui-form-item" pane>
+				{if($admin['isadmin']==1 || ($admin['isadmin']!=1 && $admin['ischeck']==0))}
+				 <div class="layui-form-item" pane>
                     <label for="isshow" class="layui-form-label">
-                        <span class="x-red"></span>是否显示
+                        <span class="x-red"></span>是否审核
                     </label>
-                    <div class="layui-input-block" >
-                        <input type="radio" name="isshow" value="0" title="不显示">
-						<input type="radio" name="isshow" value="1" title="显示" checked>
+                    <div class="layui-input-block">
+                        <input type="radio" name="isshow" value="0" title="未审">
+						<input type="radio" name="isshow" value="1" title="已审" checked>
                     </div>
 					 
 					
-                </div>
+                 </div>
+				{/if}
 				
 				 <div class="layui-form-item">
                     <label for="addtime" class="layui-form-label">

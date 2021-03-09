@@ -67,6 +67,7 @@ class AdminController extends CommonController
 				JsonReturn(array('code'=>1,'msg'=>'修改失败，您的权限不足！'));
 			}
 			$data['name'] = $this->frparam('name',1);
+			$data['ischeck'] = $this->frparam('ischeck');
 			$data['description'] = $this->frparam('description',1);
 			$data['paction'] = (count($this->frparam('ruler',2))>0)?','.implode(',',$this->frparam('ruler',2)).',':'';
 			$data['tids'] = (count($this->frparam('tids',2))>0)?','.implode(',',$this->frparam('tids',2)).',':'';
@@ -106,6 +107,7 @@ class AdminController extends CommonController
 		if($this->frparam('go')==1){
 			$data = $this->frparam();
 			$data['name'] = $this->frparam('name',1);
+			$data['ischeck'] = $this->frparam('ischeck');
 			$data['description'] = $this->frparam('description',1);
 			$data['paction'] = (count($this->frparam('ruler',2))>0)?','.implode(',',$this->frparam('ruler',2)).',':'';
 			$data['tids'] = (count($this->frparam('tids',2))>0)?','.implode(',',$this->frparam('tids',2)).',':'';
@@ -203,7 +205,7 @@ class AdminController extends CommonController
 			$sql .= $get_sql;
 			
 			
-			$lists = $page->where($sql)->page($this->frparam('page',0,1))->go();
+			$lists = $page->where($sql)->limit($this->frparam('limit',0,10))->page($this->frparam('page',0,1))->go();
 			$pages = $page->pageList();
 			
 			$ajaxdata = [];

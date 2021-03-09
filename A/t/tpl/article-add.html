@@ -177,7 +177,7 @@
 						 <input id="tags" type="text" name="tags" class="tags" value=""  autocomplete="off" class="layui-input"  />
                     </div>
                 </div>
-				
+				{if($admin['isadmin']==1 || ($admin['isadmin']!=1 && $admin['ischeck']==0))}
 				 <div class="layui-form-item" pane>
                     <label for="isshow" class="layui-form-label">
                         <span class="x-red"></span>是否审核
@@ -189,6 +189,7 @@
 					 
 					
                  </div>
+				{/if}
 				
 				 <div class="layui-form-item">
                     <label for="addtime" class="layui-form-label">

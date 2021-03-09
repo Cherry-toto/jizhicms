@@ -83,6 +83,8 @@ class FieldsController extends CommonController
 				break;
 				case 3:
 				case 15:
+				case 6:
+				case 10:
 				$sql .= "TEXT CHARACTER SET utf8 default ";
 				$sql .= ' NULL ';
 				
@@ -118,15 +120,7 @@ class FieldsController extends CommonController
 					$sql .= " NULL ";
 				}
 				break;
-				case 6:
-				case 10:
-				$sql .= "VARCHAR(".$data['fieldlong'].") CHARACTER SET utf8 default ";
-				if($data['vdata']){
-					$sql .=  "'".$data['vdata']."'";
-				}else{
-					$sql .= " NULL ";
-				}
-				break;
+			
 				case 7:
 				case 8:
 				case 12:
@@ -258,6 +252,8 @@ class FieldsController extends CommonController
 					break;
 					case 3:
 					case 15:
+					case 6:
+					case 10:
 					$sql .= "TEXT CHARACTER SET utf8 default ";
 					$sql .= ' NULL ';
 					
@@ -304,15 +300,7 @@ class FieldsController extends CommonController
 						$sql .= ' NULL ';
 					}
 					break;
-					case 6:
-					case 10:
-					$sql .= "VARCHAR(".$data['fieldlong'].") CHARACTER SET utf8 default ";
-					if($data['vdata']){
-						$sql .=  "'".$data['vdata']."'";
-					}else{
-						$sql .= ' NULL ';
-					}
-					break;
+					
 					case 7:
 					case 8:
 					case 12:
@@ -367,10 +355,8 @@ class FieldsController extends CommonController
 		$sql = array();
 		$molds = strtolower($this->frparam('molds',1));
 		$moldsdata = M('molds')->find(['biaoshi'=>$molds]);
-		if($moldsdata['ismust']!=1 || in_array($molds,['tags','message','comment','orders','admin','collect_type','fields','buylog','link_type','links','layout','level_group','level','member_group','molds','pictures','plugins','power','ruler','sysconfig','task','collect','member','menu'])){
-			if($tid!=0){
-				$sql[] = " tids like '%,".$tid.",%' "; 
-			}
+		if($moldsdata['ismust']!=1 || in_array($molds,['tags','comment','orders','admin','collect_type','fields','buylog','link_type','links','layout','level_group','level','member_group','molds','pictures','plugins','power','ruler','sysconfig','task','collect','member','menu'])){
+			
 		}else{
 			$sql[] = " tids like '%,".$tid.",%' "; 
 		}

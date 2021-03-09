@@ -141,7 +141,7 @@
               <a class="layui-btn layui-btn layui-btn-xs"  onclick="x_admin_show('编辑','{fun U('Classtype/editclass',array('id'=>$v['id']))}')" >编辑</a>
 			{/if}
 			
-			 <a href="/{$v['htmlurl']}{__File_TXT__}" class="layui-btn layui-btn-normal layui-btn layui-btn-xs"  target="_blank">预览</a>
+			 <a href="{$classtypedata[$v['id']]['url']}" class="layui-btn layui-btn-normal layui-btn layui-btn-xs"  target="_blank">预览</a>
 			{if(checkAction('Classtype/deleteclass'))}
               <a class="layui-btn-danger layui-btn layui-btn-xs"  onclick="member_del(this,'{$v['id']}')" href="javascript:;" >删除</a>
 			{/if}

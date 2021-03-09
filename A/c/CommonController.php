@@ -55,13 +55,7 @@ class CommonController extends Controller
 	  $this->customconf = $customconf;
 	  $this->classtypetree =  get_classtype_tree();
 	  
-		$m = 1;
-		if(isset($_SESSION['terminal'])){
-			$m = $_SESSION['terminal']=='mobile' ? 1 : 0;
-		}else{
-			$m = (isMobile() && $webconf['iswap']==1) ? 1 : 0;
-		}
-		if($m){
+		if(isMobile() && $webconf['iswap']==1){
 			$classtypedata = classTypeDataMobile();
 		}else{
 			$classtypedata = classTypeData();

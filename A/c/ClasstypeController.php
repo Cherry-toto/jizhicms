@@ -80,14 +80,24 @@ class ClasstypeController extends CommonController
 			$w['details_html'] = $this->frparam('details_html',1);
 			$w['gourl'] = $this->frparam('gourl',1);
 			$w['lists_num'] = $this->frparam('lists_num');
-			if($w['lists_html']=='' && $w['details_html']==''){
+			
+			if($w['pid']){
 				$parent = M('classtype')->find(array('id'=>$w['pid']));
 				if($parent['iscover']==1){
-					$w['lists_html']=$parent['lists_html'];
-					$w['details_html']=$parent['details_html'];
+					$w['lists_html']= $w['lists_html'] ? $w['lists_html'] : ($this->frparam('lists_html_write',1) ? $this->frparam('lists_html_write',1) : $parent['lists_html']);
+					$w['details_html']= $w['details_html'] ? $w['details_html'] : ($this->frparam('details_html_write',1) ? $this->frparam('details_html_write',1) : $parent['details_html']);
 					$w['lists_num']=$parent['lists_num'];
+				}else{
+					$w['lists_html']= $w['lists_html'] ? $w['lists_html'] : $this->frparam('lists_html_write',1);
+					$w['details_html']= $w['details_html'] ? $w['details_html'] : $this->frparam('details_html_write',1);
 				}
+			}else{
+				$w['lists_html']= $w['lists_html'] ? $w['lists_html'] : $this->frparam('lists_html_write',1);
+				$w['details_html']= $w['details_html'] ? $w['details_html'] : $this->frparam('details_html_write',1);
 			}
+			
+			$w['lists_html'] = str_ireplace('.html','',$w['lists_html']);
+			$w['details_html'] = str_ireplace('.html','',$w['details_html']);
 			
 			
 			$data = $this->frparam();
@@ -150,11 +160,12 @@ class ClasstypeController extends CommonController
 			$w['body'] = $this->frparam('body',4);
 			$w['htmlurl'] = $htmlurl;
 			$w['iscover'] = $this->frparam('iscover');
-			$w['lists_html'] = $this->frparam('lists_html',1);
-			$w['details_html'] = $this->frparam('details_html',1);
+			$w['lists_html'] = $this->frparam('lists_html',1) ? $this->frparam('lists_html',1) : $this->frparam('lists_html_write',1);
+			$w['details_html'] = $this->frparam('details_html',1) ? $this->frparam('details_html',1) : $this->frparam('details_html_write',1);
 			$w['lists_num'] = $this->frparam('lists_num');
 			$w['gourl'] = $this->frparam('gourl',1);
-			
+			$w['lists_html'] = str_ireplace('.html','',$w['lists_html']);
+			$w['details_html'] = str_ireplace('.html','',$w['details_html']);
 			
 			
 			$data = $this->frparam();

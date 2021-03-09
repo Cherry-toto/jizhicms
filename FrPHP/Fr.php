@@ -128,17 +128,34 @@ class FrPHP
 			
 			
 		}
-		
-      	
-		//引入自定义路由
-		
-		$route_ok = false;
-		
 		if(isset($_SERVER['argv']) && !isset($_SERVER['REQUEST_URI'])){
 			$url = urldecode($_SERVER['argv'][1]);
 		}else{
 			$url = urldecode($_SERVER['REQUEST_URI']);
 		}
+      	//读取系统配置
+		$webconfig = getCache('webconfig');
+		if(!$webconfig){
+			$wcf = M('sysconfig')->findAll();
+			$webconfig = array();
+			foreach($wcf as $k=>$v){
+				if($v['field']=='web_js' || $v['field']=='ueditor_config'){
+					$v['data'] = html_decode($v['data']);
+				}
+				$webconfig[$v['field']] = $v['data'];
+			}
+			setCache('webconfig',$webconfig);
+		}
+		if($webconfig){
+			if($webconfig['iswap']==1){
+				$webconfig['mobile_html'] = $webconfig['mobile_html']=='' ? '/' : $webconfig['mobile_html'];
+				$url = str_replace('/'.$webconfig['mobile_html'].'/','/',$url);
+			}
+			$url = str_replace('/'.$webconfig['pc_html'].'/','/',$url);
+		}
+		//引入自定义路由
+		
+		$route_ok = false;
 		
 		$method = '';
 		if(open_url_route){
@@ -175,36 +192,7 @@ class FrPHP
 			$open_url_route = [];
 			
 		}
-		//读取系统配置
-		$webconfig = getCache('webconfig');
-		if(!$webconfig){
-			$wcf = M('sysconfig')->findAll();
-			$webconfig = array();
-			foreach($wcf as $k=>$v){
-				if($v['field']=='web_js' || $v['field']=='ueditor_config'){
-					$v['data'] = html_decode($v['data']);
-				}
-				$webconfig[$v['field']] = $v['data'];
-			}
-			setCache('webconfig',$webconfig);
-		}
-		if(isset($_SESSION['terminal'])){
-			$terminal_path = ($_SESSION['terminal']=='mobile' && $webconfig['iswap']==1) ? $webconfig['mobile_html'] : $webconfig['pc_html'];
-			$terminal_path = $terminal_path==''  ? '/' : $terminal_path;
-			$url = str_replace('/'.$terminal_path.'/','/',$url);
-			
-		}else{
-			if($webconfig){
-				if($webconfig['iswap']==1){
-					$webconfig['mobile_html'] = $webconfig['mobile_html']=='' ? '/' : $webconfig['mobile_html'];
-					$url = str_replace('/'.$webconfig['mobile_html'].'/','/',$url);
-				}else{
-					
-				}
-				$url = str_replace('/'.$webconfig['pc_html'].'/','/',$url);
-			}
-			
-		}
+		
 		//去除二级目录
 		$url = str_replace(ROOT,'/',$url);
 		$url = format_param($url,1);

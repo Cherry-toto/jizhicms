@@ -240,11 +240,4 @@ class ScreenController extends CommonController
 	}
 
 	
-	//错误页面
-	function error($msg){
-		$this->display($this->template.'/404');
-		exit;
-	}
-
-	
 }

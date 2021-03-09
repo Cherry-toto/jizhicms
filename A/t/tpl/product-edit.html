@@ -226,11 +226,12 @@
                     </div>
                 </div>
 				
+				{if($admin['isadmin']==1 || ($admin['isadmin']!=1 && $admin['ischeck']==0))}
 				<div class="layui-form-item" pane>
                     <label for="isshow" class="layui-form-label">
                         <span class="x-red"></span>是否审核
                     </label>
-                    <div class="layui-input-inline">
+                    <div class="layui-input-block">
                         <input type="radio" name="isshow" value="0" title="未审" {if($data['isshow']==0)}checked{/if}>
 						<input type="radio" name="isshow" value="1" title="已审" {if($data['isshow']==1)}checked{/if}>
 						<input type="radio" name="isshow" value="2" title="退回" {if($data['isshow']==2)}checked{/if}>
@@ -238,6 +239,7 @@
 					 
 					
                 </div>
+				{/if}
 				
 				 <div class="layui-form-item" >
                     <label for="addtime" class="layui-form-label">

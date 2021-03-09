@@ -193,6 +193,11 @@ class ProductController extends CommonController
 				}
 				
 			}
+			if($this->admin['isadmin']==1 || ($this->admin['isadmin']!=1 && $this->admin['ischeck']==0)){
+				$data['isshow'] = $this->frparam('isshow',0,1);
+			}else{
+				$data['isshow'] = 0;
+			}
 			$r = M('product')->add($data);
 			if($r){
 				if($data['ownurl']){
@@ -322,6 +327,11 @@ class ProductController extends CommonController
 					
 				}else{
 					M('customurl')->delete(['molds'=>'product','aid'=>$this->frparam('id')]);
+				}
+				if($this->admin['isadmin']==1 || ($this->admin['isadmin']!=1 && $this->admin['ischeck']==0)){
+					$data['isshow'] = $this->frparam('isshow',0,1);
+				}else{
+					$data['isshow'] = 0;
 				}
 				if(M('product')->update(array('id'=>$this->frparam('id')),$data)){
 					//tags处理

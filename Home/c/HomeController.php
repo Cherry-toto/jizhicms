@@ -976,6 +976,7 @@ class HomeController extends CommonController
 			
 			exit;
 		}
+		header("HTTP/1.0 404");
 		$this->display($this->template.'/404');
 		$this->end_cache($this->cache_file);
 		exit;

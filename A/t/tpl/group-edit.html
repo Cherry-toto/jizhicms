@@ -46,6 +46,19 @@
 					
                 </div>
 				<div class="layui-form-item" pane>
+                    <label for="ischeck" class="layui-form-label">
+                        <span class="x-red"></span>发布审核
+                    </label>
+                    <div class="layui-input-inline">
+                        <input type="radio" name="ischeck" value="0" title="不是" {if($data['ischeck']==0)}checked{/if}>
+						<input type="radio" name="ischeck" value="1" title="是" {if($data['ischeck']==1)}checked{/if}>
+                    </div>
+					<div class="layui-form-mid layui-word-aux">
+					  超级管理员除外，发布的内容是否需要审核
+					</div>
+					
+                </div>
+				<div class="layui-form-item" pane>
                     <label for="classcontrol" class="layui-form-label">
                         <span class="x-red"></span>栏目权限
                     </label>

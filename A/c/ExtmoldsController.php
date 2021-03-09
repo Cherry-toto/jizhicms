@@ -52,10 +52,13 @@ class ExtmoldsController extends Controller
 		  $customconf = get_custom();
 		  $this->customconf = $customconf;
 		  $this->classtypetree =  get_classtype_tree();
+		  $m = 1;
 			if(isMobile() && $webconf['iswap']==1){
 				$classtypedata = classTypeDataMobile();
+				$m = 1;
 			}else{
 				$classtypedata = classTypeData();
+				$m = 0;
 			}
 			
 			$this->classtypedata = getclasstypedata($classtypedata,$m);

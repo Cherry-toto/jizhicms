@@ -153,6 +153,9 @@ class ClasstypeController extends CommonController
 			$w['orders'] = $this->frparam('orders');
 			$w['classname'] = $this->frparam('classname',1);
 			$w['molds'] = $this->frparam('molds',1);
+			if(!M('molds')->find(['biaoshi'=>$w['molds']])){
+				JsonReturn(array('status'=>1,'info'=>'模型错误！'));
+			}
 			$w['description'] = $this->frparam('description',1);
 			$w['keywords'] = $this->frparam('keywords',1);
 			$w['id'] = $this->frparam('id');

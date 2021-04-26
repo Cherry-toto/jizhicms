@@ -34,9 +34,9 @@ class ExtmoldsController extends Controller
 				   $ac = M('Ruler')->find(array('fc'=>$action));
 				   if($this->frparam('ajax')){
 					   
-					   JsonReturn(['code'=>1,'msg'=>'您没有【'.$ac['name'].'】的权限！','url'=>U('Index/index')]);
+					   JsonReturn(['code'=>1,'msg'=>'您没有【'.$ac['name'].'】的权限！','url'=>U('Index/welcome')]);
 				   }
-				   Error('您没有'.$ac['name'].'的权限！');
+				   Error('您没有'.$ac['name'].'的权限！','url'=>U('Index/welcome'));
 				}
 			}
 		   

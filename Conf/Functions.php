@@ -1784,7 +1784,7 @@ function jzcachedata($field){
 				}
 			}
 		}
-		$time = $res['times']*60+time();
+		$time = $res['times']*60;
 		setCache('jzcache_'.$res['field'],$result,$time);
 	}
 	return $result;

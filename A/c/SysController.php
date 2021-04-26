@@ -27,6 +27,12 @@ class SysController extends CommonController
 		$custom = M('sysconfig')->findAll('type!=0');
 		if($_POST){
 			$data = $this->frparam();
+			if($this->webconf['islevelurl']==0 && $this->frparam('islevelurl')==1){
+				if(M('classtype')->find()){
+					JsonReturn(['code'=>1,'msg'=>'已创建栏目无法设置层级URL！']);
+				}
+			}
+			
 			foreach($web_config as $k=>$v){
 				if (array_key_exists($k,$data)) {
 					if($k=='web_js'){

@@ -245,7 +245,7 @@ function Error($info, $url=null){
 **/
 
 function JsonReturn($data){
-	echo json_encode($data);
+	echo json_encode($data,JSON_UNESCAPED_UNICODE);
 	exit;
 }
 
@@ -375,7 +375,7 @@ function start_session($expire = 0)  {
 		mkdir($session_cache_dir,0777,true);
 	}
 	ini_set('session.save_path',$session_cache_dir);
-	ini_set("session.cookie_httponly", 1);
+	
 	
 	if (!isset($_COOKIE['PHPSESSID'])) {
 		session_set_cookie_params($expire);

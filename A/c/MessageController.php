@@ -106,6 +106,7 @@ class MessageController extends CommonController
 		if($this->frparam('go',1)==1){
 			
 			$data = $this->frparam();
+			$data['title'] = $this->frparam('title',1);
 			$data['addtime'] = strtotime($data['addtime']);
 			$data['body'] = $this->frparam('body',4);
 			$data = get_fields_data($data,'message');

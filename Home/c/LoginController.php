@@ -237,13 +237,13 @@ class LoginController extends CommonController
 		}
 		$w['username'] = getRandChar(6);
 		$w['pass'] =  md5(md5($w['password']).md5($w['password']));
-		$w['pid'] = $this->frparam('pid',0,0);
+		$w['pid'] = $_SESSION['invite'];
 		$r = M('member')->add($w);
 		if($r){
 			
 			//检查是否开启邀请奖励
-			if($this->webconf['invite_award_open']==1 && $this->frparam('pid') && $this->webconf['invite_award']){
-				$ww['userid'] = $this->frparam('pid');
+			if($this->webconf['invite_award_open']==1 && $w['pid'] && $this->webconf['invite_award']){
+				$ww['userid'] = $w['pid'];
 				$ww['buytype'] = $this->webconf['invite_type'];
 				$ww['type'] = 3;
 				$ww['msg'] = '邀请奖励';
@@ -255,6 +255,7 @@ class LoginController extends CommonController
 				}else{
 					$ww['money'] = $ww['amount']/($this->webconf['money_exchange']);
 				}
+				M('member')->goInc(['id'=>$w['pid']],$ww['buytype'],$ww['amount']);
 				$r = M('buylog')->add($ww);
 			}
 			
@@ -287,6 +288,7 @@ class LoginController extends CommonController
 			  $invite = 0;
 		  }
 	  }
+	  $_SESSION['invite'] = $invite;
 	  $this->invite = $invite;
 	  $this->display($this->template.'/user/register');
   }

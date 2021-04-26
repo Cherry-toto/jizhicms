@@ -36,7 +36,7 @@ class ExtmoldsController extends Controller
 					   
 					   JsonReturn(['code'=>1,'msg'=>'您没有【'.$ac['name'].'】的权限！','url'=>U('Index/welcome')]);
 				   }
-				   Error('您没有'.$ac['name'].'的权限！','url'=>U('Index/welcome'));
+				   Error('您没有'.$ac['name'].'的权限！',U('Index/welcome'));
 				}
 			}
 		   

@@ -23,7 +23,7 @@ function webConf($str=null){
 	//$web_config = include(APP_PATH.'Conf/webconf.php');
 	$webconfig = getCache('webconfig');
 	if(!$webconfig){
-		$wcf = M('sysconfig')->findAll(array('type'=>0));
+		$wcf = M('sysconfig')->findAll();
 		$webconfig = array();
 		foreach($wcf as $k=>$v){
 			if($v['field']=='web_js' || $v['field']=='ueditor_config'){
@@ -77,7 +77,7 @@ function get_template(){
 	
 		//检测是否安装插件
 		$res = M('plugins')->find(['filepath'=>'website','isopen'=>1]);
-		if($res){ 
+		if($res  && $res['config']){ 
 			$website = $_SERVER['HTTP_HOST'];
 			$config = json_decode($res['config'],1);
 			$pc = $webconf['pc_template'];
@@ -103,26 +103,21 @@ function get_template(){
 					}
 				}
 			}
-			if(isset($_SESSION['terminal'])){
-				$template = ($_SESSION['terminal']=='mobile' && $webconf['iswap']==1) ? (isWeixin() ? $wechat : $wap) : $pc;
-			}else{
-				
-				//当前端口检测
-				if($webconf['iswap']==1 && isMobile()){
-					$template = $wap;
-					//wap
-					if(isWeixin()){
-						//wechat
-						$template = $wechat;
-					}
-					
-					
-				}else{
-					//pc
-					$template = $pc;
+			//当前端口检测
+			if($webconf['iswap']==1 && isMobile()){
+				$template = $wap;
+				//wap
+				if(isWeixin()){
+					//wechat
+					$template = $wechat;
 				}
+				
+				
+			}else{
+				//pc
+				$template = $pc;
 			}
-			
+		
 			
 			if($template==''){
 				//全局
@@ -136,21 +131,15 @@ function get_template(){
 		
 	}
 	if($isgo){
-		if(isset($_SESSION['terminal'])){
-			$wechat = ($webconf['weixin_template']!='')?$webconf['weixin_template']:$webconf['wap_template'];
-			$template = ($_SESSION['terminal']=='mobile' && $webconf['iswap']==1) ? (isWeixin() ? $wechat : $webconf['wap_template']) : $webconf['pc_template'];
-		}else{
-			if($webconf['iswap']==1 && isMobile()){
-				if(isWeixin()){
-					$template = ($webconf['weixin_template']!='')?$webconf['weixin_template']:$webconf['wap_template'];
-				}else{
-					$template = $webconf['wap_template'];
-				}
-				
+		if($webconf['iswap']==1 && isMobile()){
+			if(isWeixin()){
+				$template = ($webconf['weixin_template']!='')?$webconf['weixin_template']:$webconf['wap_template'];
 			}else{
-				$template = $webconf['pc_template'];
+				$template = $webconf['wap_template'];
 			}
 			
+		}else{
+			$template = $webconf['pc_template'];
 		}
 		
 	}
@@ -341,7 +330,7 @@ function get_classtype_tree(){
 	$classtypetree = getCache('classtypetree');
 	if(!$classtypetree){
 		
-		$classtype = M('classtype')->findAll(null,'orders desc');
+		$classtype = M('classtype')->findAll(['isclose'=>0],'orders desc');
 		$classtype = set_class_haschild($classtype);
 		$classtypetree = getTree($classtype);
 		setCache('classtypetree',$classtypetree);	
@@ -365,7 +354,11 @@ function classTypeData(){
 			if($v['gourl']!=''){
 				$d[$v['id']]['url'] = $v['gourl'];
 			}else{
-				$d[$v['id']]['url'] = get_domain().$htmlpath.'/'.$v['htmlurl'].File_TXT;
+				$file_txt = File_TXT_HIDE ? '' : File_TXT;
+				if($file_txt==''){
+					$file_txt = CLASS_HIDE_SLASH ? $file_txt : $file_txt.'/';
+				}
+				$d[$v['id']]['url'] = get_domain().$htmlpath.'/'.$v['htmlurl'].$file_txt;
 			}
 			
 		}
@@ -393,7 +386,11 @@ function classTypeDataMobile(){
 			if($v['gourl']!=''){
 				$d[$v['id']]['url'] = $v['gourl'];
 			}else{
-				$d[$v['id']]['url'] = get_domain().$htmlpath.'/'.$v['htmlurl'].File_TXT;
+				$file_txt = File_TXT_HIDE ? '' : File_TXT;
+				if($file_txt==''){
+					$file_txt = CLASS_HIDE_SLASH ? $file_txt : $file_txt.'/';
+				}
+				$d[$v['id']]['url'] = get_domain().$htmlpath.'/'.$v['htmlurl'].$file_txt;
 			}
 			
 		}
@@ -524,7 +521,7 @@ function classTypeDataMobile(){
  **/
  function get_fields_data($data,$molds,$isadmin=1){
 	 if($isadmin){
-		 $fields = M('fields')->findAll(['molds'=>$molds],'orders desc,id asc');
+		 $fields = M('fields')->findAll(['molds'=>$molds,'isadmin'=>1],'orders desc,id asc');
 	 }else{
 		 //前台需要判断是否前台显示
 		 $fields = M('fields')->findAll(['molds'=>$molds,'isshow'=>1],'orders desc,id asc');
@@ -550,13 +547,18 @@ function classTypeDataMobile(){
 				 case 13:
 				 $data[$v['field']] = format_param($data[$v['field']]);
 				 break;
-				 
+				 case 14:
+				 $data[$v['field']] = format_param($data[$v['field']],3);
+				 break;
 				 case 8:
 				 $r = implode(',',format_param($data[$v['field']],2));
-				 if($r!=''){
+				 if($r){
 					 $r = ','.$r.',';
 				 } 
-			 
+				 $data[$v['field']] = $r;
+				 break;
+				 case 15:
+				 $r = implode('||',format_param($data[$v['field']],2));
 				 $data[$v['field']] = $r;
 				 break;
 				
@@ -565,7 +567,20 @@ function classTypeDataMobile(){
 		     switch($v['fieldtype']){
 		         case 6:
 				 case 10:
-				 $data[$v['field']] = implode('||',format_param($data[$v['field'].'_urls'],2));
+				 if(array_key_exists($v['field'].'_des',$data)){
+					 $pics = format_param($data[$v['field'].'_urls'],2);
+					 $pics_des = format_param($data[$v['field'].'_des'],2);
+					 foreach($pics as $k=>$vv){
+						 if($pics_des[$k]){
+							 $pics[$k] = $vv.'|'.$pics_des[$k];
+						 }
+					 }
+					$data[$v['field']] = implode('||',$pics);
+					
+				 }else{
+					$data[$v['field']] = implode('||',format_param($data[$v['field'].'_urls'],2)); 
+				 }
+				 
 				 break;
 		     }
 		 }else{
@@ -582,7 +597,7 @@ function classTypeDataMobile(){
  
  
  //新增字段-后台列表搜索获取
- function molds_search($molds=null,$data){
+ function molds_search($molds=null,$data=null){
 	 if($molds==null){
 		 Error('缺少模块标识！');
 	 }
@@ -599,6 +614,8 @@ function classTypeDataMobile(){
 			 case 6:
 			 case 9:
 			 case 10:
+			 case 14:
+			 case 15:
 			 $fields_search .= '<input type="text" name="'.$v['field'].'" value="'.format_param($data[$v['field']],1).'" placeholder="请输入'.$v['fieldname'].'" autocomplete="off" class="layui-input">';
 			 if(array_key_exists($v['field'],$data)){
 				 if(format_param($data[$v['field']],1)!=''){
@@ -668,20 +685,21 @@ function classTypeDataMobile(){
 			 break;
 			 case 11:
 			 $laydate = ($data[$v['field']]=='' || $data[$v['field']]==0)?'':date('Y-m-d',strtotime($data[$v['field']]));
+			 $laytime = ($data[$v['field']]=='' || $data[$v['field']]==0)?0:strtotime($laydate);
 			 $fields_search .= '<input name="'.$v['field'].'" value="'.$laydate.'" placeholder="请选择'.$v['fieldname'].'" id="laydate_'.$v['field'].'" autocomplete="off" class="layui-input"><script>
 layui.use("laydate", function(){
   var laydate = layui.laydate;
   laydate.render({elem: "#laydate_'.$v['field'].'" });});</script>';
 			 if(array_key_exists($v['field'],$data)){
 				 if(format_param($data[$v['field']])!=0){
-					 $fields_search_check[] ="  (".$v['field']." >= ".format_param($data[$v['field']])." and ".$v['field']." < ".(format_param($data[$v['field']])+86400).") ";
+					$fields_search_check[] ="  (".$v['field']." >= ".$laytime." and ".$v['field']." < ".($laytime+86400).") ";
 				 }
 				
 			 }
 			 break;
 			 case 13:
 			  $body = explode(',',$v['body']);
-			  $moldsdata = M('molds')->find(['id'=>$body[0]],'');
+			  $moldsdata = M('molds')->find(['id'=>$body[0]]);
 			  $datalist = M($moldsdata['biaoshi'])->findAll();
 			 $fields_search .= '<div class="layui-input-inline">
 			  <select name="'.$v['field'].'" lay-search="" class="layui-inline">
@@ -910,37 +928,61 @@ function isWeixin(){
 
 //内容url
 function gourl($id,$htmlurl=null,$molds='article'){
-		if(!$id){Error_msg('缺少ID！');}
-		if(isset($_SESSION['terminal'])){
-			$htmlpath = $_SESSION['terminal']=='mobile' ? webConf('mobile_html') : webConf('pc_html');
-		}else{
-			$htmlpath = (isMobile() && webConf('iswap')==1)?webConf('mobile_html'):webConf('pc_html');
+		if(is_array($id)){
+			/**
+			ownurl target id 
+			**/
+			$value = $id;
+			if($value['target']){
+				return $value['target'];
+			}else{
+				if($value['ownurl']){
+					return get_domain().'/'.$value['ownurl'];
+					
+				}
+			}
+			$id = $value['id'];
+			$htmlurl = $value['htmlurl'];
 		}
+		if(!$id){Error_msg('缺少ID！');}
+		$htmlpath = (isMobile() && webConf('iswap')==1)?webConf('mobile_html'):webConf('pc_html');
 		$htmlpath = ($htmlpath=='' || $htmlpath=='/') ? '' : '/'.$htmlpath; 
 		if($htmlurl!=null){
-			return get_domain().$htmlpath.'/'.$htmlurl.'/'.$id.File_TXT;
+			return get_domain().$htmlpath.'/'.$htmlurl.'/'.$id.'.html';
 		}
 		
 		$tid = M($molds)->getField(array('id'=>$id),'tid');
 		$htmlurl = M('classtype')->getField(array('id'=>$tid),'htmlurl');
-		return get_domain().$htmlpath.'/'.$htmlurl.'/'.$id.File_TXT;
+		return get_domain().$htmlpath.'/'.$htmlurl.'/'.$id.'.html';
 }
 
 //输出任何模块的内容URL
 function all_url($id,$molds='article',$htmlurl=null){
-	if(!$id){Error_msg('缺少ID！');}
-		if(isset($_SESSION['terminal'])){
-			$htmlpath = $_SESSION['terminal']=='mobile' ? webConf('mobile_html') : webConf('pc_html');
+	if(is_array($id)){
+		/**
+		ownurl target id 
+		**/
+		$value = $id;
+		if($value['target']){
+			return $value['target'];
 		}else{
-			$htmlpath = isMobile() && webConf('isopen')?webConf('mobile_html'):webConf('pc_html');
+			if($value['ownurl']){
+				return get_domain().'/'.$value['ownurl'];
+			}
 		}
+		$id = $value['id'];
+	}
+	if(!$id){Error_msg('缺少ID！');}
+		$htmlpath = isMobile() && webConf('isopen')?webConf('mobile_html'):webConf('pc_html');
 		$htmlpath = ($htmlpath=='' || $htmlpath=='/') ? '' : '/'.$htmlpath; 
 		if($htmlurl!=null){
-			return get_domain().$htmlpath.'/'.$htmlurl.'/'.$id.File_TXT;
+			$file_txt = File_TXT_HIDE ? '' : File_TXT;
+			return get_domain().$htmlpath.'/'.$htmlurl.'/'.$id.$file_txt;
 		}
 		$tid = M($molds)->getField(array('id'=>$id),'tid');
 		$htmlurl = M('classtype')->getField(array('id'=>$tid),'htmlurl');
-		return get_domain().$htmlpath.'/'.$htmlurl.'/'.$id.File_TXT;
+		$file_txt = File_TXT_HIDE ? '' : File_TXT;
+		return get_domain().$htmlpath.'/'.$htmlurl.'/'.$id.$file_txt;
 }
 
 //递增
@@ -1109,7 +1151,7 @@ function get_comment_user($id){
 //计算评论数量---或者直接comment_num显示
 function get_comment_num($tid,$id=0){
 	if($id==0){ return '缺少ID！';}
-	$count = M('comment')->getCount(['aid'=>$id,'tid'=>$tid]);
+	$count = M('comment')->getCount(['aid'=>$id,'tid'=>$tid,'isshow'=>1]);
 	return $count;
 }
 
@@ -1133,7 +1175,7 @@ function get_fields_show($tid,$molds){
 		$sql[] = " tids like '%,".$tid.",%' "; 
 	}
 	
-	$sql[] = " molds = '".$molds."' ";
+	$sql[] = " molds = '".$molds."' and isshow=1 ";
 	$sql = implode(' and ',$sql);
 	$fields_list = M('Fields')->findAll($sql,'orders desc,id asc');
 	return $fields_list;
@@ -1142,9 +1184,9 @@ function get_fields_show($tid,$molds){
 //发送邮件处理
 function send_mail($send_mail,$password,$send_name,$to_mail,$title,$body,$email_ext=''){
 	
-	require APP_PATH.'/FrPHP/Extend/PHPMailer/PHPMailerAutoload.php';
-	require_once(APP_PATH.'/FrPHP/Extend/PHPMailer/class.phpmailer.php');
-	require_once(APP_PATH."/FrPHP/Extend/PHPMailer/class.smtp.php");
+	require APP_PATH.'FrPHP/Extend/PHPMailer/PHPMailerAutoload.php';
+	require_once(APP_PATH.'FrPHP/Extend/PHPMailer/class.phpmailer.php');
+	require_once(APP_PATH."FrPHP/Extend/PHPMailer/class.smtp.php");
 	
 	    $mail = new PHPMailer();
 
@@ -1154,43 +1196,65 @@ function send_mail($send_mail,$password,$send_name,$to_mail,$title,$body,$email_
 			exit('邮件服务器未配置完成');
 		}
 
-        $mail->IsSMTP(); // telling the class to use SMTP
+		if(strpos($host,'qq')!==false){
+			$mail->isSMTP();
+		    $mail->CharSet = "UTF-8";
+		    $mail->Host = $host;
+		    $mail->SMTPAuth = true;
+		    $mail->Username = $send_mail;
+		    $mail->Password = $password;
+		    $mail->SMTPSecure = 'tls';
+		    $mail->Port = $port;
+		    $mail->SetFrom($send_mail, $send_name);
+		    $address = $to_mail;
+		    if($email_ext!=''){
+				 $mail->AddAddress($email_ext, $send_name);
+			}
+	        $mail->AddAddress($address, $send_name);
+		    $mail->isHTML(true);
+		    $mail->Subject = $title;
+		    $mail->Body    = $body;
+		}else{
+			$mail->IsSMTP(); // telling the class to use SMTP
 
-        $mail->SMTPDebug = 0; // enables SMTP debug information (for testing)
+	        $mail->SMTPDebug = 0; // enables SMTP debug information (for testing)
 
-        $mail->SMTPAuth = true; // enable SMTP authentication
+	        $mail->SMTPAuth = true; // enable SMTP authentication
 
-        $mail->SMTPSecure = "ssl"; // sets the prefix to the servier
-       
-     	//$mail->SMTPSecure = false; // sets the prefix to the servier
+	        $mail->SMTPSecure = "ssl"; // sets the prefix to the servier
+	       
+	     	//$mail->SMTPSecure = false; // sets the prefix to the servier
 
-        $mail->Host = $host; // sets GMAIL as the SMTP server
+	        $mail->Host = $host; // sets GMAIL as the SMTP server
 
-        $mail->Port = $port; // set the SMTP port for the GMAIL server
+	        $mail->Port = $port; // set the SMTP port for the GMAIL server
 
-        $mail->Username = $send_mail; // GMAIL username
+	        $mail->Username = $send_mail; // GMAIL username
 
-        $mail->Password = $password; // GMAIL password
+	        $mail->Password = $password; // GMAIL password
 
-        $mail->SetFrom($send_mail, $send_name);
+	        $mail->SetFrom($send_mail, $send_name);
 
-        //$mail->AddReplyTo("xxx@xxx.com","First Last");
+	        //$mail->AddReplyTo("xxx@xxx.com","First Last");
 
-        $mail->Subject = $title;
+	        $mail->Subject = $title;
 
-        $mail->AltBody = $title; // optional, comment out and test
+	        $mail->AltBody = $title; // optional, comment out and test
 
-        $mail->MsgHTML($body);
+	        $mail->MsgHTML($body);
 
-        $mail->CharSet = "utf-8"; // 这里指定字符集！
+	        $mail->CharSet = "utf-8"; // 这里指定字符集！
 
-        $address = $to_mail;
-		if($email_ext!=''){
-			
-			 $mail->AddAddress($email_ext, $send_name);
+	        $address = $to_mail;
+			if($email_ext!=''){
+				
+				 $mail->AddAddress($email_ext, $send_name);
+			}
+	        $mail->AddAddress($address, $send_name);
+
 		}
-        $mail->AddAddress($address, $send_name);
 
+        
 
         if(!$mail->Send()) {
 
@@ -1223,26 +1287,71 @@ function checkCollect($tid=0,$id=0){
 }
 //检测是否点赞
 function checkLikes($tid=0,$id=0){
-	if($tid && $id && isset($_SESSION['member'])){
-		if(strpos($_SESSION['member']['likes'],'||'.$tid.'-'.$id.'||')!==false){
-			return true;
+	if(isset($_SESSION['member'])){
+		if($tid && $id){
+			if(strpos($_SESSION['member']['likes'],'||'.$tid.'-'.$id.'||')!==false){
+				return true;
+			}else{
+				return false;
+			}
+			
+			
 		}else{
 			return false;
 		}
-		
-		
 	}else{
-		return false;
+		if($tid && $id && isset($_SESSION['likes'])){
+			if(in_array($tid.'-'.$id,$_SESSION['likes'])){
+				return true;
+			}else{
+				return false;
+			}
+			
+			
+		}else{
+			return false;
+		}
 	}
+	
 	
 }
 
-//检查是否已有评论未查看
+//检查多少未读评论
 function has_no_read_comment(){
     if(!isset($_SESSION['member'])){
         return 0;
     }
-    $count = M('comment')->getCount(['userid'=>$_SESSION['member']['id'],'isread'=>0]);
+    $sql = 'userid='.$_SESSION['member']['id']." and isshow=1 and (type = 'comment' or type = 'reply') and isread=0 ";
+    $count = M('task')->getCount($sql);
+    return $count;
+}
+//检查多少未读消息
+function has_no_read_msg(){
+	if(!isset($_SESSION['member'])){
+        return 0;
+    }
+    //增对个人用户是否关闭提醒
+    $sql = 'userid='.$_SESSION['member']['id']." and isshow=1  and isread=0 ";
+    if(!$_SESSION['member']['ismsg']){
+    	$sql.=" and type = '0' ";//只接收交易提醒
+    }
+    if(!$_SESSION['member']['iscomment']){
+    	$sql.=" and type != 'comment' and type != 'reply'  ";
+    }
+    if(!$_SESSION['member']['iscollect']){
+    	$sql.=" and type != 'collect'  ";
+    }
+    if(!$_SESSION['member']['islikes']){
+    	$sql.=" and type != 'likes'  ";
+    }
+    if(!$_SESSION['member']['isat']){
+    	$sql.=" and type != 'at'  ";
+    }
+	if(!$_SESSION['member']['isrechange']){
+    	$sql.=" and type != 'rechange'  ";
+    }
+    
+    $count = M('task')->getCount($sql);
     return $count;
 }
 
@@ -1269,36 +1378,35 @@ function str_replace_limit($search, $replace, $subject, $limit=-1) {
 //人性化时间显示
 function formatTime($sTime, $formt = 'Y-m-d') {
  
-    if (!$sTime) {
-        return '';
-    }
- 
     //sTime=源时间，cTime=当前时间，dTime=时间差
     $cTime = time();
     $dTime = $cTime - $sTime;
-    $dDay = intval(date('z',$cTime)) - intval(date('z',$sTime));
+    $dDay = intval($dTime/86400);
     $dYear = intval(date('Y',$cTime)) - intval(date('Y',$sTime));
  
     //n秒前，n分钟前，n小时前，日期
     if ($dTime < 60 ) {
         if ($dTime < 10) {
-            return '刚刚';
+			
+			if($dTime<0){
+				return date($formt, $sTime);
+			}else{
+				return '刚刚';
+			}
         } else {
             return intval(floor($dTime / 10) * 10).'秒前';
         }
-    } elseif ($dTime < 3600 ) {
+    } else if ($dTime < 3600 ) {
         return intval($dTime/60).'分钟前';
-    } elseif( $dTime >= 3600 && $dDay == 0  ){
+    } else if( $dTime >= 3600 && $dDay == 0){
         return intval($dTime/3600).'小时前';
-    } elseif( $dDay > 0 && $dDay<=7 ){
+    } else if( $dDay > 0 && $dDay<=7){
         return intval($dDay).'天前';
-    } elseif( $dDay > 7 &&  $dDay <= 30 ){
+    } else if( $dDay > 7 &&  $dDay <= 30){
         return intval($dDay/7).'周前';
-    } elseif( $dDay > 30 ){
+    } else if( $dDay > 30  && $dDay < 365){
         return intval($dDay/30).'个月前';
-    } elseif ($dYear==0) {
-        return date('m月d日', $sTime);
-    } else {
+	} else {
         return date($formt, $sTime);
     }
 }
@@ -1310,6 +1418,538 @@ function htmldecode($data){
 	return $data;
 }
 
+//计算点赞数
+function jz_zan($tid,$id){
+	
+	$sql = " likes like '%||".$tid.'-'.$id."||%' and username!='jzcustomer' ";
+	$count = M('member')->getCount($sql);
+	$custom = M('member')->find(['username'=>'jzcustomer']);
+	if($custom){
+		$likes_num = substr_count($custom['likes'],'|'.$tid.'-'.$id.'|');
+		$count+=$likes_num;
+	}
+	return $count;
+	
+}
+//计算收藏数
+function jz_collect($tid,$id){
+	
+	$sql = " collection like '%||".$tid.'-'.$id."||%' ";
+	$count = M('member')->getCount($sql);
+	return $count;
+	
+}
+//用户详情
+function memberInfo($id,$str=null){
+	$user = M('member')->find('id='.$id);
+  if($str!=null){
+  	return $user[$str];
+  }
+  return $user;
 
+}
+
+//图片水印
+function watermark($img,$water,$pos=9,$tm=100){
+
+	 $info=getImageInfo($img);
+
+	 $logo=getImageInfo($water);
+
+	 $dst=openImg($img,$info['type']);
+	 $src=openImg($water,$logo['type']);
+
+
+	 switch($pos){
+	 case 1:
+		 $x=0;
+		 $y=0;
+	 break;
+	 case 2:
+		 $x=ceil(($info['width']-$logo['width'])/2);
+		 $y=0;
+	 break;
+	 case 3:
+		 $x=$info['width']-$logo['width'];
+		 $y=0;
+	 break;
+	 case 4:
+		 $x=0;
+		 $y=ceil(($info['height']-$logo['height'])/2);
+	 break;
+	 case 5:
+		 $x=ceil(($info['width']-$logo['width'])/2);
+		 $y=ceil(($info['height']-$logo['height'])/2);
+	 break;
+	 case 6:
+		 $x=$info['width']-$logo['width'];
+		 $y=ceil(($info['height']-$logo['height'])/2);
+	 break;
+
+	 case 7:
+		 $x=0;
+		 $y=$info['height']-$logo['height'];
+	 break;
+	 case 8:
+		 $x=ceil(($info['width']-$logo['width'])/2);
+		 $y=$info['height']-$logo['height'];
+	 break;
+	 case 9:
+		 $x=$info['width']-$logo['width'];
+		 $y=$info['height']-$logo['height'];
+	 break;
+	 case 0:
+	 default:
+		 $x=mt_rand(0,$info['width']-$logo['width']);
+		 $y=mt_rand(0,$y=$info['height']-$logo['height']);
+	 break;
+
+	 }
+		 imagecopymerge($dst,$src,$x,$y,0,0,$logo['width'],$logo['height'],$tm);
+
+
+		 imagejpeg($dst,$img);
+
+		 imagedestroy($dst);
+		 imagedestroy($src);
+		 return $img;
+
+}
+
+function getImageInfo($path) {
+    $info = getimagesize($path);
+    $data['width'] = $info[0];
+    $data['height'] = $info[1];
+    $data['type'] = $info['mime'];
+    return $data;
+} 
+//打开图片
+ function openImg($path,$type){
+	 switch($type){
+		 case 'image/jpeg':
+		 case 'image/jpg':
+		 case 'image/pjpeg':
+		 $img=imagecreatefromjpeg($path);
+	 break;
+		 case 'image/png':
+		 case 'image/x-png':
+		 $img=imagecreatefrompng($path);
+	 break;
+	 case 'image/gif':
+	 	$img=imagecreatefromgif($path);
+	 break;
+	 case 'image/wbmp':
+		 $img=imagecreatefromwbmp($path);
+	 break;
+	 default:
+		 exit('图片类型不支持');
+
+
+	 }
+	 return $img;
+ }
+//检查是否关注
+function isfollow($id,$other){
+	$follow = M('member')->getField(['id'=>$id],'follow');
+	if(strpos($follow,','.$other.',')!==false){
+		return true;
+	}else{
+		return false;
+	}
+}
+//计算粉丝数
+function jz_fans($id=0){
+	if($id){
+		$user_num = M('member')->getCount(" follow like '%,".$id.",%'");
+		return $user_num;
+	}else{
+		return 0;
+	}
+}
+//计算关注数
+function jz_follow($id=0){
+	if($id){
+		//,1,2,2,4,
+		$follow = M('member')->getField(['id'=>$id],'follow');
+		if($follow!=''){
+			$follow = trim($follow,',');
+			$num = substr_count($follow,',');
+			return $num+1;
+		}else{
+			return 0;
+		}
+	}else{
+		return 0;
+	}
+}
+	
+//删除文件目录
+function deldir($dir) {
+	//先删除目录下的文件：
+	$dh=opendir($dir);
+	while ($file=readdir($dh)) {
+		if($file!="." && $file!="..") {
+			$fullpath=$dir."/".$file;
+			if(!is_dir($fullpath)) {
+				unlink($fullpath);
+			} else {
+				deldir($fullpath);
+			}
+		}
+	}
+	closedir($dh);
+	//删除当前文件夹：
+	if(rmdir($dir)) {
+		return true;
+	} else {
+		return false;
+	}
+}
+
+
+/**
+ * 图片压缩裁剪
+ * src_image 原图链接  根目录绝对链接，支持远程图片
+ * out_image 生成图链接  写文件名即可
+ * mode=1 按尺寸裁剪 mode=0 按比例裁剪
+ * out_width 生成的宽（比例）
+ * out_height 生成的高（比例）
+ * img_quality 压缩比例（PNG无法压缩）
+ * direct=1 中间开始裁剪  direct=0 左上角开始裁剪
+ * debug=1 调试状态，每次请求都生成缓存 debug=0 会直接调用已生成的缩略图
+ */
+function jzresize($src_image,$out_width = NULL, $out_height = NULL, $mode = 1, $out_image = NULL,  $direct = 0 ,$debug=0 , $img_quality = 90 ) {
+	if(!is_dir(APP_PATH.'cache/image')){
+		if(!mkdir(APP_PATH.'cache/image',0777)){
+			exit('图片缓存文件夹不存在cache/image');
+		}		
+	}
+	// 检查原图是否存在
+	if(!file_exists('.'.$src_image)){
+		// 检查是否远程图片,并下载
+		if(strpos($src_image,'http')!==false){
+			  $path = 'cache/image';
+			  $ch = curl_init();
+			  curl_setopt($ch, CURLOPT_URL, $src_image);
+			  curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+			  curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 30);
+			  $file = curl_exec($ch);
+			  curl_close($ch);
+			  if($file==false){
+				  exit('无法下载！');
+			  }
+			  $filename = pathinfo($src_image, PATHINFO_BASENAME);
+			  $resource = fopen($path . $filename, 'w');
+			  fwrite($resource, $file);
+			  fclose($resource);
+			  $src_image = '/'.$path . $filename;
+		}else{
+			return '错误链接';//返回空，避免程序停止执行
+		}
+		
+	}
+	
+	
+	// 处理图片名称
+	if(!$out_image){
+		
+		$imageinfo = pathinfo($src_image);
+		$filename = str_replace('.'.$imageinfo['extension'],'_'.$out_width.'x'.$out_height.'.'.$imageinfo['extension'],$imageinfo['basename']);
+		$out_image = 'cache/image/'.$filename;
+	}
+	
+	// 检查生成图片是否存在
+	if(file_exists(APP_PATH.$out_image) && !$debug){
+		return '/'.$out_image;
+	}
+	
+	//$out_image = $out_image;
+	// 将图片拷贝到缓存目录
+	if(!copy(APP_PATH.$src_image, $out_image)){
+		return '';
+	}
+	$src_image = $out_image;
+	
+	// 获取图片属性
+	list($width, $height, $type, $attr) = getimagesize($src_image);
+	switch ($type) {
+		case 1:
+			$img = imagecreatefromgif($src_image);
+			break;
+		case 2:
+			$img = imagecreatefromjpeg($src_image);
+			break;
+		case 3:
+			$img = imagecreatefrompng($src_image);
+			break;
+	}
+	
+	$thumbnail_w = $width;
+	$thumbnail_h = $height;
+	// 压缩形式
+	if($mode==1){
+		//尺寸
+		$new_img_thumbnail_width = $out_width;
+		$new_img_thumbnail_height = $out_height;
+		
+	}else{
+		//比例
+		$new_img_thumbnail_width = $width;
+		$new_img_thumbnail_height = $width/($out_width/$out_height);
+		if($new_img_thumbnail_height>$height){
+			$new_img_thumbnail_height = $height;
+			$new_img_thumbnail_width = $height*($out_width/$out_height);
+		}
+		
+		
+		
+	}
+	if($direct==1){
+		//正中间裁剪
+
+		$start_x = ($width - $new_img_thumbnail_width)/2;
+		$start_y = ($height - $new_img_thumbnail_height)/2;
+		
+		if($height-$thumbnail_h<0){
+			$height = $height+$start_y;
+		}
+		if($width-$thumbnail_w<0){
+			$width = $width+$start_x;
+		}
+	
+	}else{
+		//左上角裁剪
+		$start_x = 0;
+		$start_y = 0;
+	}
+	
+	$new_img = imagecreatetruecolor($new_img_thumbnail_width, $new_img_thumbnail_height); // 创建画布
+															  
+	// 创建透明画布,避免黑色
+	if ($type == 1 || $type == 3) {
+		$color = imagecolorallocate($new_img, 255, 255, 255);
+		imagefill($new_img, 0, 0, $color);
+		imagecolortransparent($new_img, $color);
+	}
+	imagecopyresampled($new_img, $img, 0, 0, $start_x, $start_y, $thumbnail_w, $thumbnail_h, $width, $height);
+	
+	switch ($type) {
+		case 1:
+			imagegif($new_img, $out_image, $img_quality);
+			break;
+		case 2:
+			imagejpeg($new_img, $out_image, $img_quality);
+			break;
+		case 3:
+			imagepng($new_img, $out_image); 
+			break;
+		default:
+			imagejpeg($new_img, $out_image, $img_quality);
+	}
+	imagedestroy($new_img);
+	imagedestroy($img);
+	
+	
+	return '/'.$out_image;
+}
+
+function jzcachedata($field){
+	$result = getCache('jzcache_'.$field);
+	if(!$result){
+		$res = M('cachedata')->find(['field'=>$field]);
+		
+		if($res['isall'] && $res['tid']){
+			$classtypedata = (isMobile() && $webconf['iswap']==1)?classTypeDataMobile():classTypeData();
+			foreach($classtypedata as $k=>$v){
+				$classtypedata[$k]['children'] = get_children($v,$classtypedata);
+			}
+		}
+		
+		
+		$tid = $res['tid'] ? ($res['isall']==1 ? ' and tid in ('.implode(',',$classtypedata[$res['tid']]['children']['ids']).') ' : ' and tid='.$res['tid']) : '';
+		$sqls = $res['sqls'] ? ' and '.$res['sqls'] : '';
+		$orderby = $res['orders'] ? ' order by '.$res['orders'] : '';
+		$limit = $res['limits'] ? ' limit '.$res['limits'] : '';
+		if($tid || $sqls){
+			$where = ' where 1=1 '.$tid.htmlspecialchars_decode($sqls,ENT_QUOTES);
+		}else{
+			$where = '';
+		}
+		$sql = "select * from ".DB_PREFIX.$res['molds'].$where.$orderby.$limit;
+		$result = M()->findSql($sql);
+		if($result){
+			foreach($result as $kk=>$vv){
+				if(isset($vv['htmlurl'])){
+					$result[$kk]['url'] = gourl($vv,$vv['htmlurl']);
+				}
+			}
+		}
+		$time = $res['times']*60;
+		setCache('jzcache_'.$res['field'],$result,$time);
+	}
+	return $result;
+}
+// 增加classtypedata缓存
+function getclasstypedata($array,$m=1){
+	if($m){
+		$s = 'classtypedatamobile';
+	}else{
+		$s = 'classtypedatapc';
+	}
+	$classtypedata = getCache($s);
+	if(!$classtypedata){
+	    $classtypedata = $array;
+		foreach($classtypedata as $k=>$v){
+			$classtypedata[$k]['children'] = get_children($v,$classtypedata);
+		}
+		setCache($s,$classtypedata);
+	}
+	return $classtypedata;
+}
+
+function jztpldata(){
+	$tpldata = getCache('tpldata');
+	if(!$tpldata){
+		$webconf = webConf();
+		$m = (isMobile() && $webconf['iswap']==1) ? 1 : 0;
+		if($m){
+			$classtypedata = classTypeDataMobile();
+		}else{
+			$classtypedata = classTypeData();
+		}
+		$tpldata = [];
+		$tpl_data = M('tplfields')->findAll();
+		if($tpl_data){
+
+			foreach($tpl_data as $v){
+				if($v['tid']){
+					$v['url'] = $classtypedata[$v['tid']]['url'];
+				}
+				if($v['orders']){
+					switch($v['orders']){
+						case 1:
+						$v['orders'] = ' addtime desc ';
+						break;
+						case 2:
+						$v['orders'] = ' addtime asc ';
+						break;
+						case 3:
+						$v['orders'] = ' orders desc ';
+						break;
+						case 4:
+						$v['orders'] = ' hits desc ';
+						break;
+						case 5:
+						$v['orders'] = ' id asc ';
+						break;
+						case 6:
+						$v['orders'] = ' id desc ';
+						break;
+					}
+				}
+				switch($v['fieldtype']){
+					case 4:
+					case 11:
+					$data = explode('||',$v['data']);
+					$newdata = [];
+					foreach($data as $kk=>$vv){
+						$pic = explode('|',$vv);
+						$newdata[$kk] = ['url'=>$pic[0],'title'=>$pic[1]];
+					}
+					$v['filedata'] = $newdata;
+
+					break;
+
+					case 8:
+					case 9:
+					$v['sdata'] = explode("\n",$v['sdata']);
+
+					break;
+				}
+				$tpldata[$v['pid']][$v['field']] = $v;
+			}
+		}
+
+		setCache('tpldata',$tpldata);
+
+	}
+	return $tpldata;
+}
+
+function jztpldatafield(){
+    $tpldata = getCache('tpldata');
+    if(!$tpldata){
+		$webconf = webConf();
+		$m = (isMobile() && $webconf['iswap']==1) ? 1 : 0;
+		if($m){
+			$classtypedata = classTypeDataMobile();
+		}else{
+			$classtypedata = classTypeData();
+		}
+        $tpldata = [];
+        $tpls = M('tpl')->findAll();
+        $tplarr = [];
+        foreach($tpls as $v){
+            $tplarr[$v['id']] = $v;
+        }
+        $tpl_data = M('tplfields')->findAll();
+        if($tpl_data){
+
+            foreach($tpl_data as $v){
+                if($v['tid']){
+                    $v['url'] = $classtypedata[$v['tid']]['url'];
+                }
+                if($v['orders']){
+                    switch($v['orders']){
+                        case 1:
+                        $v['orders'] = ' addtime desc ';
+                        break;
+                        case 2:
+                        $v['orders'] = ' addtime asc ';
+                        break;
+                        case 3:
+                        $v['orders'] = ' orders desc ';
+                        break;
+                        case 4:
+                        $v['orders'] = ' hits desc ';
+                        break;
+                        case 5:
+                        $v['orders'] = ' id asc ';
+                        break;
+                        case 6:
+                        $v['orders'] = ' id desc ';
+                        break;
+                    }
+                }
+                switch($v['fieldtype']){
+                    case 4:
+                    case 11:
+                    $data = explode('||',$v['data']);
+                    $newdata = [];
+                    foreach($data as $kk=>$vv){
+                        $pic = explode('|',$vv);
+                        $newdata[$kk] = ['url'=>$pic[0],'title'=>$pic[1]];
+                    }
+                    $v['filedata'] = $newdata;
+
+                    break;
+
+                    case 8:
+                    case 9:
+                    $v['sdata'] = explode("\n",$v['sdata']);
+
+                    break;
+                }
+                $tpldata[$tplarr[$v['pid']]['field']][$v['field']] = $v;
+            }
+        }
+
+        setCache('tpldata2',$tpldata);
+
+    }else{
+		$tpldata = getCache('tpldata2');
+	}
+    return $tpldata;
+}
 //引入扩展方法文件
 include(APP_PATH.'Conf/FunctionsExt.php');

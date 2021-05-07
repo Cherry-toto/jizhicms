@@ -6,21 +6,7 @@
         {include="style"}
 		<link rel="stylesheet" type="text/css" href="{__Tpl_style__}/style/tags/jquery.tagsinput.css" />
 		<script type="text/javascript" charset="utf-8" src="{__Tpl_style__}/style/tags/jquery.tagsinput.js"></script>
-		<!--新增编辑器-->
-		<script type="text/javascript" charset="utf-8" src="{__Tpl_style__}/uedit/ueditor.config.js"></script>
-		<script type="text/javascript" charset="utf-8" src="{__Tpl_style__}/uedit/editor_api.js?v=333"> </script>
-		<!--建议手动加在语言，避免在ie下有时因为加载语言失败导致编辑器加载失败-->
-		<!--这里加载的语言文件会覆盖你在配置项目里添加的语言类型，比如你在配置项目里配置的是英文，这里加载的中文，那最后就是中文-->
-		<script type="text/javascript" charset="utf-8" src="{__Tpl_style__}/uedit/lang/zh-cn/zh-cn.js"></script>
-		<script>
-		var ue = UE.getEditor('editor',{
-		{if($webconf['ueditor_config']!='')}
-		toolbars : [[
-				   {$webconf['ueditor_config']}
-					]]
-		{/if}			
-					});
-		</script>
+		{include="edit"}
     </head>
     
     <body>
@@ -54,24 +40,35 @@
                         autocomplete="off" class="layui-input">
                     </div>
                 </div>
+				{if($molds['isclasstype']==1)}
 				<div class="layui-form-item">
                     <label for="tid" class="layui-form-label">
                         <span class="x-red">*</span>栏目
                     </label>
                     <div class="layui-input-inline">
-						<select name="tid" lay-search="" lay-filter="tid" id="tid" >
-						<option value="0">选择栏目</option>
+						<select name="tid" lay-search="" {if($molds['ismust']==1)} lay-verify="required" {/if} lay-filter="tid" id="tid" >
+						{if($molds['ismust']==1)}
+						<option value="">选择栏目</option>
+						{else}
+						<option value="0">不限栏目</option>
+						{/if}
 					   {foreach $classtypes as $v}
 					   {if($v['molds']=='article')}
-					   <option {if($tid==$v['id'])}selected{/if} value="{$v['id']}">{fun str_repeat('--', $v['level']), $v['classname']}</option>
+					   {if($admin['classcontrol']==0 || $admin['isadmin']==1 || strpos($tids,','.$v['id'].',')!==false || $molds['iscontrol']==0)}
+					   <option {if($tid==$v['id'])}selected{/if} value="{$v['id']}">{fun str_repeat('--', $v['level'])}{$v['classname']}</option>
+					   {/if}
 					   {/if}
 					   {/foreach}
+					  
 					   </select>
                     </div>
                 </div>
+				{else}
+				<input type="hidden" name="tid" value="0" />
+				{/if}
 				 <div class="layui-form-item">
                     <label for="seo_title" class="layui-form-label">
-                        <span class="x-red">*</span>SEO标题
+                        SEO标题
                     </label>
                     <div class="layui-input-inline">
                         <input type="text" id="seo_title" value="" style="width:500px;"  name="seo_title" 
@@ -102,7 +99,7 @@
 				
 				<div class="layui-form-item">
 					<label for="litpic" class="layui-form-label">
-						<span class="x-red">*</span>图片  
+						图片  
 					</label>
 					
 					<div class="layui-input-inline">
@@ -127,10 +124,10 @@
                     </div>
 				 <div class="layui-form-item layui-form-text">
                     <label for="body" class="layui-form-label">
-                        <span class="x-red">*</span>内容
+                        内容
                     </label>
                     <div class="layui-input-block" style="clear:both;" >
-					<script id="editor" name="body" type="text/plain" style="width:100%;height:400px;"></script>
+					{include="content"}
                     </div>
                 </div>
 				{if($webconf['isrelative']==1)}
@@ -163,7 +160,7 @@
                     <label for="tjsx" class="layui-form-label">
                         <span class="x-red"></span>推荐属性
                     </label>
-                    <div class="layui-input-inline">
+                    <div class="layui-input-block">
                         <input type="checkbox" name="istop" value="1" title="置顶">
 						<input type="checkbox" name="ishot" value="1" title="热点" >
 						<input type="checkbox" name="istuijian" value="1" title="推荐" >
@@ -180,27 +177,56 @@
 						 <input id="tags" type="text" name="tags" class="tags" value=""  autocomplete="off" class="layui-input"  />
                     </div>
                 </div>
-				
-				<div class="layui-form-item" pane>
+				{if($admin['isadmin']==1 || ($admin['isadmin']!=1 && $admin['ischeck']==0))}
+				 <div class="layui-form-item" pane>
                     <label for="isshow" class="layui-form-label">
-                        <span class="x-red"></span>是否显示
+                        <span class="x-red"></span>是否审核
                     </label>
-                    <div class="layui-input-inline">
-                        <input type="radio" name="isshow" value="0" title="不显示">
-						<input type="radio" name="isshow" value="1" title="显示" checked>
+                    <div class="layui-input-block">
+                        <input type="radio" name="isshow" value="0" title="未审">
+						<input type="radio" name="isshow" value="1" title="已审" checked>
                     </div>
 					 
 					
-                </div>
+                 </div>
+				{/if}
 				
 				 <div class="layui-form-item">
                     <label for="addtime" class="layui-form-label">
-                        <span class="x-red">*</span>更新时间
+                        更新时间
                     </label>
                     <div class="layui-input-inline">
                       <input class="layui-input" value="{fun date('Y-m-d H:i:s')}" name="addtime" placeholder="文件日期" id="article_addtime">
                     </div>
                    
+                </div>
+				
+				<div class="layui-form-item">
+                    <label for="target" class="layui-form-label">
+                        <span class="x-red"></span>外链URL
+                    </label>
+                    <div class="layui-input-inline">
+                        <input type="text" id="target" value="" name="target" 
+                        autocomplete="off" class="layui-input">
+                    </div>
+					<div class="layui-form-mid layui-word-aux">
+					  默认为空，系统访问内容则直接跳转到此链接
+					</div>
+					
+                </div>
+				
+				<div class="layui-form-item">
+                    <label for="ownurl" class="layui-form-label">
+                        <span class="x-red"></span>自定义URL
+                    </label>
+                    <div class="layui-input-inline">
+                        <input type="text" id="ownurl" value="" name="ownurl" 
+                        autocomplete="off" class="layui-input">
+                    </div>
+					<div class="layui-form-mid layui-word-aux">
+					  默认为空，自定义URL
+					</div>
+					
                 </div>
 				
 				
@@ -211,7 +237,7 @@
 						
                
                 
-                <div class="layui-form-item" style="text-align:center;">
+                <div class="layui-form-item" id="jizhitj" style="text-align:center;">
                     
                      <button  class="layui-btn" lay-filter="save" lay-submit="">
                         保存
@@ -236,6 +262,9 @@
 					width:'auto',
 					defaultText:'添加一个标签',
 			  });
+
+			  get_fields({$tid});
+
 			})
 			function deleteImage(elm){
 				$(elm).prev().attr("src", "{__Tpl_style__}/style/images/nopic.jpg");
@@ -255,11 +284,12 @@
              upload.render({
 				elem: '#litpic_upload',
 				url: "{fun U('Common/uploads')}" //上传接口
+				,data:{tid:function(){ return $("#tid").val();},molds:'article'}
 				,done: function(res){ //上传成功后的回调
 				 
 					if(res.code==0){
-						 $('#litpic_img').attr('src','/'+res.url);
-						 $('#litpic').val('/'+res.url);
+						 $('#litpic_img').attr('src',res.url);
+						 $('#litpic').val(res.url);
 					}else{
 						 layer.alert(res.error, {icon: 5});
 					}
@@ -271,7 +301,7 @@
               form.on('submit(save)', function(data){
 
 				$.post("{fun U('addarticle')}",data.field,function(r){
-				
+					//console.log(r);return false;
 					var r = JSON.parse(r);
 					if(r.code==0){
 						layer.confirm(r.msg, {

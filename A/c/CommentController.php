@@ -27,6 +27,7 @@ class CommentController extends CommonController
 			$data = $this->frparam();
 			$data['addtime'] = strtotime($data['addtime']);
 			$data['body'] = $this->frparam('body',4);
+			$data['reply'] = $this->frparam('reply',4);
 			$data['userid'] = $_SESSION['admin']['id'];
 			
 			
@@ -80,10 +81,25 @@ class CommentController extends CommonController
 		$get_sql = ($res['fields_search_check']!='') ? (' and '.$res['fields_search_check']) : '';
 		$this->fields_search = $res['fields_search'];
 		$this->classtypes = $this->classtypetree;
+		$this->molds = M('molds')->find(['biaoshi'=>'comment']);
 		if($this->frparam('ajax')){
 			
 			$page = new Page('Comment');
 			$sql = '1=1';
+			if($this->isshow==1){
+				$sql .= ' and isshow=1 ';
+			}else if($this->isshow==2){
+				$sql .= ' and isshow=0 ';
+			}else if($this->isshow==3){
+				$sql .= ' and isshow=2 ';
+			}
+			if($this->admin['classcontrol']==1 && $this->admin['isadmin']!=1 && $this->molds['iscontrol']!=0 && $this->molds['isclasstype']==1){
+				$a1 = explode(',',$this->tids);
+				$a2 = array_filter($a1);
+				$tids = implode(',',$a2);
+				$sql.=' and tid in('.$tids.') ';
+			}
+			
 			if($this->frparam('tid')){
 				$sql .= ' and tid='.$this->frparam('tid');
 			}
@@ -97,8 +113,7 @@ class CommentController extends CommonController
 				$sql.=" and userid = ".$this->frparam('userid')." ";
 			}
 			$sql .= $get_sql;
-			$data = $page->where($sql)->orderby('id desc')->page($this->frparam('page',0,1))->go();
-			
+			$data = $page->where($sql)->orderby('addtime desc,id desc')->limit($this->frparam('limit',0,10))->page($this->frparam('page',0,1))->go();
 			$ajaxdata = [];
 			$classtypedata = classTypeData();
 			
@@ -124,8 +139,14 @@ class CommentController extends CommonController
 				
 				$v['new_zid'] = $v['zid']!=0 ? U('Comment/editcomment',array('id'=>$v['zid'])) : '';
 				$v['new_pid'] = $v['pid']!=0 ? U('Comment/editcomment',array('id'=>$v['pid'])) : '';
+				if($v['isshow']==1){
+					$v['new_isshow'] = '已审核';
+				}else if($v['isshow']==2){
+					$v['new_isshow'] = '被删除';
+				}else{
+					$v['new_isshow'] = '未审核';
+				}
 				
-				$v['new_isshow'] = $v['isshow']==1 ? '已审' : '未审';
 				$v['new_isread'] = $v['isread']==1 ? '已读' : '未读';
 				$v['new_addtime'] = date('Y-m-d H:i:s',$v['addtime']);
 				$v['edit_url'] = U('Comment/editcomment',array('id'=>$v['id']));
@@ -160,10 +181,30 @@ class CommentController extends CommonController
 			$data = $this->frparam();
 			$data['addtime'] = strtotime($data['addtime']);
 			$data['body'] = $this->frparam('body',4);
+			$data['reply'] = $this->frparam('reply',4);
 			$data = get_fields_data($data,'comment');
 			if($this->frparam('id')){
 				if(M('Comment')->update(array('id'=>$this->frparam('id')),$data)){
-					//Success('修改成功！',U('index'));
+					if($this->frparam('ismsg') && $data['reply']){
+						$task['aid'] = $this->frparam('id');
+						$task['tid'] = $data['tid'];
+						$task['userid'] = $data['userid'];
+						$task['puserid'] = 0;
+						$task['molds'] = $this->classtypedata[$data['tid']]['molds'];
+						$task['type'] = 'comment';
+						$task['addtime'] = time();
+						$task['body'] = $data['reply'];
+						if(!$data['aid']){
+							$url = $this->classtypedata[$data['tid']]['url'];
+						}else{
+							//非栏目评论
+							$res=M($this->classtypedata[$data['tid']]['molds'])->find(['id'=>$data['aid']]);
+							$url = gourl($res,$res['htmlurl']);
+						}
+						$task['url'] = $url;
+						M('task')->add($task);
+				
+					}
 					JsonReturn(array('code'=>0,'msg'=>'修改成功！','url'=>U('index')));
 					exit;
 				}else{

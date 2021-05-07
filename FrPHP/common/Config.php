@@ -41,6 +41,9 @@ return array(
 	'Session_Path'		=>	 APP_PATH.'cache/tmp',//session存储目录
 	'APP_LANG'			=>	 'zh_cn',//默认当前语言，zh_cn中文简体，其他自定义
 	'APP_LANG_REQUREST'	=>	 'l',//语言包接收参数（小写的L）
+	'ROOT'				=>	 '/',//根目录路径
+	'File_TXT_HIDE'		=>	 false,//隐藏URL后缀
+	'CLASS_HIDE_SLASH'	=>	 false,//隐藏栏目最后的斜杠
 
 
 

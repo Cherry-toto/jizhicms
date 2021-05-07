@@ -64,12 +64,14 @@ class Controller
 	
 	// 获取URL参数值
 	public function frparam($str=null, $int=0,$default = FALSE, $method = null){
+		
 		$data = $this->_data;
-		if($str==null) return $data;
+		if($str===null) return $data;
 		if(!array_key_exists($str,$data)){
-			return ($default==FALSE)?false:$default;
+			return ($default===FALSE)?false:$default;
 		}
-		if($method==null){
+		
+		if($method===null){
 			$value = $data[$str];
 		}else{
 			$method = strtolower($method);
@@ -87,7 +89,7 @@ class Controller
 			} 
 		}
 		
-		return format_param($value,$int);
+		return format_param($value,$int,$default);
 		
 		
 	}

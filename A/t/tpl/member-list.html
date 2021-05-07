@@ -15,7 +15,11 @@
             <a class="layui-btn layui-btn-small" style="line-height:1.6em;margin-top:3px;float:right"  href="javascript:location.replace(location.href);" title="刷新"><i class="iconfont" style="line-height:30px">&#xe6aa;</i></a>
         </div>
         <div class="x-body">
-         <div class="layui-collapse">
+		
+		<div class="layui-card">
+			<div class="layui-card-body">
+			
+			<div class="layui-collapse">
 		    <div class="layui-colla-item">
 			<h2 class="layui-colla-title">搜索</h2>
 				<div class="layui-colla-content layui-show">
@@ -36,7 +40,7 @@
 					  <input type="text" name="username" value="{$username}"  placeholder="请输入用户名" autocomplete="off" class="layui-input">
 					  <input type="text" name="tel" value="{$tel}"  placeholder="请输入手机号" autocomplete="off" class="layui-input"> 
 					  {$fields_search}
-					  <button class="layui-btn"  lay-submit="" lay-filter="search"><i class="layui-icon">&#xe615;</i></button>
+					  <button class="layui-btn"  lay-submit="" lay-filter="search">搜索</button>
 					</form>
 				</div>
 				</div>
@@ -45,22 +49,28 @@
 		  
 		<table class="layui-hide" lay-data="{id: 'jizhi_table'}" id="jizhi_table" lay-filter="jizhi_table"></table>
 		<input id="select_data" type="hidden" value="" />
+			
+			</div>
+		</div>
+		
+		
+       
 		<script type="text/html" id="rightbar">
 		{if(checkAction('Member/memberedit'))}
-			<button class="layui-btn layui-btn-xs" lay-event="edit"><i class="layui-icon">&#xe642;</i>编辑</button>
+			<a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>
 		{/if}	
 		{if(checkAction('Member/member_del'))}
-			<button class="layui-btn layui-btn-xs layui-btn-danger" lay-event="delete"><i class="layui-icon">&#xe640;</i>删除</button>
+			<a class="layui-btn layui-btn-xs layui-btn-danger" lay-event="delete">删除</a>
 		{/if}	
 			
 		</script>
 		<script type="text/html" id="toolbar">
 		 <div class="layui-btn-container" style="font-size:15px;">
 		 {if(checkAction('Member/deleteAll'))}
-			   <button class="layui-btn layui-btn-danger" onclick="delAll()"><i class="layui-icon">&#xe640;</i>批量删除</button>
+			   <a class="layui-btn layui-btn-danger layui-btn-sm" onclick="delAll()">批量删除</a>
 		 {/if}	 
          {if(checkAction('Member/memberadd'))}		 
-			   <button class="layui-btn" onclick="x_admin_show('新增会员','{fun U('Member/memberadd')}')"><i class="layui-icon">&#xe608;</i>新增</button>
+			   <a class="layui-btn layui-btn-sm" onclick="x_admin_show('新增会员','{fun U('Member/memberadd')}')">新增会员</a>
 		 {/if}  
 			
 		 </div>
@@ -87,7 +97,7 @@
 			  
 			  table.render({
 				elem: '#jizhi_table'
-				,height: 650
+				,height: 700
 				,url: window.location.href+'?ajax=1' //数据接口
 				,page: true //开启分页
 				,size:'lg'
@@ -102,25 +112,27 @@
 				  ,last: true //显示尾页
 				  ,count:500
 				  ,limit:10
+				  ,first: '首页' //不显示首页
+				  ,last: '尾页' //不显示尾页
 				  
 				}
 				,cols: [[ //表头
-				  {field: 'id', title: 'ID', width:50, sort: true, fixed:'left'}
+				  {field: 'id', title: 'ID', width:60}
 				  ,{type:'checkbox'}
 				  ,{field: 'isshow', title: '状态',width: 100,templet:'#isshow'}
-				  ,{field: 'username', title: '用户名',width: 150, sort: true}
+				  ,{field: 'username', title: '用户名'}
 				  ,{field: 'new_gid', title: '分组',width:150}
-				  ,{field: 'tel', title: '手机号',width:200,  sort: true}
-				  ,{field: 'email', title: '邮箱',width:150,  sort: true}
+				  ,{field: 'tel', title: '手机号',width:200}
+				  ,{field: 'email', title: '邮箱',width:150}
 				  ,{field: 'new_litpic', title: '头像',width:150} 
 				  ,{field: 'jifen', title: '积分',width:150} 
 				  ,{field: 'money', title: '余额',width:150} 
-				  {foreach $fields_list as $v},{field: '{$v['field']}',width:150, title: '{$v['fieldname']}'}{/foreach}
+				  {foreach $fields_list as $v},{field: '{$v['field']}', title: '{$v['fieldname']}'}{/foreach}
 				 
 				  ,{field: 'new_regtime', title: '加入时间',width:160}
 				  ,{field: 'new_logintime', title: '登录时间',width:160}
 				  {if(checkAction('Member/memberedit') || checkAction('Member/member_del'))}
-				  ,{field: '', title: '操作',width:260, toolbar: '#rightbar', fixed:'right'}
+				  ,{field: '', title: '操作',width:200, toolbar: '#rightbar', fixed:'right'}
 				  {/if}
 				 
 				]]
@@ -182,14 +194,7 @@
 			  
 			  
 			  table.on('checkbox(jizhi_table)', function(obj){
-				 // console.log(obj.checked); //当前是否选中状态
-				 // console.log(obj.data); //选中行的相关数据
-				 // console.log(obj.type); //如果触发的是全选，则为：all，如果触发的是单选，则为：one
-				 /*
-					console.log(checkStatus.data) //获取选中行的数据
-					console.log(checkStatus.data.length) //获取选中行数量，可作为是否有选中行的条件
-					console.log(checkStatus.isAll ) //表格是否全选
-				 */
+				
 				   var checkStatus = table.checkStatus('jizhi_table'); //idTest 即为基础参数 id 对应的值
 				   var len = checkStatus.data.length;
 				   var arr=[];
@@ -206,7 +211,7 @@
 				
 				
 				form.on('submit(search)', function(data){
-					//data.field
+					
 					table.reload('jizhi_table', {
 					  url: window.location.href+'?ajax=1'
 					  ,where: data.field //设定异步数据接口的额外参数

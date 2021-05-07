@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  {include="user/style"}
+  <title>我的关注 - 个人中心</title>
+</head>
+<body>
+
+{include="user/top"}
+<div class="login-page page">
+  <div class="container clearfix">
+   {include="user/left_nav"}
+    <!-- 右侧内容 -->
+    <div class="user-right">
+      <div class="user-tips">
+        <p><i class="iconfont iconxiaoxi3"></i> 欢迎注册本站会员，注册会员后您将享受专属会员服务!包括但不限于专属文章浏览权限，会员投稿权限，在线购物权限，下载会员可见附件等实用功能，欢迎注册体验！</p>
+      </div>
+      <div class="common-tab">
+        <h2><a href="{fun U('user/follow')}" class="active">我的关注</a><a href="{fun U('user/fans')}">我的粉丝</a></h2>
+      </div>
+      <ul class="follow-list1">
+      {if($lists)}
+      {foreach $lists as $v}
+        <li>
+          <div class="follow-list-item">
+            {if(isfollow($v['id'],$member['id']))}<div class="each-other"><i class="iconfont iconhuxiangguanzhu3" title="互相关注"></i></div>{/if}
+            <div class="img-box"><img src="{if($v['litpic'])}{$v['litpic']}{else}{$common}user/images/login1.png{/if}" alt="{$v['username']}"></div>
+            <h4>{$v['username']}</h4>
+            <p>{if($v['signature'])}{$v['signature']}{else}他很懒，什么都没有留下~{/if}</p>
+            <a href="{fun U('user/nofollow',['uid'=>$v['id']])}" title="取消关注">取消关注</a>
+          </div>
+        </li>
+      {/foreach}
+      {else}
+     <p style="text-align: center;width: 100%;display: block;height: 50px;line-height: 50px;"> 暂无关注~ </p>
+      {/if}
+       
+      </ul>
+      <div class="pagebar-common">
+      {if($listpage['list'])}
+      <ul class="pagination">
+      <li class="page-item {if(!$listpage['prev'])}disabled{/if}">
+      <a class="page-link" href="{$listpage['prev']}" aria-label="Previous"><span aria-hidden="true">«</span></a></li>
+      {foreach $listpage['list'] as $ss}
+      <li class="page-item {if($ss['num']==$listpage['current_num'])}active background{/if}"><a href="{$ss['url']}" class="page-link">{$ss['num']}</a></li>
+      {/foreach}
+
+      <li class="page-item {if(!$listpage['next'])}disabled{/if}"><a class="page-link" href="{$listpage['next']}" aria-label="Next"><span aria-hidden="true">»</span></a></li>
+      </ul>
+      {/if}
+      </div>
+    
+    </div>
+  </div>
+</div>
+
+{include="user/footer"}
+</body>
+</html>

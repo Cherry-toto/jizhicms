@@ -73,7 +73,10 @@ class CollectController extends CommonController
 			$data['tid'] = $this->frparam("tid");
 			$data['isshow'] = $this->frparam("isshow");
 			$data['orders'] = $this->frparam("orders");
-			
+			if(!$data['tid']){
+				JsonReturn(array('code'=>1,'msg'=>'请选择分类！'));
+				exit;
+			}
 			$data = get_fields_data($data,'collect');
 			if(M('collect')->add($data)){
 				JsonReturn(array('code'=>0,'msg'=>'添加成功！继续添加~','url'=>U('addcollect',array('tid'=>$data['tid']))));
@@ -140,6 +143,10 @@ class CollectController extends CommonController
 			$data['tid'] = $this->frparam("tid");
 			$data['isshow'] = $this->frparam("isshow");
 			$data['orders'] = $this->frparam("orders");
+			if(!$data['tid']){
+				JsonReturn(array('code'=>1,'msg'=>'请选择分类！'));
+				exit;
+			}
 			$data = get_fields_data($data,'collect');
 			if($this->frparam('id')){
 				if(M('collect')->update(array('id'=>$this->frparam('id')),$data)){

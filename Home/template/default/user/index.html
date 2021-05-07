@@ -1,108 +1,89 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="robots" content="noindex,noarchive">
-	<title>个人中心-{$webconf['web_name']}</title>
-	<meta property="og:title" 	content="个人中心-{$webconf['web_name']}" />
-	<meta name="twitter:title" 	content="个人中心-{$webconf['web_name']}" />
-	<meta name="keywords" content="个人中心-{$webconf['web_keyword']}" />
-	<meta name="description" 			content="个人中心-{$webconf['web_desc']}" />
-{include="user/user-style"}
-	
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  {include="user/style"}
+  <title>个人中心</title>
 </head>
 <body>
-{include="user/user-top"}
-<section class="container py-3">
-	<div class="row justify-content-center">
-		<div class="col-lg-10 step mb-2">
-			{include="user/user-content"}
-		</div>
-		<div class="col-lg-8 step">
-			<fieldset>
-				<div class="input-group mb-2">
-					<div class="input-group-prepend">
-						<div class="input-group-text">昵称</div>
-					</div>
-					<div class="form-control">{$member['username']}</div>
-					<div class="input-group-prepend">
-						<a class="btn btn-outline-secondary" href="{fun U('User/userinfo')}">编辑</a>
-					</div>
-				</div>
-			</fieldset>
-			<fieldset>
-				<div class="input-group mb-2">				
-					<div class="input-group-prepend">
-						<div class="input-group-text">手机</div>
-					</div>
-					<div class="form-control">{$member['tel']}</div>
-					<div class="input-group-prepend">
-						<a class="btn btn-outline-secondary" href="{fun U('User/userinfo')}">编辑</a>
-					</div>
-				</div>
-			</fieldset>
-			<fieldset>
-				<div class="input-group mb-2">				
-					<div class="input-group-prepend">
-						<div class="input-group-text">邮箱</div>
-					</div>
-					<div class="form-control">{$member['email']}</div>
-					<div class="input-group-prepend">
-						<a class="btn btn-outline-secondary" href="{fun U('User/userinfo')}">编辑</a>
-					</div>
-				</div>
-			</fieldset>
-			<fieldset>
-				<div class="input-group mb-2">				
-					<div class="input-group-prepend">
-						<div class="input-group-text">订单</div>
-					</div>
-					<div class="form-control">总共有<span class="px-1">{$order_num}</span>笔 订单</div>
-					<div class="input-group-prepend">
-						<a class="btn btn-outline-secondary" href="{fun U('User/order')}">查看</a>
-					</div>
-				</div>
-			</fieldset>
-			<fieldset>
-				<div class="input-group mb-2">				
-					<div class="input-group-prepend">
-						<div class="input-group-text">评论</div>
-					</div>
-					<div class="form-control">发表了<span class="px-1">{$comment_num}</span>条 评论</div>
-					<div class="input-group-prepend">
-						<a class="btn btn-outline-secondary" href="{fun U('User/comment')}">查看</a>
-					</div>
-				</div>
-			</fieldset>
-			<fieldset>
-				<div class="input-group mb-2">				
-					<div class="input-group-prepend">
-						<div class="input-group-text">点赞</div>
-					</div>
-					<div class="form-control">我赞了<span class="px-1">{$likes_num}</span>篇文章</div>
-					<div class="input-group-prepend">
-						<a class="btn btn-outline-secondary" href="{fun U('User/likes')}">查看</a>
-					</div>
-				</div>
-			</fieldset>
-			<fieldset>
-				<div class="input-group mb-2">				
-					<div class="input-group-prepend">
-						<div class="input-group-text">收藏</div>
-					</div>
-					<div class="form-control">收藏了<span class="px-1">{$collect_num}</span>篇內容</div>
-					<div class="input-group-prepend">
-						<a class="btn btn-outline-secondary" href="{fun U('User/collect')}">查看</a>
-					</div>
-				</div>
-			</fieldset>
-			
-			
-		</div>
-	</div>
-</section>
 
-{include="user/common"}
+{include="user/top"}
+
+<div class="login-page page">
+  <div class="container clearfix">
+    {include="user/left_nav"}
+    <div class="user-right">
+      <div class="user-tips">
+        <p><i class="iconfont iconxiaoxi3"></i> 欢迎注册本站会员，注册会员后您将享受专属会员服务!包括但不限于专属文章浏览权限，会员投稿权限，在线购物权限，下载会员可见附件等实用功能，欢迎注册体验！</p>
+      </div>
+      <div class="user-content">
+        <div class="user-tab">
+          <div class="num">
+            <a href="{fun U('user/posts',['molds'=>'article'])}" title="">
+              <h4>{$article_num}</h4>
+              <p>投稿</p>
+            </a>
+          </div>
+          <div class="num">
+            <a href="{fun U('user/posts',['molds'=>'product'])}" title="">
+              <h4>{$product_num}</h4>
+              <p>商品</p>
+            </a>
+          </div>
+          <div class="num">
+            <a href="{fun U('user/follow')}" title="">
+              <h4>{fun jz_follow($member['id'])}</h4>
+              <p>关注</p>
+            </a>
+          </div>
+          <div class="num">
+            <a href="{fun U('user/fans')}" title="">
+              <h4>{fun jz_fans($member['id'])}</h4>
+              <p>粉丝</p>
+            </a>
+          </div>
+          <div class="num">
+            <a href="{fun U('user/collect')}" title="">
+              <h4>{$collect_num}</h4>
+              <p>收藏</p>
+            </a>
+          </div>
+          <div class="num">
+            <a href="{fun U('user/comment')}" title="">
+              <h4>{$comment_num}</h4>
+              <p>评论</p>
+            </a>
+          </div>
+          <div class="num">
+            <a href="{fun U('user/likes')}" title="">
+              <h4>{$likes_num}</h4>
+              <p>点赞</p>
+            </a>
+          </div>
+          <div class="num">
+            <a href="{fun U('user/orders')}" title="">
+              <h4>{$order_num}</h4>
+              <p>订单</p>
+            </a>
+          </div>
+        </div>
+      </div>
+      <div class="user-data">
+        <h2>个人中心</h2>
+        <p><span>用户名：</span><span>{$member['username']}</span></p>
+        <p><span>个性签名：</span><span>{if($member['signature'])}{$member['signature']}{else}他很懒，什么都没有留下~{/if}</span></p>
+        <p><span>手机号码：</span><span>{$member['tel']}</span></p>
+        <p><span>电子邮箱：</span><span>{$member['email']}</span></p>
+        <p><span>生日：</span><span>{if($member['birthday'])}{$member['birthday']}{else}-{/if}</span></p>
+        <p><span>性别：</span><span>{if($member['sex']==1)}男{else if($member['sex']==2)}女{else}未知{/if}</span></p>
+      </div>
+    </div>
+  </div>
+</div>
+
+{include="user/footer"}
+
 </body>
 </html>

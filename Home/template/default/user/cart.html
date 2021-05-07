@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  {include="user/style"}
+  <title>我的购物车 - 个人中心</title>
+</head>
+<body>
+
+{include="user/top"}
+
+<div class="login-page page">
+  <div class="container clearfix">
+    {include="user/left_nav"}
+    <div class="user-right">
+      <div class="user-tips">
+        <p><i class="iconfont iconxiaoxi3"></i> 欢迎注册本站会员，注册会员后您将享受专属会员服务!包括但不限于专属文章浏览权限，会员投稿权限，在线购物权限，下载会员可见附件等实用功能，欢迎注册体验！</p>
+      </div>
+      <div class="common-tab">
+        <h2><a href="" class="active">我的购物车</a></h2>
+      </div>
+      <div class="order-details">
+        <h4 class="head-title">购物车</h4>
+        {if($carts)}
+        <div class="display-flex-order">
+          <div class="order-left">
+            <ul class="order-list">
+            {foreach $carts as $v}
+            {if($v['info'])}
+              <li class="product product-{$v['tid']}-{$v['info']['id']}">
+                <div class="order-item">
+                  <div class="img-box">
+                    <a href="{fun gourl($v['info']['id'],$v['info']['htmlurl'])}"><img src="{$v['info']['litpic']}" ></a>
+                  </div>
+                  <div class="order-title">
+                    <h4><a href="{fun gourl($v['info']['id'],$v['info']['htmlurl'])}" target="_blank">[{$v['info']['id']}]{$v['info']['title']}</a></h4>
+                    {php $product_fields = get_fields_show($v['tid'],$classtypedata[$v['tid']]['molds'])/}
+                    {foreach $product_fields as $vv}
+                    <p class="hidden-sm"><span>{$vv['fieldname']}：</span><span>
+                    {if($vv['fieldtype']==7)}
+{fun get_key_field_select($v['info'][$vv['field']],$classtypedata[$v['tid']]['molds'],$vv['field'])}
+                    {else if($vv['fieldtype']==8)}
+{fun implode(' ',get_key_field_select($v['info'][$vv['field']],$classtypedata[$v['tid']]['molds'],$vv['field']))}
+                    {else}
+                    {$v['info'][$vv['field']]}
+                    {/if}
+                    <input id="price_per_{$v['tid']}_{$v['info']['id']}" value="{$v['info']['price']}" type="hidden" />
+                    </span></p>
+                    {/foreach}
+                  </div>
+                </div>
+                <div class="order-item-right">
+                  <div class="order-number">
+                    <p>数量</p>
+                    <p><input type="number" class="quantity-input" data-id="{$v['id']}" data-tid="{$v['tid']}" value="{$v['num']}"></p>
+                  </div>
+                  <input id="price_per_{$v['tid']}_{$v['info']['id']}" value="{$v['info']['price']}" type="hidden" />
+                  <div class="order-money">
+                    <p>单价</p>
+                    <p class="price">￥{$v['info']['price']}</p>
+                  </div>
+                </div>
+				<div class="col-sm-12 col-md-1">
+					<button class="btn btn-danger" onclick="delcart({$v['tid']},{$v['info']['id']})" type="button">删除</button>
+				</div>
+              </li>
+            {else}
+              <li>
+                <div class="order-item">
+                  <div class="img-box">
+                    <a >[ 无 ]</a>
+                  </div>
+                  <div class="order-title">
+                    <h4><a >[{$v['id']}][ 商品已被删除 ]</a></h4>
+                   
+                  </div>
+                </div>
+                <div class="order-item-right">
+                  <div class="order-number">
+                    <p>数量</p>
+                    <p><input type="number" class="quantity-input" data-id="{$v['info']['id']}" data-tid="{$v['tid']}" value="{$v['num']}"></p>
+                  </div>
+                  
+                  <div class="order-money">
+                    <p>单价</p>
+                    <p class="price">￥{$v['price']}</p>
+                  </div>
+                </div>
+              </li>
+            {/if}
+            {/foreach}
+             
+            </ul>
+          </div>
+          <div class="order-right">
+            <div class="summary">
+            <form action="{fun U('order/create')}" method="POST">
+            <input name="go" value="1" type="hidden" />
+              <h3>总计</h3>
+              <h4><span>总金额</span><span class="price fr" id="allmoney">0.00</span></h4>
+              <h4><span>折扣</span><span class="price fr" id="alldiscount">0.00</span></h4>
+              <h4><span>邮费</span><span class="price fr" id="yunfei">0.00</span></h4>
+              <h4><span>总计</span><span class="price fr" id="summary">0.00</span></h4>
+              <button class="" type="submit">立即支付</button>
+            </form>
+            </div>
+          </div>
+        </div>
+        {else}
+        暂无商品~
+        {/if}
+      </div>
+    </div>
+  </div>
+</div>
+
+{include="user/footer"}
+<script>
+  
+
+    var floatObj = function () {
+ 
+        /*
+         * 判断obj是否为一个整数
+         */
+        function isInteger(obj) {
+            return Math.floor(obj) === obj
+        }
+ 
+        /*
+         * 将一个浮点数转成整数，返回整数和倍数。如 3.14 >> 314，倍数是 100
+         * @param floatNum {number} 小数
+         * @return {object}
+         *   {times:100, num: 314}
+         */
+        function toInteger(floatNum) {
+            var ret = {times: 1, num: 0};
+            if (isInteger(floatNum)) {
+                ret.num = floatNum;
+                return ret
+            }
+            var strfi = floatNum + '';
+            var dotPos = strfi.indexOf('.');
+            var len = strfi.substr(dotPos + 1).length;
+            var times = Math.pow(10, len);
+            var intNum = parseInt(floatNum * times + 0.5, 10);
+            ret.times = times;
+            ret.num = intNum;
+            return ret
+        }
+ 
+    /*
+         * 核心方法，实现加减乘除运算，确保不丢失精度
+         * 思路：把小数放大为整数（乘），进行算术运算，再缩小为小数（除）
+         *
+         * @param a {number} 运算数1
+         * @param b {number} 运算数2
+         * @param op {string} 运算类型，有加减乘除（add/subtract/multiply/divide）
+         *
+         */
+        function operation(a, b, op) {
+            var o1 = toInteger(a);
+            var o2 = toInteger(b);
+            var n1 = o1.num;
+            var n2 = o2.num;
+            var t1 = o1.times;
+            var t2 = o2.times;
+            var max = t1 > t2 ? t1 : t2;
+            var result = null;
+            switch (op) {
+                case 'add':
+                    if (t1 === t2) { // 两个小数位数相同
+                        result = n1 + n2
+                    } else if (t1 > t2) { // o1 小数位 大于 o2
+                        result = n1 + n2 * (t1 / t2)
+                    } else { // o1 小数位 小于 o2
+                        result = n1 * (t2 / t1) + n2
+                    }
+                    return result / max;
+                case 'subtract':
+                    if (t1 === t2) {
+                        result = n1 - n2
+                    } else if (t1 > t2) {
+                        result = n1 - n2 * (t1 / t2)
+                    } else {
+                        result = n1 * (t2 / t1) - n2
+                    }
+                    return result / max;
+                case 'multiply':
+                    result = (n1 * n2) / (t1 * t2);
+                    return result;
+                case 'divide':
+                    result = (n1 / n2) * (t2 / t1);
+                    return result
+            }
+        }
+ 
+        // 加减乘除的四个接口
+        function add(a, b) {
+            return operation(a, b, 'add')
+        }
+ 
+        function subtract(a, b) {
+            return operation(a, b, 'subtract')
+        }
+ 
+        function multiply(a, b) {
+            return operation(a, b, 'multiply')
+        }
+ 
+        function divide(a, b) {
+            return operation(a, b, 'divide')
+        }
+ 
+        // exports
+        return {
+            add: add,
+            subtract: subtract,
+            multiply: multiply,
+            divide: divide
+        }
+    }();
+  
+  //删除商品
+  function delcart(tid,id){
+    
+    $.ajax({
+       url:"{fun U('user/delcart')}",//请求的url地址
+       dataType:"json",//返回格式为json
+       async:true,//请求是否异步，默认为异步，这也是ajax重要特性
+       data:{tid:tid,id:id,ajax:1},//参数值
+       type:"POST",//请求方式
+       beforeSend:function(){
+        //请求前的处理
+        },
+         success:function(r){
+          if(r.code==0){
+            //window.location.href=r.url;
+            $(".product-"+tid+"-"+id).remove();
+            total();
+          }else{
+            alert(r.msg);
+          }
+            
+        },
+         complete:function(){
+        //请求完成的处理
+        },
+         error:function(){
+        //请求出错处理
+          alert('网络错误');
+        }
+
+          
+      
+    })
+    
+  }
+  //更改商品数量
+   $(document).on("change",".quantity-input",function () {
+    //console.log($(this).val());
+    var num = $(this).val();
+    if(num==0){
+      alert('购买数量不能等于0');
+      $(this).val(1);
+      return false;
+    }
+    
+    var tid = $(this).attr('data-tid');
+    var id = $(this).attr('data-id');
+    var price = parseFloat($("#price_per_"+tid+"_"+id).val());
+    var money = floatObj.multiply(num,price);
+    $(".price_"+tid+"_"+id).html('￥'+money);
+    $.ajax({
+       url:"{fun U('user/addcart')}",//请求的url地址
+       dataType:"json",//返回格式为json
+       async:true,//请求是否异步，默认为异步，这也是ajax重要特性
+       data:{tid:tid,id:id,num:num,ajax:1},//参数值
+       type:"POST",//请求方式
+       beforeSend:function(){
+        //请求前的处理
+        },
+         success:function(r){
+          if(r.code==0){
+            //window.location.href=r.url;
+            total();
+          }else{
+            alert(r.msg);
+            window.location.reload();
+          }
+            
+        },
+         complete:function(){
+        //请求完成的处理
+        },
+         error:function(){
+        //请求出错处理
+          alert('网络错误');
+        }
+
+          
+      
+    })
+    
+   });
+   
+   //统计商品金额及折扣
+  var discount_type= {$member_group['discount_type']};//折扣类型
+  var discount = parseFloat({$member_group['discount']});//折扣价
+  var yunfei = {$webconf['yunfei']};//自由设定
+  function total(){
+    var num=0,id=0,tid=0,price=0.00,money=0.00;
+    var allmoney = 0.00;
+    var alldiscount = 0.00;
+    var summary = 0.00;
+    $(".quantity-input").each(function(){
+       num = $(this).val();
+       id = $(this).attr('data-id');
+       tid = $(this).attr('data-tid');
+       price =  parseFloat($("#price_per_"+tid+"_"+id).val());
+       money = floatObj.multiply(num,price);
+       allmoney = floatObj.add(allmoney,money);
+       if(allmoney<0){
+        allmoney = 0;
+       }
+    });
+    if(discount_type==1){
+      //现金折扣
+     // alldiscount = floatObj.subtract(allmoney,discount);
+	 alldiscount = discount;
+    }else if(discount_type==2){
+      //百分比折扣
+	  discount = (1-discount).toFixed(2);
+      alldiscount = floatObj.multiply(allmoney,discount);
+    }
+    var summary1 = floatObj.subtract(allmoney,alldiscount);//减去折扣
+    summary = floatObj.add(summary1,yunfei);//加上运费
+    //赋值统计
+    $("#allmoney").html('￥'+allmoney);
+    $("#alldiscount").html('￥'+alldiscount);
+    $("#yunfei").html('￥'+yunfei);
+    $("#summary").html('￥'+summary);
+  
+  }
+  
+  $(function(){
+    total();
+  });
+  
+  </script>
+</body>
+</html>

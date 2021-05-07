@@ -17,14 +17,14 @@
         <i class="iconfont" style="line-height:30px">&#xe6aa;</i></a>
     </div>
     <div class="x-body">
-      <div class="layui-row">
-        
-      </div>
-      <xblock>
+      
+	  	<div class="layui-card">
+			<div class="layui-card-body">
+			 <xblock>
        {if(checkAction('Member/groupadd'))}
-        <button class="layui-btn" onclick="x_admin_show('添加分组','{fun U('Member/groupadd')}')"><i class="layui-icon"></i>添加分组</button>
+        <a class="layui-btn layui-btn-sm" onclick="x_admin_show('添加分组','{fun U('Member/groupadd')}')">添加分组</a>
 	   {/if}
-         {if($webconf['isopenhomepower']==0)}<button class="layui-btn">温馨提示：前台权限已关闭，设置权限不会生效。</button>{else}<button class="layui-btn layui-btn-danger">温馨提示：前台权限已开启，权限设置将直接影响前台访问，请谨慎操作！</button>{/if}
+         {if($webconf['isopenhomepower']==0)}<a class="layui-btn layui-btn-sm">温馨提示：前台权限已关闭，设置权限不会生效。</a>{else}<a class="layui-btn layui-btn-sm layui-btn-danger">温馨提示：前台权限已开启，权限设置将直接影响前台访问，请谨慎操作！</a>{/if}
       </xblock>
       <table class="layui-table layui-form">
         <thead>
@@ -68,10 +68,10 @@
            
             <td class="td-manage">
 			 {if(checkAction('Member/groupedit'))}
-              <button class="layui-btn layui-btn layui-btn-xs"  onclick="x_admin_show('编辑','{fun U('Member/groupedit',array('id'=>$v['id']))}')" ><i class="layui-icon">&#xe642;</i>编辑</button>
+              <a class="layui-btn layui-btn layui-btn-xs"  onclick="x_admin_show('编辑','{fun U('Member/groupedit',array('id'=>$v['id']))}')" >编辑</a>
 			 {/if}
 			 {if(checkAction('Member/group_del'))}
-              <button class="layui-btn-danger layui-btn layui-btn-xs"  onclick="member_del(this,'{$v['id']}')" href="javascript:;" ><i class="layui-icon">&#xe640;</i>删除</button>
+              <a class="layui-btn-danger layui-btn layui-btn-xs"  onclick="member_del(this,'{$v['id']}')" href="javascript:;" >删除</a>
 			 {/if}
             </td>
           </tr>
@@ -81,12 +81,16 @@
 		 
         </tbody>
       </table>
-      <div class="page">
-         
-      </div>
+			
+			</div>
+		</div>
+	  
+     
+     
 
     </div>
-    <script>
+
+	<script>
       layui.use(['laydate','form'], function(){
         var laydate = layui.laydate;
         var form = layui.form;

@@ -26,6 +26,8 @@ namespace FrPHP\Extend;
 		public $nextpage = '';
 		//每页条数
 		public $limit = 10;
+		//分页从第几开始
+		public $limit_t = 0;
 		//当前页码
 		public $currentPage = 1;
 		//间隔条数
@@ -34,6 +36,7 @@ namespace FrPHP\Extend;
 		public $url = '';
 		//分页分隔符
 		public $sep = '/page/';
+		public $paged = 'page';
 		//SQL
 		public $sql = null;
 		//排序
@@ -51,12 +54,10 @@ namespace FrPHP\Extend;
 		
 		
 		
-		public function __construct($table){
+		public function __construct($table=''){
 			
 			$this->table = $table;
-			if(!$table){
-				Error_msg('缺少表对象！');
-			}
+
 		}
 		
 		
@@ -75,13 +76,9 @@ namespace FrPHP\Extend;
 					$url = get_domain().APP_URL.'/'.APP_CONTROLLER.'/'.APP_ACTION.'?'.http_build_query($_GET);
 				}
 			}else{
-				//$url = str_ireplace('.html','',$request_uri);
-				//$position = strpos($url, '-');
-				//$url = $position === false ? $url : substr($url, 0, $position);
-				
+			
 				switch($this->typeurl){
 					case 'screen':
-						//$url = str_ireplace('.html','',$request_uri);
 					$url = get_domain().'/screen-'.$_GET['molds'].'-'.$_GET['tid'].'-'.$_GET['jz_screen']; 
 						if(strpos($url,'page')!==false){
 							$urls = explode('-page-',$url);
@@ -96,38 +93,43 @@ namespace FrPHP\Extend;
 							$url = $urls[0];
 						}
 						
+						
 					break;
 					case 'search':
+						$this->file_ext = '';
 						$param = $_REQUEST;
 						if(isset($param['page'])){
 							unset($param['page']);
 						}
-						
-						$url = get_domain().'/search?'.http_build_query($param);
+						unset($param['ajax']);
+						unset($param['ajax_tpl']);
+						$urlparse = parse_url($request_uri);
+						$url = get_domain().$urlparse['path'].'?'.http_build_query($param);
 						
 					break;
 					default:
+						
 						$url = str_ireplace('.html','',$request_uri);
-						if(strpos($url,'-')!==false){
-							$urls = explode('-',$url);
-							$num = array_pop($urls);
-							if(is_numeric($num)){
-								  $url = implode('-',$urls);
-							}
-
-						}
+						
 					
 					break;
 					
 				}
 				
-				
+				if($this->typeurl!='search'){
+					$position = strpos($url, '?');
+					$url = $position === false ? $url : substr($url, 0, $position);
+					$url = (strripos($url,'/')+1 == strlen($url)) ? substr($url,0,strripos($url,'/')) : $url; 
+				}
 			}
+			
+			
+			
 			return $url;
             
 		}
 		
-		public function pageList($pv=3,$sep=false){
+		public function pageList($pv=5,$sep=false){
 			/**
 				首页url  		home
 				上一页url		prev
@@ -150,40 +152,74 @@ namespace FrPHP\Extend;
 				'list' => null,
 				'last' => null,
 			);
-			$this->url = $this->getUrl();
+			
 			$this->pv = $pv;
 			$this->sep = ($sep==false) ? ($this->sep) : $sep;
-			$list = '';
-			$file_ext = $this->file_ext;
-			$listpage['home'] = $this->url.$file_ext;
-			for($i=1;$i<=$this->allpage;$i++){
-				if($this->allpage >= 2*$this->pv){
-					//需要间隔
-					$start = $this->currentPage+$this->pv;
-					$end = $this->currentPage-$this->pv;
-					if($i>=$end && $i<=$start){
-						if($i==$this->currentPage){
-							$list.='<li class="active" ><a >'.$this->currentPage.'</a></li>';
-							$listpage['current'] = $this->url.$this->sep.$i.$file_ext;
-							$listpage['current_num'] = $this->currentPage;
-						}else{
-							$list .= '<li><a href="'.$this->url.$this->sep.$i.$file_ext.'" data-page="'.$i.'">'.$i.'</a></li>';
-							
-						}
-						
-						$listpage['list'][] = array('url'=>$this->url.$this->sep.$i.$file_ext,'num'=>$i);
-					}
-				}else{
-					if($i==$this->currentPage){
-						$list.='<li class="active" ><a >'.$this->currentPage.'</a></li>';
-						$listpage['current'] = $this->url.$this->sep.$i.$file_ext;
-						$listpage['current_num'] = $this->currentPage;
-					}else{
-						$list .= '<li><a href="'.$this->url.$this->sep.$i.$file_ext.'" data-page="'.$i.'">'.$i.'</a></li>';
-						
-					}
-					$listpage['list'][] = array('url'=>$this->url.$this->sep.$i.$file_ext,'num'=>$i);
+			$url = $this->getUrl();
+			if(strpos($url,$this->sep)!==false){
+				$urls = explode($this->sep,$url);
+				$num = array_pop($urls);
+				if(is_numeric($num)){
+					  $url = implode($this->sep,$urls);
 				}
+
+			}
+			
+			$this->url = $url;
+			$list = '';
+			$request_uri = $_SERVER["REQUEST_URI"];    
+            if(strpos($request_uri,APP_URL)!==false){
+				$file_ext = '';
+			}else{
+				$file_ext = File_TXT_HIDE ? '' : $this->file_ext;
+				if($file_ext=='' && $this->typeurl==''){
+					$file_ext = CLASS_HIDE_SLASH ? $file_ext : $file_ext.'/';
+				}
+				if(strpos($url,'?')===false){
+					$param = $_REQUEST;
+					if(isset($param['page'])){
+						unset($param['page']);
+					}
+					unset($param['ajax']);
+					unset($param['ajax_tpl']);
+					unset($param['s']);
+					if($this->typeurl=='screen'){
+						unset($param['tid']);
+						unset($param['jz_screen']);
+						unset($param['molds']);
+					}
+					if($this->typeurl=='tpl'){
+						if(isset($param[$this->paged])){
+							unset($param[$this->paged]);
+						}
+					}
+					if(count($param)){
+						if(strpos($this->sep,'?')!==false){
+							$file_ext.='&'.http_build_query($param);
+						}else{
+							$file_ext.='?'.http_build_query($param);
+						}
+					}
+					
+				}
+			}
+			
+			
+			$listpage['home'] = $this->url.$file_ext;
+			$start = $this->currentPage-$this->pv;
+			$start = $start<1 ? 1 : $start;
+			$end = $this->currentPage+$this->pv;
+			$end = $end>$this->allpage ? $this->allpage : $end;
+			while($start<=$end){
+				if($start==$this->currentPage){
+					$list.='<li class="active" ><a >'.$this->currentPage.'</a></li>';
+					$listpage['current'] = $this->url.$this->sep.$start.$file_ext;
+					$listpage['current_num'] = $this->currentPage;
+				}else{
+					$list .= '<li><a href="'.$this->url.$this->sep.$start.$file_ext.'" data-page="'.$start.'">'.$start.'</a></li>';
+				}
+				$listpage['list'][] = array('url'=>$this->url.$this->sep.$start.$file_ext,'num'=>$start);
+				$start++;
 			}
 			$listpage['allpage'] = $this->allpage;
 			
@@ -209,17 +245,14 @@ namespace FrPHP\Extend;
 				$list = $prev.$list;
 				$listpage['prev'] = $this->prevpage;
 			}
-			
 			if($this->currentPage<$this->allpage){
 				$list .= $next;
 				$listpage['next'] = $this->nextpage;
 			}
-			
 			if($this->allpage > $this->pv){
 				$list .= $last;
-				$listpage['last'] = $this->url.$this->sep.$this->allpage.$file_ext;
 			}
-			
+			$listpage['last'] = $this->url.$this->sep.$this->allpage.$file_ext;
 			$list = $ext.$list.'</ul></div>';
 			$this->listpage = $listpage;
 			return $list;
@@ -235,7 +268,19 @@ namespace FrPHP\Extend;
 			return $this;
 		}
 		public function limit($limit=null){
-			$this->limit = ($limit==null)?$this->limit:$limit;
+			if($limit==null){
+				$this->limit = $this->limit;
+			}else{
+				if(strpos($limit,',')!==false){
+					$limit_t = explode(',',$limit);
+					$this->limit = (int)$limit_t[1];
+					$this->limit_t = (int)$limit_t[0];
+				}else{
+					$this->limit = $limit;
+				}
+
+			}
+
 			return $this;
 		}
 		public function fields($fields=null){
@@ -267,17 +312,22 @@ namespace FrPHP\Extend;
 		
 		public function go(){
 			if($this->currentPage!=1){
-				$limitsql = $this->limit*($this->currentPage-1).','.$this->limit;
+				$limitsql = (($this->limit*($this->currentPage-1)) - ($this->limit_t)).','.$this->limit;
 				//1-0:1  2-2:3
 			}else{
-				$limitsql = $this->limit;
+				if($this->limit_t!=0){
+					$limitsql = $this->limit_t.','.$this->limit;
+				}else{
+					$limitsql = $this->limit;
+				}
+				
 			}
 			
 			$this->datalist = M($this->table)->findAll($this->sql,$this->order,$this->fields,$limitsql);
 			
 			$this->sum = M($this->table)->getCount($this->sql);
 			$this->limit = $this->limit;
-			
+
 			$allpage = ceil($this->sum/$this->limit);
 			if($allpage==0){$allpage=1;}
 			$this->allpage = $allpage;
@@ -289,13 +339,26 @@ namespace FrPHP\Extend;
 			$this->sql = $sql;
 			$this->order = $order;
 			$this->fields = $fields;
-			$this->limit = $limit;
+			if(strpos($limit,',')!==false){
+				$limit_t = explode(',',$limit);
+				$this->limit = (int)$limit_t[1];
+				$this->limit_t = (int)$limit_t[0];
+			}else{
+				$this->limit = $limit;
+			}
+			
 			if($this->currentPage!=1){
-				$limitsql = $this->limit*($this->currentPage-1).','.$this->limit;
+				$limitsql = (($this->limit*($this->currentPage-1)) - ($this->limit_t)).','.$this->limit;
 				//1-0:1  2-2:3
 			}else{
-				$limitsql = $this->limit;
+				if($this->limit_t!=0){
+					$limitsql = $this->limit_t.','.$this->limit;
+				}else{
+					$limitsql = $this->limit;
+				}
+				
 			}
+			
 			$this->datalist = M($this->table)->findAll($this->sql,$this->order,$this->fields,$limitsql);
 			$this->sum = M($this->table)->getCount($sql);
 			$this->limit = $limit;
@@ -303,7 +366,36 @@ namespace FrPHP\Extend;
 			return $this->datalist;
 		}
 		
+		// SQL处理
+		public function goSql(){
+			if($this->currentPage!=1){
+				$limitsql = (($this->limit*($this->currentPage-1)) - ($this->limit_t)).','.$this->limit;
+				//1-0:1  2-2:3
+			}else{
+				if($this->limit_t!=0){
+					$limitsql = $this->limit_t.','.$this->limit;
+				}else{
+					$limitsql = $this->limit;
+				}
+				
+			}
+			$orderby = $this->order ? ' order by '.$this->order : '';
+			$limit = ' limit '.$limitsql;
+			$sql = $this->sql.' '.$orderby.' '.$limit;
+			$this->datalist = M()->findSql($sql);
+			$this->limit = $this->limit;
+
+			$allpage = ceil($this->sum/$this->limit);
+			if($allpage==0){$allpage=1;}
+			$this->allpage = $allpage;
+			return $this->datalist;
+		}
 		
+		public function goCount($sql){
+			$n = M()->findSql($sql);
+			$this->sum = count($n);
+			return $this;
+		}
 		
 		
 		

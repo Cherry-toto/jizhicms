@@ -52,6 +52,9 @@ class FrPHP
 		defined('Session_Path') or define('Session_Path', isset($config['Session_Path']) ? $config['Session_Path'] : $MyConfig['Session_Path']);
 		defined('APP_LANG') or define('APP_LANG', isset($config['APP_LANG']) ? $config['APP_LANG'] : $MyConfig['APP_LANG']);
 		defined('APP_LANG_REQUREST') or define('APP_LANG_REQUREST', isset($config['APP_LANG_REQUREST']) ? $config['APP_LANG_REQUREST'] : $MyConfig['APP_LANG_REQUREST']);
+		defined('ROOT') or define('ROOT', isset($config['ROOT']) ? $config['ROOT'] : $MyConfig['ROOT']);
+		defined('File_TXT_HIDE') or define('File_TXT_HIDE', isset($config['File_TXT_HIDE']) ? $config['File_TXT_HIDE'] : $MyConfig['File_TXT_HIDE']);
+		defined('CLASS_HIDE_SLASH') or define('CLASS_HIDE_SLASH', isset($config['CLASS_HIDE_SLASH']) ? $config['CLASS_HIDE_SLASH'] : $MyConfig['CLASS_HIDE_SLASH']);
 		//引入系统函数
 		require(CORE_PATH.'/common/Functions.php');
 		//引入项目函数
@@ -59,7 +62,6 @@ class FrPHP
 		if(file_exists($ext_fun)){
 			require($ext_fun);
 		}
-		
 		//引入扩展函数
 		$Extend = scandir(CORE_PATH.'/Extend');
 		//var_dump($Extend);
@@ -126,17 +128,34 @@ class FrPHP
 			
 			
 		}
-		
-      	
-		//引入自定义路由
-		
-		$route_ok = false;
-		
 		if(isset($_SERVER['argv']) && !isset($_SERVER['REQUEST_URI'])){
 			$url = urldecode($_SERVER['argv'][1]);
 		}else{
 			$url = urldecode($_SERVER['REQUEST_URI']);
 		}
+      	//读取系统配置
+		$webconfig = getCache('webconfig');
+		if(!$webconfig){
+			$wcf = M('sysconfig')->findAll();
+			$webconfig = array();
+			foreach($wcf as $k=>$v){
+				if($v['field']=='web_js' || $v['field']=='ueditor_config'){
+					$v['data'] = html_decode($v['data']);
+				}
+				$webconfig[$v['field']] = $v['data'];
+			}
+			setCache('webconfig',$webconfig);
+		}
+		if($webconfig){
+			if($webconfig['iswap']==1){
+				$webconfig['mobile_html'] = $webconfig['mobile_html']=='' ? '/' : $webconfig['mobile_html'];
+				$url = str_replace('/'.$webconfig['mobile_html'].'/','/',$url);
+			}
+			$url = str_replace('/'.$webconfig['pc_html'].'/','/',$url);
+		}
+		//引入自定义路由
+		
+		$route_ok = false;
 		
 		$method = '';
 		if(open_url_route){
@@ -163,45 +182,26 @@ class FrPHP
 
 			}
 			
-			
+			$position = strpos($url,'?');
+			if($position!==false){
+				$param = substr($url,$position+1);
+				parse_str($param,$_GET);
+			}
 			
 		}else{
 			$open_url_route = [];
 			
 		}
-		//读取系统配置
-		$webconfig = getCache('webconfig');
-		if(!$webconfig){
-			$wcf = M('sysconfig')->findAll(array('type'=>0));
-			$webconfig = array();
-			foreach($wcf as $k=>$v){
-				if($v['field']=='web_js' || $v['field']=='ueditor_config'){
-					$v['data'] = html_decode($v['data']);
-				}
-				$webconfig[$v['field']] = $v['data'];
-			}
-			setCache('webconfig',$webconfig);
-		}
-		if(isset($_SESSION['terminal'])){
-			$terminal_path = ($_SESSION['terminal']=='mobile' && $webconfig['iswap']==1) ? $webconfig['mobile_html'] : $webconfig['pc_html'];
-			$terminal_path = $terminal_path==''  ? '/' : $terminal_path;
-			$url = str_replace('/'.$terminal_path.'/','/',$url);
-			
-		}else{
-			if(isMobile() && $webconfig['iswap']==1){
-				$webconfig['mobile_html'] = $webconfig['mobile_html']=='' ? '/' : $webconfig['mobile_html'];
-				$url = str_replace('/'.$webconfig['mobile_html'].'/','/',$url);
-			}else{
-				$url = str_replace('/'.$webconfig['pc_html'].'/','/',$url);
-			}
 		
-		}
-		
+		//去除二级目录
+		$url = str_replace(ROOT,'/',$url);
+		$url = format_param($url,1);
 		define('REQUEST_URI',$url);
         $controllerName = DefaultController;
         $actionName = DefaultAction;
         $param = array();
-
+		$tpl = get_template();
+		define('TEMPLATE',$tpl);
        // $url = urldecode($url);
         // 清除?之后的内容
         $position = strpos($url, '?');
@@ -251,6 +251,7 @@ class FrPHP
 		// 判断插件中是否存在控制器和操作--2019/2/15 by 留恋风
 		$controller = APP_HOME.'\\plugins\\'. $controllerName . 'Controller';
 		if (!class_exists($controller) || !method_exists($controller, $actionName)) {
+
 			// 不存在插件，则进入系统默认控制器
             // 判断控制器和操作是否存在
 			$controller = APP_HOME.'\\'.HOME_CONTROLLER.'\\'. $controllerName . 'Controller';
@@ -263,7 +264,7 @@ class FrPHP
             if(APP_URL=='/index.php'){
                 if (!method_exists($controller, $actionName)) {
                    $actionName = 'jizhi';
-				    //Error_msg('方法不存在！');
+				   //Error_msg('方法不存在！');
                 }  
             }else{
                 if (!method_exists($controller, $actionName)) {
@@ -271,8 +272,13 @@ class FrPHP
                 }
             }
 
+            if($controllerName=='Home' && $actionName=='jizhi'){
+            	if(method_exists(APP_HOME.'\\plugins\\HomeController', 'jizhi')){
+					$controller = APP_HOME.'\\plugins\\HomeController';
+					$actionName = 'jizhi';
+				}
+            }
 
-			
         }
         //定义全局控制器及方法常量
 		define('APP_CONTROLLER',$controllerName);
@@ -311,11 +317,14 @@ class FrPHP
 			//['module'=>APP_HOME,'controller'=>APP_CONTROLLER,'action'=>APP_ACTION]
 			foreach($hookconfig as $v){
 				if($v['module']==APP_HOME && $v['controller']==APP_CONTROLLER && (strpos(','.$v['action'].',',','.APP_ACTION.',')!==false || $v['all_action']==1)){
+					$newhook_controller = '\\'.$v['module'].'\\plugins\\'.$v['hook_controller'].'Controller';
+					/* //防止数据库反斜杠出错，做出更改，hook_namespace参数将失效
 					if($v['hook_namespace']!=''){
 						$newhook_controller = $v['hook_namespace'].'\\'.$v['hook_controller'].'Controller';
 					}else{
 						$newhook_controller = $v['hook_controller'].'Controller';
 					}
+					*/
 					$newhook = new $newhook_controller($param);
 					$hook_action = $v['hook_action'];
 					$newhook->$hook_action($param);
@@ -324,10 +333,9 @@ class FrPHP
 			
 			}
 		}
-		//$dispatch = new $controller($controllerName, $actionName ,$param);
 		$dispatch = new $controller($param);
-        call_user_func_array(array($dispatch, $actionName), $param);
-
+		$dispatch->$actionName($param);
+       
 		
 		
 		
@@ -351,12 +359,13 @@ class FrPHP
     // 检测开发环境
     public function setReporting()
     {
-     
+		ini_set("session.cookie_httponly", 1);
         if (APP_DEBUG === true) {
-            error_reporting(E_ALL);
+            //error_reporting(E_ALL);
+			error_reporting(E_ALL & ~E_NOTICE & ~E_WARNING);
             ini_set('display_errors','On');
         } else {
-            error_reporting(E_ALL);
+            error_reporting(0);
             ini_set('display_errors','Off');
             ini_set('log_errors', 'On');
         }
@@ -372,12 +381,10 @@ class FrPHP
     // 检测敏感字符并删除
     public function removeMagicQuotes()
     {
-        if (get_magic_quotes_gpc()) {
-            $_GET = isset($_GET) ? $this->stripSlashesDeep($_GET ) : '';
-            $_POST = isset($_POST) ? $this->stripSlashesDeep($_POST ) : '';
-            $_COOKIE = isset($_COOKIE) ? $this->stripSlashesDeep($_COOKIE) : '';
-            $_SESSION = isset($_SESSION) ? $this->stripSlashesDeep($_SESSION) : '';
-        }
+        $_GET = isset($_GET) ? $this->stripSlashesDeep($_GET ) : '';
+		$_POST = isset($_POST) ? $this->stripSlashesDeep($_POST ) : '';
+		$_COOKIE = isset($_COOKIE) ? $this->stripSlashesDeep($_COOKIE) : '';
+		$_SESSION = isset($_SESSION) ? $this->stripSlashesDeep($_SESSION) : '';
     }
 
     // 检测自定义全局变量并移除。因为 register_globals 已经弃用，如果
@@ -409,6 +416,10 @@ class FrPHP
             define('DB_USER', $this->config['db']['username']);
             define('DB_PASS', $this->config['db']['password']);
             define('DB_PORT', $this->config['db']['port']);
+			if(DB_HOST=='' || DB_NAME=='' || DB_USER=='' || DB_PASS==''){
+				exit('<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />数据库无法链接，如果您是第一次使用，请先执行<a href="/install/">安装程序</a><br /><br /><a href="http://jizhicms.com" target="_blank">极致CMS建站程序 jizhicms.com</a>');
+			}
+			
         }
 		
     }

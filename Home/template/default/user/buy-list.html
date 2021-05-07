@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  {include="user/style"}
+  <title>购买记录 - 个人中心</title>
+</head>
+<body>
+
+{include="user/top"}
+
+<div class="login-page page">
+  <div class="container clearfix">
+    {include="user/left_nav"}
+    <div class="user-right">
+      <div class="user-tips">
+        <p><i class="iconfont iconxiaoxi3"></i> 欢迎注册本站会员，注册会员后您将享受专属会员服务!包括但不限于专属文章浏览权限，会员投稿权限，在线购物权限，下载会员可见附件等实用功能，欢迎注册体验！</p>
+      </div>
+      <div class="common-tab">
+        <h2><a href="{fun U('user/wallet')}">我的钱包</a><a href="{fun U('user/buylist',['type'=>1])}" {if($type==1)}class="active"{/if} >交易记录</a><a href="{fun U('user/buylist',['type'=>2])}" {if($type==2)}class="active"{/if} >充值记录</a><a href="{fun U('user/buylist',['type'=>3])}" {if($type==3)}class="active"{/if} >赠送记录</a></h2>
+      </div>
+      <style>
+      .rechage {
+        background: #fff;
+        border-radius: 5px;
+        margin-bottom: 10px;
+        overflow: hidden;
+        padding: 15px 10px;
+      }
+      .rechage-list li {
+        border-bottom: 1px solid #f9f9f9;
+        padding: 0 10px;
+        position: relative;
+      }
+      .rechage-list li:hover {
+        background: #f1f1f1;
+      }
+      .rechage-list li a {
+        display: flex;
+        justify-content: space-between;
+        width: 100%;
+        padding: 10px 0;
+      }
+      .rechage-list li a.btn {
+        position: absolute;
+        right: 10px;
+        bottom: 10px;
+        display: block;
+        width: 40px;
+        height: 24px;
+        line-height: 22px;
+        border-radius: 2px;
+        color: #fff;
+        font-size: 12px;
+        text-align: center;
+        background: #c82333;
+        padding: 0;
+        border: 1px solid #c82333;
+        display: none;
+      }
+      .rechage-list li:hover a.btn {
+        display: block;
+      }
+      .rechage-list i.iconjifen1 {
+        display: block;
+        width: 30px;
+        height: 30px;
+        text-align: center;
+        line-height: 30px;
+        border-radius: 50%;
+        color: #fff;
+        font-size: 20px;
+        background: #e85328;
+        margin-right: 10px;
+      }
+      .rechage-list i.iconzijin {
+        display: block;
+        width: 30px;
+        height: 30px;
+        text-align: center;
+        line-height: 30px;
+        border-radius: 50%;
+        color: #fff;
+        font-size: 20px;
+        background: #007bff;
+        margin-right: 10px;
+      }
+      .rechage-item {
+        display: flex;
+      }
+      .rechage-item p.title {
+        color: #242424;
+        font-size: 14px;
+        line-height: 20px;
+      }
+      .rechage-item p.type,
+      .rechage-item p.time {
+        color: #666;
+        font-size: 12px;
+        line-height: 20px;
+      }
+      .rechage-list li .money {
+        color: #000;
+      }
+      </style>
+      <div class="rechage">
+        <ul class="rechage-list">
+        {foreach $lists1 as $v}
+          <li>
+            <a href="{$v['details']}" title="">
+              <div class="rechage-item">
+              {if($v['buytype']=='money')}
+                <div class="icon">
+                  <i class="iconfont iconzijin"></i>
+                </div>
+                <div class="p">
+                  <p class="title">余额</p>
+                  <p class="type">{$v['msg']}</p>
+                  <p class="time">{fun formatTime($v['addtime'],'Y-m-d H:i:s')}</p>
+                </div>
+              {else}
+                <div class="icon">
+                  <i class="iconfont iconjifen1"></i>
+                </div>
+                <div class="p">
+                  <p class="title">积分</p>
+                  <p class="type">{$v['msg']}</p>
+                  <p class="time">{fun formatTime($v['addtime'],'Y-m-d H:i:s')}</p>
+                </div>
+              {/if}
+              </div>
+              <div class="money">
+               {if($v['type']!=2)}+{else}-{/if}{$v['amount']}
+              </div>
+            </a>
+            <a href="{$v['details']}" class="btn">查看</a>
+          </li>
+        {/foreach}
+          
+        </ul>
+        <div class="pagebar-common">
+          {if($listpage1['list'])}
+          <ul class="pagination">
+          <li class="page-item {if(!$listpage1['prev'])}disabled{/if}">
+          <a class="page-link" href="{$listpage1['prev']}" aria-label="Previous"><span aria-hidden="true">«</span></a></li>
+          {foreach $listpage1['list'] as $ss}
+          <li class="page-item {if($ss['num']==$listpage1['current_num'])}active background{/if}"><a href="{$ss['url']}" class="page-link">{$ss['num']}</a></li>
+          {/foreach}
+          <li class="page-item {if(!$listpage1['next'])}disabled{/if}"><a class="page-link" href="{$listpage1['next']}" aria-label="Next"><span aria-hidden="true">»</span></a></li>
+          </ul>
+          {/if}
+        </div>
+      </div>
+      <div class="table release-table">
+        <div class="table-scroll">
+          <table>
+            <thead>
+              <tr>
+                <th>订单号</th>
+                <th>金额</th>
+                <th>状态</th>
+                <th>创建时间</th>
+                <th>操作</th>
+              </tr>
+            </thead>
+            <tbody>
+            {foreach $lists as $v}
+              <tr>
+                <td>{$v['orderno']}</td>
+                <td><span class="price">{$v['price']}</span></th>
+                <td>{if($v['isshow']==1)}
+              <span class="fr btn-sm btn-info">待支付</span>
+              {else if($v['isshow']==2)}
+              <span class="fr btn-sm btn-success">交易成功</span>
+              {else if($v['isshow']==3)}
+              <span class="fr btn-sm btn-danger">已超时</span>
+              {else if($v['isshow']==4)}
+              <span class="fr btn-sm btn-warning">待发货</span>
+              {else if($v['isshow']==5)}
+              <span class="fr btn-sm btn-success">已发货</span>
+              {else}
+              <span class="fr btn-sm btn-warning">已废弃</span>
+              {/if}</td>
+                <td>{$v['date']}</td>
+                <td><a href="{$v['orderdetails']}" class="btn-edit">查看</a><a  href="javascript:;" onclick="javascript:if(confirm('您确定要删除吗？'))window.location.href='{$v['orderdel']}'" class="btn-delete">删除</a></td>
+              </tr>
+            {/foreach}
+            
+            </tbody>
+          </table>
+        </div>
+        <div class="pagebar-common">
+          {if($listpage['list'])}
+          <ul class="pagination">
+          <li class="page-item {if(!$listpage['prev'])}disabled{/if}">
+          <a class="page-link" href="{$listpage['prev']}" aria-label="Previous"><span aria-hidden="true">«</span></a></li>
+          {foreach $listpage['list'] as $ss}
+          <li class="page-item {if($ss['num']==$listpage['current_num'])}active background{/if}"><a href="{$ss['url']}" class="page-link">{$ss['num']}</a></li>
+          {/foreach}
+          <li class="page-item {if(!$listpage['next'])}disabled{/if}"><a class="page-link" href="{$listpage['next']}" aria-label="Next"><span aria-hidden="true">»</span></a></li>
+          </ul>
+          {/if}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+{include="user/footer"}
+</body>
+</html>

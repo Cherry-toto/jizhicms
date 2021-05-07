@@ -4,7 +4,14 @@
     <head>
        <meta charset="UTF-8">
         {include="style"}
-		
+		<style>
+		.layui-form-pane .layui-form-label {
+			width: 150px;
+			}
+		.layui-form-pane .layui-form-item[pane] .layui-input-inline {
+			margin-left: 150px;
+		}
+		</style>
     </head>
     
     <body>
@@ -12,8 +19,8 @@
             <span class="layui-breadcrumb">
               <a><cite>首页</cite></a>
               <a><cite>系统扩展</cite></a>
-              <a><cite>模块管理</cite></a>
-              <a><cite>修改模块</cite></a>
+              <a><cite>模型管理</cite></a>
+              <a><cite>修改模型</cite></a>
             </span>
             <a class="layui-btn layui-btn-small" style="line-height:1.6em;margin-top:3px;float:right"  href="javascript:location.replace(location.href);" title="刷新"><i class="iconfont" style="line-height:30px">&#xe6aa;</i></a>
         </div>
@@ -27,7 +34,7 @@
 			
                 <div class="layui-form-item">
                     <label for="name" class="layui-form-label">
-                        <span class="x-red">*</span>模块名称
+                        <span class="x-red">*</span>模型名称
                     </label>
                     <div class="layui-input-inline">
                         <input type="text" id="name" value="{$data['name']}"   name="name" required="" lay-verify="required"
@@ -37,7 +44,7 @@
 				
 				 <div class="layui-form-item">
                     <label for="biaoshi" class="layui-form-label">
-                        <span class="x-red">*</span>模块标识
+                        <span class="x-red">*</span>模型标识
                     </label>
                     <div class="layui-input-inline">
                         <input type="text" id="biaoshi" value="{$data['biaoshi']}"   name="biaoshi" 
@@ -47,25 +54,96 @@
 					  <span class="x-red">*</span>必须是英文字母，且不能是已存在的标识，标识即是数据库里的表名
 				    </div>
                 </div>
-				<div class="layui-form-item" pane>
-                    <label for="isclasstype" class="layui-form-label">
-                        <span class="x-red"></span>是否栏目
+				
+				 <div class="layui-form-item" pane>
+                    <label for="ismust" class="layui-form-label">
+                        <span class="x-red"></span>是否必选栏目
                     </label>
                     <div class="layui-input-inline">
-                        <input type="radio" name="isclasstype" value="0" title="不显示" {if($data['isclasstype']==0)}checked{/if}>
-						<input type="radio" name="isclasstype" value="1" title="显示" {if($data['isclasstype']==1)}checked{/if}>
+                        <input type="radio" name="ismust" value="0" title="不是" {if($data['ismust']==0)}checked{/if}>
+						<input type="radio" name="ismust" value="1" title="是" {if($data['ismust']==1)}checked{/if}>
                     </div>
 					<div class="layui-form-mid layui-word-aux">
 					  <span class="x-red">*</span>
-					  列表展示、录入内容、修改内容三个页面是否展示栏目这个选项
+					  新增修改内容时必选
+				    </div>
+					
+                 </div>
+				 <div class="layui-form-item" pane>
+                    <label for="isclasstype" class="layui-form-label">
+                        <span class="x-red"></span>是否显示栏目
+                    </label>
+                    <div class="layui-input-inline">
+                        <input type="radio" name="isclasstype" value="0" title="不是" {if($data['isclasstype']==0)}checked{/if}>
+						<input type="radio" name="isclasstype" value="1" title="是" {if($data['isclasstype']==1)}checked{/if}>
+                    </div>
+					<div class="layui-form-mid layui-word-aux">
+					  <span class="x-red">*</span>
+					  列表展示、录入内容、修改内容三个页面是否展示栏目
+				    </div>
+					
+                 </div>
+				 <div class="layui-form-item" pane>
+                    <label for="iscontrol" class="layui-form-label">
+                        <span class="x-red"></span>是否受权限控制
+                    </label>
+                    <div class="layui-input-inline">
+                        <input type="radio" name="iscontrol" value="0" title="否" {if($data['iscontrol']==0)}checked{/if}>
+						<input type="radio" name="iscontrol" value="1" title="是" {if($data['iscontrol']==1)}checked{/if}>
+                    </div>
+					<div class="layui-form-mid layui-word-aux">
+					  <span class="x-red">*</span>
+					  不同角色可以通过控制栏目权限来限制查看内容
 				    </div>
 					
                  </div>
 				<div class="layui-form-item" pane>
+                    <label for="isshowclass" class="layui-form-label">
+                        <span class="x-red"></span>栏目绑定显示
+                    </label>
+                    <div class="layui-input-inline">
+					
+					<input type="radio" name="isshowclass" value="0" title="不是" {if($data['isshowclass']==0)}checked{/if}>
+					<input type="radio" name="isshowclass" value="1" title="是" {if($data['isshowclass']==1)}checked{/if}>
+					
+                    </div>
+					<div class="layui-form-mid layui-word-aux">
+					  <span class="x-red">*</span>
+					  栏目绑定时是否显示该模型
+				    </div>
+					
+                 </div>
+				<div class="layui-form-item">
+                    <label for="list_html" class="layui-form-label">
+                        <span class="x-red">*</span>列表模板
+                    </label>
+                    <div class="layui-input-inline">
+                        <input type="text" id="list_html" value="{$data['list_html']}"    name="list_html" 
+                        autocomplete="off" class="layui-input">
+                    </div>
+					<div class="layui-form-mid layui-word-aux">
+					  <span class="x-red">*</span>默认列表模板
+				    </div>
+                </div>
+				<div class="layui-form-item">
+                    <label for="details_html" class="layui-form-label">
+                        <span class="x-red">*</span>详情模板
+                    </label>
+                    <div class="layui-input-inline">
+                        <input type="text" id="details_html" value="{$data['details_html']}"    name="details_html" 
+                        autocomplete="off" class="layui-input">
+                    </div>
+					<div class="layui-form-mid layui-word-aux">
+					  <span class="x-red">*</span>默认详情模板
+				    </div>
+                </div>
+				 
+				 
+				<div class="layui-form-item" pane>
                     <label for="isopen" class="layui-form-label">
                         <span class="x-red"></span>是否开启
                     </label>
-                    <div class="layui-input-block">
+                    <div class="layui-input-inline">
                         <input type="radio" name="isopen" value="0" title="不显示" {if($data['isopen']==0)}checked{/if}>
 						<input type="radio" name="isopen" value="1" title="显示" {if($data['isopen']==1)}checked{/if}>
                     </div>

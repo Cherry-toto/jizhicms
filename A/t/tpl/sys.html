@@ -2,9 +2,15 @@
 <html>
     <head>
     <meta charset="UTF-8">
-   {include="style"}
+    {include="style"}
+	{include="edit"}
+	<style>
+	body .layui-layer-demo .layui-layer-title{background:#009688; color:#fff; border: none;}
+	body .layui-layer-demo .layui-layer-content{padding:20px;line-height: 24px;}
+
+	</style>
+	
   </head>
-    </head>
     <body>
         <div class="x-nav">
             <span class="layui-breadcrumb">
@@ -14,27 +20,30 @@
             </span>
             <a class="layui-btn layui-btn-small" style="line-height:1.6em;margin-top:3px;float:right"  href="javascript:location.replace(location.href);" title="刷新"><i class="iconfont" style="line-height:30px">&#xe6aa;</i></a>
         </div>
-		<form class="layui-form layui-form-pane" >
+        <form class="layui-form layui-form-pane" >
         <div class="x-body">
             <div class="layui-tab layui-tab-brief" lay-filter="docDemoTabBrief">
               <ul class="layui-tab-title">
                 <li class="layui-this">网站设置</li>
-				{if(checkAction('Sys/high-level'))}
+                {if(checkAction('Sys/high-level'))}
                 <li>高级设置</li>
-				{/if}
-				{if(checkAction('Sys/email-order'))}
+                {/if}
+                {if(checkAction('Sys/email-order'))}
                 <li>邮箱订单</li>
-				{/if}
-				{if(checkAction('Sys/payconfig'))}
+                {/if}
+                {if(checkAction('Sys/payconfig'))}
                 <li>支付配置</li>
-				{/if}
-				{if(checkAction('Sys/wechatbind'))}
+                {/if}
+                {if(checkAction('Sys/wechatbind'))}
                 <li>公众号绑定</li> 
-				{/if}
+                {/if}
+                {if(checkAction('Sys/jifenset'))}
+                <li>积分设置</li> 
+                {/if}
               </ul>
-			 
+             
               <div class="layui-tab-content" >
-			 
+             
                 <div class="layui-tab-item layui-show">
                     
                         <div class="layui-form-item">
@@ -46,12 +55,12 @@
                                 class="layui-input">
                             </div>
                         </div>
-						 <div class="layui-form-item">
+                         <div class="layui-form-item">
                             <label style="width:150px" class="layui-form-label">
                                 <span class='x-red'>*</span>网站SEO网址
                             </label>
                             <div style="margin-left:150px" class="layui-input-block">
-                                <input type="text" name="domain" value="{$config['domain']}" autocomplete="off" placeholder="全局网址,最后不带/"
+                                <input type="text" name="domain" value="{$config['domain']}" autocomplete="off" placeholder="全局网址,最后不带/,如：http://www.xxx.com"
                                 class="layui-input">
                             </div>
                         </div>
@@ -65,8 +74,8 @@
                             </div>
                         </div>
                       
-						
-						<div class="layui-form-item layui-form-text">
+                        
+                        <div class="layui-form-item layui-form-text">
                             <label  class="layui-form-label">
                                 <span class='x-red'>*</span>网站SEO描述
                             </label>
@@ -74,7 +83,23 @@
                                 <textarea placeholder="空制在80个汉字，160个字符以内"  name="web_desc" class="layui-textarea">{$config['web_desc']}</textarea>
                             </div>
                         </div>
-                        
+                        <div class="layui-form-item" >
+                            <label  class="layui-form-label">
+                                <span class="x-red">*</span>网站logo
+                            </label>
+                            <div class="layui-inline">
+                               
+                              <input name="web_logo" type="text" class="layui-input" id="web_logo" value="{$config['web_logo']}">
+                            </div>
+                             <div class="layui-inline">
+                                <button type="button" class="layui-btn" id="web_logo_upload">
+                                      <i class="layui-icon"></i>上传图片
+                                  </button><input class="layui-upload-file" type="file" accept="image/*" name="file">
+                             </div>
+                             <div class="layui-block">
+                            <img src="{$config['web_logo']}"  id="web_logo_img">
+                            </div>
+                        </div>
                         <div class="layui-form-item">
                             <label style="width:150px" class="layui-form-label">
                                 <span class='x-red'>*</span>底部版权
@@ -93,12 +118,21 @@
                                 class="layui-input">
                             </div>
                         </div>
-						<div class="layui-form-item">
+                        <div class="layui-form-item">
                             <label style="width:150px" class="layui-form-label">
                                 <span class='x-red'>*</span>网站电话
                             </label>
                             <div style="margin-left:150px" class="layui-input-block">
                                 <input type="text" name="web_tel" value="{$config['web_tel']}" autocomplete="off" placeholder=""
+                                class="layui-input">
+                            </div>
+                        </div>
+						<div class="layui-form-item">
+                            <label style="width:150px" class="layui-form-label">
+                                <span class='x-red'>*</span>联系手机
+                            </label>
+                            <div style="margin-left:150px" class="layui-input-block">
+                                <input type="text" name="web_phone" value="{$config['web_phone']}" autocomplete="off" placeholder=""
                                 class="layui-input">
                             </div>
                         </div>
@@ -111,7 +145,7 @@
                                     class="layui-input">
                                 </div>
                             </div>
-						<div class="layui-form-item">
+                        <div class="layui-form-item">
                             <label style="width:150px" class="layui-form-label">
                                 <span class='x-red'>*</span>网站QQ
                             </label>
@@ -120,7 +154,7 @@
                                 class="layui-input">
                             </div>
                         </div>
-						<div class="layui-form-item">
+                        <div class="layui-form-item">
                             <label style="width:150px" class="layui-form-label">
                                 <span class='x-red'>*</span>网站邮箱
                             </label>
@@ -129,7 +163,7 @@
                                 class="layui-input">
                             </div>
                         </div>
-						<div class="layui-form-item">
+                        <div class="layui-form-item">
                             <label style="width:150px" class="layui-form-label">
                                 <span class='x-red'>*</span>公司地址
                             </label>
@@ -146,68 +180,69 @@
                                 <textarea placeholder="将铭感词放到这里，用 , 分隔，用 {xxx} 替代通配内容"  name="mingan" class="layui-textarea">{$config['mingan']}</textarea>
                             </div>
                         </div>
-					
-						{if($custom)}
-						{foreach $custom as $k=>$v}
-						<?php
-						switch($v['type']){
-							case 1:
-							echo '<div class="layui-form-item" id="custom_'.$v['field'].'">
-									<label style="width:150px" class="layui-form-label">
-										<span class=\'x-red\'>*</span>'.$v['title'].'
-									</label>
-									<div  class="layui-inline">
-									   
-									  <input name="'.$v['field'].'" type="text" class="layui-input" id="'.$v['field'].'" value="'.$v['data'].'" />
-									</div>
-									 <div class="layui-inline">
-										 
-										 
-										  <button type="button" class="layui-btn" id="LAY_'.$v['field'].'_upload">
-											  <i class="layui-icon">&#xe67c;</i>上传图片
-										  </button>
-									 </div>';
-							if($admin['gid']==1){
-								echo	 '<div class="layui-inline">
-										<button type="button" lay-filter="del" data="custom_'.$v['field'].'"  lay-submit=""  class="layui-btn layui-btn-danger">删除</button>
-									 </div>[  '.$v['field'].'  ]';
-							}
-								echo	'<div class="layui-block">
-									<img src="'.$v['data'].'"  width="400"  id="'.$v['field'].'_img" />
-									</div>
-								</div>
+                    
+                        {if($custom)}
+                        {foreach $custom as $k=>$v}
+                        <?php
+                        switch($v['type']){
+                            case 1:
+                            echo '<div class="layui-form-item" id="custom_'.$v['field'].'">
+                                    <label style="width:150px" class="layui-form-label">
+                                        <span class=\'x-red\'>*</span>'.$v['title'].'
+                                    </label>
+                                    <div  class="layui-inline">
+                                       
+                                      <input name="'.$v['field'].'" type="text" class="layui-input" id="'.$v['field'].'" value="'.$v['data'].'" />
+                                    </div>
+                                     <div class="layui-inline">
+                                         
+                                         
+                                          <button type="button" class="layui-btn" id="LAY_'.$v['field'].'_upload">
+                                              <i class="layui-icon">&#xe67c;</i>上传图片
+                                          </button>
+                                     </div>';
+                            if($admin['gid']==1){
+                                echo     '<div class="layui-inline">
+                                        <button type="button" lay-filter="del" data="custom_'.$v['field'].'"  lay-submit=""  class="layui-btn layui-btn-danger">删除</button>
+                                     </div>[  '.$v['field'].'  ]';
+                            }
+                                echo    '<div class="layui-block">
+                                    <img src="'.$v['data'].'"  width="150"  id="'.$v['field'].'_img" />
+                                    </div>
+                                </div>
                         
-						<script>
-				
-						layui.use("upload", function(){
-							  var upload_'.$v['field'].' = layui.upload;
-							   
-							  //执行实例
-							  var uploadInst = upload_'.$v['field'].'.render({
-								elem: "#LAY_'.$v['field'].'_upload" //绑定元素
-								,url: "'.U('Common/uploads').'" //上传接口
-								,accept:"images"
-								,acceptMime:"image/*"
-								,done: function(res){
-								  
-									if(res.code==0){
-										 $("#'.$v['field'].'_img").attr("src","/"+res.url);
-										 $("#'.$v['field'].'").val("/"+res.url);
-									}else{
-										 layer.alert(res.error, {icon: 5});
-									}
-								}
-								,error: function(){
-								  //请求异常回调
-								  layer.alert("上传异常！");
-								}
-							  });
-							});
-						</script>';
-							
-							break;
-							case 2:
-							echo '<div class="layui-form-item" id="custom_'.$v['field'].'">
+                        <script>
+                
+                        layui.use("upload", function(){
+                              var upload_'.$v['field'].' = layui.upload;
+                               
+                              //执行实例
+                              var uploadInst = upload_'.$v['field'].'.render({
+                                elem: "#LAY_'.$v['field'].'_upload" //绑定元素
+                                ,url: "'.U('Common/uploads').'" //上传接口
+                                ,accept:"images"
+                                ,acceptMime:"image/*"
+                                ,data:{molds:"sysconfig"}
+                                ,done: function(res){
+                                  
+                                    if(res.code==0){
+                                         $("#'.$v['field'].'_img").attr("src",res.url);
+                                         $("#'.$v['field'].'").val(res.url);
+                                    }else{
+                                         layer.alert(res.error, {icon: 5});
+                                    }
+                                }
+                                ,error: function(){
+                                  //请求异常回调
+                                  layer.alert("上传异常！");
+                                }
+                              });
+                            });
+                        </script>';
+                            
+                            break;
+                            case 2:
+                            echo '<div class="layui-form-item" id="custom_'.$v['field'].'">
                             <label style="width:150px" class="layui-form-label">
                                 <span class=\'x-red\'>*</span>'.$v['title'].'
                             </label>
@@ -215,63 +250,221 @@
                                 <input type="text" name="'.$v['field'].'" value="'.$v['data'].'" autocomplete="off" placeholder="请输入内容"
                                 class="layui-input">
                             </div>';
-							if($admin['gid']==1){
-							echo '<div class="layui-inline">
-								<button type="button" lay-filter="del" data="custom_'.$v['field'].'"  lay-submit=""  class="layui-btn layui-btn-danger">删除</button>
-							 </div>[  '.$v['field'].'  ]';
-							 }
-							echo '</div>';
-							
-							break;
-							case 3:
-							echo '<div class="layui-form-item layui-form-text"  id="custom_'.$v['field'].'">
+                            if($admin['gid']==1){
+                            echo '<div class="layui-inline">
+                                <button type="button" lay-filter="del" data="custom_'.$v['field'].'"  lay-submit=""  class="layui-btn layui-btn-danger">删除</button>
+                             </div>[  '.$v['field'].'  ]';
+                             }
+                            echo '</div>';
+                            
+                            break;
+                            case 3:
+                            echo '<div class="layui-form-item layui-form-text"  id="custom_'.$v['field'].'">
                             <label class="layui-form-label">
                                 <span class=\'x-red\'>*</span>'.$v['title'].'
                             </label>
-							
+                            
                             <div class="layui-input-block">
                                 <textarea placeholder="请输入内容"   name="'.$v['field'].'" class="layui-textarea">'.$v['data'].'</textarea>
                             </div>';
-							if($admin['gid']==1){
-							echo '<div class="layui-inline">
-								<button type="button" lay-filter="del" data="custom_'.$v['field'].'"  lay-submit="" class="layui-btn layui-btn-danger">删除</button>
-							 </div>[  '.$v['field'].'  ]';
-							 }
-							echo '</div>';
-							break;
-							
-						}
-						
-						?>
-						{/foreach}
-						{/if}
-						{if($admin['gid']==1)}
-                        <div class="layui-form-item layui-input-inline">
-							<label style="width:150px" class="layui-form-label">
-                                <span class='x-red'></span>新增参数
-                            </label>
-							<div class="layui-inline">
-                                <input type="text" id="custom_title" name="custom_title" autocomplete="off" placeholder="请填写参数名"
-                                class="layui-input">
-                            </div>
-							<div class="layui-inline" >
-								<select class="layui-btn layui-btn-normal" name="custom_type" id="custom_type" >
-								<option value="0">选择类型</option>
-								<option value="1">图片</option>
-								<option value="2">输入框</option>
-								<option value="3">简短文字</option>
-								
+                            if($admin['gid']==1){
+                            echo '<div class="layui-inline">
+                                <button type="button" lay-filter="del" data="custom_'.$v['field'].'"  lay-submit="" class="layui-btn layui-btn-danger">删除</button>
+                             </div>[  '.$v['field'].'  ]';
+                             }
+                            echo '</div>';
+                            break;
+							case 4:
+							$edit = include(APP_PATH.'A/t/tpl/common/uediter.php');
+							echo $edit;
+                            if($admin['gid']==1){
+                            echo '<div class="layui-inline">
+                                <button type="button" lay-filter="del" data="custom_'.$v['field'].'"  lay-submit="" class="layui-btn layui-btn-danger">删除</button>
+                             </div>[  '.$v['field'].'  ]';
+                             }
+                          
+                            break;
+							case 5:
+                            echo '<div class="layui-form-item" id="custom_'.$v['field'].'">
+                                    <label style="width:150px" class="layui-form-label">
+                                        <span class=\'x-red\'>*</span>'.$v['title'].'
+                                    </label>
+                                    <div  class="layui-inline">
+                                       
+                                      <input name="'.$v['field'].'" type="text" class="layui-input" id="'.$v['field'].'" value="'.$v['data'].'" />
+                                    </div>
+                                     <div class="layui-inline">
+                                         
+                                         
+                                          <button type="button" class="layui-btn" id="LAY_'.$v['field'].'_upload">
+                                              <i class="layui-icon">&#xe67c;</i>上传文件
+                                          </button>
+                                     </div>';
+                            if($admin['gid']==1){
+                                echo     '<div class="layui-inline">
+                                        <button type="button" lay-filter="del" data="custom_'.$v['field'].'"  lay-submit=""  class="layui-btn layui-btn-danger">删除</button>
+                                     </div>[  '.$v['field'].'  ]';
+                            }
+                                echo    '</div>
+                        
+                        <script>
+                
+                        layui.use("upload", function(){
+                              var upload_'.$v['field'].' = layui.upload;
+                               
+                              //执行实例
+                              var uploadInst = upload_'.$v['field'].'.render({
+                                elem: "#LAY_'.$v['field'].'_upload" //绑定元素
+                                ,url: "'.U('Common/uploads').'" //上传接口
+                                ,accept:"file"
+								,exts: "'.$this->webconf['fileType'].'"
+                                ,data:{molds:"sysconfig"}
+                                ,done: function(res){
+                                  
+                                    if(res.code==0){
+                                        
+                                         $("#'.$v['field'].'").val(res.url);
+                                    }else{
+                                         layer.alert(res.error, {icon: 5});
+                                    }
+                                }
+                                ,error: function(){
+                                  //请求异常回调
+                                  layer.alert("上传异常！");
+                                }
+                              });
+                            });
+                        </script>';
+                            
+                            break;
+							case 6:
+							echo '<div  class="layui-form-item">
+								<label style="width:150px"  class="layui-form-label">
+									<span class="x-red"></span>'.$v['title'].'
+								</label>
+								<div  class="layui-input-inline">
+								<select name="'.$v['field'].'" id="'.$v['field'].'" class="layui-btn layui-btn-normal">
+								<option value="1" ';
+								if($v['data']==1){
+									echo 'selected';
+								}
+								echo '>开启</option>
+								<option value="0" ';
+								if($v['data']==0){
+									echo 'selected';
+								}
+								echo '>关闭</option>
 								</select>
+								</div>';
+								if($admin['gid']==1){
+								echo '<div class="layui-inline">
+                                <button type="button" lay-filter="del" data="custom_'.$v['field'].'"  lay-submit="" class="layui-btn layui-btn-danger">删除</button>
+								</div>[  '.$v['field'].'  ]';
+								}
 								
+							echo '</div>';
+                            break;
+							case 7:
+							echo '<div  class="layui-form-item">
+								<label style="width:150px"  class="layui-form-label">
+									<span class="x-red"></span>'.$v['title'].'
+								</label>
+								<div  class="layui-input-inline">
+								<select name="'.$v['field'].'" id="'.$v['field'].'" class="layui-btn layui-btn-normal">
+								<option value="1" ';
+								if($v['data']==1){
+									echo 'selected';
+								}
+								echo '>是</option>
+								<option value="0" ';
+								if($v['data']==0){
+									echo 'selected';
+								}
+								echo '>否</option>
+								</select>
+								</div>';
+							if($admin['gid']==1){
+								echo '<div class="layui-inline">
+                                <button type="button" lay-filter="del" data="custom_'.$v['field'].'"  lay-submit="" class="layui-btn layui-btn-danger">删除</button>
+								</div>[  '.$v['field'].'  ]';
+								}
 								
-							</div>
-							<div class="layui-inline">
-							 <button lay-filter="*" lay-submit="" class="layui-btn"><i class="iconfont">&#xe6b9;</i>添加</button>
+							echo '</div>';
+                            break;
+							case 8:
+								echo '<div  class="layui-form-item">
+									<label style="width:150px"  class="layui-form-label">
+										<span class="x-red"></span>'.$v['title'].'
+									</label>
+									<div  class="layui-input-inline">
+									<select name="'.$v['field'].'" id="'.$v['field'].'" class="layui-btn layui-btn-normal">
+									<option value="0" >不选</option>';
+								foreach($classtypetree as $vv){
+									if($vv['id']==$v['data']){
+									echo '<option selected value="'.$vv['id'].'">'.str_repeat('--', $vv['level']).$vv['classname'].'</option>';
+									}else{
+									echo '<option value="'.$vv['id'].'">'.str_repeat('--', $vv['level']).$vv['classname'].'</option>';
+									}
+									
+								}
 								
-							</div>
-							 
-							  
-                        </div>
+								echo '</select>
+									</div>';
+									if($admin['gid']==1){
+									echo '<div class="layui-inline">
+									<button type="button" lay-filter="del" data="custom_'.$v['field'].'"  lay-submit="" class="layui-btn layui-btn-danger">删除</button>
+									</div>[  '.$v['field'].'  ]';
+									}
+									
+								echo '</div>';
+                            break;
+                            
+                        }
+                        
+                        ?>
+                        {/foreach}
+                        {/if}
+                        {if($admin['gid']==1)}
+						
+						<fieldset class="layui-elem-field">
+						  <legend>自定义配置区域</legend>
+						  <div class="layui-field-box">
+								<label style="width:150px" class="layui-form-label">
+									<span class='x-red'></span>新增配置
+								</label>
+								<div class="layui-inline">
+									<input type="text" id="custom_title" name="custom_title" autocomplete="off" placeholder="请填写配置名(中文)"
+									class="layui-input">
+								</div>
+								
+								<div class="layui-inline">
+									<input type="text" id="custom_fields" name="custom_fields" autocomplete="off" placeholder="配置标识(字母或数字)"
+									class="layui-input">
+								</div>
+								<div class="layui-inline" >
+									<select class="layui-btn layui-btn-normal" name="custom_type" id="custom_type" >
+									<option value="0">选择类型</option>
+									<option value="1">图片</option>
+									<option value="2">单行文本</option>
+									<option value="3">多行文本</option>
+									<option value="4">编辑器</option>
+									<option value="5">文件上传</option>
+									<option value="6">下拉开启关闭选项</option>
+									<option value="7">下拉是否选项</option>
+									<option value="8">栏目选项</option>
+									
+									</select>
+									
+									
+								</div>
+								<div class="layui-inline">
+								 <button lay-filter="*" lay-submit="" class="layui-btn"><i class="iconfont">&#xe6b9;</i>添加</button>
+									
+								</div>
+						  </div>
+						</fieldset>
+						
+                       
                         {/if}
 
                         <div class="layui-form-item layui-form-text">
@@ -282,6 +475,27 @@
                                 <textarea placeholder="将百度统计、cnzz等平台的流量统计JS代码放到这里"  name="web_js" class="layui-textarea">{$config['web_js']}</textarea>
                             </div>
                         </div>
+						<div  class="layui-form-item">
+                            <label style="width:150px"  class="layui-form-label">
+                                <span class='x-red'>*</span>关闭站点
+                            </label>
+                            <div  class="layui-input-inline">
+							<select name="closeweb" class="layui-btn layui-btn-normal">
+							<option value="1" {if($config['closeweb']==1)}selected{/if}>是</option>
+							<option value="0" {if($config['closeweb']==0)}selected{/if}>否</option>
+							</select>
+                               
+                            </div>
+                        </div>
+						<div class="layui-form-item layui-form-text">
+                            <label class="layui-form-label">
+                                <span class='x-red'>*</span>关闭提示
+                            </label>
+                            <div class="layui-input-block">
+                                <textarea placeholder="关闭站点后提示信息"  name="closetip" class="layui-textarea">{$config['closetip']}</textarea>
+                            </div>
+                        </div>
+						
                         <div class="layui-form-item">
                             <button class="layui-btn" lay-submit="" lay-filter="*">
                                 保存
@@ -291,119 +505,135 @@
                     <div style="height:100px;"></div>
                 </div>
                 {if(checkAction('Sys/high-level'))}
-				<div class="layui-tab-item">
+                <div class="layui-tab-item">
                    
                        <div  class="layui-form-item">
                             <label style="width:150px"  class="layui-form-label">
                                 <span class='x-red'>*</span>PC网站模板
                             </label>
-                            <div  style="margin-left: 150px;" class="layui-input-block">
-                                <input type="text" name="pc_template" value="{$config['pc_template']}" autocomplete="off" placeholder="请把模板放到Home/template/目录下面"
-                                class="layui-input">
+                            <div  class="layui-input-inline">
+							<select name="pc_template" class="layui-btn layui-btn-normal">
+							{foreach $templatelist as $v}
+							<option value="{$v}" {if($config['pc_template']==$v)}selected{/if}>{$v}</option>
+							{/foreach}
+							</select>
+                               
                             </div>
                         </div>
-						<div class="layui-form-item" pane>
-							<label for="iswap" style="width:150px" class="layui-form-label">
-								<span class="x-red"></span>是否开启手机端
-							</label>
-							<div  style="margin-left: 150px;" class="layui-input-block">
-								<input type="radio" name="iswap" value="0" title="不显示" {if($config['iswap']==0)}checked{/if}>
-								<input type="radio" name="iswap" value="1" title="显示" {if($config['iswap']==1)}checked{/if}>
-							</div>
-							 
-							
-						</div>
-						<div  class="layui-form-item">
+                        <div class="layui-form-item" pane>
+                            <label for="iswap" style="width:150px" class="layui-form-label">
+                                <span class="x-red"></span>是否开启手机端
+                            </label>
+                            <div  style="margin-left: 150px;" class="layui-input-block">
+                                <input type="radio" name="iswap" value="0" title="不显示" {if($config['iswap']==0)}checked{/if}>
+                                <input type="radio" name="iswap" value="1" title="显示" {if($config['iswap']==1)}checked{/if}>
+                            </div>
+                             
+                            
+                        </div>
+                        <div  class="layui-form-item">
                             <label style="width:150px"  class="layui-form-label">
                                 WAP网站模板
                             </label>
-                            <div  style="margin-left: 150px;" class="layui-input-block">
-                                <input type="text" name="wap_template" value="{$config['wap_template']}" autocomplete="off" placeholder="请把模板放到Home/template/目录下面"
-                                class="layui-input">
+                             <div  class="layui-input-inline">
+							
+							<select name="wap_template" class="layui-btn layui-btn-normal">
+							{foreach $templatelist as $v}
+							<option value="{$v}" {if($config['wap_template']==$v)}selected{/if}>{$v}</option>
+							{/foreach}
+							</select>
+							
+                                
                             </div>
                         </div>
-						<div  class="layui-form-item">
+                        <div  class="layui-form-item">
                             <label style="width:150px"  class="layui-form-label">
                                 微信网站模板
                             </label>
-                            <div  style="margin-left: 150px;" class="layui-input-block">
-                                <input type="text" name="weixin_template" value="{$config['weixin_template']}" autocomplete="off" placeholder="请把模板放到Home/template/目录下面"
-                                class="layui-input">
-                            </div>
-                        </div>
-						<div class="layui-form-item" >
-							<label for="iswap" style="width:150px" class="layui-form-label">
-								<span class="x-red"></span>后台模板风格
-							</label>
-							<div  class="layui-input-inline">
-							<select class="layui-btn layui-btn-normal" name="admintpl" id="admintpl" >
-							<option value="tpl" {if($config['admintpl']=='tpl')}selected{/if}>默认</option>
-							<option value="default" {if($config['admintpl']=='default')}selected{/if}>原始</option>
+                            <div  class="layui-input-inline">
 							
-							
+							<select name="weixin_template" class="layui-btn layui-btn-normal">
+							{foreach $templatelist as $v}
+							<option value="{$v}" {if($config['weixin_template']==$v)}selected{/if}>{$v}</option>
+							{/foreach}
 							</select>
 							
-							</div>
-							<div class="layui-form-mid layui-word-aux">
-								该风格主要是指链接跳转方面，是否弹窗形式打开页面
-							</div>
-							 
-							
-						</div>
-						
-						<div class="layui-form-item" pane>
-							<label for="isrelative" style="width:150px" class="layui-form-label">
-								<span class="x-red"></span>基本信息下扩展
-							</label>
-							<div  style="margin-left: 150px;" class="layui-input-inline">
-								<input type="radio" name="isrelative" value="0" title="否" {if($config['isrelative']==0)}checked{/if}>
-								<input type="radio" name="isrelative" value="1" title="是" {if($config['isrelative']==1)}checked{/if}>
-							</div>
-							<div class="layui-form-mid layui-word-aux">
-								  新增字段是否显示在【基本信息】底部，默认在【扩展信息】下
-							</div> 
-							
-						</div>
-						<div class="layui-form-item" pane>
-							<label for="islevelurl" style="width:150px" class="layui-form-label">
-								<span class="x-red"></span>开启层级URL
-							</label>
-							<div  style="margin-left: 150px;" class="layui-input-inline">
-								<input type="radio" name="islevelurl" value="0" title="否" {if($config['islevelurl']==0)}checked{/if}>
-								<input type="radio" name="islevelurl" value="1" title="是" {if($config['islevelurl']==1)}checked{/if}>
-							</div>
-							<div class="layui-form-mid layui-word-aux">
-								  默认关闭层级URL，开启后URL会按照父类层级展现
-							</div> 
-							
-						</div>
-						<div class="layui-form-item" pane>
-							<label for="iscachepage" style="width:150px" class="layui-form-label">
-								<span class="x-red"></span>缓存完整页面
-							</label>
-							<div  style="margin-left: 150px;" class="layui-input-inline">
-								<input type="radio" name="iscachepage" value="0" title="否" {if($config['iscachepage']==0)}checked{/if}>
-								<input type="radio" name="iscachepage" value="1" title="是" {if($config['iscachepage']==1)}checked{/if}>
-							</div>
-							<div class="layui-form-mid layui-word-aux">
-								  前台完整页面缓存，结合缓存时间，可以提高访问速度
-							</div> 
-							
-						</div>
-						<div class="layui-form-item" pane>
-							<label for="isautohtml" style="width:150px" class="layui-form-label">
-								<span class="x-red"></span>自动生成静态
-							</label>
-							<div  style="margin-left: 150px;" class="layui-input-inline">
-								<input type="radio" name="isautohtml" value="0" title="否" {if($config['isautohtml']==0)}checked{/if}>
-								<input type="radio" name="isautohtml" value="1" title="是" {if($config['isautohtml']==1)}checked{/if}>
-							</div>
-							<div class="layui-form-mid layui-word-aux">
-								  前台访问网站页面，将自动生成静态HTML，下次访问直接进入静态HTML页面
-							</div> 
-							
-						</div>
-						<div  class="layui-form-item">
+                                
+                            </div>
+                        </div>
+                        <div class="layui-form-item" >
+                            <label for="iswap" style="width:150px" class="layui-form-label">
+                                <span class="x-red"></span>后台模板风格
+                            </label>
+                            <div  class="layui-input-inline">
+                            <select class="layui-btn layui-btn-normal" name="admintpl" id="admintpl" >
+                            <option value="tpl" {if($config['admintpl']=='tpl')}selected{/if}>默认</option>
+                            <option value="default" {if($config['admintpl']=='default')}selected{/if}>原始</option>
+                            
+                            
+                            </select>
+                            
+                            </div>
+                            <div class="layui-form-mid layui-word-aux">
+                                该风格主要是指链接跳转方面，是否弹窗形式打开页面
+                            </div>
+                             
+                            
+                        </div>
+                        
+                        <div class="layui-form-item" pane>
+                            <label for="isrelative" style="width:150px" class="layui-form-label">
+                                <span class="x-red"></span>基本信息下扩展
+                            </label>
+                            <div  style="margin-left: 150px;" class="layui-input-inline">
+                                <input type="radio" name="isrelative" value="0" title="否" {if($config['isrelative']==0)}checked{/if}>
+                                <input type="radio" name="isrelative" value="1" title="是" {if($config['isrelative']==1)}checked{/if}>
+                            </div>
+                            <div class="layui-form-mid layui-word-aux">
+                                  新增字段是否显示在【基本信息】底部，默认在【扩展信息】下
+                            </div> 
+                            
+                        </div>
+                        <div class="layui-form-item" pane>
+                            <label for="islevelurl" style="width:150px" class="layui-form-label">
+                                <span class="x-red"></span>开启层级URL
+                            </label>
+                            <div  style="margin-left: 150px;" class="layui-input-inline">
+                                <input type="radio" name="islevelurl" value="0" title="否" {if($config['islevelurl']==0)}checked{/if}>
+                                <input type="radio" name="islevelurl" value="1" title="是" {if($config['islevelurl']==1)}checked{/if}>
+                            </div>
+                            <div class="layui-form-mid layui-word-aux">
+                                  默认关闭层级URL，开启后URL会按照父类层级展现
+                            </div> 
+                            
+                        </div>
+                        <div class="layui-form-item" pane>
+                            <label for="iscachepage" style="width:150px" class="layui-form-label">
+                                <span class="x-red"></span>缓存完整页面
+                            </label>
+                            <div  style="margin-left: 150px;" class="layui-input-inline">
+                                <input type="radio" name="iscachepage" value="0" title="否" {if($config['iscachepage']==0)}checked{/if}>
+                                <input type="radio" name="iscachepage" value="1" title="是" {if($config['iscachepage']==1)}checked{/if}>
+                            </div>
+                            <div class="layui-form-mid layui-word-aux">
+                                  前台完整页面缓存，结合缓存时间，可以提高访问速度
+                            </div> 
+                            
+                        </div>
+                        <div class="layui-form-item" pane>
+                            <label for="isautohtml" style="width:150px" class="layui-form-label">
+                                <span class="x-red"></span>自动生成静态
+                            </label>
+                            <div  style="margin-left: 150px;" class="layui-input-inline">
+                                <input type="radio" name="isautohtml" value="0" title="否" {if($config['isautohtml']==0)}checked{/if}>
+                                <input type="radio" name="isautohtml" value="1" title="是" {if($config['isautohtml']==1)}checked{/if}>
+                            </div>
+                            <div class="layui-form-mid layui-word-aux">
+                                  前台访问网站页面，将自动生成静态HTML，下次访问直接进入静态HTML页面
+                            </div> 
+                            
+                        </div>
+                        <div  class="layui-form-item">
                             <label style="width:150px"  class="layui-form-label">
                                 <span class='x-red'>*</span>电脑静态目录
                             </label>
@@ -411,11 +641,11 @@
                                 <input type="text" name="pc_html" value="{$config['pc_html']}" autocomplete="off" placeholder=""
                                 class="layui-input">
                             </div>
-							<div class="layui-form-mid layui-word-aux">
-							电脑端静态HTML存放目录，默认根目录[ / ]
-							</div> 
+                            <div class="layui-form-mid layui-word-aux">
+                            电脑端静态HTML存放目录，默认根目录[ / ]
+                            </div> 
                         </div>
-						<div  class="layui-form-item">
+                        <div  class="layui-form-item">
                             <label style="width:150px"  class="layui-form-label">
                                 <span class='x-red'>*</span>手机静态目录
                             </label>
@@ -423,24 +653,24 @@
                                 <input type="text" name="mobile_html" value="{$config['mobile_html']}" autocomplete="off" placeholder=""
                                 class="layui-input">
                             </div>
-							<div class="layui-form-mid layui-word-aux">
-							手机端静态HTML存放目录，默认[ m ]，如果不生成静态，则PC和WAP静态目录改为[ / ]							</div> 
+                            <div class="layui-form-mid layui-word-aux">
+                            手机端静态HTML存放目录，默认[ m ]，如果不生成静态，则PC和WAP静态目录改为[ / ]                            </div> 
                         </div>
-						
-						<div class="layui-form-item" pane>
-							<label for="isopenwebsite" style="width:150px" class="layui-form-label">
-								<span class="x-red"></span>是否绑定多域名
-							</label>
-							<div  style="margin-left: 150px;" class="layui-input-inline">
-								<input type="radio" name="isopenwebsite" value="0" title="不开启" {if($config['isopenwebsite']==0)}checked{/if}>
-								<input type="radio" name="isopenwebsite" value="1" title="开启" {if($config['isopenwebsite']==1)}checked{/if}>
-							</div>
-							<div class="layui-form-mid layui-word-aux">
-								  开启绑定多域名后，需要到插件中配置
-							</div>
-							
-						</div>
-						<div  class="layui-form-item">
+                        
+                        <div class="layui-form-item" pane>
+                            <label for="isopenwebsite" style="width:150px" class="layui-form-label">
+                                <span class="x-red"></span>是否绑定多域名
+                            </label>
+                            <div  style="margin-left: 150px;" class="layui-input-inline">
+                                <input type="radio" name="isopenwebsite" value="0" title="不开启" {if($config['isopenwebsite']==0)}checked{/if}>
+                                <input type="radio" name="isopenwebsite" value="1" title="开启" {if($config['isopenwebsite']==1)}checked{/if}>
+                            </div>
+                            <div class="layui-form-mid layui-word-aux">
+                                  开启绑定多域名后，需要到插件中配置
+                            </div>
+                            
+                        </div>
+                        <div  class="layui-form-item">
                             <label  style="width:150px"  class="layui-form-label">
                                 缓存时间
                             </label>
@@ -449,18 +679,18 @@
                                 class="layui-input">
                             </div>
                         </div>
-						
+                        
                         <div class="layui-form-item" pane>
-							<label for="isopenhomeupload" style="width:150px" class="layui-form-label">
-								<span class="x-red"></span>是否开启前台上传
-							</label>
-							<div  style="margin-left: 150px;" class="layui-input-block">
-								<input type="radio" name="isopenhomeupload" value="0" title="关闭" {if($config['isopenhomeupload']==0)}checked{/if}>
-								<input type="radio" name="isopenhomeupload" value="1" title="开启" {if($config['isopenhomeupload']==1)}checked{/if}>
-							</div>
-							 
-							
-						</div>
+                            <label for="isopenhomeupload" style="width:150px" class="layui-form-label">
+                                <span class="x-red"></span>是否开启前台上传
+                            </label>
+                            <div  style="margin-left: 150px;" class="layui-input-block">
+                                <input type="radio" name="isopenhomeupload" value="0" title="关闭" {if($config['isopenhomeupload']==0)}checked{/if}>
+                                <input type="radio" name="isopenhomeupload" value="1" title="开启" {if($config['isopenhomeupload']==1)}checked{/if}>
+                            </div>
+                             
+                            
+                        </div>
                         <div  class="layui-form-item">
                             <label  style="width:150px"  class="layui-form-label">
                                 允许上传文件类型
@@ -475,51 +705,152 @@
                                 限制上传文件大小
                             </label>
                             <div  style="margin-left: 150px;"   class="layui-input-block">
-                                <input type="text" name="fileSize" value="{$config['fileSize']}" autocomplete="off" placeholder="0代表不限"
+                                <input type="text" name="fileSize" value="{$config['fileSize']}" autocomplete="off" placeholder="0代表不限，单位Kb"
                                 class="layui-input">
                             </div>
+							<div class="layui-form-mid layui-word-aux">
+                           0代表不限，单位b
+                            </div> 
+                        </div>
+                        
+						<div  class="layui-form-item">
+                            <label style="width:150px"  class="layui-form-label">
+                                <span class='x-red'></span>后台文件存储路径
+                            </label>
+                            <div  style="margin-left: 150px;" class="layui-input-block">
+                                <input type="text" name="admin_save_path" value="{$config['admin_save_path']}" autocomplete="off" placeholder=""
+                                class="layui-input">
+                            </div>
+                            <div class="layui-form-mid layui-word-aux">
+                            默认Public/Admin，存储路径相对于根目录，最后不能带斜杠[ / ]
+							<a 	class="layui-btn layui-btn-sm savepath">更多</a>
+                            </div> 
+                        </div>
+                         <div  class="layui-form-item">
+                            <label style="width:150px"  class="layui-form-label">
+                                <span class='x-red'></span>前台文件存储路径
+                            </label>
+                            <div  style="margin-left: 150px;" class="layui-input-block">
+                                <input type="text" name="home_save_path" value="{$config['home_save_path']}" autocomplete="off" placeholder=""
+                                class="layui-input">
+                            </div>
+                            <div class="layui-form-mid layui-word-aux">
+                            默认Public/Home，存储路径相对于根目录，最后不能带斜杠[ / ]
+							<a 	class="layui-btn layui-btn-sm savepath">更多</a>
+                            </div> 
                         </div>
 						
-						<div  class="layui-form-item">
+                        <div  class="layui-form-item">
                             <label style="width:150px"  class="layui-form-label">
                                 上传图片压缩比例
                             </label>
-							 <div  class="layui-input-inline">
-							<select class="layui-btn layui-btn-normal" name="imagequlity" id="imagequlity" >
-							<option value="100" {if($config['imagequlity']==100)}selected{/if}>100%</option>
-							<option value="95" {if($config['imagequlity']==95)}selected{/if}>95%</option>
-							<option value="90" {if($config['imagequlity']==90)}selected{/if}>90%</option>
-							<option value="85" {if($config['imagequlity']==85)}selected{/if}>85%</option>
-							<option value="80" {if($config['imagequlity']==80)}selected{/if}>80%</option>
-							<option value="75" {if($config['imagequlity']==75)}selected{/if}>75%</option>
-							<option value="70" {if($config['imagequlity']==70)}selected{/if}>70%</option>
-							<option value="65" {if($config['imagequlity']==65)}selected{/if}>65%</option>
-							<option value="60" {if($config['imagequlity']==60)}selected{/if}>60%</option>
-							<option value="55" {if($config['imagequlity']==55)}selected{/if}>55%</option>
-							<option value="50" {if($config['imagequlity']==50)}selected{/if}>50%</option>
-							
-							
-							</select>
-							
-							</div>
-							<div class="layui-form-mid layui-word-aux">
-								  100%则不压缩，如果PNG是透明图，压缩后背景变黑色
-							</div>
-							
-						</div>
-						<div class="layui-form-item" pane>
-							<label for="ispngcompress" style="width:150px" class="layui-form-label">
-								<span class="x-red"></span>PNG是否压缩
-							</label>
-							<div style="margin-left: 150px;"  class="layui-input-block">
-								<input type="radio" name="ispngcompress" value="0" title="关闭" {if($config['ispngcompress']==0)}checked{/if}>
-								<input type="radio" name="ispngcompress" value="1" title="启用" {if($config['ispngcompress']==1)}checked{/if}>
-							</div>
-							 
-							
-						</div>
-						
-						<div class="layui-form-item layui-form-text">
+                             <div  class="layui-input-inline">
+                            <select class="layui-btn layui-btn-normal" name="imagequlity" id="imagequlity" >
+                            <option value="100" {if($config['imagequlity']==100)}selected{/if}>使用原图，不压缩</option>
+                            <option value="95" {if($config['imagequlity']==95)}selected{/if}>95%</option>
+                            <option value="90" {if($config['imagequlity']==90)}selected{/if}>90%</option>
+                            <option value="85" {if($config['imagequlity']==85)}selected{/if}>85%</option>
+                            <option value="80" {if($config['imagequlity']==80)}selected{/if}>80%</option>
+                            <option value="75" {if($config['imagequlity']==75)}selected{/if}>75%</option>
+                            <option value="70" {if($config['imagequlity']==70)}selected{/if}>70%</option>
+                            <option value="65" {if($config['imagequlity']==65)}selected{/if}>65%</option>
+                            <option value="60" {if($config['imagequlity']==60)}selected{/if}>60%</option>
+                            <option value="55" {if($config['imagequlity']==55)}selected{/if}>55%</option>
+                            <option value="50" {if($config['imagequlity']==50)}selected{/if}>50%</option>
+                            
+                            
+                            </select>
+                            
+                            </div>
+                            <div class="layui-form-mid layui-word-aux">
+                                  100%则不压缩，如果PNG是透明图，压缩后背景变黑色
+                            </div>
+                            
+                        </div>
+                        <div class="layui-form-item" pane>
+                            <label for="ispngcompress" style="width:150px" class="layui-form-label">
+                                <span class="x-red"></span>PNG是否压缩
+                            </label>
+                            <div style="margin-left: 150px;"  class="layui-input-inline">
+                                <input type="radio" name="ispngcompress" value="0" title="关闭" {if($config['ispngcompress']==0)}checked{/if}>
+                                <input type="radio" name="ispngcompress" value="1" title="启用" {if($config['ispngcompress']==1)}checked{/if}>
+                            </div>
+                        </div>
+                        <div class="layui-form-item" pane>
+                            <label for="iswatermark" style="width:150px" class="layui-form-label">
+                                <span class="x-red"></span>是否开启水印
+                            </label>
+                            <div style="margin-left: 150px;"  class="layui-input-inline">
+                                <input type="radio" name="iswatermark" value="0" title="关闭" {if($config['iswatermark']==0)}checked{/if}>
+                                <input type="radio" name="iswatermark" value="1" title="启用" {if($config['iswatermark']==1)}checked{/if}>
+                            </div>
+                            <div class="layui-form-mid layui-word-aux">
+                                 开启水印需要上传水印图片
+                            </div> 
+                        </div>
+                        <div class="layui-form-item" >
+                            <label style="width:150px"  class="layui-form-label">
+                                <span class="x-red"></span>水印位置
+                            </label>
+                            <div  class="layui-input-inline">
+                            <select class="layui-btn layui-btn-normal" name="watermark_t" id="watermark_t" >
+                            <option value="1" {if($config['watermark_t']==1)}selected{/if}>左上（1）</option>
+                            <option value="2" {if($config['watermark_t']==2)}selected{/if}>中上（2）</option>
+                            <option value="3" {if($config['watermark_t']==3)}selected{/if}>右上（3）</option>
+                            <option value="4" {if($config['watermark_t']==4)}selected{/if}>左中（4）</option>
+                            <option value="5" {if($config['watermark_t']==5)}selected{/if}>正中（5）</option>
+                            <option value="6" {if($config['watermark_t']==6)}selected{/if}>右中（6）</option>
+                            <option value="7" {if($config['watermark_t']==7)}selected{/if}>左下（7）</option>
+                            <option value="8" {if($config['watermark_t']==8)}selected{/if}>中下（8）</option>
+                            <option value="9" {if($config['watermark_t']==9)}selected{/if}>右下（9）</option>
+                            </select>
+                            </div>
+                            <div class="layui-form-mid layui-word-aux">
+                                 参考键盘九宫格1-9
+                            </div>
+                        </div>
+                         <div class="layui-form-item" >
+                            <label style="width:150px"  class="layui-form-label">
+                                <span class="x-red"></span>水印透明度
+                            </label>
+                            <div  class="layui-input-inline">
+                            <select class="layui-btn layui-btn-normal" name="watermark_tm" id="watermark_tm" >
+                            <option value="0" {if($config['watermark_tm']==0)}selected{/if}>不透明</option>
+                            <option value="10" {if($config['watermark_tm']==10)}selected{/if}>10%</option>
+                            <option value="20" {if($config['watermark_tm']==20)}selected{/if}>20%</option>
+                            <option value="30" {if($config['watermark_tm']==30)}selected{/if}>30%</option>
+                            <option value="40" {if($config['watermark_tm']==40)}selected{/if}>40%</option>
+                            <option value="50" {if($config['watermark_tm']==50)}selected{/if}>50%</option>
+                            <option value="60" {if($config['watermark_tm']==60)}selected{/if}>60%</option>
+                            <option value="70" {if($config['watermark_tm']==70)}selected{/if}>70%</option>
+                            <option value="80" {if($config['watermark_tm']==80)}selected{/if}>80%</option>
+                            <option value="90" {if($config['watermark_tm']==90)}selected{/if}>90%</option>
+                            <option value="100" {if($config['watermark_tm']==100)}selected{/if}>完全透明</option>
+                            </select>
+                            </div>
+                            <div class="layui-form-mid layui-word-aux">
+                                 透明度越大，越难看清楚水印
+                            </div>
+                        </div>
+                        <div class="layui-form-item" >
+                            <label style="width:150px" class="layui-form-label">
+                                <span class="x-red">*</span>水印图片
+                            </label>
+                            <div class="layui-inline">
+                               
+                              <input name="watermark_file" type="text" class="layui-input" id="watermark_file" value="{$config['watermark_file']}">
+                            </div>
+                             <div class="layui-inline">
+                                <button type="button" class="layui-btn" id="watermark_file_upload">
+                                      <i class="layui-icon"></i>上传图片
+                                  </button><input class="layui-upload-file" type="file" accept="image/*" name="file">
+                             </div>
+                             <div class="layui-block">
+                            <img src="{$config['watermark_file']}"  id="watermark_file_img">
+                            </div>
+                        </div>
+                        
+                        <div class="layui-form-item layui-form-text">
                             <label  class="layui-form-label">
                                 <span class='x-red'>*</span>UEditor编辑器导航条配置
                             </label>
@@ -528,32 +859,70 @@
                             </div>
                         </div>
                         
-						
-						
-						<div  class="layui-form-item">
+                        
+                        <div  class="layui-form-item">
+                            <label  style="width:150px"  class="layui-form-label">
+                                前台搜索的字段
+                            </label>
+                            <div  style="margin-left: 150px;"   class="layui-input-block">
+                                <input type="text" name="search_words" value="{$config['search_words']}" autocomplete="off" placeholder=""
+                                class="layui-input">
+                            </div>
+							<div class="layui-form-mid layui-word-aux">
+                                可以设置搜索表中的相关字段进行模糊查询,多个字段可用|分割,如：title|body 
+                            </div>
+                        </div>
+                        <div  class="layui-form-item">
                             <label  style="width:150px"  class="layui-form-label">
                                 允许前台搜索的表
                             </label>
                             <div  style="margin-left: 150px;"   class="layui-input-block">
-                                <input type="text" name="search_table" value="{$config['search_table']}" autocomplete="off" placeholder="防止数据泄露,填写允许搜索的表名,留空表示不允许搜索,多个表可用|分割,如：article|product "
+                                <input type="text" name="search_table" value="{$config['search_table']}" autocomplete="off" placeholder=""
                                 class="layui-input">
                             </div>
-                        </div>
-						
-						 <div class="layui-form-item" pane>
-							<label for="isopenhomepower" style="width:150px" class="layui-form-label">
-								<span class="x-red"></span>是否开启前台权限
-							</label>
-							<div  style="margin-left: 150px;" class="layui-input-inline">
-								<input type="radio" name="isopenhomepower" value="0" title="关闭" {if($config['isopenhomepower']==0)}checked{/if}>
-								<input type="radio" name="isopenhomepower" value="1" title="开启" {if($config['isopenhomepower']==1)}checked{/if}>
-							</div>
 							<div class="layui-form-mid layui-word-aux">
+                                 防止数据泄露,填写允许搜索的表名,留空表示不允许搜索,多个表可用|分割,如：article|product
+                            </div>
+                        </div>
+                        
+						<div  class="layui-form-item">
+                            <label  style="width:150px"  class="layui-form-label">
+                                允许前台发布模块
+                            </label>
+                            <div  style="margin-left: 150px;"   class="layui-input-block">
+                                <input type="text" name="release_table" value="{$config['release_table']}" autocomplete="off" placeholder=""
+                                class="layui-input">
+                            </div>
+							<div class="layui-form-mid layui-word-aux">
+                                防止数据泄露,填写允许发布模块标识,留空表示不允许发布,多个表可用|分割,如：article|product 
+                            </div>
+                        </div>
+						<div  class="layui-form-item">
+                            <label  style="width:150px"  class="layui-form-label">
+                                TAG包含模型
+                            </label>
+                            <div  style="margin-left: 150px;"   class="layui-input-block">
+                                <input type="text" name="tag_table" value="{$config['tag_table']}" autocomplete="off" placeholder=""
+                                class="layui-input">
+                            </div>
+							<div class="layui-form-mid layui-word-aux">
+                                在tag列表上查询的相关模型,多个模型标识可用|分割,如：article|product 
+                            </div>
+                        </div>
+                        <div class="layui-form-item" pane>
+                            <label for="isopenhomepower" style="width:150px" class="layui-form-label">
+                                <span class="x-red"></span>是否开启前台权限
+                            </label>
+                            <div  style="margin-left: 150px;" class="layui-input-inline">
+                                <input type="radio" name="isopenhomepower" value="0" title="关闭" {if($config['isopenhomepower']==0)}checked{/if}>
+                                <input type="radio" name="isopenhomepower" value="1" title="开启" {if($config['isopenhomepower']==1)}checked{/if}>
+                            </div>
+                            <div class="layui-form-mid layui-word-aux">
                              开启后前台用户权限可以在后台控制
                             </div> 
-							
-						</div>
-                         <div class="layui-form-item" pane>
+                            
+                        </div>
+                        <div class="layui-form-item" pane>
                             <label for="autocheckmessage" style="width:150px" class="layui-form-label">
                                 <span class="x-red"></span>是否留言自动审核
                             </label>
@@ -583,7 +952,114 @@
                             
                             
                         </div>
-
+						<div class="layui-form-item" pane>
+                            <label for="closehomevercode" style="width:150px" class="layui-form-label">
+                                <span class="x-red"></span>前台验证码
+                            </label>
+                            <div  style="margin-left: 150px;" class="layui-input-inline">
+                                <input type="radio" name="closehomevercode" value="0" title="开启" {if($config['closehomevercode']==0)}checked{/if}>
+								<input type="radio" name="closehomevercode" value="1" title="关闭" {if($config['closehomevercode']==1)}checked{/if}>
+                                
+                            </div>
+                            <div class="layui-form-mid layui-word-aux">
+                            关闭后，登录注册不需要验证码
+                            </div> 
+                            
+                            
+                        </div>
+						<div class="layui-form-item" pane>
+                            <label for="closeadminvercode" style="width:150px" class="layui-form-label">
+                                <span class="x-red"></span>后台验证码
+                            </label>
+                            <div  style="margin-left: 150px;" class="layui-input-inline">
+                                <input type="radio" name="closeadminvercode" value="0" title="开启" {if($config['closeadminvercode']==0)}checked{/if}>
+								<input type="radio" name="closeadminvercode" value="1" title="关闭" {if($config['closeadminvercode']==1)}checked{/if}>
+                                
+                            </div>
+                            <div class="layui-form-mid layui-word-aux">
+                            关闭后，后台管理员登录不需要验证码
+                            </div> 
+                            
+                            
+                        </div>
+						<div class="layui-form-item" pane>
+                            <label for="isajax" style="width:150px" class="layui-form-label">
+                                <span class="x-red"></span>开启前台AJAX
+                            </label>
+                            <div  style="margin-left: 150px;" class="layui-input-inline">
+                                <input type="radio" name="isajax" value="0" title="关闭" {if($config['isajax']==0)}checked{/if}>
+                                <input type="radio" name="isajax" value="1" title="开启" {if($config['isajax']==1)}checked{/if}>
+                            </div>
+                            <div class="layui-form-mid layui-word-aux">
+                             开启后AJAX，前台可以通过栏目链接+ajax=1获取JSON数据
+                            </div> 
+                            
+                        </div>
+						<div class="layui-form-item" pane>
+                            <label for="isautositemap" style="width:150px" class="layui-form-label">
+                                <span class="x-red"></span>自动生成sitemap
+                            </label>
+                            <div  style="margin-left: 150px;" class="layui-input-inline">
+                                <input type="radio" name="isautositemap" value="0" title="关闭" {if($config['isautositemap']==0)}checked{/if}>
+                                <input type="radio" name="isautositemap" value="1" title="开启" {if($config['isautositemap']==1)}checked{/if}>
+                            </div>
+                            <div class="layui-form-mid layui-word-aux">
+                             开启后，前台访问每天会自动生成1次sitemap
+                            </div> 
+                            
+                        </div>
+						<div class="layui-form-item" pane>
+                            <label for="hideclasspath" style="width:150px" class="layui-form-label">
+                                <span class="x-red"></span>隐藏栏目.html
+                            </label>
+                            <div  style="margin-left: 150px;" class="layui-input-inline">
+                                <input type="radio" name="hideclasspath" value="0" title="关闭" {if(!File_TXT_HIDE)}checked{/if}>
+                                <input type="radio" name="hideclasspath" value="1" title="开启" {if(File_TXT_HIDE)}checked{/if}>
+                            </div>
+                            <div class="layui-form-mid layui-word-aux">
+                             开启后栏目链接形式如：/abc/
+                            </div> 
+                            
+                        </div>
+						<div class="layui-form-item" pane>
+                            <label for="ispicsdes" style="width:150px" class="layui-form-label">
+                                <span class="x-red"></span>多图加描述
+                            </label>
+                            <div  style="margin-left: 150px;" class="layui-input-inline">
+                                <input type="radio" name="ispicsdes" value="0" title="关闭" {if($config['ispicsdes']==0)}checked{/if}>
+                                <input type="radio" name="ispicsdes" value="1" title="开启" {if($config['ispicsdes']==1)}checked{/if}>
+                            </div>
+                            <div class="layui-form-mid layui-word-aux">
+                             开启后图集每张图可以添加描述，注意模板输出需要更改输出方式！(附件同理)
+                            </div> 
+                            
+                        </div>
+						<div class="layui-form-item" pane>
+                            <label for="isregister" style="width:150px" class="layui-form-label">
+                                <span class="x-red"></span>前台用户注册
+                            </label>
+                            <div  style="margin-left: 150px;" class="layui-input-inline">
+                                <input type="radio" name="isregister" value="0" title="关闭" {if($config['isregister']==0)}checked{/if}>
+                                <input type="radio" name="isregister" value="1" title="开启" {if($config['isregister']==1)}checked{/if}>
+                            </div>
+                            <div class="layui-form-mid layui-word-aux">
+                             关闭前台注册后，前台无法进入注册页面
+                            </div> 
+                            
+                        </div>
+						<div class="layui-form-item" pane>
+                            <label for="onlyinvite" style="width:150px" class="layui-form-label">
+                                <span class="x-red"></span>仅邀请码注册
+                            </label>
+                            <div  style="margin-left: 150px;" class="layui-input-inline">
+                                <input type="radio" name="onlyinvite" value="0" title="关闭" {if($config['onlyinvite']==0)}checked{/if}>
+                                <input type="radio" name="onlyinvite" value="1" title="开启" {if($config['onlyinvite']==1)}checked{/if}>
+                            </div>
+                            <div class="layui-form-mid layui-word-aux">
+                             开启后，必须通过邀请链接才能注册！
+                            </div> 
+                            
+                        </div>
                         <div class="layui-form-item" pane>
                             <label for="isdebug" style="width:150px" class="layui-form-label">
                                 <span class="x-red"></span>是否开启PHP调试
@@ -597,8 +1073,8 @@
                             </div> 
                             
                         </div>
-						
-						<div class="layui-form-item">
+                        
+                        <div class="layui-form-item">
                             <button class="layui-btn" lay-submit="" lay-filter="*">
                                 保存
                             </button>
@@ -606,29 +1082,41 @@
                     
                 </div>
                 {/if}
-				{if(checkAction('Sys/email-order'))}
-				<div class="layui-tab-item">
-                    
-						{if($admin['gid']==1)}
-						<div class="layui-form-item">
+                {if(checkAction('Sys/email-order'))}
+                <div class="layui-tab-item">
+                        <div class="layui-form-item" pane>
+                            <label for="isopenemail" style="width:150px"  class="layui-form-label">
+                                <span class="x-red"></span>发送邮件
+                            </label>
+                            <div  style="margin-left: 150px;" class="layui-input-block">
+                                <input type="radio" name="isopenemail" value="0" title="关闭" {if($config['isopenemail']==0)}checked{/if}>
+                                <input type="radio" name="isopenemail" value="1" title="开启" {if($config['isopenemail']==1)}checked{/if}>
+                            </div>
+                        </div>
+                        {if($admin['gid']==1)}
+                        <div class="layui-form-item">
                             <label style="width:150px" class="layui-form-label">
                                 <span class='x-red'>*</span>邮件服务器
                             </label>
                             <div   style="margin-left: 150px;" class="layui-input-block">
-                                <input type="text" name="email_server" value="{$config['email_server']}" autocomplete="off" placeholder="请输入邮件服务器"
-                                class="layui-input">
+                                <select id="email_server" name="email_server">
+                                <option value="smtp.163.com" {if($config['email_server']=='smtp.163.com')}selected{/if}>163邮件服务器</option>
+                                <option value="smtp.qq.com" {if($config['email_server']=='smtp.qq.com')}selected{/if}>QQ邮件服务器</option>
+                                </select>
                             </div>
                         </div>
-						<div class="layui-form-item">
+                        <div class="layui-form-item">
                             <label style="width:150px" class="layui-form-label">
                                 <span class='x-red'>*</span>收发端口
                             </label>
                             <div   style="margin-left: 150px;" class="layui-input-block">
-                                <input type="text" name="email_port" value="{$config['email_port']}" autocomplete="off" placeholder="邮件收发端口"
-                                class="layui-input">
+                                <select id="email_port" name="email_port">
+                                <option value="465" {if($config['email_port']==465)}selected{/if}>163邮件端口(465)</option>
+                                <option value="587" {if($config['email_port']==587)}selected{/if}>QQ邮件端口(587)</option>
+                                </select>
                             </div>
                         </div>
-						<div class="layui-form-item">
+                        <div class="layui-form-item">
                             <label style="width:150px" class="layui-form-label">
                                 <span class='x-red'>*</span>Email地址
                             </label>
@@ -637,7 +1125,7 @@
                                 class="layui-input">
                             </div>
                         </div>
-						<div class="layui-form-item">
+                        <div class="layui-form-item">
                             <label style="width:150px" class="layui-form-label">
                                 <span class='x-red'>*</span>Email密码
                             </label>
@@ -646,8 +1134,8 @@
                                 class="layui-input">
                             </div>
                         </div>
-						{/if}
-						<div class="layui-form-item">
+                        {/if}
+                        <div class="layui-form-item">
                             <label style="width:150px" class="layui-form-label">
                                 <span class='x-red'>*</span>收件邮箱
                             </label>
@@ -656,7 +1144,7 @@
                                 class="layui-input">
                             </div>
                         </div>
-						<div class="layui-form-item">
+                        <div class="layui-form-item">
                             <label style="width:150px" class="layui-form-label">
                                 <span  class='x-red'>*</span>发件人
                             </label>
@@ -665,8 +1153,8 @@
                                 class="layui-input">
                             </div>
                         </div>
-						
-						<div class="layui-form-item layui-form-text">
+                        
+                        <div class="layui-form-item layui-form-text">
                             <label  class="layui-form-label">
                                 <span class='x-red'>*</span>客户订单通知  <i class='x-red'>     请输入发送信件通知内容，用{xxx}占位</i>
                             </label>
@@ -674,10 +1162,10 @@
                                 <textarea placeholder="请输入发送信件通知内容，用{xxx}占位"  name="tj_msg" class="layui-textarea">{$config['tj_msg']}</textarea>
                             </div>
                         </div>
-						
-						
-						
-						<div class="layui-form-item layui-form-text">
+                        
+                        
+                        
+                        <div class="layui-form-item layui-form-text">
                             <label  class="layui-form-label">
                                 <span class='x-red'>*</span>订单出货通知  <i class='x-red'>请输入发送信件通知内容，用{xxx}占位</i>
                             </label>
@@ -685,8 +1173,8 @@
                                 <textarea placeholder="请输入发送信件通知内容，用{xxx}占位"  name="send_msg" class="layui-textarea">{$config['send_msg']}</textarea>
                             </div>
                         </div>
-						
-						<div class="layui-form-item">
+                        
+                        <div class="layui-form-item">
                             <label style="width:150px" class="layui-form-label">
                                 <span  class='x-red'>*</span>订单运费
                             </label>
@@ -695,7 +1183,7 @@
                                 class="layui-input">
                             </div>
                         </div>
-						<div class="layui-form-item">
+                        <div class="layui-form-item">
                             <label style="width:150px" class="layui-form-label">
                                 <span  class='x-red'>*</span>订单超时
                             </label>
@@ -703,12 +1191,12 @@
                                 <input type="number" name="overtime" value="{$config['overtime']}" autocomplete="off" placeholder="请输入订单超时时间"
                                 class="layui-input">
                             </div>
-							<div class="layui-form-mid layui-word-aux">
-								  按小时计算，超过该小时订单过期，仅限于开启支付后，0代表不限制，关闭支付后不起效
-							</div> 
+                            <div class="layui-form-mid layui-word-aux">
+                                  按小时计算，超过该小时订单过期，仅限于开启支付后，0代表不限制，关闭支付后不起效
+                            </div> 
                         </div>
-						
-						<div class="layui-form-item">
+                        
+                        <div class="layui-form-item">
                             <button class="layui-btn" lay-submit="" lay-filter="*">
                                 保存
                             </button>
@@ -716,290 +1204,591 @@
                    
                 </div>
                 {/if}
-				{if(checkAction('Sys/payconfig'))}
-				<div class="layui-tab-item">
+                {if(checkAction('Sys/payconfig'))}
+                <div class="layui-tab-item">
+                    
+                    <div class="layui-form-item">
+                            <label style="width:150px" class="layui-form-label">
+                                <span  class='x-red'>*</span>钱包兑换率
+                            </label>
+                            <div   class="layui-input-inline">
+                                <input type="text" name="money_exchange" value="{$config['money_exchange']}" autocomplete="off" placeholder="站内钱包与RMB的兑换率"
+                                class="layui-input">
+                            </div>
+                            <div class="layui-form-mid layui-word-aux">
+                                <span class="x-red">*</span>站内钱包与RMB的兑换率，即1元=多少金币
+                            </div>
+                    </div>
+                    <div class="layui-form-item">
+                            <label style="width: 150px;"  class="layui-form-label">
+                                <span  class='x-red'>*</span>积分兑换率
+                            </label>
+                            <div   class="layui-input-inline">
+                                <input type="text" name="jifen_exchange" value="{$config['jifen_exchange']}" autocomplete="off" placeholder="站内积分与RMB的兑换率"
+                                class="layui-input">
+                            </div>
+                            <div class="layui-form-mid layui-word-aux">
+                                <span class="x-red">*</span>站内积分与RMB的兑换率，即1元=多少积分
+                            </div>
+                    </div>
                     <div class="layui-form-item" pane>
-						<label for="paytype" style="width:150px"  class="layui-form-label">
-							<span class="x-red"></span>支付方式
-						</label>
-						<div  style="margin-left: 150px;" class="layui-input-block">
-							<input type="radio" name="paytype" value="0" title="关闭支付" {if($config['paytype']==0)}checked{/if}>
-							<input type="radio" name="paytype" value="1" title="极致平台" {if($config['paytype']==1)}checked{/if}>
-							<input type="radio" name="paytype" value="2" title="自主平台" {if($config['paytype']==2)}checked{/if}>
-							
-							
-						</div>
-					</div>
-					
-					<fieldset class="layui-elem-field layui-field-title">
-					  <legend>极致平台&nbsp;&nbsp;<b class="x-red">同时支持：支付宝 & 微信支付</b></legend>
-					  <div class="layui-field-box">
-						<div class="layui-form-item">
-							<label style="width:150px" class="layui-form-label">
-								<span class='x-red'>*</span>平台接口
-							</label>
-							<div style="margin-left: 150px;" class="layui-input-block">
-								<input type="text" name="jizhi_pay_url" value="{$config['jizhi_pay_url']}" autocomplete="off" placeholder="请填写极致平台支付域名"
-								class="layui-input">
-							</div>
-						</div>
-						<div class="layui-form-item">
-							<label style="width:150px" class="layui-form-label">
-								<span class='x-red'>*</span>平台商户
-							</label>
-							<div style="margin-left: 150px;" class="layui-input-block">
-								<input type="text" name="jizhi_mchid" value="{$config['jizhi_mchid']}" autocomplete="off" placeholder="请填写极致平台的商户号"
-								class="layui-input">
-							</div>
-						</div>
-						<div class="layui-form-item">
-							<label style="width:150px" class="layui-form-label">
-								<span class='x-red'>*</span>应用appid
-							</label>
-							<div  style="margin-left: 150px;" class="layui-input-block">
-								<input type="text" name="jizhi_appid" value="{$config['jizhi_appid']}" autocomplete="off" placeholder="请填写极致平台应用的appid"
-								class="layui-input">
-							</div>
-						</div>
-						<div class="layui-form-item">
-							<label style="width:150px" class="layui-form-label">
-								<span class='x-red'>*</span>应用秘钥
-							</label>
-							<div  style="margin-left: 150px;" class="layui-input-block">
-								<input type="password" name="jizhi_key" value="{$config['jizhi_key']}" autocomplete="off" placeholder="请填写极致平台应用的密钥"
-								class="layui-input">
-							</div>
-						</div>
-						
-					  </div>
-					</fieldset>
-					
-					<fieldset class="layui-elem-field layui-field-title">
-					  <legend>自主平台</legend>
-					  <div class="layui-field-box">
-					
-							
-						    <div class="layui-form-item">
-								  <label style="width:150px" for="alipay_partner" class="layui-form-label">
-									  <span class="x-red">*</span>支付宝合作者
-								  </label>
-								  <div  class="layui-input-inline">
-									
-									   <input type="text" id="alipay_partner" value="{$config['alipay_partner']}" name="alipay_partner"  style="width:400px;"  autocomplete="off" class="layui-input">
-								  </div>
-								  <div class="layui-form-mid layui-word-aux">
-										<span class="x-red">*</span>合作身份者ID，签约账号，以2088开头由16位纯数字组成的字符串
-									</div>
-								  
-							  </div>
-							<div class="layui-form-item">
-								  <label style="width:150px" for="alipay_key" class="layui-form-label">
-									  <span class="x-red">*</span>支付宝key
-								  </label>
-								  <div class="layui-input-inline">
-									
-									   <input type="text" id="alipay_key" value="{$config['alipay_key']}" name="alipay_key"  style="width:400px;"  autocomplete="off" class="layui-input">
-								  </div>
-								  <div class="layui-form-mid layui-word-aux">
-										<span class="x-red">*</span>MD5密钥，安全检验码，由数字和字母组成的32位字符串
-									</div>
-								  
-							  </div>
-						   
-								
-								<div class="layui-form-item layui-form-text">
-									<label class="layui-form-label">
-										<span class='x-red'>*</span>支付宝私钥
-									</label>
-									<div class="layui-input-block">
-										<textarea placeholder="支付宝私钥"  name="alipay_private_key" class="layui-textarea">{$config['alipay_private_key']}</textarea>
-									</div>
-								</div>
-								<div class="layui-form-item layui-form-text">
-									<label class="layui-form-label">
-										<span class='x-red'>*</span>支付宝公钥
-									</label>
-									<div class="layui-input-block">
-										<textarea placeholder="支付宝公钥"  name="alipay_public_key" class="layui-textarea">{$config['alipay_public_key']}</textarea>
-									</div>
-								</div>
-								
-							 
-							
-							  
-							   <div class="layui-form-item">
-									<label style="width:150px" class="layui-form-label">
-										<span class='x-red'>*</span>微信商户mchid
-									</label>
-									<div style="margin-left:150px" class="layui-input-block">
-										<input type="text" name="wx_mchid" value="{$config['wx_mchid']}" autocomplete="off" placeholder=""
-										class="layui-input">
-									</div>
-								</div>
-							  
-							  
-							 
-							  <div class="layui-form-item">
-									<label style="width:150px" class="layui-form-label">
-										<span class='x-red'>*</span>微信商户key
-									</label>
-									<div style="margin-left:150px" class="layui-input-block">
-										<input type="text" name="wx_key" autocomplete="off"  value="{$config['wx_key']}"  placeholder=""
-										class="layui-input">
-									</div>
-								</div>
-							   <div class="layui-form-item">
-									<label style="width:150px" class="layui-form-label">
-										<span class='x-red'>*</span>微信公众号appid
-									</label>
-									<div style="margin-left:150px" class="layui-input-block">
-										<input type="text" name="wx_appid" autocomplete="off" value="{$config['wx_appid']}" placeholder=""
-										class="layui-input">
-									</div>
-								</div>
-								 <div class="layui-form-item">
-									<label style="width:150px" class="layui-form-label">
-										<span class='x-red'>*</span>微信公众号token
-									</label>
-									<div style="margin-left:150px" class="layui-input-block">
-										<input type="text" name="wx_token" autocomplete="off" value="{$config['wx_token']}" placeholder=""
-										class="layui-input">
-									</div>
-								</div>
-							  <div class="layui-form-item">
-									<label style="width:150px" class="layui-form-label">
-										<span class='x-red'>*</span>公众号appsecret
-									</label>
-									<div style="margin-left:150px" class="layui-input-block">
-										<input type="text" name="wx_appsecret" autocomplete="off" value="{$config['wx_appsecret']}" placeholder=""
-										class="layui-input">
-									</div>
-								</div>
-							 
-							  
-							  <div class="layui-form-item">
-									<label style="width:150px" for="wx_client_cert" class="layui-form-label">
-										
-										<span class="x-red">*</span>微信apiclient_cert  
-										
-									</label>
-									
-									<div  class="layui-input-inline">
-									  <div class="site-demo-upbar">
-									  
-									   <input name="wx_client_cert" type="text" class="layui-input" id="wx_client_cert" value="{$config['wx_client_cert']}" />
-										
-									  </div>
-									</div>
-									<div  class="layui-input-inline">
-										<button type="button" class="layui-btn" id="wx_client_cert_upload">
-										  <i class="layui-icon">&#xe67c;</i>上传文件
-										</button>
-									  
-									</div>
-									
-								</div>
-							  <div class="layui-form-item">
-									<label  style="width:150px" for="wx_client_key" class="layui-form-label">
-										
-										<span class="x-red">*</span>微信apiclient_key  
-										
-									</label>
-									
-									<div  class="layui-input-inline">
-									  <div class="site-demo-upbar">
-									   <input name="wx_client_key"  type="text" class="layui-input" id="wx_client_key" value="{$config['wx_client_key']}" />
-										
-									  </div>
-									</div>
-									<div  class="layui-input-inline">
-										<button type="button" class="layui-btn" id="wx_client_key_upload">
-										  <i class="layui-icon">&#xe67c;</i>上传文件
-										</button>
-									</div>
-								</div>
-							
-					
-					
-					  </div>
-					</fieldset>
-					
-					<div class="layui-form-item">
-							
-						  
-						<button class="layui-btn" lay-submit="" lay-filter="*">
-							保存
-						</button>
-					</div>
+                        <label for="isopenjifen" style="width:150px"  class="layui-form-label">
+                            <span class="x-red"></span>积分支付
+                        </label>
+                        <div  style="margin-left: 150px;" class="layui-input-block">
+                            <input type="radio" name="isopenjifen" value="0" title="关闭" {if($config['isopenjifen']==0)}checked{/if}>
+                            <input type="radio" name="isopenjifen" value="1" title="开启" {if($config['isopenjifen']==1)}checked{/if}>
+                        </div>
+                    </div>
+                    <div class="layui-form-item" pane>
+                        <label for="isopenqianbao" style="width:150px"  class="layui-form-label">
+                            <span class="x-red"></span>钱包支付
+                        </label>
+                        <div  style="margin-left: 150px;" class="layui-input-block">
+                            <input type="radio" name="isopenqianbao" value="0" title="关闭" {if($config['isopenqianbao']==0)}checked{/if}>
+                            <input type="radio" name="isopenqianbao" value="1" title="开启" {if($config['isopenqianbao']==1)}checked{/if}>
+                        </div>
+                    </div>
+                    <div class="layui-form-item" pane>
+                        <label for="isopenweixin" style="width:150px"  class="layui-form-label">
+                            <span class="x-red"></span>微信支付
+                        </label>
+                        <div  style="margin-left: 150px;" class="layui-input-block">
+                            <input type="radio" name="isopenweixin" value="0" title="关闭" {if($config['isopenweixin']==0)}checked{/if}>
+                            <input type="radio" name="isopenweixin" value="1" title="开启" {if($config['isopenweixin']==1)}checked{/if}>
+                        </div>
+                    </div>
+                    <div class="layui-form-item" pane>
+                        <label for="isopenzfb" style="width:150px"  class="layui-form-label">
+                            <span class="x-red"></span>支付宝支付
+                        </label>
+                        <div  style="margin-left: 150px;" class="layui-input-block">
+                            <input type="radio" name="isopenzfb" value="0" title="关闭" {if($config['isopenzfb']==0)}checked{/if}>
+                            <input type="radio" name="isopenzfb" value="1" title="开启" {if($config['isopenzfb']==1)}checked{/if}>
+                        </div>
+                    </div>
+                    <div class="layui-form-item" pane>
+                        <label for="paytype" style="width:150px"  class="layui-form-label">
+                            <span class="x-red"></span>支付方式
+                        </label>
+                        <div  style="margin-left: 150px;" class="layui-input-block">
+                            <input type="radio" name="paytype" value="0" title="关闭支付" {if($config['paytype']==0)}checked{/if}>
+                            <input type="radio" name="paytype" value="1" title="极致平台" {if($config['paytype']==1)}checked{/if}>
+                            <input type="radio" name="paytype" value="2" title="自主平台" {if($config['paytype']==2)}checked{/if}>
+                            
+                            
+                        </div>
+                    </div>
+                    
+                    <fieldset class="layui-elem-field layui-field-title">
+                      <legend>极致平台&nbsp;&nbsp;<b class="x-red">同时支持：支付宝 & 微信支付</b></legend>
+                      <div class="layui-field-box">
+                        <div class="layui-form-item">
+                            <label style="width:150px" class="layui-form-label">
+                                <span class='x-red'>*</span>平台接口
+                            </label>
+                            <div style="margin-left: 150px;" class="layui-input-block">
+                                <input type="text" name="jizhi_pay_url" value="{$config['jizhi_pay_url']}" autocomplete="off" placeholder="请填写极致平台支付域名"
+                                class="layui-input">
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label style="width:150px" class="layui-form-label">
+                                <span class='x-red'>*</span>平台商户
+                            </label>
+                            <div style="margin-left: 150px;" class="layui-input-block">
+                                <input type="text" name="jizhi_mchid" value="{$config['jizhi_mchid']}" autocomplete="off" placeholder="请填写极致平台的商户号"
+                                class="layui-input">
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label style="width:150px" class="layui-form-label">
+                                <span class='x-red'>*</span>应用appid
+                            </label>
+                            <div  style="margin-left: 150px;" class="layui-input-block">
+                                <input type="text" name="jizhi_appid" value="{$config['jizhi_appid']}" autocomplete="off" placeholder="请填写极致平台应用的appid"
+                                class="layui-input">
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label style="width:150px" class="layui-form-label">
+                                <span class='x-red'>*</span>应用秘钥
+                            </label>
+                            <div  style="margin-left: 150px;" class="layui-input-block">
+                                <input type="password" name="jizhi_key" value="{$config['jizhi_key']}" autocomplete="off" placeholder="请填写极致平台应用的密钥"
+                                class="layui-input">
+                            </div>
+                        </div>
+                        
+                      </div>
+                    </fieldset>
+                    
+                    <fieldset class="layui-elem-field layui-field-title">
+                      <legend>自主平台</legend>
+                      <div class="layui-field-box">
+                    
+                            
+                            <div class="layui-form-item">
+                                  <label style="width:150px" for="alipay_partner" class="layui-form-label">
+                                      <span class="x-red">*</span>支付宝APPID
+                                  </label>
+                                  <div  class="layui-input-inline">
+                                    
+                                       <input type="text" id="alipay_partner" value="{$config['alipay_partner']}" name="alipay_partner"  style="width:400px;"  autocomplete="off" class="layui-input">
+                                  </div>
+                                  <div class="layui-form-mid layui-word-aux">
+                                        <span class="x-red">*</span>账户中心->密钥管理->开放平台密钥，填写添加了电脑网站支付的应用的APPID
+                                    </div>
+                                  
+                              </div>
+                            <div class="layui-form-item">
+                                  <label style="width:150px" for="alipay_key" class="layui-form-label">
+                                      <span class="x-red">*</span>支付宝key
+                                  </label>
+                                  <div class="layui-input-inline">
+                                    
+                                       <input type="text" id="alipay_key" value="{$config['alipay_key']}" name="alipay_key"  style="width:400px;"  autocomplete="off" class="layui-input">
+                                  </div>
+                                  <div class="layui-form-mid layui-word-aux">
+                                        <span class="x-red">*</span>MD5密钥，安全检验码，由数字和字母组成的32位字符串
+                                    </div>
+                                  
+                              </div>
+                           
+                                
+                                <div class="layui-form-item layui-form-text">
+                                    <label class="layui-form-label">
+                                        <span class='x-red'>*</span>支付宝私钥
+                                    </label>
+                                    <div class="layui-input-block">
+                                        <textarea placeholder="支付宝私钥"  name="alipay_private_key" class="layui-textarea">{$config['alipay_private_key']}</textarea>
+                                    </div>
+                                </div>
+                                <div class="layui-form-item layui-form-text">
+                                    <label class="layui-form-label">
+                                        <span class='x-red'>*</span>支付宝公钥
+                                    </label>
+                                    <div class="layui-input-block">
+                                        <textarea placeholder="支付宝公钥"  name="alipay_public_key" class="layui-textarea">{$config['alipay_public_key']}</textarea>
+                                    </div>
+                                </div>
+                                
+                             
+                            
+                              
+                               <div class="layui-form-item">
+                                    <label style="width:150px" class="layui-form-label">
+                                        <span class='x-red'>*</span>微信商户mchid
+                                    </label>
+                                    <div style="margin-left:150px" class="layui-input-block">
+                                        <input type="text" name="wx_mchid" value="{$config['wx_mchid']}" autocomplete="off" placeholder=""
+                                        class="layui-input">
+                                    </div>
+                                </div>
+                              
+                              
+                             
+                              <div class="layui-form-item">
+                                    <label style="width:150px" class="layui-form-label">
+                                        <span class='x-red'>*</span>微信商户key
+                                    </label>
+                                    <div style="margin-left:150px" class="layui-input-block">
+                                        <input type="text" name="wx_key" autocomplete="off"  value="{$config['wx_key']}"  placeholder=""
+                                        class="layui-input">
+                                    </div>
+                                </div>
+                               <div class="layui-form-item">
+                                    <label style="width:150px" class="layui-form-label">
+                                        <span class='x-red'>*</span>微信公众号appid
+                                    </label>
+                                    <div style="margin-left:150px" class="layui-input-block">
+                                        <input type="text" name="wx_appid" autocomplete="off" value="{$config['wx_appid']}" placeholder=""
+                                        class="layui-input">
+                                    </div>
+                                </div>
+                                 <div class="layui-form-item">
+                                    <label style="width:150px" class="layui-form-label">
+                                        <span class='x-red'>*</span>微信公众号token
+                                    </label>
+                                    <div style="margin-left:150px" class="layui-input-block">
+                                        <input type="text" name="wx_token" autocomplete="off" value="{$config['wx_token']}" placeholder=""
+                                        class="layui-input">
+                                    </div>
+                                </div>
+                              <div class="layui-form-item">
+                                    <label style="width:150px" class="layui-form-label">
+                                        <span class='x-red'>*</span>公众号appsecret
+                                    </label>
+                                    <div style="margin-left:150px" class="layui-input-block">
+                                        <input type="text" name="wx_appsecret" autocomplete="off" value="{$config['wx_appsecret']}" placeholder=""
+                                        class="layui-input">
+                                    </div>
+                                </div>
+                             
+                              
+                              <div class="layui-form-item">
+                                    <label style="width:150px" for="wx_client_cert" class="layui-form-label">
+                                        
+                                        <span class="x-red">*</span>微信apiclient_cert  
+                                        
+                                    </label>
+                                    
+                                    <div  class="layui-input-inline">
+                                      <div class="site-demo-upbar">
+                                      
+                                       <input name="wx_client_cert" type="text" class="layui-input" id="wx_client_cert" value="{$config['wx_client_cert']}" />
+                                        
+                                      </div>
+                                    </div>
+                                    <div  class="layui-input-inline">
+                                        <button type="button" class="layui-btn" id="wx_client_cert_upload">
+                                          <i class="layui-icon">&#xe67c;</i>上传文件
+                                        </button>
+                                      
+                                    </div>
+                                    
+                                </div>
+                              <div class="layui-form-item">
+                                    <label  style="width:150px" for="wx_client_key" class="layui-form-label">
+                                        
+                                        <span class="x-red">*</span>微信apiclient_key  
+                                        
+                                    </label>
+                                    
+                                    <div  class="layui-input-inline">
+                                      <div class="site-demo-upbar">
+                                       <input name="wx_client_key"  type="text" class="layui-input" id="wx_client_key" value="{$config['wx_client_key']}" />
+                                        
+                                      </div>
+                                    </div>
+                                    <div  class="layui-input-inline">
+                                        <button type="button" class="layui-btn" id="wx_client_key_upload">
+                                          <i class="layui-icon">&#xe67c;</i>上传文件
+                                        </button>
+                                    </div>
+                                </div>
+                            
+                    
+                    
+                      </div>
+                    </fieldset>
+                    
+                    <div class="layui-form-item">
+                            
+                          
+                        <button class="layui-btn" lay-submit="" lay-filter="*">
+                            保存
+                        </button>
+                    </div>
                    
                 </div>
-			    {/if}
-				{if(checkAction('Sys/wechatbind'))}
-				<div class="layui-tab-item">
-				
-						<blockquote class="layui-elem-quote">仅仅是配置菜单栏，不需要接入服务器</blockquote>
-						<div class="layui-form-item">
-								<label style="width:150px" class="layui-form-label">
-									<span class='x-red'>*</span>服务器URL
-								</label>
-								<div style="margin-left:150px" class="layui-input-block">
-									<input type="text"  autocomplete="off" value="{fun get_domain()}/Wechat/index" disabled placeholder=""
-									class="layui-input">
-								</div>
-							</div>
-						<div class="layui-form-item">
-								<label style="width:150px" class="layui-form-label">
-									<span class='x-red'>*</span>公众号appid
-								</label>
-								<div style="margin-left:150px" class="layui-input-block">
-									<input type="text" name="wx_login_appid" autocomplete="off" value="{$config['wx_login_appid']}" placeholder=""
-									class="layui-input">
-								</div>
-							</div>
-							<div class="layui-form-item">
-								<label style="width:150px" class="layui-form-label">
-									<span class='x-red'>*</span>公众号appsecret
-								</label>
-								<div style="margin-left:150px" class="layui-input-block">
-									<input type="text" name="wx_login_appsecret" autocomplete="off" value="{$config['wx_login_appsecret']}" placeholder=""
-									class="layui-input">
-								</div>
-							</div>
-							<div class="layui-form-item">
-								<label style="width:150px" class="layui-form-label">
-									<span class='x-red'>*</span>公众号token
-								</label>
-								<div style="margin-left:150px" class="layui-input-block">
-									<input type="text" name="wx_login_token" autocomplete="off"  value="{$config['wx_login_token']}"  placeholder=""
-									class="layui-input">
-								</div>
-							</div>
-							<div class="layui-form-item layui-form-text">
-								<label  class="layui-form-label">
-									<span class='x-red'>*</span>公众号欢迎语  <i class='x-red'>用户关注公众号推送的文字</i>
-								</label>
-								<div class="layui-input-block">
-									<textarea placeholder="请输入公众号欢迎语"  name="huanying" class="layui-textarea">{$config['huanying']}</textarea>
-								</div>
-							</div>
-						
-					
-						<div class="layui-form-item">
+                {/if}
+                {if(checkAction('Sys/wechatbind'))}
+                <div class="layui-tab-item">
+                
+                        <blockquote class="layui-elem-quote">仅仅是配置菜单栏，不需要接入服务器</blockquote>
+                        <div class="layui-form-item">
+                                <label style="width:150px" class="layui-form-label">
+                                    <span class='x-red'>*</span>服务器URL
+                                </label>
+                                <div style="margin-left:150px" class="layui-input-block">
+                                    <input type="text"  autocomplete="off" value="{fun get_domain()}/Wechat/index" disabled placeholder=""
+                                    class="layui-input">
+                                </div>
+                            </div>
+                        <div class="layui-form-item">
+                                <label style="width:150px" class="layui-form-label">
+                                    <span class='x-red'>*</span>公众号appid
+                                </label>
+                                <div style="margin-left:150px" class="layui-input-block">
+                                    <input type="text" name="wx_login_appid" autocomplete="off" value="{$config['wx_login_appid']}" placeholder=""
+                                    class="layui-input">
+                                </div>
+                            </div>
+                            <div class="layui-form-item">
+                                <label style="width:150px" class="layui-form-label">
+                                    <span class='x-red'>*</span>公众号appsecret
+                                </label>
+                                <div style="margin-left:150px" class="layui-input-block">
+                                    <input type="text" name="wx_login_appsecret" autocomplete="off" value="{$config['wx_login_appsecret']}" placeholder=""
+                                    class="layui-input">
+                                </div>
+                            </div>
+                            <div class="layui-form-item">
+                                <label style="width:150px" class="layui-form-label">
+                                    <span class='x-red'>*</span>公众号token
+                                </label>
+                                <div style="margin-left:150px" class="layui-input-block">
+                                    <input type="text" name="wx_login_token" autocomplete="off"  value="{$config['wx_login_token']}"  placeholder=""
+                                    class="layui-input">
+                                </div>
+                            </div>
+                            <div class="layui-form-item layui-form-text">
+                                <label  class="layui-form-label">
+                                    <span class='x-red'>*</span>公众号欢迎语  <i class='x-red'>用户关注公众号推送的文字</i>
+                                </label>
+                                <div class="layui-input-block">
+                                    <textarea placeholder="请输入公众号欢迎语"  name="huanying" class="layui-textarea">{$config['huanying']}</textarea>
+                                </div>
+                            </div>
+                        
+                    
+                        <div class="layui-form-item">
                             <button class="layui-btn" lay-submit="" lay-filter="*">
                                 保存
                             </button>
                         </div>
-						
+                        
                     
-				</div>
-				{/if}
-			 
-				
+                </div>
+                {/if}
+                {if(checkAction('Sys/jifenset'))}
+                <div class="layui-tab-item" >
+                    <div class="layui-form-item" >
+                        <label style="width:150px" class="layui-form-label">
+                            <span class='x-red'>*</span>登录奖励
+                        </label>
+                        <div class="layui-input-inline">
+                            <input type="number" name="login_award"  autocomplete="off" value="{$config['login_award']}"  placeholder=""
+                            class="layui-input">
+                        </div>
+                         <div  class="layui-input-inline">
+                            <input type="radio" name="login_award_open" value="0" title="关闭" {if($config['login_award_open']==0)}checked{/if}>
+                            <input type="radio" name="login_award_open" value="1" title="开启" {if($config['login_award_open']==1)}checked{/if}>
+                        </div>
+                        <div class="layui-form-mid layui-word-aux">
+                              每天登录奖励积分数，最小为0，每天登录只奖励一次
+                        </div> 
+                        
+                    </div>
+					<div class="layui-form-item" >
+                    <fieldset class="layui-elem-field">
+                      <legend>邀请奖励</legend>
+                      <div class="layui-field-box">
+                        <label style="width:150px" class="layui-form-label">
+                            <span class='x-red'>*</span>每次奖励
+                        </label>
+                        <div class="layui-input-inline">
+                            <input type="number" name="invite_award"  autocomplete="off" value="{$config['invite_award']}"  placeholder=""
+                            class="layui-input">
+                        </div>
+                        <label style="width:150px" class="layui-form-label">
+                            <span class='x-red'>*</span>奖励类型
+                        </label>
+                        <div class="layui-input-inline">
+                            <select name="invite_type" class="layui-btn layui-btn-normal">
+							
+							<option value="jifen" {if($config['invite_type']=='jifen')}selected{/if}>积分</option>
+							<option value="money" {if($config['invite_type']=='money')}selected{/if}>钱包</option>
+							
+							</select>
+                        </div>
+                     
+						<label style="width:150px" class="layui-form-label">
+                            <span class='x-red'>*</span>是否关闭
+                        </label>
+						<div  class="layui-input-inline">
+								<input type="radio" name="invite_award_open" value="0" title="关闭" {if($config['invite_award_open']==0)}checked{/if}>
+								<input type="radio" name="invite_award_open" value="1" title="开启" {if($config['invite_award_open']==1)}checked{/if}>
+							</div>
+							<div class="layui-form-mid layui-word-aux">
+								  是否开启邀请奖励，访问邀请链接（个人中心用户信息），注册成功则会奖励
+							</div> 
+                      </div>
+                    </fieldset>
+                       
+                        
+                    </div>
+                    <div class="layui-form-item" >
+                    <fieldset class="layui-elem-field">
+                      <legend>发布奖励</legend>
+                      <div class="layui-field-box">
+                        <label style="width:150px" class="layui-form-label">
+                            <span class='x-red'>*</span>每次奖励
+                        </label>
+                        <div class="layui-input-inline">
+                            <input type="number" name="release_award"  autocomplete="off" value="{$config['release_award']}"  placeholder=""
+                            class="layui-input">
+                        </div>
+                        <label style="width:150px" class="layui-form-label">
+                            <span class='x-red'>*</span>每天最高奖励
+                        </label>
+                        <div class="layui-input-inline">
+                            <input type="number" name="release_max_award"  autocomplete="off" value="{$config['release_max_award']}"  placeholder=""
+                            class="layui-input">
+                        </div>
+                     
+                        <label style="width:150px" class="layui-form-label">
+                            <span class='x-red'>*</span>是否关闭
+                        </label>
+                        <div  class="layui-input-inline">
+                            <input type="radio" name="release_award_open" value="0" title="关闭" {if($config['release_award_open']==0)}checked{/if}>
+                            <input type="radio" name="release_award_open" value="1" title="开启" {if($config['release_award_open']==1)}checked{/if}>
+                        </div>
+                        <div class="layui-form-mid layui-word-aux">
+                            每次发布内容奖励（后台审核通过才奖励），每天奖励不超过最高奖励，设置0则无上限
+                        </div> 
+                      </div>
+                    </fieldset>
+                       
+                        
+                    </div>
+
+                    <div class="layui-form-item" >
+                    <fieldset class="layui-elem-field">
+                      <legend>收藏奖励</legend>
+                      <div class="layui-field-box">
+                        <label style="width:150px" class="layui-form-label">
+                            <span class='x-red'>*</span>每次奖励
+                        </label>
+                        <div class="layui-input-inline">
+                            <input type="number" name="collect_award"  autocomplete="off" value="{$config['collect_award']}"  placeholder=""
+                            class="layui-input">
+                        </div>
+                        <label style="width:150px" class="layui-form-label">
+                            <span class='x-red'>*</span>每天最高奖励
+                        </label>
+                        <div class="layui-input-inline">
+                            <input type="number" name="collect_max_award"  autocomplete="off" value="{$config['collect_max_award']}"  placeholder=""
+                            class="layui-input">
+                        </div>
+                   
+                        <label style="width:150px" class="layui-form-label">
+                            <span class='x-red'>*</span>是否关闭
+                        </label>
+                        <div  class="layui-input-inline">
+                            <input type="radio" name="collect_award_open" value="0" title="关闭" {if($config['collect_award_open']==0)}checked{/if}>
+                            <input type="radio" name="collect_award_open" value="1" title="开启" {if($config['collect_award_open']==1)}checked{/if}>
+                        </div>
+                        <div class="layui-form-mid layui-word-aux">
+                            发布的内容被收藏，发布用户会得到奖励，每天最低0，每天不超过最高奖励，0代表无上限
+                        </div> 
+                      </div>
+                    </fieldset>
+                       
+                        
+                    </div>
+
+                    <div class="layui-form-item" >
+                    <fieldset class="layui-elem-field">
+                      <legend>点赞奖励</legend>
+                      <div class="layui-field-box">
+                        <label style="width:150px" class="layui-form-label">
+                            <span class='x-red'>*</span>每次奖励
+                        </label>
+                        <div class="layui-input-inline">
+                            <input type="number" name="likes_award"  autocomplete="off" value="{$config['likes_award']}"  placeholder=""
+                            class="layui-input">
+                        </div>
+                        <label style="width:150px" class="layui-form-label">
+                            <span class='x-red'>*</span>每天最高奖励
+                        </label>
+                        <div class="layui-input-inline">
+                            <input type="number" name="likes_max_award"  autocomplete="off" value="{$config['likes_max_award']}"  placeholder=""
+                            class="layui-input">
+                        </div>
+                      
+                        <label style="width:150px" class="layui-form-label">
+                            <span class='x-red'>*</span>是否关闭
+                        </label>
+                        <div  class="layui-input-inline">
+                            <input type="radio" name="likes_award_open" value="0" title="关闭" {if($config['likes_award_open']==0)}checked{/if}>
+                            <input type="radio" name="likes_award_open" value="1" title="开启" {if($config['likes_award_open']==1)}checked{/if}>
+                        </div>
+                        <div class="layui-form-mid layui-word-aux">
+                            发布的内容被点赞，发布用户会得到奖励，每天最低0，每天不超过最高奖励，0代表无上限
+                        </div> 
+                      </div>
+                    </fieldset>
+                       
+                        
+                    </div>
+
+                    <div class="layui-form-item" >
+                    <fieldset class="layui-elem-field">
+                      <legend>评论奖励</legend>
+                      <div class="layui-field-box">
+                        <label style="width:150px" class="layui-form-label">
+                            <span class='x-red'>*</span>每次奖励
+                        </label>
+                        <div class="layui-input-inline">
+                            <input type="number" name="comment_award"  autocomplete="off" value="{$config['comment_award']}"  placeholder=""
+                            class="layui-input">
+                        </div>
+                        <label style="width:150px" class="layui-form-label">
+                            <span class='x-red'>*</span>每天最高奖励
+                        </label>
+                        <div class="layui-input-inline">
+                            <input type="number" name="comment_max_award"  autocomplete="off" value="{$config['comment_max_award']}"  placeholder=""
+                            class="layui-input">
+                        </div>
+                    
+                        <label style="width:150px" class="layui-form-label">
+                            <span class='x-red'>*</span>是否关闭
+                        </label>
+                        <div  class="layui-input-inline">
+                            <input type="radio" name="comment_award_open" value="0" title="关闭" {if($config['comment_award_open']==0)}checked{/if}>
+                            <input type="radio" name="comment_award_open" value="1" title="开启" {if($config['comment_award_open']==1)}checked{/if}>
+                        </div>
+                        <div class="layui-form-mid layui-word-aux">
+                            发布的内容被评论，发布用户会得到奖励，每天最低0，每天不超过最高奖励，0代表无上限
+                        </div> 
+                      </div>
+                    </fieldset>
+                       
+                        
+                    </div>
+
+                    <div class="layui-form-item" >
+                    <fieldset class="layui-elem-field">
+                      <legend>关注奖励</legend>
+                      <div class="layui-field-box">
+                        <label style="width:150px" class="layui-form-label">
+                            <span class='x-red'>*</span>每次奖励
+                        </label>
+                        <div class="layui-input-inline">
+                            <input type="number" name="follow_award"  autocomplete="off" value="{$config['follow_award']}"  placeholder=""
+                            class="layui-input">
+                        </div>
+                        <label style="width:150px" class="layui-form-label">
+                            <span class='x-red'>*</span>每天最高奖励
+                        </label>
+                        <div class="layui-input-inline">
+                            <input type="number" name="follow_max_award"  autocomplete="off" value="{$config['follow_max_award']}"  placeholder=""
+                            class="layui-input">
+                        </div>
+                      
+                        <label style="width:150px" class="layui-form-label">
+                            <span class='x-red'>*</span>是否关闭
+                        </label>
+                        <div  class="layui-input-inline">
+                            <input type="radio" name="follow_award_open" value="0" title="关闭" {if($config['follow_award_open']==0)}checked{/if}>
+                            <input type="radio" name="follow_award_open" value="1" title="开启" {if($config['follow_award_open']==1)}checked{/if}>
+                        </div>
+                        <div class="layui-form-mid layui-word-aux">
+                            用户被粉丝关注，将得到奖励，相应取消关注也会被扣除奖励
+                        </div> 
+                      </div>
+                    </fieldset>
+                       
+                        
+                    </div>
+
+    
+                    <div class="layui-form-item">
+                        <button class="layui-btn" lay-submit="" lay-filter="*">
+                            保存
+                        </button>
+                    </div>
+                </div>
+                {/if}
+             
+                
               </div>
             </div> 
-			
+            
         </div>
-		</form>
+        </form>
      
         <script>
             layui.use(['element','layer','form','upload'], function(){
@@ -1009,104 +1798,162 @@
             var  form = layui.form;
              var upload = layui.upload;
             
+            $('.savepath').click(function(){
+				layer.open({
+					  type: 1,
+					  title:'路径规则',
+					  skin: 'layui-layer-demo', //样式类名
+					  closeBtn: 0, //不显示关闭按钮
+					  anim: 2,
+					  shadeClose: true, //开启遮罩关闭
+					  content: ' [ 设置后请确保系统有权限创建文件夹 ]<br/>{time} 会替换成时间戳<br/> {yyyy} 会替换成四位年份 <br/>{yy} 会替换成两位年份 <br/>{mm} 会替换成两位月份 <br/>{dd} 会替换成两位日期 <br/>{hh} 会替换成两位小时 <br/>{ii} 会替换成两位分钟 <br/>{ss} 会替换成两位秒 <br/> 不可写字符 \\ : * ? " < > | <br/>例：Public/{yyyy}/{mm}/{dd}'
+					});
+				
 			
-			 //图片上传接口
+			});
+			
+             //图片上传接口
               upload.render({
-			    elem: '#wx_client_cert_upload',
-				accept:'file',
+                elem: '#wx_client_cert_upload',
+                accept:'file',
                 url: "{fun U('Sys/uploadcert')}" //上传接口
+                ,data:{molds:'sysconfig'}
                 ,done: function(res){ //上传成功后的回调
-					if(res.code==0){
-						 $('#wx_client_cert').val('/'+res.url);
-					}else{
-						 layer.alert(res.error, {icon: 5});
-					}
+                    if(res.code==0){
+                         $('#wx_client_cert').val('/'+res.url);
+                    }else{
+                         layer.alert(res.error, {icon: 5});
+                    }
                  
                 }
               });
-			upload.render({
-			    elem: '#wx_client_key_upload',
-				accept:'file',
+            upload.render({
+                elem: '#wx_client_key_upload',
+                accept:'file',
                 url: "{fun U('Sys/uploadcert')}"  //上传接口
+                 ,data:{molds:'sysconfig'}
                 ,done: function(res){ //上传成功后的回调
-					if(res.code==0){
-						 $('#wx_client_key').val('/'+res.url);
-					}else{
-						 layer.alert(res.error, {icon: 5});
-					}
+                    if(res.code==0){
+                         $('#wx_client_key').val('/'+res.url);
+                    }else{
+                         layer.alert(res.error, {icon: 5});
+                    }
                  
+                }
+              });
+
+             //图片上传接口
+              upload.render({
+                elem: '#watermark_file_upload'
+                ,url: "{fun U('Common/uploads')}" //上传接口
+                ,accept:"images"
+                ,acceptMime:"image/*"
+                ,data:{molds:"sysconfig"}
+                ,done: function(res){
+                  
+                    if(res.code==0){
+                         $("#watermark_file_img").attr("src",res.url);
+                         $("#watermark_file").val(res.url);
+                    }else{
+                         layer.alert(res.error, {icon: 5});
+                    }
+                }
+                ,error: function(){
+                  //请求异常回调
+                  layer.alert("上传异常！");
+                }
+              });
+			  //图片上传接口
+              upload.render({
+                elem: '#web_logo_upload'
+                ,url: "{fun U('Common/uploads')}" //上传接口
+                ,accept:"images"
+                ,acceptMime:"image/*"
+                ,data:{molds:"sysconfig"}
+                ,done: function(res){
+                  
+                    if(res.code==0){
+                         $("#web_logo_img").attr("src",res.url);
+                         $("#web_logo").val(res.url);
+                    }else{
+                         layer.alert(res.error, {icon: 5});
+                    }
+                }
+                ,error: function(){
+                  //请求异常回调
+                  layer.alert("上传异常！");
                 }
               });
              
              //监听提交
               form.on('submit(*)', function(data){
-			
-				$.post("{fun U('Sys/index')}",data.field,function(r){
-					//console.log(r);
-					var r = JSON.parse(r);
-					if(r.code==0){
-						 layer.alert(r.msg, {icon: 6},function(){
-							 
-							 window.location.reload();
-							 
-							 });
-						
-					}else{
-						 layer.alert(r.msg, {icon: 6});
-						 
-					}
-				
-				});
-				
-				return false;
+            
+                $.post("{fun U('Sys/index')}",data.field,function(r){
+                    //console.log(r);
+                    var r = JSON.parse(r);
+                    if(r.code==0){
+                         layer.alert(r.msg, {icon: 6},function(){
+                             
+                             window.location.reload();
+                             
+                             });
+                        
+                    }else{
+                         layer.alert(r.msg, {icon: 5});
+                         
+                    }
+                
+                });
+                
+                return false;
                
                 
               });
-			  
-			   form.on('submit(del)', function(data){
-			   
-				var s = $(this).attr('data');
-				layer.confirm('确认要删除吗？',function(index){
-					 $("#"+s).remove();
-					 layer.close(index);
-					 var ss = s.split('custom_');
-					$.post("{fun U('Sys/custom_del')}",{field:ss[1]},function(r){
-						var r = JSON.parse(r);
-						if(r.code==0){
-							 layer.alert(r.msg, {icon: 6},function(){
-							 window.location.reload();
-							 });
-							 
-						}else{
-							 layer.alert(r.msg, {icon: 6});
-							 
-						}
-					
-					});
-					
-				});
-				
-				
-				
-				return false;
+              
+               form.on('submit(del)', function(data){
+               
+                var s = $(this).attr('data');
+                layer.confirm('确认要删除吗？',function(index){
+                     $("#"+s).remove();
+                     layer.close(index);
+                     var ss = s.split('custom_');
+                    $.post("{fun U('Sys/custom_del')}",{field:ss[1]},function(r){
+                        var r = JSON.parse(r);
+                        if(r.code==0){
+                             layer.alert(r.msg, {icon: 6},function(){
+                             window.location.reload();
+                             });
+                             
+                        }else{
+                             layer.alert(r.msg, {icon: 5});
+                             
+                        }
+                    
+                    });
+                    
+                });
+                
+                
+                
+                return false;
                
                 
               });
-			  
-			  
+              
+              
 
               })
-			  
-			  function custom_delete(s){
-				layer.confirm('确认要删除吗？',function(index){
-					 $("#"+s).remove();
-					 layer.close(index);
-					
-			
-				});
-			  }
-			 
-			  
+              
+              function custom_delete(s){
+                layer.confirm('确认要删除吗？',function(index){
+                     $("#"+s).remove();
+                     layer.close(index);
+                    
+            
+                });
+              }
+             
+              
             </script>
             
     </body>

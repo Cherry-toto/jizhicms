@@ -31,13 +31,23 @@ class MessageController extends CommonController
 			$w['tel'] = $this->frparam('tel',1,'','POST');
 			$w['aid'] = $this->frparam('aid',0,0,'POST');
 			$w['tid'] = $this->frparam('tid',0,0,'POST');
+			$w['email'] = $this->frparam('email',1,'','POST');
+			$w['orders'] = 0;
+			$w['istop'] = 0;
+			$w['hits'] = 0;
 			
-			
+			if($this->webconf['autocheckmessage']==1){
+				$w['isshow'] = 1;
+			}else{
+				$w['isshow'] = 0;
+			}
 			
 			$w['ip'] = GetIP();
 			$w['addtime'] = time();
 			if(isset($_SESSION['member'])){
 				$w['userid'] = $_SESSION['member']['id'];
+			}else{
+				$w['userid'] = 0;
 			}
 			
 			if($this->frparam('title',1,'','POST')==''){
@@ -68,6 +78,34 @@ class MessageController extends CommonController
 				}
 				
 			}
+			// 不为空检测
+			$sql = " molds='message' and isshow=1 ";
+			$fields_list = M('Fields')->findAll($sql,'orders desc,id asc');
+			if($fields_list){
+				foreach($fields_list as $v){
+					if($v['ismust']==1){
+						if($w[$v['field']]==''){
+							if(in_array($v['fieldtype'],array(6,10))){
+								if($w[$v['field'].'_urls']==''){
+									
+									if($this->frparam('ajax')){
+										JsonReturn(['code'=>1,'msg'=>$v['fieldname'].'不能为空！']);
+									}else{
+										Error($v['fieldname'].'不能为空！');
+									}
+								}
+							}else{
+								if($this->frparam('ajax')){
+									JsonReturn(['code'=>1,'msg'=>$v['fieldname'].'不能为空！']);
+								}else{
+									Error($v['fieldname'].'不能为空！');
+								}
+							}
+							
+						}
+					}
+				}
+			}
 			
 			
 			
@@ -79,10 +117,10 @@ class MessageController extends CommonController
 			
 			if(($_SESSION['message_time']+10*60)<time()){
 				$_SESSION['message_num'] = 0;
+				$_SESSION['message_time'] = time();
 			}
 			$_SESSION['message_num']++;
-			if($_SESSION['message_num']>10 && ($_SESSION['message_time']+10*60)<time()){
-				//$this->error('您操作过于频繁，请10分钟后再尝试！');
+			if($_SESSION['message_num']>5 && ($_SESSION['message_time']+10*60)>=time()){
 				if($this->frparam('ajax')){
 					JsonReturn(['code'=>0,'msg'=>'您操作过于频繁，请10分钟后再尝试！']);
 				}
@@ -93,7 +131,7 @@ class MessageController extends CommonController
 			$res = M('message')->add($w);
 			if($res){
 				if($this->frparam('ajax')){
-					JsonReturn(['code'=>1,'msg'=>'提交成功！我们会尽快回复您！','url'=>get_domain()]);
+					JsonReturn(['code'=>0,'msg'=>'提交成功！我们会尽快回复您！','url'=>get_domain()]);
 				}
 				Success('提交成功！我们会尽快回复您！',get_domain());
 			}else{
@@ -111,4 +149,42 @@ class MessageController extends CommonController
 
 		
 	}
+	
+	function details(){
+		$id = $this->frparam('id');
+		if(!$id){
+			$error = '链接错误';
+			if($this->frparam('ajax')){
+				JsonReturn(['code'=>1,'msg'=>$error]);
+			}
+			Error($error);
+		}
+		if($this->webconf['autocheckmessage']==1){
+			$msg = M('message')->find(['id'=>$id]);
+		}else{
+			$msg = M('message')->find(['id'=>$id,'isshow'=>1]);
+		}
+		if(!$msg){
+			$error = '留言未找到或者未审核';
+			if($this->frparam('ajax')){
+				JsonReturn(['code'=>1,'msg'=>$error]);
+			}
+			Error($error);
+		}
+		$this->data = $msg;
+		
+		if($this->classtypedata[$msg['tid']]){
+			$this->type = $this->classtypedata[$msg['tid']];
+			$details_html = $this->type['details_html'];
+		}else{
+			$details_html =  M('molds')->getField(['biaoshi'=>'message'],'details_html');
+		}
+		$this->display($this->template.'/message/'.$details_html);
+		
+		
+	}
+	
+	
+	
+	
 }

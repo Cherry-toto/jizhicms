@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+    <title>{$tags['keywords']} - {$webconf['web_name']}</title>
+<meta name="keywords" content="{$webconf['web_keyword']}" />
+<meta name="description" content="{$webconf['web_desc']}" />
+{include="style"}
+<style>
+a.tags{border: 1px solid #ccc;
+    font-size: 14px;
+    padding: 2px 5px;
+	color: #31a97c;}
+</style>
+</head>
+
+<body>
+    {include="nav"}
+    <main class="page blog-post-list">
+        <section class="clean-block clean-blog-list dark">
+            <div class="container">
+                <div class="block-heading">
+                    <h2 class="text-info">标签文章列表</h2>
+                   
+                </div>
+                <div class="block-content article-list">
+				{if($lists)}
+				{foreach $lists as $v}
+                    <div class="clean-blog-post">
+                        <div class="row">
+                            <div class="col-lg-5"><img class="rounded img-fluid" src="{if($v['litpic']=='')}{$tpl}assets/img/tech/image4.jpg{else}{$v['litpic']}{/if}"></div>
+                            <div class="col-lg-7">
+                                <h3>【{$v['id']}】{$v['title']}</h3>
+								
+								{foreach explode(',',$v['tags']) as $s}
+								{if($s)}
+								<a class="tags" href="{fun U('tags/index',['tagname'=>$s])}">{$s}</a>
+								{/if}
+								{/foreach}
+								
+                                <div class="info"><span class="text-muted">{fun date('Y-m-d',$v['addtime'])}&nbsp;<a >{fun get_info_table('level',['id'=>$v['userid']],'name')}</a></span></div>
+                                <p>{fun newstr($v['description'],150)}</p><a href="{$v['url']}"><button class="btn btn-outline-primary btn-sm" type="button">了解更多</button></a></div>
+                        </div>
+                    </div>
+				{/foreach}
+				{else}
+				<p>暂时没有数据~</p>
+				{/if}
+				<!--判断端口，手机端不显示分页-->
+				{if(!isMobile())}
+				 <nav>
+					<ul class="pagination">
+					
+					{if($listpage['list'])}
+						<li class="page-item {if($listpage['prev'])}disabled{/if}"><a class="page-link" href="{$listpage['prev']}" aria-label="Previous"><span aria-hidden="true">«</span></a></li>
+						{foreach $listpage['list'] as $ss}
+						<li class="page-item {if($ss['num']==$listpage['current_num'])}active background{/if}"><a href="{$ss['url']}" class="page-link">{$ss['num']}</a></li>
+						{/foreach}
+						<li class="page-item {if($listpage['next'])}disabled{/if}"><a class="page-link" href="{$listpage['next']}" aria-label="Next"><span aria-hidden="true">»</span></a></li>
+					{/if}
+					</ul>
+				</nav>
+				{/if}
+                </div>
+            </div>
+        </section>
+    </main>
+   {include="footer"}
+  
+</body>
+
+</html>

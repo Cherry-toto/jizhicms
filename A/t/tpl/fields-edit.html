@@ -4,7 +4,11 @@
     <head>
        <meta charset="UTF-8">
         {include="style"}
-		
+		<style>
+		.layui-form-item .layui-input-inline {
+			width: 210px;
+		}
+		</style>
     </head>
     
     <body>
@@ -28,7 +32,11 @@
 			<div class="layui-tab">
 			  <ul class="layui-tab-title">
 				<li class="layui-this">基本信息</li>
+				{if($data['molds']=='level')}
+				<li>角色绑定</li>
+				{else}
 				<li>栏目绑定</li>
+				{/if}
 				
 			  </ul>
 			  <div class="layui-tab-content">
@@ -101,6 +109,13 @@
 							<td>无</div></td>
 							<td>只能填写数字，长度不能超过11位</td>
 						   </tr>
+						   <tr>
+							<td><input type="radio" name="fieldtype" {if($data['fieldtype']==14)} checked {/if} value="14" /></div></td>
+							<td>小数<br/>decimal</div></td>
+							<td><input type="text" class="layui-input" name="fieldlong_14" value="{if($data['fieldtype']==14)}{$data['fieldlong']}{else}10,2{/if}"></div></td>
+							<td><input type="text" class="layui-input" name="body_14" value="{if($data['fieldtype']==14)}{$data['body']}{else}0.00{/if}"></div></div></td>
+							<td>金钱，小数等，保留2位</td>
+						   </tr>
 						    <tr>
 							<td><input type="radio" name="fieldtype" {if($data['fieldtype']==11)} checked {/if} value="11" /></div></td>
 							<td>时间<br/>int</div></td>
@@ -117,8 +132,8 @@
 						   </tr>
 						   <tr>
 							<td><input type="radio" name="fieldtype" {if($data['fieldtype']==6)} checked {/if} value="6" /></div></td>
-							<td>多图片<br/>varchar</div></td>
-							<td><input type="text" class="layui-input" name="fieldlong_6" value="{if($data['fieldtype']==6)}{$data['fieldlong']}{else}500{/if}"></div></td>
+							<td>多图片<br/>text</div></td>
+							<td>不限</div></td>
 							<td>无</div></td>
 							<td>多个图片</td>
 						   </tr>
@@ -152,8 +167,8 @@
 						   </tr>
 						   <tr>
 							<td><input type="radio" name="fieldtype" {if($data['fieldtype']==10)} checked {/if}  value="10" /></div></td>
-							<td>多附件<br/>varchar</div></td>
-							<td><input type="text" class="layui-input" name="fieldlong_10" value="{if($data['fieldtype']==10)}{$data['fieldlong']}{else}500{/if}"></div></td>
+							<td>多附件<br/>text</div></td>
+							<td>不限</div></td>
 							<td>无</div></td>
 							<td>多个附件，图片除外</td>
 						   </tr>
@@ -182,6 +197,14 @@
 							</div></td>
 							<td>关联模块内容ID</td>
 						   </tr>
+						    <tr>
+							<td><input type="radio" name="fieldtype" {if($data['fieldtype']==15)} checked {/if} value="15" /></div></td>
+							<td>多行录入<br/>txt</div></td>
+							<td>不限</div></td>
+							<td>无</div></td>
+							<td>可以在页面动态新增内容输入框</td>
+						   </tr>
+						   
 						</tbody>
 					  </table>
 				    </div>
@@ -245,6 +268,17 @@
 					 
 					
                 </div>
+                <div class="layui-form-item" pane>
+                    <label for="isadmin" class="layui-form-label">
+                        <span class="x-red"></span>后台显示
+                    </label>
+                    <div class="layui-input-inline">
+                        <input type="radio" name="isadmin" value="0" title="不显示" {if($data['isadmin']==0)}checked{/if}>
+						<input type="radio" name="isadmin" value="1" title="显示" {if($data['isadmin']==1)}checked{/if}>
+                    </div>
+					 
+					
+                </div>
 				<div class="layui-form-item" pane>
                     <label for="issearch" class="layui-form-label">
                         <span class="x-red"></span>后台搜索
@@ -289,10 +323,69 @@
 					  仅用于后台列表显示该字段内容处理
 					</div>
                 </div>
-				
+				<div class="layui-form-item" pane>
+                    <label for="isajax" class="layui-form-label">
+                        <span class="x-red"></span>ajax可访问
+                    </label>
+                    <div class="layui-input-inline">
+                        <input type="radio" name="isajax" value="0" title="不能" {if($data['isajax']==0)}checked{/if}>
+						<input type="radio" name="isajax" value="1" title="能" {if($data['isajax']==1)}checked{/if}>
+                    </div>
+					<div class="layui-form-mid layui-word-aux">
+					  由于本系统对json数据封装，限制访问可以提高安全性
+					</div> 
+					
+                </div>
 				
 				</div>
 				<div class="layui-tab-item">
+				 {if($data['molds']=='level')}
+				<table class="layui-table layui-form">
+					<thead>
+					  <tr>
+						<th width="20">
+						  <div class="layui-unselect header layui-form-checkbox" lay-skin="primary"><i class="layui-icon">&#xe605;</i></div>
+						</th>
+						
+						<th>角色名</th>
+						
+					</thead>
+					<tbody class="x-cate">
+					{php 
+					
+					if($admin['gid']!=1){
+					$levelgroup = M('level_group')->findAll('id!=1');
+					}else{
+					$levelgroup = M('level_group')->findAll();
+					}
+					$levelgroup = set_class_haschild($levelgroup);
+					$levelgroup = getTree($levelgroup);
+					
+					
+					/}
+					 {foreach $levelgroup as $v}
+					  <tr cate-id="{$v['id']}" fid="{$v['pid']}" >
+						<td>
+						  <div class="layui-unselect layui-form-checkbox {if(strpos($data['tids'],','.$v['id'].',')!==false)} layui-form-checked {/if}" lay-skin="primary" data-id='{$v['id']}'><i class="layui-icon">&#xe605;</i></div>
+						</td>
+						
+						<td>
+						  {fun str_repeat('&nbsp;&nbsp;&nbsp;',$v['level'])}
+						  {if($v['haschild'])}
+						  <i class="layui-icon x-show" status='false'>&#xe625;</i>
+						  {else}
+						  {if($v['level'])}|——{/if}
+						  {/if}
+						  {$v['name']}
+						</td>
+						
+					  </tr>
+					 {/foreach}
+					 
+					 
+					</tbody>
+				  </table>
+				{else}
 				 <table class="layui-table layui-form">
 					<thead>
 					  <tr>
@@ -306,6 +399,7 @@
 					<tbody class="x-cate">
 					
 					{foreach $classtypes as $v}
+					{if($v['molds']==$data['molds']  || $data['molds']=='classtype')}
 					  <tr cate-id="{$v['id']}" fid="{$v['pid']}" >
 						<td>
 						  <div class="layui-unselect layui-form-checkbox {if(strpos($data['tids'],','.$v['id'].',')!==false)} layui-form-checked {/if}" lay-skin="primary" data-id='{$v['id']}'><i class="layui-icon">&#xe605;</i></div>
@@ -322,11 +416,13 @@
 						</td>
 						
 					  </tr>
-					 {/foreach}
+					{/if}
+					{/foreach}
 					 
 					</tbody>
 				  </table>
 				
+				{/if}
 				</div>
 				
 			  </div>
@@ -367,8 +463,9 @@
               form.on('submit(save)', function(data){
                 var tids = tableCheck.getData().join(',');
 				if(tids==''){
-					layer.alert('请选择绑定栏目！', {icon: 5});
-					return false;
+					//layer.alert('请选择绑定栏目！', {icon: 5});
+					//return false;
+					tids = 0;
 				}
 				data.field.tids = tids;
 				

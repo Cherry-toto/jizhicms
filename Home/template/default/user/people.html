@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  {include="user/style"}
+  <title>{$user['username']}的公共主页</title>
+</head>
+<body>
+
+{include="user/top"}
+<style>
+/* 关注用户 */
+.user-follow-top {
+  display: flex;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+}
+/* 关注左侧 */
+.user-top-left {
+  width: 220px;
+  background: #fff;
+  margin-right: 20px;
+  border-radius: 5px;
+  padding: 20px 0;
+}
+.user-top-left .img-box {
+  width: 100%;
+  margin-bottom: 15px;
+}
+.user-top-left .img-box img {
+  width: 80px;
+  margin: 0 auto;
+  border-radius: 5px;
+}
+.user-top-left .username-info {
+  text-align: center;
+  margin-bottom: 5px;
+}
+.user-top-left .username-info a {
+  color: #242424;
+  font-size: 18px;
+  line-height: 24px;
+  font-weight: 700;
+  text-align: center;
+}
+.user-top-left .username-info a:hover {
+  color: #007bff;
+}
+.user-top-left .autograph-info {
+  text-align: center;
+  color: #808080;
+  font-size: 12px;
+  line-height: 18px;
+  margin-bottom: 20px;
+}
+.user-top-left .btn-area {
+  padding: 0 20px;
+}
+.user-top-left .btn-area .btn-default {
+  display: block;
+  height: 40px;
+  line-height: 38px;
+  text-align: center;
+  width: 100%;
+  font-size: 14px;
+  border-radius: 5px;
+}
+.user-top-left .btn-area .btn-follow {
+  color: #fff;
+  background: #007bff;
+  border: 1px solid #007bff;
+}
+.user-top-left .btn-area .btn-follow:hover {
+  background: #005bbd;
+  border: 1px solid #005bbd;
+}
+/* 关注右侧 */
+.user-top-right {
+  flex: 1;
+  background: #fff;
+  border-radius: 5px;
+  padding: 15px;
+}
+.user-top-right .user-tab {
+  display: flex;
+  flex-wrap: wrap;
+}
+.user-top-right .user-tab .num {
+  width: 25%;
+  padding: 28px 0;
+}
+/* 关注底部 */
+.user-follow-bottom {
+  background: #fff;
+  border-radius: 5px;
+  padding: 15px 20px;
+  margin-bottom: 10px;
+}
+.tab-hd {
+  display: flex;
+  flex-wrap: wrap;
+  border-bottom: 1px solid #e1e1e1;
+  margin-bottom: 20px;
+}
+.tab-hd li {
+  margin-right: 10px;
+  position: relative;
+}
+.tab-hd li.active:after {
+  content: "";
+  width: 100%;
+  height: 3px;
+  background: #007bff;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+}
+.tab-hd li.active a {
+  font-weight: 700;
+  color: #007bff;
+}
+.tab-hd li a {
+  color: #242424;
+  font-size: 16px;
+  line-height: 36px;
+  padding: 0 10px;
+}
+.tab-item-follow .follow-list {
+  width: 100%;
+  border-top: 1px solid #f1f1f1;
+}
+.follow-list-item {
+  padding-top: 10px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid #f1f1f1;
+}
+.follow-list-item > p {
+  color: #8590a6;
+  font-size: 14px;
+  line-height: 30px;
+}
+.follow-list-item > p span {
+  float: right;
+}
+.follow-list-item h3 {
+  margin-bottom: 10px;
+}
+.follow-list-item h3 a {
+  display: block;
+  font-size: 20px;
+  line-height: 30px;
+  font-weight: 700;
+  color: #242424;
+}
+.follow-list-item .user-top {
+  display: flex;
+  margin-bottom: 15px;
+}
+.follow-list-item .user-top .img-box {
+  height: 40px;
+  border-radius: 3px;
+  overflow: hidden;
+  margin-right: 20px;
+}
+.follow-list-item .user-top img {
+  width: 40px;
+  height: 40px;
+  border-radius: 5px;
+}
+.follow-list-item .user-top h4 {
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 20px;
+}
+.follow-list-item .user-top p {
+  font-size: 14px;
+  line-height: 20px;
+}
+.follow-list-item .list-content {
+  display: flex;
+}
+.follow-list-item .list-content .img-box {
+  height: 150px;
+  margin-right: 20px;
+}
+.follow-list-item .list-content img {
+  height: 150px;
+}
+.follow-list-item .list-content .cont {
+  color: #444;
+  font-size: 14px;
+  line-height: 30px;
+}
+</style>
+<div class="login-page page">
+  <div class="container clearfix">
+    <div class="user-follow-top">
+      <div class="user-top-left user-card">
+        <div class="img-box">
+          <a ><img src="{if($user['litpic'])}{$user['litpic']}{else}{$common}user/images/user.png{/if}" alt=""></a>
+        </div>
+        <div class="username-info">
+          <a >{$user['username']}</a>
+        </div>
+        <div class="autograph-info">
+          {if($user['signature'])}{$user['signature']}{else}他很懒，什么都没有留下~{/if}
+        </div>
+        <div class="btn-area">
+          {if($islogin)}
+		  {if(isfollow($member['id'],$user['id']))}
+		  <a  class="btn-default btn-follow"> 已关注</a>
+		  {else}
+		  <a href="{fun U('user/follow',['uid'=>$user['id']])}" class="btn-default btn-follow"><i class="iconfont iconguanzhu2"></i> 关注</a>
+		  {/if}
+		  {else}
+		  <a href="{fun U('user/follow',['uid'=>$user['id']])}" class="btn-default btn-follow"><i class="iconfont iconguanzhu2"></i> 关注</a>
+		  {/if}
+        </div>
+      </div>
+      <div class="user-top-right">
+        <div class="user-tab">
+          <div class="num">
+            <a href="{fun U('user/active',['molds'=>'article','uname'=>$user['username'],'type'=>1])}" title="">
+              <h4>{$article_num}</h4>
+              <p>投稿</p>
+            </a>
+          </div>
+          <div class="num">
+            <a href="{fun U('user/active',['molds'=>'product','type'=>2,'uname'=>$user['username']])}" title="">
+              <h4>{$product_num}</h4>
+              <p>商品</p>
+            </a>
+          </div>
+          <div class="num">
+            <a href="{fun U('user/active',['type'=>3,'uname'=>$user['username']])}" title="">
+              <h4>{fun jz_follow($member['id'])}</h4>
+              <p>关注</p>
+            </a>
+          </div>
+          <div class="num">
+            <a href="{fun U('user/active',['type'=>4,'uname'=>$user['username']])}" title="">
+              <h4>{fun jz_fans($member['id'])}</h4>
+              <p>粉丝</p>
+            </a>
+          </div>
+          <div class="num">
+            <a href="{fun U('user/active',['type'=>5,'uname'=>$user['username']])}" title="">
+              <h4>{$collect_num}</h4>
+              <p>收藏</p>
+            </a>
+          </div>
+          <div class="num">
+            <a href="{fun U('user/active',['type'=>6,'uname'=>$user['username']])}" title="">
+              <h4>{$comment_num}</h4>
+              <p>评论</p>
+            </a>
+          </div>
+          <div class="num">
+            <a href="{fun U('user/active',['type'=>7,'uname'=>$user['username']])}" title="">
+              <h4>{$likes_num}</h4>
+              <p>点赞</p>
+            </a>
+          </div>
+          
+        </div>
+	  </div>
+    </div>
+    <div class="user-follow-bottom">
+      <div class="tab-hd">
+        <li {if($type==1)}class="active"{/if}><a href="{fun U('user/active',['molds'=>'article','uname'=>$user['username'],'type'=>1])}" title="文章">文章</a></li>
+        <li {if($type==2)}class="active"{/if}><a href="{fun U('user/active',['molds'=>'product','uname'=>$user['username'],'type'=>2])}" title="商品">商品</a></li>
+        <li {if($type==3)}class="active"{/if}><a href="{fun U('user/active',['uname'=>$user['username'],'type'=>3])}" title="关注">关注</a></li>
+        <li {if($type==4)}class="active"{/if}><a href="{fun U('user/active',['uname'=>$user['username'],'type'=>4])}" title="粉丝">粉丝</a></li>
+        <li {if($type==5)}class="active"{/if}><a href="{fun U('user/active',['uname'=>$user['username'],'type'=>5])}" title="收藏">收藏</a></li>
+        <li {if($type==6)}class="active"{/if}><a href="{fun U('user/active',['uname'=>$user['username'],'type'=>6])}" title="评论">评论</a></li>
+        <li {if($type==7)}class="active"{/if}><a href="{fun U('user/active',['uname'=>$user['username'],'type'=>7])}" title="点赞">点赞</a></li>
+        
+      </div>
+      <div class="tab-bd">
+        <div class="tab-item-follow">
+          <ul class="follow-list">
+		  {if($lists)}
+		  {if($type==1 || $type==2)}
+		  {foreach $lists as $v}
+			<li>
+              <div class="follow-list-item">
+                
+                <div class="user-top">
+                  <div class="img-box">
+                    <img src="{if($user['litpic'])}{$user['litpic']}{else}{$common}user/images/user.png{/if}" alt="">
+                  </div>
+                  <div class="user-name">
+                    <h4>{$user['username']}</h4>
+                    <p>{$user['signature']}</p>
+                  </div>
+                </div>
+                <div class="list-content">
+                  <div class="img-box">
+                    
+                  </div>
+                  <div class="cont">
+                    <a href="{$v['url']}" title="{$v['title']}">{$v['title']}</a>
+                  </div>
+                </div>
+              </div>
+            </li>
+		  {/foreach}
+		  
+		  {else if($type==3)}
+		  {foreach $lists as $v}
+			<li>
+			  <div class="follow-list-item">
+				
+				<div class="img-box"><img src="{if($v['litpic'])}{$v['litpic']}{else}{$common}images/login1.png{/if}" alt="{$v['username']}"></div>
+				<h4>{$v['username']}</h4>
+				<p>{if($v['signature'])}{$v['signature']}{else}他很懒，什么都没有留下~{/if}</p>
+				<a href="{fun U('user/nofollow',['uid'=>$v['id']])}" title="关注">关注</a>
+			  </div>
+			</li>
+		  {/foreach}
+		  
+		  {else if($type==4)}
+		   {foreach $lists as $v}
+			<li>
+			  <div class="follow-list-item">
+			   
+				<div class="img-box"><img src="{if($v['litpic'])}{$v['litpic']}{else}{$common}user/images/login1.png{/if}" alt=""></div>
+				<h4>{$v['username']}</h4>
+				<p>{if($v['signature'])}{$v['signature']}{else}他很懒，什么都没有留下~{/if}</p>
+				<a href="{fun U('user/follow',['uid'=>$v['id']])}" title="关注">关注</a>
+			  </div>
+			</li>
+		  {/foreach}
+		  {else if($type==5)}
+		  {foreach $lists as $v}
+		  <li>
+		   
+			<p>
+			<a href="{$v['url']}" target="_blank" class="title">{$v['title']}</a>
+			<span class="btn-table btn-light">{$v['classname']}</span>
+			<a {if($v['member_id']!=0)}href="{fun U('user/active',['uid'=>$v['member_id']])}"{/if} target="_blank" class="title">{if($v['member_id']!=0)}{fun memberInfo($v['member_id'],'username')}{else}[官方]{/if}</a>
+			</p>
+			
+		  </li>
+		  {/foreach}
+		  {else if($type==6)}
+		  {foreach $lists as $v}
+          <li>
+            <div class="record-item">
+            <p><span>时间：{$v['date']}</span></p>
+              <p><span>回复了： <a href="{$v['url']}">{fun newstr($v['body'],30)}</a></span></p>
+              <h4><span class="text-info">【{$classtypedata[$v['tid']]['classname']}】</span><span class="fr"><a href="{$v['url']}" class="btn-more" title="查看详情">查看详情</a></span></h4>
+            </div>
+          </li>
+		  {/foreach}
+		  {else if($type==7)}
+		  {foreach $lists as $v}
+			<li>
+              <div class="follow-list-item">
+                {if($v['member_id']!=0)}
+				{php $author = memberInfo($v['member_id']); /}
+                <div class="user-top">
+                  <div class="img-box">
+                    <img src="{if($author['litpic'])}{$author['litpic']}{else}{$common}user/images/user.png{/if}" alt="">
+                  </div>
+                  <div class="user-name">
+                    <h4>{$author['username']}</h4>
+                    <p>{$author['signature']}</p>
+                  </div>
+                </div>
+				{else}
+				{php $author = adminInfo($v['userid']); /}
+				<div class="user-top">
+                  <div class="img-box">
+                    <img src="{$common}user/images/user.png" alt="">
+                  </div>
+                  <div class="user-name">
+                    <h4>{$author['name']}【官方】</h4>
+                    <p></p>
+                  </div>
+                </div>
+				{/if}
+                <div class="list-content">
+                  <div class="img-box">
+                    
+                  </div>
+                  <div class="cont">
+                    <a href="{$v['url']}" title="{$v['title']}">{$v['title']}</a>
+                  </div>
+                </div>
+              </div>
+            </li>
+		  {/foreach}
+		  
+		  {/if}
+		  {else}
+			<li>没有任何内容~</li>
+		  {/if}
+            
+            
+          </ul>
+        </div>
+		<div class="pagebar-common">
+          {if($listpage['list'])}
+          <ul class="pagination">
+          <li class="page-item {if(!$listpage['prev'])}disabled{/if}">
+          <a class="page-link" href="{$listpage['prev']}" aria-label="Previous"><span aria-hidden="true">«</span></a></li>
+          {foreach $listpage['list'] as $ss}
+          <li class="page-item {if($ss['num']==$listpage['current_num'])}active background{/if}"><a href="{$ss['url']}" class="page-link">{$ss['num']}</a></li>
+          {/foreach}
+          <li class="page-item {if(!$listpage['next'])}disabled{/if}"><a class="page-link" href="{$listpage['next']}" aria-label="Next"><span aria-hidden="true">»</span></a></li>
+          </ul>
+          {/if}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+{include="user/footer"}
+</body>
+</html>

@@ -1,132 +1,163 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="robots" content="noindex,noarchive">
-
-	<title>个人资料-{$webconf['web_name']}</title>
-	<meta property="og:title" 	content="个人资料-{$webconf['web_name']}" />
-	<meta name="twitter:title" 	content="个人资料-{$webconf['web_name']}" />
-	<meta name="keywords" content="个人资料-{$webconf['web_keyword']}" />
-	<meta name="description"  content="个人资料-{$webconf['web_desc']}" />
-	{include="user/user-style"}
-	
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  {include="user/style"}
+  <title>资料与账号 - 个人中心</title>
 </head>
 <body>
-{include="user/user-top"}
-<section class="container py-3">
-	<div class="row justify-content-center">
-		<div class="col-lg-10 step mb-2">
-			{include="user/user-content"}
-		</div>
-		<div class="col-12 col-lg-10 step">
-			<form class="was-validated" >
-			<fieldset>
-				<div class="input-group mb-2">
-					<div class="input-group-prepend">
-						<div class="input-group-text">昵称</div>
-					</div>
-					<input type="text" class="form-control"  maxLength="10" name="username" id="t_username" value="{$member['username']}" placeholder="Username" required>
-					<div class="invalid-feedback pl-2">昵称长度最多不超过5个中文字</div>
-				</div>
-			</fieldset>
-			<fieldset>
-				<div class="input-group mb-2">				
-					<div class="input-group-prepend">
-						<div class="input-group-text">手机</div>
-					</div>
-					<input type="number" value="{$member['tel']}" class="form-control" id="t_tel" name="tel" placeholder="phone" required>
-					<div class="invalid-feedback pl-2">请输入您的手机号码</div>
-				</div>
-			</fieldset>
-			<fieldset>
-				<div class="input-group mb-2">				
-					<div class="input-group-prepend">
-						<div class="input-group-text">邮箱</div>
-					</div>
-					<input type="email" value="{$member['email']}" class="form-control" id="t_email" name="email" placeholder="例：myname@mail.com">
-					<div class="invalid-feedback pl-2">请输入您的点子邮件信箱</div>
-				</div>
-			</fieldset>
-			<fieldset>
 
-				<div class="input-group mb-2">
-					<div class="input-group-prepend">
-						<div class="input-group-text" for="password">更改密码</div>
-					</div>
-					<input type="password" class="form-control" id="t_password" name="password" placeholder="**********" minLength="8" maxLength="16" oninput="checkPassword()" autocomplete="off">
-					<div class="invalid-feedback pl-2">密码请设定8~16位数</div>
-				</div>
-				<div class="input-group mb-2">
-					<div class="input-group-prepend">
-						<label class="input-group-text" for="repassword">重复密码</label>
-					</div>
-					<input type="password" class="form-control" id="t_repassword" name="repassword" placeholder="**********" minLength="8" maxLength="16" oninput="checkPassword()" autocomplete="off">
-					<div class="invalid-feedback pl-2">两次密码必须相同哦！</div>
-				</div>
+{include="user/top"}
 
-			</fieldset>
-			<fieldset class="my-3">
-					<button type="button" onclick="change_info()" value="submit" class="btn btn-primary rounded text-white btn-block py-2">更新资料</button>
-			</fieldset>
-			</form>
-		</div>
+<div class="login-page page">
+  <div class="container clearfix">
+    {include="user/left_nav"}
+    <div class="user-right">
+      <div class="user-tips">
+        <p><i class="iconfont iconxiaoxi3"></i> 欢迎注册本站会员，注册会员后您将享受专属会员服务!包括但不限于专属文章浏览权限，会员投稿权限，在线购物权限，下载会员可见附件等实用功能，欢迎注册体验！</p>
+      </div>
+      <div class="user-content">
+        <h2>资料与账号</h2>
+        <form action="" method="POST" onsubmit="checkform()" id="jizhiform" class="user-form">
+          <div class="form-control">
+            <label for="">头像：</label>
+              <span class="view_img">{if($member['litpic'])}<img src="{$member['litpic']}" height="100" style="border-radius: 50%;" />{/if}</span><br/>
+              <input name="litpic" type="hidden" id="fileurl" value="{$member['litpic']}" /><br/>
+              <input type="file" class="btn btn-primary rounded btn-block" name="file" id="fileid">
+          </div>
+          <div class="form-control">
+            <label for="">昵称：</label>
+            <input type="text" value="{$member['username']}" id="t_username" name="username" placeholder="请输入您的昵称">
+          </div>
+          <div class="form-control">
+            <label for="">手机：</label>
+            <input type="tel" value="{$member['tel']}" name="tel" id="t_tel" placeholder="请输入您的手机号">
+          </div>
+          <div class="form-control">
+            <label for="">邮箱：</label>
+            <input type="email" value="{$member['email']}" name="email" name="t_email" placeholder="请输入您的邮箱">
+          </div>
+          <div class="form-control">
+            <label for="">性别：</label>
+            <div class="check-box"><input type="radio" name="sex" value="1" {if($member['sex']==1)}checked{/if}>男 <input type="radio" name="sex" value="2" {if($member['sex']==2)}checked{/if}>女 <input type="radio" name="sex" value="0" {if($member['sex']==0)}checked{/if}>不展示</div>
+          </div>
+          <div class="form-control">
+            <label for="">省份：</label>
+            <input type="text" value="{$member['province']}" name="province" name="t_province" placeholder="可不填">
+          </div>
+		  <div class="form-control">
+            <label for="">城市：</label>
+            <input type="text" value="{$member['city']}" name="city" name="t_city" placeholder="可不填">
+          </div>
+		  <div class="form-control">
+            <label for="">详细地址：</label>
+            <input type="text" value="{$member['address']}" name="address" name="t_address" placeholder="可不填">
+          </div>
+          <div class="form-control">
+            <label for="password">新密码：</label>
+            <div class="form-password">
+              <input type="password" class="password1" name="password" id="t_password" value="" placeholder="如果不修改，请留空">
+              <i class="iconfont iconyanjing"></i><i class="iconfont iconyanjing-guan"></i>
+            </div>
+          </div>
+          <div class="form-control">
+            <span><label for="setpassword">确认密码：</label></span>
+            <div class="form-password">
+              <input type="password" class="password1" name="repassword" id="t_repassword" value="" placeholder="如果不修改，请留空">
+              <i class="iconfont iconyanjing"></i><i class="iconfont iconyanjing-guan"></i>
+            </div>
+          </div>
+		  <div class="form-control">
+            <label for="">邀请链接：</label>
+            <input type="text" value="{fun U('login/register')}?invite={$member['id']}" readonly name="invite" id="t_invite" placeholder="邀请链接">
+          </div>
+          <div class="form-control">
+            <span><label for="">个性签名：</label></span>
+            <textarea name="signature" id="signature" placeholder="请输入您的个性签名">{$member['signature']}</textarea>
+          </div>
+          <span id="fields_ext"></span>
+          <div class="form-control">
+            <label for="submit"></label>
+            <input type="submit" name="submit" value="提交">
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
 
-	</div>
-</section>
-{include="user/common"}
+{include="user/footer"}
+<script type="text/javascript">
+function get_fields(tid,id){
+    var id = arguments[1]?arguments[1]:0;
+    $.post("{fun U('common/get_fields')}",{molds:'member',tid:tid,id:id},function(res){
+      if(res.code==0){
+        //默认 res.tpl输出的是layui的模板HTML,可以审核元素查看res里面的内容
+        //$("#ext_fields").html(res.tpl);
+        var html = '';
+        var len = res.fields_list.length;
+        if(len>0){
+          //根据对应的字段，进行HTML设计
+          for(var i=0;i<len;i++){
+            
+          }
+          
+        }
+        $("#fields_ext").html(res.tpl);
+      }
+      
+    },'json');
+  }
+$(function(){
+  get_fields(0,{$member['id']});
+})
+function checkform(){
+    var username = $.trim($("#t_username").val());
+    var tel = $.trim($("#t_tel").val());
+    var password = $.trim($("#t_password").val());
+    var repassword = $.trim($("#t_repassword").val());
+    if(username==''){
+      alert('账户名称不能为空！');$("#t_username").focus();return false;
+    }
+    if(password!=repassword){
+      alert('两次密码不同！');$("#t_password").focus();return false;
+    }
+    return true;
+}
+$(document).ready(function(){
+  $("#fileid").change(function(){
+    var form=document.getElementById("jizhiform");
+    var data =new FormData(form);
+    $.ajax({
+       url: "{fun U('common/uploads')}",//处理图片的文件路径
+       type: "POST",//传输方式
+       data: data,
+       dataType:"json",   //返回格式为json
+       processData: false,  // 告诉jQuery不要去处理发送的数据
+       contentType: false,   // 告诉jQuery不要去设置Content-Type请求头
+       success: function(response){
+        
+        if(response.code==0){
+          
+          var result = '';
+          result +='<img src="' + response['url'] + '" height="100"  />';
+          //$("#fileid").hide();
+         // $("#upload_ok").show();
+          $('.view_img').html(result);
+          $("#fileurl").val(response['url']);
+        }else{
+          alert(response.error);
+        }
+        
+       }
+    });
+    
+  });
 
-<script>
-function change_info(){
-		var username = $.trim($("#t_username").val());
-		var tel = $.trim($("#t_tel").val());
-		var email = $.trim($("#t_email").val());
-		var password = $.trim($("#t_password").val());
-		var repassword = $.trim($("#t_repassword").val());
-		console.log(username);
-		if(username==''){
-			alert('账户名称不能为空！');$("#t_username").focus();return false;
-		}
-		if(email==''){
-			alert('邮箱不能为空！');$("#t_email").focus();return false;
-		}
-		if(password!=repassword){
-			alert('两次密码不同！');$("#t_password").focus();return false;
-		}
-	
-		$.ajax({
-			url:"{fun U('User/userinfo')}",    //请求的url地址
-		    dataType:"json",   //返回格式为json
-		    async:true,//请求是否异步，默认为异步，这也是ajax重要特性
-		    data:{username:username,password:password,repassword:repassword,tel:tel,email:email,ajax:1},    //参数值
-		    type:"POST",   //请求方式
-		    beforeSend:function(){
-		        //请求前的处理
-		    },
-		    success:function(r){
-		        //请求成功时处理
-				if(r.code==0){
-					window.location.reload();
-				}else{
-					alert(r.msg);
-					return false;
-				}
-		    },
-		    complete:function(){
-		        //请求完成的处理
-		    },
-		    error:function(){
-		        //请求出错处理
-				alert('网络异常');
-		    }
-
-			
-			
-		})
-	}
-
+  
+});
 </script>
-
 </body>
 </html>

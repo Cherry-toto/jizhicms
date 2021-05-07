@@ -1,0 +1,31 @@
+<div class="user-left hidden-sm">
+      <div class="user-card">
+        <div class="img-box">
+          <a href="{fun U('user/userinfo')}" title="{$member['username']}"><img src="{if(!$member['litpic'])}{$common}user/images/login.png{else}{$member['litpic']}{/if}" alt="{$member['username']}"></a>
+        </div>
+        <div class="username-info">
+          <a href="{fun U('user/userinfo')}" title="{$member['username']}">{$member['username']}</a>
+        </div>
+        <div class="autograph-info">
+          {if($member['signature'])}{$member['signature']}{else}他很懒，什么都没有留下~{/if}
+        </div>
+        <div class="btn-area">
+          <a href="{fun U('user/release')}" class="btn-default btn-release">发布文章</a><br>
+          <a href="{fun U('login/loginout')}" class="btn-default btn-sign-out">退出登录</a>
+        </div>
+      </div>
+      <ul class="user-list">
+        <li {if(APP_ACTION=='follow')}class="active"{/if}><a href="{fun U('user/follow')}" title="我的关注" class="bt1">我的关注</a></li>
+        <li {if(APP_ACTION=='fans')}class="active"{/if}><a href="{fun U('user/fans')}" title="我的粉丝">我的粉丝</a></li>
+        <li {if(APP_ACTION=='posts')}class="active"{/if}><a href="{fun U('user/posts')}" title="我的投稿">我的投稿</a></li>
+        <li {if(APP_ACTION=='collect')}class="active"{/if}><a href="{fun U('user/collect')}" title="我的收藏">我的收藏</a></li>
+        <li {if(APP_ACTION=='likes')}class="active"{/if}><a href="{fun U('user/likes')}" title="我的喜欢">我的喜欢</a></li>
+        <li {if(APP_ACTION=='comment')}class="active"{/if}><a href="{fun U('user/comment')}" title="我的评论">我的评论</a></li>
+        <li {if(APP_ACTION=='wallet')}class="active"{/if}><a href="{fun U('user/wallet')}" title="我的钱包" class="bt1">我的钱包</a></li>
+        <li {if(APP_ACTION=='cart')}class="active"{/if}><a href="{fun U('user/cart')}" title="购物车">购物车</a></li>
+        <li {if(APP_ACTION=='orders')}class="active"{/if}><a href="{fun U('user/orders')}" title="订单管理">订单管理</a></li>
+        <li {if(APP_ACTION=='userinfo')}class="active"{/if}><a href="{fun U('user/userinfo')}" title="资料账户">资料账户</a></li>
+        <li {if(APP_ACTION=='setmsg')}class="active"{/if}><a href="{fun U('user/setmsg')}" title="消息设置">消息设置</a></li>
+        <li><a href="index.html" title="返回主页" class="bt1">返回主页</a></li>
+      </ul>
+    </div>

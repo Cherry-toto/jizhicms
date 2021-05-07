@@ -7,7 +7,7 @@
 // +----------------------------------------------------------------------
 // | Author: 留恋风 <2581047041@qq.com>
 // +----------------------------------------------------------------------
-// | Date：2019/08
+// | Date：2021/01/01
 // +----------------------------------------------------------------------
 
 
@@ -16,7 +16,7 @@ namespace Home\c;
 use FrPHP\lib\Controller;
 use FrPHP\Extend\Page;
 
-class JzpayController extends Controller
+class JzpayController extends CommonController
 {
 	/**
 		
@@ -25,34 +25,8 @@ class JzpayController extends Controller
 	**/
 	
 	public function _init(){
-		
-		$webconf = webConf();
-		$template = get_template();
-		$this->webconf = $webconf;
-		$this->template = $template;
-		$classtypedata = classTypeData();
-		foreach($classtypedata as $k=>$v){
-			$classtypedata[$k]['children'] = get_children($v,$classtypedata);
-		}
-		$this->classtypedata = $classtypedata;
-		$this->common = Tpl_style.'common/';
-		$this->tpl = Tpl_style.$template.'/';
-		$this->frpage = $this->frparam('page');
-		$customconf = get_custom();
-		$this->customconf = $customconf;
-		if(isset($_SESSION['member'])){
-			$this->islogin = true;
-			$this->member = $_SESSION['member'];
-			
-			
-			
-		}else{
-			$this->islogin = false;
-		}
-		
-		
+		parent::_init();
 	}
-	
 	
 	
 	//检查是否支付

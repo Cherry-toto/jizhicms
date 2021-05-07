@@ -79,7 +79,7 @@ class WechatController extends CommonController
 			if($re['errcode']==0){
 				Success('更新成功！',U('wxcaidan'));
 			}else{
-				Error($re['errcode'].':'.$re['errmsg'],U('Index/index'));
+				exit($re['errcode'].':'.$re['errmsg']);
 			}
 			
 			
@@ -165,7 +165,7 @@ class WechatController extends CommonController
 		//var_dump($json);
 		$obj = json_decode($json,1);
 		if(isset($obj['errcode'])){
-			Error('微信配置错误！'.$obj['errcode'].$obj['errmsg'],U('Index/index'));
+			exit('微信配置错误！'.$obj['errcode'].$obj['errmsg']);
 		}
 		return  $obj['access_token']; 
 	}

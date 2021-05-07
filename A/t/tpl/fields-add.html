@@ -4,7 +4,11 @@
     <head>
        <meta charset="UTF-8">
         {include="style"}
-		
+		<style>
+		.layui-form-item .layui-input-inline {
+			width: 210px;
+		}
+		</style>
     </head>
     
     <body>
@@ -27,7 +31,11 @@
 			<div class="layui-tab">
 			  <ul class="layui-tab-title">
 				<li class="layui-this">基本信息</li>
+				{if($molds=='level')}
+				<li>角色绑定</li>
+				{else}
 				<li>栏目绑定</li>
+				{/if}
 				
 			  </ul>
 			  <div class="layui-tab-content">
@@ -101,6 +109,13 @@
 							<td>只能填写数字，长度不能超过11位</td>
 						   </tr>
 						   <tr>
+							<td><input type="radio" name="fieldtype" value="14" /></div></td>
+							<td>小数<br/>decimal</div></td>
+							<td><input type="text" class="layui-input" name="fieldlong_14" value="10,2"></div></td>
+							<td><input type="text" class="layui-input" name="body_14" value="0.00"></div></div></td>
+							<td>金钱，小数等，保留2位</td>
+						   </tr>
+						   <tr>
 							<td><input type="radio" name="fieldtype" value="11" /></div></td>
 							<td>时间<br/>int</div></td>
 							<td><input type="text" class="layui-input" name="fieldlong_11" value="11"></div></td>
@@ -116,8 +131,8 @@
 						   </tr>
 						   <tr>
 							<td><input type="radio" name="fieldtype" value="6" /></div></td>
-							<td>多图片<br/>varchar</div></td>
-							<td><input type="text" class="layui-input" name="fieldlong_6" value="500"></div></td>
+							<td>多图片<br/>text</div></td>
+							<td>不限</div></td>
 							<td>无</div></td>
 							<td>多个图片</td>
 						   </tr>
@@ -151,8 +166,8 @@
 						   </tr>
 						   <tr>
 							<td><input type="radio" name="fieldtype" value="10" /></div></td>
-							<td>多附件<br/>varchar</div></td>
-							<td><input type="text" class="layui-input" name="fieldlong_10" value="500"></div></td>
+							<td>多附件<br/>text</div></td>
+							<td>不限</div></td>
 							<td>无</div></td>
 							<td>多个附件，图片除外</td>
 						   </tr>
@@ -167,6 +182,13 @@
 							{/loop}
 							</select><input type="text"  placeholder="列表显示字段" class="layui-input" name="molds_list_field" id="molds_list_field" value=""></div></td>
 							<td>可以直接调用关联模块内容列表，列表显示对应字段内容</td>
+						   </tr>
+						   <tr>
+							<td><input type="radio" name="fieldtype" value="15" /></div></td>
+							<td>多行录入<br/>txt</div></td>
+							<td>不限</div></td>
+							<td>无</div></td>
+							<td>可以在页面动态新增内容输入框</td>
 						   </tr>
 						   
 						</tbody>
@@ -202,7 +224,7 @@
                         <span class="x-red"></span>排序
                     </label>
                     <div class="layui-input-inline">
-                        <input type="number" id="orders" value="0" name="orders" 
+                        <input type="number" id="orders" value="2" name="orders" 
                         autocomplete="off" class="layui-input">
                     </div>
 					<div class="layui-form-mid layui-word-aux">
@@ -238,6 +260,17 @@
                     <div class="layui-input-inline">
                         <input type="radio" name="isshow" value="0" title="不显示">
 						<input type="radio" name="isshow" value="1" title="显示" checked>
+                    </div>
+					 
+					
+                </div>
+                <div class="layui-form-item" pane>
+                    <label for="isadmin" class="layui-form-label">
+                        <span class="x-red"></span>后台显示
+                    </label>
+                    <div class="layui-input-inline">
+                        <input type="radio" name="isadmin" value="0" title="不显示">
+						<input type="radio" name="isadmin" value="1" title="显示" checked>
                     </div>
 					 
 					
@@ -286,10 +319,69 @@
 					</div>
                 </div>
 				
-				
+				<div class="layui-form-item" pane>
+                    <label for="isajax" class="layui-form-label">
+                        <span class="x-red"></span>ajax可访问
+                    </label>
+                    <div class="layui-input-inline">
+                        <input type="radio" name="isajax" value="0" title="不能">
+						<input type="radio" name="isajax" value="1" title="能" checked>
+                    </div>
+					<div class="layui-form-mid layui-word-aux">
+					  由于本系统对json数据封装，限制访问可以提高安全性
+					</div> 
+					
+                </div>
 				
 				</div>
 				<div class="layui-tab-item">
+				 {if($molds=='level')}
+				<table class="layui-table layui-form">
+					<thead>
+					  <tr>
+						<th width="20">
+						  <div class="layui-unselect header layui-form-checkbox layui-form-checked" lay-skin="primary"><i class="layui-icon">&#xe605;</i></div>
+						</th>
+						
+						<th>角色名</th>
+						
+					</thead>
+					<tbody class="x-cate">
+					{php 
+					if($admin['gid']!=1){
+					$levelgroup = M('level_group')->findAll('id!=1');
+					}else{
+					$levelgroup = M('level_group')->findAll();
+					}
+					
+					$levelgroup = set_class_haschild($levelgroup);
+					$levelgroup = getTree($levelgroup);
+					
+					
+					/}
+					 {foreach $levelgroup as $v}
+					  <tr cate-id="{$v['id']}" fid="{$v['pid']}" >
+						<td>
+						  <div class="layui-unselect layui-form-checkbox layui-form-checked" lay-skin="primary" data-id='{$v['id']}'><i class="layui-icon">&#xe605;</i></div>
+						</td>
+						
+						<td>
+						  {fun str_repeat('&nbsp;&nbsp;&nbsp;',$v['level'])}
+						  {if($v['haschild'])}
+						  <i class="layui-icon x-show" status='false'>&#xe625;</i>
+						  {else}
+						  {if($v['level'])}|——{/if}
+						  {/if}
+						  {$v['name']}
+						</td>
+						
+					  </tr>
+					 {/foreach}
+					 
+					 
+					</tbody>
+				  </table>
+				{else}
 				 <table class="layui-table layui-form">
 					<thead>
 					  <tr>
@@ -302,6 +394,7 @@
 					</thead>
 					<tbody class="x-cate">
 					{foreach $classtypes as $v}
+					{if($v['molds']==$molds || $molds=='classtype')}
 					  <tr cate-id="{$v['id']}" fid="{$v['pid']}" >
 						<td>
 						  <div class="layui-unselect layui-form-checkbox layui-form-checked" lay-skin="primary" data-id='{$v['id']}'><i class="layui-icon">&#xe605;</i></div>
@@ -318,10 +411,12 @@
 						</td>
 						
 					  </tr>
+					 {/if}
 					 {/foreach}
 					 
 					</tbody>
 				  </table>
+				{/if}
 				
 				</div>
 				
@@ -364,8 +459,9 @@
               form.on('submit(save)', function(data){
                 var tids = tableCheck.getData().join(',');
 				if(tids==''){
-					layer.alert('请选择绑定栏目！', {icon: 5});
-					return false;
+					//layer.alert('请选择绑定栏目！', {icon: 5});
+					//return false;
+					tids = 0;
 				}
 				data.field.tids = tids;
 				

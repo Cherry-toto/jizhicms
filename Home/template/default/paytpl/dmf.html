@@ -1,0 +1,30 @@
+<html>
+<head>
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1"/>
+	<title>当面付</title>
+    <script src="/static/common/user/js/jquery.min-1.10.2.js"></script>
+	<script type="text/javascript">
+		
+		setInterval(function(){
+			$.post("{fun U('Mypay/alipay_check_order')}",{orderno:'{$orderno}',ajax:1},function(r){
+				console.log(r);
+				if(r.code==0){
+					window.location.href="{fun U('user/orderdetails',['orderno'=>$orderno])}";
+				}
+			
+			},'json')
+		
+		
+		},1500);
+		
+	</script>
+</head>
+<body>
+
+<font color="#9ACD32"><b>该笔订单支付金额为<span style="color:#f00;font-size:50px"><?php echo $payAmount?>元</span></b></font><br/><br/>
+<div align="center">
+	<img src="{$url}" />
+</div>
+</body>
+</html>

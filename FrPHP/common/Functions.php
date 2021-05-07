@@ -39,7 +39,7 @@ function M($name=null) {
 			$path = 'FrPHP\lib\\Model';
 			return $path::getInstance($table);
 		}else{
-			return $name::getInstance();
+			return $name::getInstance($table);
 		}
 		
 	}
@@ -49,14 +49,21 @@ function M($name=null) {
 /**
 	参数过滤，格式化
 **/
-function format_param($value=null,$int=0){
+function format_param($value=null,$int=0,$default=false){
 	if($value==null){ return '';}
+	if($value===false && $default!==false){ return $default;}
 	switch ($int){
 		case 0://整数
 			return (int)$value;
 		case 1://字符串
+			$value = SafeFilter($value);
 			$value=htmlspecialchars(trim($value), ENT_QUOTES);
-			if(!get_magic_quotes_gpc())$value = addslashes($value);
+			if(version_compare(PHP_VERSION,'7.4','>=')){
+				$value = addslashes($value);
+			}else{
+				if(!get_magic_quotes_gpc())$value = addslashes($value);
+			}
+			
 			return $value;
 		case 2://数组
 			if($value=='')return '';
@@ -65,44 +72,31 @@ function format_param($value=null,$int=0){
 		case 3://浮点
 			return (float)$value;
 		case 4:
-			if(!get_magic_quotes_gpc())$value = addslashes($value);
+			if(version_compare(PHP_VERSION,'7.4','>=')){
+				$value = addslashes($value);
+			}else{
+				if(!get_magic_quotes_gpc())$value = addslashes($value);
+			}
 			return trim($value);
 	}
 }
 //过滤XSS攻击
-function SafeFilter(&$arr) 
+function SafeFilter($arr) 
 {
-   $ra=Array('/([\x00-\x08,\x0b-\x0c,\x0e-\x19])/','/script/','/javascript/','/vbscript/','/expression/','/applet/'
-   ,'/meta/','/xml/','/blink/','/link/','/style/','/embed/','/object/','/frame/','/layer/','/title/','/bgsound/'
-   ,'/base/','/onload/','/onunload/','/onchange/','/onsubmit/','/onreset/','/onselect/','/onblur/','/onfocus/',
-   '/onabort/','/onkeydown/','/onkeypress/','/onkeyup/','/onclick/','/ondblclick/','/onmousedown/','/onmousemove/'
-   ,'/onmouseout/','/onmouseover/','/onmouseup/','/onunload/');
-     
-   if (is_array($arr))
-   {
-     foreach ($arr as $key => $value) 
-     {
-        if (!is_array($value))
-        {
-          if (!get_magic_quotes_gpc())  //不对magic_quotes_gpc转义过的字符使用addslashes(),避免双重转义。
-          {
-             $value  = addslashes($value); //给单引号（'）、双引号（"）、反斜线（\）与 NUL（NULL 字符）  加上反斜线转义
-          }
-          $value       = preg_replace($ra,'',$value);     //删除非打印字符，粗暴式过滤xss可疑字符串
-          $arr[$key]     = htmlentities(strip_tags($value)); //去除 HTML 和 PHP 标记并转换为 HTML 实体
-        }
-        else
-        {
-          SafeFilter($arr[$key]);
-        }
-     }
-   }
+   $ra=Array('/([\x00-\x08])/','/([\x0b-\x0c])/','/([\x0e-\x19])/','/script(.*)script/','/javascript(.*)javascript/');
+   $arr = preg_replace($ra,'',$arr);   
+   return $arr;
 }
 function array_format(&$item, $key)
 {
 	$item=trim($item);
+	//$item = SafeFilter($item);
 	$item=htmlspecialchars($item, ENT_QUOTES);
-	if(!get_magic_quotes_gpc())$item = addslashes($item);
+	if(version_compare(PHP_VERSION,'7.4','>=')){
+		$item = addslashes($item);
+	}else{
+		if(!get_magic_quotes_gpc())$item = addslashes($item);
+	}
 }
 
 function unicodeEncode($str){
@@ -154,8 +148,8 @@ function U($action=null,$field=null){
 	
 	if(APP_URL=='/index.php'){
 		if(strpos($action,'/')!==FALSE){
-			//存在'/'
-			$action  = ucfirst($action);
+			//存在'/' 取消首字母大写限制
+			//$action  = ucfirst($action);
 			$url =  get_domain().'/'.$action;
 		}else if($action!=null){
 			$url =  get_domain().'/'.APP_CONTROLLER.'/'.$action;
@@ -251,7 +245,7 @@ function Error($info, $url=null){
 **/
 
 function JsonReturn($data){
-	echo json_encode($data);
+	echo json_encode($data,JSON_UNESCAPED_UNICODE);
 	exit;
 }
 
@@ -277,7 +271,7 @@ function GetIP(){
 function GetIP(){ 
   static $ip = '';
   $ip = $_SERVER['REMOTE_ADDR'];
-  if(isset($_SERVER['HTTP_CDN_SRC_IP'])) {
+  if(isset($_SERVER['HTTP_CDN_SRC_IP']) && preg_match('/^([0-9]{1,3}\.){3}[0-9]{1,3}$/', $_SERVER['HTTP_CDN_SRC_IP'])) {
     $ip = $_SERVER['HTTP_CDN_SRC_IP'];
   } elseif (isset($_SERVER['HTTP_CLIENT_IP']) && preg_match('/^([0-9]{1,3}\.){3}[0-9]{1,3}$/', $_SERVER['HTTP_CLIENT_IP'])) {
     $ip = $_SERVER['HTTP_CLIENT_IP'];
@@ -299,6 +293,10 @@ function get_domain(){
 		$protocol = "https://";
 	}
 	elseif (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https')
+	{
+		$protocol = "https://";
+	}
+	elseif ( ! empty($_SERVER['HTTP_FROM_HTTPS']) && strtolower($_SERVER['HTTP_FROM_HTTPS']) !== 'off')
 	{
 		$protocol = "https://";
 	}
@@ -377,7 +375,7 @@ function start_session($expire = 0)  {
 		mkdir($session_cache_dir,0777,true);
 	}
 	ini_set('session.save_path',$session_cache_dir);
-	ini_set("session.cookie_httponly", 1);
+	
 	
 	if (!isset($_COOKIE['PHPSESSID'])) {
 		session_set_cookie_params($expire);
@@ -506,7 +504,7 @@ function getRandChar($length = 8){
 **/
 function newstr($string, $length, $dot="...") {
 	if(strlen($string) <= $length) {return $string;}
-	$string = str_replace(array('&amp;', '&quot;', '&lt;', '&gt;'), array('&','"','<','>'), $string);
+	$string = str_replace(array('&amp;', '&quot;', '&lt;', '&gt;' ,'&nbsp;'), array('&','"','<','>',''), $string);
 	$strcut = '';$n = $tn = $noc = $noct = $nc = $tnc =0;
 	while($n < strlen($string)) {
 		$t = ord($string[$n]);
@@ -605,11 +603,11 @@ function setCache($str,$data,$timeout=-1){
 	//设置
 	$rdata['frcache_time'] = $timeout;
 	$rdata['frcache_data'] = $data;
-	
-	$s = md5($str).'frphp'.md5($str);
-	$cache_file_data = APP_PATH.'cache/data/'.$s.'.php';
-	if(!file_exists(APP_PATH.'cache/data')){
-		mkdir (APP_PATH.'cache/data',0777,true);
+	$str = get_domain().$str;
+	$s = md5(md5($str.'frphp'.$str));
+	$cache_file_data = Cache_Path.'/data/'.$s.'.php';
+	if(!file_exists(Cache_Path.'/data')){
+		mkdir (Cache_Path.'/data',0777,true);
 	}
 	//如果为null,则直接删除缓存
 	if(!isset($data)){
@@ -621,11 +619,11 @@ function setCache($str,$data,$timeout=-1){
 	
 	$res = json_encode($rdata,JSON_UNESCAPED_UNICODE);
 	$res = '<?php die();?>'.$res;
-	if(file_put_contents($cache_file_data,$res)){
-		
+	$r = file_put_contents($cache_file_data,$res);
+	if($r){
 		return true;
 	}else{
-		Error_msg('数据缓存失败，'.APP_PATH.'cache/data文件夹的读写权限设置为777！');
+		Error_msg('数据缓存失败，'.Cache_Path.'/data文件夹的读写权限设置为777！');
 	}
 
 	
@@ -635,9 +633,10 @@ function getCache($str=false){
 	if(!$str){
 		return false;
 	}
+	$str = get_domain().$str;
 	//获取
-	$s = md5($str).'frphp'.md5($str);
-	$cache_file_data = APP_PATH.'cache/data/'.$s.'.php';
+	$s = md5(md5($str.'frphp'.$str));
+	$cache_file_data = Cache_Path.'/data/'.$s.'.php';
 	if(!file_exists($cache_file_data)){
 		return false;
 	}

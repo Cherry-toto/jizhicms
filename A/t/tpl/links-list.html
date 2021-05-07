@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html>
+    <head>
+	<meta charset="UTF-8">
+        {include="style"}
+    </head>
+    <body>
+        <div class="x-nav">
+            <span class="layui-breadcrumb">
+              <a><cite>首页</cite></a>
+              <a><cite>扩展模块管理</cite></a>
+              <a><cite>{$molds['name']}列表</cite></a>
+              
+            </span>
+            <a class="layui-btn layui-btn-small" style="line-height:1.6em;margin-top:3px;float:right"  href="javascript:location.replace(location.href);" title="刷新"><i class="iconfont" style="line-height:30px">&#xe6aa;</i></a>
+        </div>
+        <div class="x-body">
+		
+		<div class="layui-card">
+			<div class="layui-card-body">
+			  <div class="layui-collapse">
+		    <div class="layui-colla-item">
+			<h2 class="layui-colla-title">搜索</h2>
+				<div class="layui-colla-content layui-show">
+				<div class="layui-row">
+					<form class="layui-form layui-col-md12 x-so" method="get" id="myform">
+					<div class="layui-input-inline">
+					  <select name="isshow" lay-filter="isshow" class="layui-inline autosubmit">
+					  <option value="">是否显示</option>
+					   
+					   <option {if($isshow==1)} selected="selected" {/if}value="1">显示</option>
+					   <option {if($isshow==2)} selected="selected" {/if}value="2">不显示</option>
+					   
+					   
+					
+					  </select>
+					</div>
+					
+					<div class="layui-input-inline">
+					  <select name="tid" lay-filter="tid" lay-search class="layui-inline autosubmit">
+					  <option value="">请选择分类</option>
+					   {loop table="link_type"  as="v"}
+					 
+					   <option {if($tid==$v['id'])} selected="selected" {/if}value="{$v['id']}">{$v['name']}</option>
+					  
+					   {/loop}
+					
+					  </select>
+					</div>
+					
+					  {$fields_search}
+					  <button class="layui-btn"  lay-submit="" lay-filter="search">搜索</button>
+					</form>
+				</div>
+				</div>
+		    </div>
+         </div> 
+		  
+		<table class="layui-hide" lay-data="{id: 'jizhi_table'}" id="jizhi_table" lay-filter="jizhi_table"></table>
+		<input id="select_data" type="hidden" value="" />
+			
+			</div>
+		</div>
+		
+       
+		<script type="text/html" id="rightbar">
+		{if(checkAction('Links/editlinks'))}
+			<a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>
+		{/if}
+		
+		
+		{if(checkAction('Links/deletelinks'))}
+			<a class="layui-btn layui-btn-xs layui-btn-danger" lay-event="delete">删除</a>
+		{/if}
+		{if(checkAction('Links/copylinks'))}
+			<a class="layui-btn layui-btn-xs layui-btn-warm" lay-event="copy">复制</a>
+		{/if}	
+		</script>
+		<script type="text/html" id="toolbar">
+		 <div class="layui-btn-container" style="font-size:15px;">
+		 {if(checkAction('Links/deleteAll'))}
+			   <a class="layui-btn layui-btn-danger layui-btn-sm" onclick="delAll()">批量删除</a>
+		 {/if}
+		 {if(checkAction('Links/copyAll'))}
+			   <a class="layui-btn layui-btn-warm  layui-btn-sm" onclick="copyAll()">批量复制</a>
+		 {/if}
+		 {if(checkAction('Links/changeType'))}
+			
+			   <div class="layui-input-inline" style="margin-right: 10px;margin-bottom: 10px;">
+			   <select class="layui-btn" id="change_tid"  lay-search="" lay-filter="change_tid" >
+			   <option value="0">批量修改分类</option>
+			   
+			   {loop table="link_type"  as="v"}
+			   <option value="{$v['id']}">{$v['name']}</option>
+			   {/loop}
+			   </select>
+			   </div>
+			  
+		 {/if}
+		 {if(checkAction('Links/checkAll'))}
+		  <div class="layui-input-inline" style="margin-right: 10px;margin-bottom: 10px;width:150px;">
+			   <select class="layui-btn" id="change_isshow"  lay-filter="change_isshow" >
+			   <option value="0">批量处理</option>
+			   <option   value="1">显示</option>
+			   <option   value="2">不显示</option>
+			  
+			   </select>
+		  </div>
+		 {/if}
+		 {if(checkAction('Links/addlinks'))}
+			   <a class="layui-btn  layui-btn-sm" onclick="x_admin_show('新增{$molds['name']}','{fun U('Links/addlinks',array('molds'=>$molds['biaoshi']))}')">新增{$molds['name']}</a>
+		 {/if}	  
+		 {if(checkAction('Links/linktype'))}
+		  <a class="layui-btn  layui-btn-sm" href="{fun U('Links/linktype')}" >友情链接分类</a>
+		 {/if}	  
+			
+		 </div>
+		</script>
+		<script type="text/html" id="isshow">
+			{{#  if(d.isshow ==1){ }}
+			<span class="layui-badge layui-bg-green">显示</span>
+		    {{#  } else{ }}
+		    <span class="layui-badge">不显示</span>
+		    {{#  } }}
+		</script>
+	 
+		<script>
+	 
+	   
+	    layui.use(['laydate','form','element','laypage','layer','table'], function(){
+                $ = layui.jquery;//jquery
+              var laydate = layui.laydate;//日期插件
+              var lement = layui.element;//面包导航
+              var layer = layui.layer;//弹出层
+			  var form = layui.form;
+			  var table = layui.table;
+			  
+			  table.render({
+				elem: '#jizhi_table'
+				,height: 700
+				,url: window.location.href+'?ajax=1' //数据接口
+				,page: true //开启分页
+				,size:'lg'
+				,count:100
+				,toolbar:"#toolbar"
+				,data:{}
+				,page: { //支持传入 laypage 组件的所有参数（某些参数除外，如：jump/elem） - 详见文档
+				  layout: ['limit', 'count', 'prev', 'page', 'next', 'skip'] //自定义分页布局
+				  //,curr: 5 //设定初始在第 5 页
+				  ,groups: 5 //只显示 1 个连续页码
+				  ,first: true //显示首页
+				  ,last: true //显示尾页
+				  ,count:500
+				  ,limit:10
+				  
+				}
+				,cols: [[ //表头
+				  {field: 'id', title: 'ID', width:60}
+				  ,{type:'checkbox'}
+				  ,{field: 'orders', title: '排序',width: 100, edit:'text'}
+				  ,{field: 'new_tid', title: '分类'}
+				  {foreach $fields_list as $k=>$v}
+				  ,{field: '{$v['field']}', title: '{$v['fieldname']}'{if($v['fieldtype']==1 || $v['fieldtype']==2)},edit:'text'{/if}}
+				  {/foreach}
+				  ,{field: 'new_isshow', title: '审核', width: 100,templet:'#isshow'}
+				  {if(checkAction('Links/copylinks') || checkAction('Links/deletelinks') || checkAction('Links/editlinks'))}
+				  ,{field: '', title: '操作', toolbar: '#rightbar',width:200, fixed:'right'}
+				  {/if}
+				 
+				 
+				]]
+			  });
+			  
+			    table.on('tool(jizhi_table)', function(obj){
+					var data = obj.data; //获得当前行数据
+					var layEvent = obj.event; //获得 lay-event 对应的值（也可以是表头的 event 参数对应的值）
+					var tr = obj.tr; //获得当前行 tr 的DOM对象
+					 
+					switch(layEvent){
+					  case 'edit':
+						//console.log(data);
+						 x_admin_show('编辑',data.edit_url);
+					  break;
+					  case 'view':
+						    var a = $('<a href="'+data.view_url+'" target="_blank">预览</a>').get(0);
+							var e = document.createEvent('MouseEvents');
+							e.initEvent( 'click', true, true );
+							a.dispatchEvent(e);
+					  break;
+					  case 'delete':
+							layer.confirm('确认要删除吗？',function(index){
+				
+								$.post("{fun U('Links/deletelinks')}",{molds:"{$molds['biaoshi']}",id:data.id},function(r){
+										var r = JSON.parse(r);
+										if(r.code==0){
+										 //发异步删除数据
+											$(tr).remove();
+											layer.msg(r.msg,{icon: 1,time:1000},function(){
+												table.reload('jizhi_table', {
+												  url: window.location.href+'?ajax=1'
+												  ,where: {} //设定异步数据接口的额外参数
+												 
+												});
+											
+											});
+											
+											
+											
+										}else{
+											
+											layer.msg(r.msg,{icon: 5,time:1000});
+										}
+								})
+								
+							
+							   
+							});
+					  break;
+					  case 'copy':
+					  
+							$.post("{fun U('Links/copylinks')}",{molds:"{$molds['biaoshi']}",id:data.id},function(r){
+								var r = JSON.parse(r);
+								if(r.code==0){
+									layer.msg(r.msg,{icon: 1,time:1000},function(){
+										table.reload('jizhi_table', {
+										  url: window.location.href+'?ajax=1'
+										  ,where: {} //设定异步数据接口的额外参数
+										 
+										});
+									});
+									
+									
+								}else{
+									layer.msg(r.msg,{icon: 5,time:1000});
+								}
+							})
+					  
+						 
+					  break;
+					  
+					 
+					}
+				});
+			  
+			  table.on('checkbox(jizhi_table)', function(obj){
+				
+				   var checkStatus = table.checkStatus('jizhi_table'); //idTest 即为基础参数 id 对应的值
+				   var len = checkStatus.data.length;
+				   var arr=[];
+				   if(len>0){
+					for(var i=0;i<len;i++){
+						arr.push(checkStatus.data[i].id);
+					}
+				   }
+				   $("#select_data").val(arr);
+				   
+					
+				});
+				
+				table.on('edit(jizhi_table)', function(obj){ //注：edit是固定事件名，test是table原始容器的属性 lay-filter="对应的值"
+				
+				  var id = obj.data.id;
+				  var value = obj.value;
+				  var field = obj.field;
+				
+					$.post("{fun U('Links/editOrders')}",{'id':id,'field':field,'value':value,'molds':'{$molds['biaoshi']}'},function(r){
+						var r = JSON.parse(r);
+						if(r.code==0){
+							$("#select_data").val('');
+							table.reload('jizhi_table', {
+							  url: window.location.href+'?ajax=1'
+							  ,where: {} //设定异步数据接口的额外参数
+							 
+							});
+						}else{
+							layer.msg(r.info,{icon: 5,time:1000});
+						}
+						
+					});
+				  
+				  
+				});
+				
+				form.on('submit(search)', function(data){
+					
+					table.reload('jizhi_table', {
+					  url: window.location.href+'?ajax=1'
+					  ,where: data.field //设定异步数据接口的额外参数
+					 
+					});
+				   
+					return false;
+				  });
+					
+			    form.on('select(change_tid)', function(data){
+					var datas =  $("#select_data").val();
+					var tid = parseInt(data.value);
+					if(tid==0){
+						alert('请选择修改栏目！');return false;
+					}
+					if(datas==''){
+						alert('请选择对象！');return false;
+					}
+					layer.confirm('确认要批量修改['+datas+']内容为['+tid+']分类吗？',function(index){
+						
+						$.post("{fun U('Links/changeType')}",{molds:"{$molds['biaoshi']}",data:datas,tid:tid},function(r){
+						
+								var r = JSON.parse(r);
+								if(r.code==0){
+									$("#select_data").val('');
+									layer.msg('批量修改成功', {icon: 1,time:1000},function(){
+										table.reload('jizhi_table', {
+										  url: window.location.href+'?ajax=1'
+										  ,where: {} //设定异步数据接口的额外参数
+										 
+										});
+									});
+									
+								}else{
+									
+									layer.msg(r.msg,{icon: 5,time:1000});
+								}
+						})
+						
+						
+						
+					});
+					
+				
+			    });
+
+			    form.on('select(change_isshow)', function(data){
+					var datas =  $("#select_data").val();
+					var isshow = parseInt(data.value);
+					if(isshow==0){
+						alert('请选择审核选项！');return false;
+					}
+					if(datas==''){
+						alert('请选择审核对象！');return false;
+					}
+					if(isshow==1){
+						var tip = '已审核';
+					}else if(isshow==2){
+						var tip = '未审核';
+					}else{
+						var tip = '退回';
+					}
+					layer.confirm('确认要批量处理['+datas+']的为['+tip+']吗？',function(index){
+						
+						$.post("{fun U('Links/checkAll')}",{molds:"{$molds['biaoshi']}",data:datas,isshow:isshow},function(r){
+								
+								var r = JSON.parse(r);
+								if(r.code==0){
+									$("#select_data").val('');
+									layer.msg('批量处理成功', {icon: 1,time:1000},function(){
+										table.reload('jizhi_table', {
+										  url: window.location.href+'?ajax=1'
+										  ,where: {} //设定异步数据接口的额外参数
+										 
+										});
+									});
+									
+								}else{
+									
+									layer.msg(r.msg,{icon: 5,time:1000});
+								}
+						})
+						
+						
+						
+					});
+					
+				
+			    });
+				
+
+			
+			 
+              
+            });
+			
+			
+			
+		 
+			
+			
+			
+			 function delAll () {
+				
+				var data = $("#select_data").val();
+				if(data==''){
+					alert('请选择对象！');return false;
+				}
+				layer.confirm('确认要删除吗？'+data,function(index){
+					
+					$.post("{fun U('Links/deleteAll')}",{molds:"{$molds['biaoshi']}",data:data},function(r){
+							var r = JSON.parse(r);
+							if(r.code==0){
+							  layer.msg('批量删除成功', {icon: 1,time:1000},function(){
+								window.location.reload();
+							  });
+							}else{
+								layer.msg(r.msg,{icon: 5,time:1000});
+							}
+					})
+					
+					
+					
+				});
+			  }
+			 function copyAll(){
+
+				var data = $("#select_data").val();
+				if(data==''){
+					alert('请选择对象！');return false;
+				}
+				layer.confirm('确认要复制吗？['+data+']',function(index){
+					
+					$.post("{fun U('Links/copyAll')}",{molds:"{$molds['biaoshi']}",data:data},function(r){
+					
+							var r = JSON.parse(r);
+							if(r.code==0){
+							  
+							  layer.msg('批量复制成功', {icon: 1,time:1000},function(){
+								window.location.reload();
+							  });
+							 
+							}else{
+								
+								layer.msg(r.msg,{icon: 5,time:1000});
+							}
+					})
+					
+					
+					
+				});
+			  }
+			  
+			  
+			
+			
+       </script>
+    </body>
+</html>

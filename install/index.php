@@ -78,15 +78,20 @@ function new_is_writeable($file) {
 function get_admin_url(){
 	//读取根目录文件
 	$admin_url = '';
-	if (false != ($handle = opendir ( dirname(dirname(__FILE__)) ))) {
+	$filepath = '../';
+	if (false !== ($handle = opendir ($filepath))) {
 		$i=0;
 		while ( false !== ($file = readdir ( $handle )) ) {
 			//去掉"“.”、“..”以及带“.xxx”后缀的文件
 			if ($file != "." && $file != ".."&&strpos($file,".")) {
 				
 				if(strpos($file,'.php')!==false && $file!='index.php'){
-					$admin_url = $file;
-					break;
+					$data = file_get_contents('../'.$file);
+					if(strpos($data,"define('APP_HOME','A')")!==false){
+						$admin_url = $file;
+						break;
+					}
+					
 				}
 				
 			}
@@ -187,9 +192,6 @@ switch($act){
 				//去掉"“.”、“..”以及带“.xxx”后缀的文件
 				if ($file != "." && $file != ".."&& (strpos($file,".php")!==false) && (strpos($file,'_v')===false)) {
 					$fileArray[$i]=$file;
-					if($i==100){
-						break;
-					}
 					$i++;
 				}
 			}
@@ -225,6 +227,7 @@ switch($act){
 				'RECONNECT' => false,
 				'EXPIRE'=>1800
 			);
+			$config['APP_DEBUG'] = true;
 			
 			$ress = file_put_contents('../Conf/config.php', '<?php return ' . var_export($config, true) . '; ?>');
 			
@@ -234,14 +237,10 @@ switch($act){
 			echo '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8" /></head><body><script type=text/javascript>alert("数据库连接失败！");javascript:history.go(-1);</script></body></html>';
 		}
 		$db = $_POST['go_backup']==1 ? $_POST['backup_db'] : '';
-		//更改后台文件
-		$old_url = get_admin_url();
-		$admin_url = $_POST['adminpath'];
-		if(strpos($admin_url,'.php')!==false && $admin_url!='index.php'){
-			rename('../'.$old_url,'../'.$admin_url);
-		}else{
-			rename('../'.$old_url,'../'.$admin_url.'.php');
-		}
+	
+		
+		$admin_url = get_admin_url();
+	
 		
 		//传入管理员信息
 		$admin_name = $_POST['admin_name'];
@@ -300,20 +299,9 @@ switch($act){
 			//读取备份数据库
 			$dir = '../backup';
 			$fileArray=array();
-			if (false != ($handle = opendir ( $dir ))) {
-				$i=0;
-				while ( false !== ($file = readdir ( $handle )) ) {
-					//去掉"“.”、“..”以及带“.xxx”后缀的文件
-					if ($file != "." && $file != ".."&& strpos($file,".php")) {
-						if(strpos($file,$filename)!==false){
-							$fileArray[$i]='../backup/'.$file;
-						}
-						
-						$i++;
-					}
-				}
-				//关闭句柄
-				closedir ( $handle );
+			$fileArray[] = $dir.'/'.$filename.'.php';
+			for($i=1;file_exists($dir.'/'.$filename.'_v'.$i.'.php')===true;$i++){
+			   $fileArray[]=$dir.'/'.$filename.'_v'.$i.'.php';
 			}
 			
 		    foreach($fileArray as $path){
@@ -334,6 +322,11 @@ switch($act){
 			   }
 			   
 		    }
+			if($_POST['admin_pass']!='' && $_POST['admin_name']!=''){
+				$sql="UPDATE `jz_level` SET `name`='".$_POST['admin_name']."',`pass`='".md5(md5($_POST['admin_pass']).'YF')."' , `regtime` = '".time()."' , `logintime` = ".time()."   WHERE id=1";
+				$sql = str_replace('jz_',$config['db']['prefix'],$sql);
+				$db->exec($sql);
+			}
 
 		    echo json_encode(array('count'=>100,"start"=>0,"to"=>100,'code'=>0));
 			exit;

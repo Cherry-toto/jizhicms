@@ -20,7 +20,6 @@ class FieldsController extends CommonController
 {
 	
 	function index(){
-		$page = new Page('Fields');
 		$sql = '1=1';
 		if($this->frparam('molds',1)==''){
 			Error('请选择模块！');
@@ -28,11 +27,10 @@ class FieldsController extends CommonController
 		
 		$sql = ['molds'=>$this->frparam('molds',1)];
 		$this->molds = M('Molds')->find(array('biaoshi'=>$this->frparam('molds',1)));
-		$data = $page->where($sql)->orderby('orders desc,id asc')->page($this->frparam('page',0,1))->go();
-		$pages = $page->pageList();
-		$this->pages = $pages;
+		$this->pages = '';
+		$data = M('fields')->findAll(array('molds'=>$this->frparam('molds',1)));
 		$this->lists = $data;
-		$this->sum = $page->sum;
+		$this->sum = count($data);
 		
 		$this->display('fields-list');
 		
@@ -84,6 +82,9 @@ class FieldsController extends CommonController
 				}
 				break;
 				case 3:
+				case 15:
+				case 6:
+				case 10:
 				$sql .= "TEXT CHARACTER SET utf8 default ";
 				$sql .= ' NULL ';
 				
@@ -119,15 +120,7 @@ class FieldsController extends CommonController
 					$sql .= " NULL ";
 				}
 				break;
-				case 6:
-				case 10:
-				$sql .= "VARCHAR(".$data['fieldlong'].") CHARACTER SET utf8 default ";
-				if($data['vdata']){
-					$sql .=  "'".$data['vdata']."'";
-				}else{
-					$sql .= " NULL ";
-				}
-				break;
+			
 				case 7:
 				case 8:
 				case 12:
@@ -151,6 +144,17 @@ class FieldsController extends CommonController
 				}
 				$data['body'] = $this->frparam('molds_select',1).','.$this->frparam('molds_list_field',1);
 				break;
+				case 14:
+				if(strpos($data['fieldlong'],',')===false){
+					JsonReturn(array('code'=>1,'msg'=>'字段长度不对,decimal字段长度格式[ 整数位数,小数位数 ]'));
+				}
+				$sql .= "DECIMAL(".$data['fieldlong'].") DEFAULT ";
+				if($data['vdata']){
+					$sql .=  "'".$data['vdata']."'";
+				}else{
+					$sql .= " '".$data['body_14']."' NOT NULL ";
+				}
+				break;
 				
 			}
 			$x = M()->runSql($sql);
@@ -173,10 +177,7 @@ class FieldsController extends CommonController
 		$this->display('fields-add');
 	}
 	
-
-	
-	
-	public function editFields(){
+	function editFields(){
 		
 		if($this->frparam('go',1)==1){
 
@@ -211,14 +212,18 @@ class FieldsController extends CommonController
 							break;
 							case 4:
 							case 11:
+							case 13:
 							$sql.=" int(".$data['fieldlong'].") ";
+							break;
+							case 14:
+							$sql.=" decimal(".$data['fieldlong'].") ";
 							break;
 							
 						}
 						$x = M()->runSql($sql);
 						
 					}
-					if($data['fieldtype']==7 || $data['fieldtype']==8 || $data['fieldtype']==12){
+					if($data['fieldtype']==7 || $data['fieldtype']==8 || $data['fieldtype']==12 || $data['fieldtype']==14){
                     	$data['body'] = $this->frparam('body_'.$data['fieldtype'],1);
                     }
 					if($data['fieldtype']==13){
@@ -246,6 +251,9 @@ class FieldsController extends CommonController
 					}
 					break;
 					case 3:
+					case 15:
+					case 6:
+					case 10:
 					$sql .= "TEXT CHARACTER SET utf8 default ";
 					$sql .= ' NULL ';
 					
@@ -272,6 +280,17 @@ class FieldsController extends CommonController
 						$sql .= " '0' NOT NULL ";
 					}
 					break;
+					case 14:
+					if(strpos($data['fieldlong'],',')===false){
+						JsonReturn(array('code'=>1,'msg'=>'字段长度不对,decimal字段长度格式[ 整数位数,小数位数 ]'));
+					}
+					$sql .= "DECIMAL(".$data['fieldlong'].") DEFAULT ";
+					if($data['vdata']){
+						$sql .=  "'".$data['vdata']."'";
+					}else{
+						$sql .= " '".$data['body_14']."' NOT NULL ";
+					}
+					break;
 					case 5:
 					case 9:
 					$sql .= "VARCHAR(".$data['fieldlong'].") CHARACTER SET utf8 default ";
@@ -281,15 +300,7 @@ class FieldsController extends CommonController
 						$sql .= ' NULL ';
 					}
 					break;
-					case 6:
-					case 10:
-					$sql .= "VARCHAR(".$data['fieldlong'].") CHARACTER SET utf8 default ";
-					if($data['vdata']){
-						$sql .=  "'".$data['vdata']."'";
-					}else{
-						$sql .= ' NULL ';
-					}
-					break;
+					
 					case 7:
 					case 8:
 					case 12:
@@ -340,19 +351,23 @@ class FieldsController extends CommonController
 	}
 	
 	function get_fields(){
-		$tid = $this->frparam('tid');
+		$tid = $this->frparam('tid',0,0);
 		$sql = array();
-		if($tid!=0){
+		$molds = strtolower($this->frparam('molds',1));
+		$moldsdata = M('molds')->find(['biaoshi'=>$molds]);
+		if($moldsdata['ismust']!=1 || in_array($molds,['tags','comment','orders','admin','collect_type','fields','buylog','link_type','links','layout','level_group','level','member_group','molds','pictures','plugins','power','ruler','sysconfig','task','collect','member','menu'])){
+			
+		}else{
 			$sql[] = " tids like '%,".$tid.",%' "; 
 		}
-		$molds = $this->frparam('molds',1);
+		
 		$id = $this->frparam('id');
 		if($id){
 			$data = M($molds)->find(array('id'=>$id));
 		}else{
 			$data = array();
 		}
-		$sql[] = " molds = '".$molds."' ";
+		$sql[] = " molds = '".$molds."' and isadmin=1 ";
 		$sql = implode(' and ',$sql);
 		$fields_list = M('Fields')->findAll($sql,'orders desc,id asc');
 		$l = '';
@@ -364,10 +379,13 @@ class FieldsController extends CommonController
 			switch($v['fieldtype']){
 				case 1:
 				$l .= '<div class="layui-form-item">
-                    <label for="'.$v['field'].'" class="layui-form-label">
-                        <span class="x-red"></span>'.$v['fieldname'].'
+                    <label for="'.$v['field'].'" class="layui-form-label">';
+				if($v['ismust']==1){
+				$l .= '<span class="x-red">*</span>';	
+				}
+                $l .= $v['fieldname'].'
                     </label>
-                    <div class="layui-input-block">
+                    <div class="layui-input-inline"  style="width:500px;">
                         <input type="text" id="'.$v['field'].'" value="'.$data[$v['field']].'" name="'.$v['field'].'" ';
 				if($v['ismust']==1){
 					$l.=' required="" lay-verify="required" ';
@@ -382,8 +400,11 @@ class FieldsController extends CommonController
 				break;
 				case 2:
 				$l .= '<div class="layui-form-item  layui-form-text">
-                    <label for="'.$v['field'].'" class="layui-form-label">
-                        <span class="x-red"></span>'.$v['fieldname'].'
+                    <label for="'.$v['field'].'" class="layui-form-label">';
+				if($v['ismust']==1){
+				$l .= '<span class="x-red">*</span>';	
+				}
+                $l .= $v['fieldname'].'
                     </label>
                     <div class="layui-input-block">
                         <textarea  class="layui-textarea" id="'.$v['field'].'"  name="'.$v['field'].'" ';
@@ -399,35 +420,40 @@ class FieldsController extends CommonController
                 </div>';
 				break;
 				case 3:
-				$rd = time();
-				$l .= '<div class="layui-form-item layui-form-text">
-							<label for="'.$v['field'].'" class="layui-form-label">
-								<span class="x-red">*</span>'.$v['fieldname'].'
-							</label>
-							<div class="layui-input-block" style="width:100%;">
-							<script id="'.$v['field'].$rd.'" name="'.$v['field'].'" type="text/plain" style="width:100%;height:400px;">'.$data[$v['field']].'</script>
-								
-							</div>
-						</div>
-						<script>
-						$(document).ready(function(){
-						var ue_'.$v['field'].$rd.' = UE.getEditor("'.$v['field'].$rd.'",{';
-					if($this->webconf['ueditor_config']!=''){
-						$l.= 'toolbars : [['.$this->webconf['ueditor_config'].']]';
-					}		
-						$l.='}		
-						);	
-						});
-						</script>';
+				$l .= include(APP_PATH.'A/t/tpl/common/uediter.php');
 				
 				break;
 				case 4:
 				$l .= '<div class="layui-form-item">
-                    <label for="'.$v['field'].'" class="layui-form-label">
-                        <span class="x-red"></span>'.$v['fieldname'].'
+                    <label for="'.$v['field'].'" class="layui-form-label">';
+				if($v['ismust']==1){
+				$l .= '<span class="x-red">*</span>';	
+				}
+                $l .= $v['fieldname'].'
+                    </label>
+                    <div class="layui-input-inline">
+                        <input type="number" id="'.$v['field'].'" value="'.$data[$v['field']].'" name="'.$v['field'].'" ';
+				if($v['ismust']==1){
+					$l.=' required="" lay-verify="required" ';
+				}		
+                $l .=  'autocomplete="off" class="layui-input">
+                    </div>
+					<div class="layui-form-mid layui-word-aux">
+					  '.$v['tips'].'
+					</div>
+					
+                </div>';
+				break;
+				case 14:
+				$l .= '<div class="layui-form-item">
+                    <label for="'.$v['field'].'" class="layui-form-label">';
+				if($v['ismust']==1){
+				$l .= '<span class="x-red">*</span>';	
+				}
+                $l .= $v['fieldname'].'
                     </label>
                     <div class="layui-input-block">
-                        <input type="number" id="'.$v['field'].'" value="'.$data[$v['field']].'" name="'.$v['field'].'" ';
+                        <input type="text" id="'.$v['field'].'" value="'.$data[$v['field']].'" name="'.$v['field'].'" ';
 				if($v['ismust']==1){
 					$l.=' required="" lay-verify="required" ';
 				}		
@@ -442,8 +468,11 @@ class FieldsController extends CommonController
 				case 11:
 				$laydate = ($data[$v['field']]=='' || $data[$v['field']]==0)?time():$data[$v['field']];
 				$l .= '<div class="layui-form-item">
-                    <label for="'.$v['field'].'" class="layui-form-label">
-                        <span class="x-red"></span>'.$v['fieldname'].'
+                    <label for="'.$v['field'].'" class="layui-form-label">';
+				if($v['ismust']==1){
+				$l .= '<span class="x-red">*</span>';	
+				}
+                $l .= $v['fieldname'].'
                     </label>
                     <div class="layui-input-block">
                         <input id="laydate_'.$v['field'].'" value="'.date('Y-m-d H:i:s',$laydate).'" name="'.$v['field'].'" ';
@@ -458,12 +487,15 @@ class FieldsController extends CommonController
                 </div><script>
 layui.use("laydate", function(){
   var laydate = layui.laydate;
-  laydate.render({elem: "#laydate_'.$v['field'].'",type:"datetime" });});</script>';
+  laydate.render({elem: "#laydate_'.$v['field'].'",type:"datetime",trigger: "click" });});</script>';
 				break;
 				case 5:
 				$l .= '<div class="layui-form-item">
-                    <label for="'.$v['field'].'" class="layui-form-label">
-						<span class="x-red">*</span>'.$v['fieldname'].'  
+                    <label for="'.$v['field'].'" class="layui-form-label">';
+				if($v['ismust']==1){
+				$l .= '<span class="x-red">*</span>';	
+				}
+                $l .= $v['fieldname'].'  
                     </label>
 					
 					
@@ -478,7 +510,7 @@ layui.use("laydate", function(){
 						<button class="layui-btn layui-btn-primary" id="LAY_'.$v['field'].'_upload" type="button" >选择图片</button>
 					</div>
 					<div class="layui-input-inline">
-						<img id="'.$v['field'].'_img" class="img-responsive img-thumbnail" style="max-width: 200px;" src="" onerror="javascipt:this.src=\''.Tpl_style.'/style/images/nopic.jpg\'; this.title=\'图片未找到\';this.onerror=\'\'">
+						<img id="'.$v['field'].'_img" class="img-responsive img-thumbnail" style="max-width: 200px;" src="'.$data[$v['field']].'" onerror="javascipt:this.src=\''.Tpl_style.'/style/images/nopic.jpg\'; this.title=\'图片未找到\';this.onerror=\'\'">
 						<button type="button" onclick="deleteImage_auto(this,\''.$v['field'].'\')" class="layui-btn layui-btn-sm layui-btn-radius layui-btn-danger " title="删除这张图片" >删除</button>
 					</div>
 					
@@ -495,13 +527,14 @@ layui.use("laydate", function(){
 					  var uploadInst = upload_'.$v['field'].'.render({
 						elem: "#LAY_'.$v['field'].'_upload" //绑定元素
 						,url: "'.U('Common/uploads').'" //上传接口
+						,data:{tid:function(){ return $("#tid").val();},molds:"'.$molds.'"}
 						,accept:"images"
 						,acceptMime:"image/*"
 						,done: function(res){
 						  
 							if(res.code==0){
-								 $("#'.$v['field'].'_img").attr("src","/"+res.url);
-								 $("#'.$v['field'].'").val("/"+res.url);
+								 $("#'.$v['field'].'_img").attr("src",res.url);
+								 $("#'.$v['field'].'").val(res.url);
 							}else{
 								 layer.alert(res.error, {icon: 5});
 							}
@@ -533,7 +566,13 @@ layui.use("laydate", function(){
 					  <span class="preview_'.$v['field'].'" >';
 					if($data[$v['field']]!=''){
 						foreach(explode('||',$data[$v['field']]) as $vv){
-							$l.='<div class="upload-icon-img layui-input-inline" ><div class="upload-pre-item"><img src="'.$vv.'" class="img" width="200px" height="200px" ><input name="'.$v['field'].'_urls[]" type="text" class="layui-input"  value="'.$vv.'" /><i  class="layui-icon delete_file" >&#xe640;</i></div></div>';
+							if($this->webconf['ispicsdes']==1){
+								$pic = explode('|',$vv);
+								$l.='<div class="upload-icon-img layui-input-inline" ><div class="upload-pre-item"><img src="'.$pic[0].'" class="img" width="200px" height="200px" ><input name="'.$v['field'].'_urls[]" type="text" class="layui-input"  value="'.$pic[0].'" /><input name="'.$v['field'].'_des[]" type="text" class="layui-input" placeholder="文字描述"  value="'.$pic[1].'" /><a class="layui-btn layui-btn-sm layui-btn-radius layui-btn-danger delete_file">删除</a><a class="layui-btn layui-btn-sm layui-btn-radius imgorder " onclick="goleft(this)">左移</a><a class="layui-btn layui-btn-sm layui-btn-radius imgorder " onclick="goright(this)">右移</a></div></div>';
+							}else{
+								$l.='<div class="upload-icon-img layui-input-inline" ><div class="upload-pre-item"><img src="'.$vv.'" class="img" width="200px" height="200px" ><input name="'.$v['field'].'_urls[]" type="text" class="layui-input"  value="'.$vv.'" /><a class="layui-btn layui-btn-sm layui-btn-radius layui-btn-danger delete_file">删除</a><a class="layui-btn layui-btn-sm layui-btn-radius imgorder " onclick="goleft(this)">左移</a><a class="layui-btn layui-btn-sm layui-btn-radius imgorder " onclick="goright(this)">右移</a></div></div>';
+							}
+							
 						}
 					}	 
 					$l .= '</span>
@@ -549,6 +588,7 @@ layui.use("laydate", function(){
 					  var uploadInst = upload_'.$v['field'].'.render({
 						elem: "#LAY_'.$v['field'].'_upload" //绑定元素
 						,url: "'.U('Common/uploads').'" //上传接口
+						,data:{tid:function(){ return $("#tid").val();},molds:"'.$molds.'"}
 						,accept:"images"
 						,multiple: true
 						,acceptMime:"image/*"
@@ -557,10 +597,15 @@ layui.use("laydate", function(){
 						  }
 						,done: function(res){
 							layer.closeAll("loading"); //关闭loading
-							if(res.code==0){
+							if(res.code==0){';
+							if($this->webconf['ispicsdes']==1){
+								$l.='$(".preview_'.$v['field'].'").append(\'<div class="upload-icon-img layui-input-inline" ><div class="upload-pre-item"><img src="\' + res.url + \'" class="img" width="200px" height="200px" ><input name="'.$v['field'].'_urls[]" type="text" class="layui-input"  value="\' + res.url + \'" /><input name="'.$v['field'].'_des[]" type="text" class="layui-input"  placeholder="文字描述" value="" /><a class="layui-btn layui-btn-sm layui-btn-radius layui-btn-danger delete_file">删除</a><a class="layui-btn layui-btn-sm layui-btn-radius imgorder " onclick="goleft(this)">左移</a><a class="layui-btn layui-btn-sm layui-btn-radius imgorder " onclick="goright(this)">右移</a></div></div>\');';
+							}else{
+								$l.='$(".preview_'.$v['field'].'").append(\'<div class="upload-icon-img layui-input-inline" ><div class="upload-pre-item"><img src="\' + res.url + \'" class="img" width="200px" height="200px" ><input name="'.$v['field'].'_urls[]" type="text" class="layui-input"  value="\' + res.url + \'" /><a class="layui-btn layui-btn-sm layui-btn-radius layui-btn-danger delete_file">删除</a><a class="layui-btn layui-btn-sm layui-btn-radius imgorder " onclick="goleft(this)">左移</a><a class="layui-btn layui-btn-sm layui-btn-radius imgorder " onclick="goright(this)">右移</a></div></div>\');';
+							}
 							
-							$(".preview_'.$v['field'].'").append(\'<div class="upload-icon-img layui-input-inline" ><div class="upload-pre-item"><img src="/\' + res.url + \'" class="img" width="200px" height="200px" ><input name="'.$v['field'].'_urls[]" type="text" class="layui-input"  value="/\' + res.url + \'" /><i  class="layui-icon delete_file" >&#xe640;</i></div></div>\');
-								
+							
+							$l.='	
 								
 							}else{
 								 layer.alert(res.error, {icon: 5});
@@ -576,8 +621,11 @@ layui.use("laydate", function(){
 				break;
 				case 7:
 				$l .= '<div class="layui-form-item">
-                    <label for="'.$v['field'].'" class="layui-form-label">
-                        <span class="x-red">*</span>'.$v['fieldname'].'  
+                    <label for="'.$v['field'].'" class="layui-form-label">';
+				if($v['ismust']==1){
+				$l .= '<span class="x-red">*</span>';	
+				}
+                $l .= $v['fieldname'].'  
                     </label>
                     <div class="layui-input-inline">
 						<select name="'.$v['field'].'" lay-search="" id="'.$v['field'].'" ><option value="">请选择</option>';
@@ -604,8 +652,11 @@ layui.use("laydate", function(){
 				break;
 				case 12:
 				$l .= '<div class="layui-form-item" pane>
-                    <label for="'.$v['field'].'" class="layui-form-label">
-                        <span class="x-red">*</span>'.$v['fieldname'].'  
+                    <label for="'.$v['field'].'" class="layui-form-label">';
+				if($v['ismust']==1){
+				$l .= '<span class="x-red">*</span>';	
+				}
+                $l .= $v['fieldname'].'  
                     </label>
                     <div class="layui-input-inline">';
 				foreach(explode(',',$v['body']) as $vv){
@@ -630,8 +681,11 @@ layui.use("laydate", function(){
 				break;
 				case 8:
 				$l .= '<div class="layui-form-item">
-						<label for="'.$v['field'].'" class="layui-form-label">
-							<span class="x-red">*</span>'.$v['fieldname'].'  
+						<label for="'.$v['field'].'" class="layui-form-label">';
+				if($v['ismust']==1){
+				$l .= '<span class="x-red">*</span>';	
+				}
+                $l .= $v['fieldname'].'  
 						</label>
 						<div class="layui-input-block">';
 				foreach(explode(',',$v['body']) as $vv){
@@ -657,8 +711,11 @@ layui.use("laydate", function(){
 				break;
 				case 9:
 				$l .= '<div class="layui-form-item">
-                    <label for="'.$v['field'].'" class="layui-form-label">
-						<span class="x-red">*</span>'.$v['fieldname'].'  
+                    <label for="'.$v['field'].'" class="layui-form-label">';
+				if($v['ismust']==1){
+				$l .= '<span class="x-red">*</span>';	
+				}
+                $l .= $v['fieldname'].'  
                     </label>
 					
                     <div class="layui-input-inline">
@@ -689,12 +746,13 @@ layui.use("laydate", function(){
 					  var uploadInst = upload_'.$v['field'].'.render({
 						elem: "#LAY_'.$v['field'].'_upload" //绑定元素
 						,url: "'.U('Common/uploads').'" //上传接口
+						,data:{tid:function(){ return $("#tid").val();},molds:"'.$molds.'"}
 						,accept:"file"
 						,exts: "'.$this->webconf['fileType'].'"
 						,done: function(res){
 							if(res.code==0){
 								
-								 $("#'.$v['field'].'").val("/"+res.url);
+								 $("#'.$v['field'].'").val(res.url);
 							}else{
 								 layer.alert(res.error, {icon: 5});
 							}
@@ -708,30 +766,36 @@ layui.use("laydate", function(){
 				</script>';
 				break;
 				case 10:
-				$l .= '<div class="layui-form-item">
-                    <label for="'.$v['field'].'" class="layui-form-label">
-						<span class="x-red">*</span>'.$v['fieldname'].'  
-                    </label>
-					
-                    <div class="layui-input-inline">
-                      <div class="site-demo-upbar">
-                     <span class="preview_'.$v['field'].'" >';
-				if($data[$v['field']]!=''){
-					foreach(explode('||',$data[$v['field']]) as $vv){
-						$l.='<span class="upload-icon-img" ><div class="upload-pre-item"><i class="layui-icon layui-icon-file"></i><input type="text" value="'.$vv.'" name="'.$v['field'].'_urls[]" class="layui-input" /><i   class="layui-icon delete_file">&#xe640;</i></div></span>';
-					}
-				}	
-				$l	.= '</span>
-					  
-						<button type="button" class="layui-btn" id="LAY_'.$v['field'].'_upload">
-						  <i class="layui-icon">&#xe67c;</i>上传附件
-						</button>
-                      </div>
-                    </div>
-					<div class="layui-form-mid layui-word-aux">
-					  '.$v['tips'].'
-					</div>
-                </div>
+				$l .= '<fieldset class="layui-elem-field">
+				  <legend>'.$v['fieldname'].'</legend>
+				  <div class="layui-field-box">
+					  <div class="layui-input-block">
+						  <div class="site-demo-upbar">
+							<button type="button" class="layui-btn" id="LAY_'.$v['field'].'_upload">
+							  <i class="layui-icon">&#xe67c;</i>上传附件
+							</button>
+							 '.$v['tips'].'
+						  </div>
+						   
+					  </div>
+					 
+					  <div class="layui-input-block">
+					  <span class="preview_'.$v['field'].'" >';
+					if($data[$v['field']]!=''){
+						foreach(explode('||',$data[$v['field']]) as $vv){
+							if($this->webconf['ispicsdes']==1){
+								$pic = explode('|',$vv);
+								$l.='<div class="upload-icon-img layui-input-inline" ><div class="upload-pre-item"><input name="'.$v['field'].'_urls[]" type="text" class="layui-input"  value="'.$pic[0].'" /><input name="'.$v['field'].'_des[]" type="text" class="layui-input" placeholder="文字描述"  value="'.$pic[1].'" /><a class="layui-btn layui-btn-sm layui-btn-radius layui-btn-danger delete_file">删除</a><a class="layui-btn layui-btn-sm layui-btn-radius imgorder " onclick="goleft(this)">左移</a><a class="layui-btn layui-btn-sm layui-btn-radius imgorder " onclick="goright(this)">右移</a></div></div>';
+							}else{
+								$l.='<div class="upload-icon-img layui-input-inline" ><div class="upload-pre-item"><input name="'.$v['field'].'_urls[]" type="text" class="layui-input"  value="'.$vv.'" /><a class="layui-btn layui-btn-sm layui-btn-radius layui-btn-danger delete_file">删除</a><a class="layui-btn layui-btn-sm layui-btn-radius imgorder " onclick="goleft(this)">左移</a><a class="layui-btn layui-btn-sm layui-btn-radius imgorder " onclick="goright(this)">右移</a></div></div>';
+							}
+							
+						}
+					}	 
+					$l .= '</span>
+					  </div>
+				  </div>
+				</fieldset>
 				<script>
 				
 				layui.use("upload", function(){
@@ -741,6 +805,7 @@ layui.use("laydate", function(){
 					  var uploadInst = upload_'.$v['field'].'.render({
 						elem: "#LAY_'.$v['field'].'_upload" //绑定元素
 						,url: "'.U('Common/uploads').'" //上传接口
+						,data:{tid:function(){ return $("#tid").val();},molds:"'.$molds.'"}
 						,multiple: true
 						,accept:"file"
 						,exts: "'.$this->webconf['fileType'].'"
@@ -749,10 +814,15 @@ layui.use("laydate", function(){
 						  }
 						,done: function(res){
 							layer.closeAll("loading"); //关闭loading
-							if(res.code==0){
-							var fileurl = $("#'.$v['field'].'").val();
-							$(".preview_'.$v['field'].'").append(\'<span class="upload-icon-img" ><div class="upload-pre-item"><i class="layui-icon layui-icon-file"></i><input type="text" value="/\'+res.url+\'" name="'.$v['field'].'_urls[]" class="layui-input delete_file" /><i   class="layui-icon">&#xe640;</i></div></span>\');
-								
+							if(res.code==0){';
+							if($this->webconf['ispicsdes']==1){
+								$l.='$(".preview_'.$v['field'].'").append(\'<div class="upload-icon-img layui-input-inline" ><div class="upload-pre-item"><input name="'.$v['field'].'_urls[]" type="text" class="layui-input"  value="\' + res.url + \'" /><input name="'.$v['field'].'_des[]" type="text" class="layui-input" placeholder="文字描述"  value="" /><a class="layui-btn layui-btn-sm layui-btn-radius layui-btn-danger delete_file">删除</a><a class="layui-btn layui-btn-sm layui-btn-radius imgorder " onclick="goleft(this)">左移</a><a class="layui-btn layui-btn-sm layui-btn-radius imgorder " onclick="goright(this)">右移</a></div></div>\');';
+							}else{
+								$l.='$(".preview_'.$v['field'].'").append(\'<div class="upload-icon-img layui-input-inline" ><div class="upload-pre-item"><input name="'.$v['field'].'_urls[]" type="text" class="layui-input"  value="\' + res.url + \'" /><a class="layui-btn layui-btn-sm layui-btn-radius layui-btn-danger delete_file">删除</a><a class="layui-btn layui-btn-sm layui-btn-radius imgorder " onclick="goleft(this)">左移</a><a class="layui-btn layui-btn-sm layui-btn-radius imgorder " onclick="goright(this)">右移</a></div></div>\');';
+							}
+							
+							$l.='
+							
 							}else{
 								 layer.alert(res.error, {icon: 5});
 							}
@@ -768,8 +838,11 @@ layui.use("laydate", function(){
 				case 13:
 				//tid,field
 				$l .= '<div class="layui-form-item">
-                    <label for="'.$v['field'].'" class="layui-form-label">
-                        <span class="x-red">*</span>'.$v['fieldname'].'  
+                    <label for="'.$v['field'].'" class="layui-form-label">';
+				if($v['ismust']==1){
+				$l .= '<span class="x-red">*</span>';	
+				}
+                $l .= $v['fieldname'].'  
                     </label>
                     <div class="layui-input-inline">
 						<select name="'.$v['field'].'" lay-search="" id="'.$v['field'].'" >';
@@ -797,6 +870,44 @@ layui.use("laydate", function(){
 							 
 						</script>';
 				break;
+				case 15:
+				$l .= '<fieldset class="layui-elem-field">
+				  <legend>'.$v['fieldname'].'</legend>
+				  <div class="layui-field-box">
+					  <div class="layui-input-block" id="'.$v['field'].'_space">';
+				if($data[$v['field']]){
+					$rs = explode('||',$data[$v['field']]);
+					foreach($rs as $vv){
+						$l.='<div class="layui-input-block"><input type="text"  style="width:500px;" value="'.$vv.'" name="'.$v['field'].'[]" autocomplete="off" class="layui-input layui-input-inline"><button type="button" class="layui-btn layui-btn-danger layui-btn-sm  layui-input-inline '.$v['field'].'_del" >删除</button></div>';
+					}
+				}else{
+					$l .='<div class="layui-input-block">
+							<input type="text"  style="width:500px;" value="'.$data[$v['field']].'" name="'.$v['field'].'[]" autocomplete="off" class="layui-input">
+						</div>';
+				}
+				$l	.=  '</div>
+					  <div class="layui-form-mid layui-word-aux">
+						  <button type="button" class="layui-btn" id="'.$v['field'].'_add">新增</button>'.$v['tips'].'
+				      </div>
+				  </div>
+				</fieldset>
+				<script>
+				$(document).ready(function(){
+					$("#'.$v['field'].'_add").click(function(){
+						var html = \'<div class="layui-input-block"><input type="text"  style="width:500px;" value="" name="'.$v['field'].'[]" autocomplete="off" class="layui-input layui-input-inline"><button type="button" class="layui-btn layui-btn-danger layui-btn-sm  layui-input-inline '.$v['field'].'_del" >删除</button></div>\';
+						
+						$("#'.$v['field'].'_space").append(html);
+						
+						
+					});
+					$(document).on("click",".'.$v['field'].'_del",function(){
+						$(this).parent().remove();
+					})
+					
+					
+				})
+				</script>';
+				break;
 				
 				
 			}
@@ -805,15 +916,16 @@ layui.use("laydate", function(){
 		echo $l;
 	}
 	
-	
-	
-	
-	
 	function deleteFields(){
 		$id = $this->frparam('id');
 		if($id){
 			
 			$fields = M('fields')->find(array('id'=>$id));
+			//不允许删除字段
+			$noallow = ['addtime','member_id','hits','target','ownurl','istop'];
+			if(in_array($fields['field'],$noallow)){
+				JsonReturn(array('code'=>1,'msg'=>'系统字段不允许删除！'));
+			}
 			if(M('Fields')->delete('id='.$id)){
 				$sql = "ALTER TABLE ".DB_PREFIX.$fields['molds']." DROP COLUMN ".$fields['field'];
 				$x = M()->runSql($sql);
@@ -825,11 +937,40 @@ layui.use("laydate", function(){
 		}
 	}
 	
+	function changeOrders(){
+		
+		$w['orders'] = $this->frparam('orders',0,0);
+		$r = M('fields')->update(array('id'=>$this->frparam('id')),$w);
+		if(!$r){
+			JsonReturn(array('code'=>1,'info'=>'修改失败！'));
+		}
+		JsonReturn(array('code'=>0,'info'=>'修改成功！'));
+	}
 	
-	
-	
-	
-	
+	function changeTid(){
+		$ids = $this->frparam('data',1);
+		if(!$ids){
+			JsonReturn(['code'=>1,'msg'=>'请选择字段！']);
+		}
+		$tid = $this->frparam('tid');
+		if(!$tid){
+			JsonReturn(['code'=>1,'msg'=>'请选择栏目！']);
+		}
+		$sql = 'id in('.$ids.') ';
+		$lists = M('fields')->findAll($sql);
+		foreach($lists as $v){
+			if(strpos($v['tids'],','.$tid.',')===false){
+				if($v['tids']){
+					$v['tids'] .= $tid.',';
+				}else{
+					$v['tids'] = ','.$tid.',';
+				}
+				M('fields')->update(['id'=>$v['id']],['tids'=>$v['tids']]);
+			}
+		}
+		
+		JsonReturn(['code'=>0,'msg'=>'操作成功！']);
+	}
 	
 	
 	

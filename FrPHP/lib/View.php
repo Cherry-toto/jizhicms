@@ -40,18 +40,22 @@ class View
     // 渲染显示
     public function render($name)
     {
-        
+        if(defined('TPL_PATH')){
+			$path = TPL_PATH;
+		}else{
+			$path = APP_HOME;
+		}
 		if($name!=null){
 			//$name = strtolower($name);
 			
 			if(strpos($name,'@')!==false){
 				$controllerLayout =  str_replace('@','',$name);
 			}else{
-				$controllerLayout =  APP_HOME . '/'.HOME_VIEW.'/'.Tpl_template.'/' . $name . '.html';
+				$controllerLayout =  $path . '/'.HOME_VIEW.'/'.Tpl_template.'/' . $name . '.html';
 			}
 			
 		}else{
-			$controllerLayout =  APP_HOME .'/'.HOME_VIEW.'/'.Tpl_template.'/' . strtolower($this->_controller) . '/' . $this->_action . '.html';
+			$controllerLayout =  $path .'/'.HOME_VIEW.'/'.Tpl_template.'/' . strtolower($this->_controller) . '/' . $this->_action . '.html';
 
 		}
 		//去除可能没有的Tpl_template
@@ -74,7 +78,7 @@ class View
 			
 			
         } else {
-           Error_msg('无法找到视图文件'.$controllerLayout);
+           Error_msg('无法找到视图文件，页面模板：'.$name.'.html');
         }
 		
 		
@@ -85,8 +89,9 @@ class View
 	public function template($controllerLayout){
 		extract($this->variables);//分配变量到模板中
 		//对路径文件换为缓存目录  '/'换为'-'
-		$layout = str_ireplace(array("//","/"),'_',$controllerLayout);
-		$cache_file = str_ireplace('.html','.php',APP_PATH.'/cache/'.$layout);
+		//$layout = str_ireplace(array("//","/"),'_',$controllerLayout);
+		//$cache_file = str_ireplace('.html','.php',APP_PATH.'/cache/'.$layout);
+		$cache_file = Cache_Path.'/'.md5($controllerLayout).'.php';
 		$this->_cachefile = $cache_file;//传入系统中
 		
 		if(APP_DEBUG===true){
@@ -94,6 +99,7 @@ class View
 			$fp_txt=@fread($fp_tp,filesize($controllerLayout));
 			@fclose($fp_tp);
 			$fp_txt=$this->template_html($fp_txt);
+			$fp_txt = "<?php if (!defined('CORE_PATH')) exit();?>".$fp_txt;
 			$fpt_tpl=@fopen($cache_file,"w");
 			@fwrite($fpt_tpl,$fp_txt);
 			@fclose($fpt_tpl);
@@ -102,6 +108,7 @@ class View
 			$fp_txt=@fread($fp_tp,filesize($controllerLayout));
 			@fclose($fp_tp);
 			$fp_txt=$this->template_html($fp_txt);
+			$fp_txt = "<?php if (!defined('CORE_PATH')) exit();?>".$fp_txt;
 			$fpt_tpl=@fopen($cache_file,"w");
 			@fwrite($fpt_tpl,$fp_txt);
 			@fclose($fpt_tpl);
@@ -123,27 +130,27 @@ class View
 		//include标签
 		preg_match_all('/\{include=\"(.*?)\"\}/si',$content,$i);
 		foreach($i[0] as $k=>$v){
-			$content=str_ireplace($v,$this->template_html_include(strtolower($i[1][$k])),$content);
+			$content=str_ireplace($v,$this->template_html_include($i[1][$k]),$content);
 		}
 		//loop标签
 		preg_match_all('/\{loop (.*?)\}/si',$content,$i);
 		$this->check_template_err(substr_count($content, '{/loop}'),count($i[0]),'loop');
 		foreach($i[0] as $k=>$v){
-			$content=str_ireplace($v,$this->template_html_loop(strtolower($i[1][$k])),$content);
+			$content=str_ireplace($v,$this->template_html_loop($i[1][$k]),$content);
 		}
 		$content=str_ireplace('{/loop}','<?php } ?>',$content);
 		//foreach循环
 		preg_match_all('/\{foreach(.*?)\}/si',$content,$i);
 		$this->check_template_err(substr_count($content, '{/foreach}'),count($i[0]),'foreach');
 		foreach($i[0] as $k=>$v){
-			$content=str_ireplace($v,'<?php foreach('.$i[1][$k].'){ ?>',$content);
+			$content=str_ireplace($v,$this->template_html_foreach($i[1][$k]),$content);
 		}
 		$content=str_ireplace('{/foreach}','<?php } ?>',$content);
 		//screen标签
 		preg_match_all('/\{screen (.*?)\}/si',$content,$i);
 		$this->check_template_err(substr_count($content, '{/screen}'),count($i[0]),'screen');
 		foreach($i[0] as $k=>$v){
-			$content=str_ireplace($v,$this->check_template_screen(strtolower($i[1][$k])),$content);
+			$content=str_ireplace($v,$this->template_html_screen($i[1][$k]),$content);
 		}
 		$content=str_ireplace('{/screen}','<?php } ?>',$content);
 		//for循环
@@ -200,12 +207,21 @@ class View
 		}else{
 			$prefix = '.html';
 		}
-		if(APP_URL=='/index.php'){
-			$includefile = str_replace('//','/',APP_PATH . APP_HOME .'/'.HOME_VIEW.'/'.get_template().'/'.$filename. $prefix);
+		 if(defined('TPL_PATH')){
+			$path = TPL_PATH;
 		}else{
-			$includefile = str_replace('//','/',APP_PATH . APP_HOME .'/'.HOME_VIEW.'/'.Tpl_template.'/'. Tpl_common .'/'.$filename. $prefix);
+			$path = APP_HOME;
 		}
-		if(!is_file($includefile)) Error_msg($includefile.'不存在！');
+		if(APP_URL=='/index.php'){
+			$includefile = str_replace('//','/',APP_PATH . $path .'/'.HOME_VIEW.'/'.TEMPLATE.'/'.$filename. $prefix);
+			$file = TEMPLATE.'/'.$filename. $prefix;
+		}else{
+			$includefile = str_replace('//','/',APP_PATH . $path .'/'.HOME_VIEW.'/'.Tpl_template.'/'. Tpl_common .'/'.$filename. $prefix);
+			$file = Tpl_common .'/'.$filename. $prefix;
+		}
+		if(!is_file($includefile)){
+			Error_msg($file.'不存在！');
+		}
 		$content = file_get_contents($includefile);
 		$content = $this->template_html($content);
 		return $content;
@@ -220,7 +236,7 @@ class View
 		输出参数：筛选列表all(item)，链接url，升降序(id,orders,addtime)
 		{screen molds="article" orderby="orders desc" tid="1|2" fields='pingpai,yanse' as="v"}
 	**/
-	public function check_template_screen($f){
+	public function template_html_screen($f){
 		preg_match_all('/.*?(\s*.*?=.*?[\"|\'].*?[\"|\']\s).*?/si',' '.$f.' ',$aa);
 		$a=array();
 		foreach($aa[1] as $v){
@@ -228,7 +244,7 @@ class View
 			$a=array_merge($a,array(trim($t[0]) => trim($t[1])));
 		}
 		if(strpos($a['molds'],'$')!==FALSE){
-			$a['molds']='".'.$a['molds'].'."';
+			$a['molds']='\'".'.$a['molds'].'."\'';
 		}else{
 			$a['molds'] = " '".$a['molds']."' ";
 		}
@@ -286,22 +302,70 @@ class View
 		return $txt;
 	}
 	
-	
+	//foreach全局标签
+	/**
+	$content=str_ireplace($v,'<?php foreach('.$i[1][$k].'){  ?>',$content);
+	*/
+	private function template_html_foreach($f){
+		$ff = explode(' as ',$f);
+		if(strpos($ff[1],'=>')!==false){
+			$fff = explode('=>',$ff[1]);
+			$fff[1] = trim($fff[1]);
+			return '<?php '.$fff[1].'_n=0;foreach('.$f.'){ '.$fff[1].'_n++; ?>';
+		}else{
+			$ff[1] = trim($ff[1]);
+			return '<?php '.$ff[1].'_n=0;foreach('.$f.'){ '.$ff[1].'_n++;?>';
+		}
+	}
 	
 	//loop全局标签
 	private function template_html_loop($f){
 		preg_match_all('/.*?(\s*.*?=.*?[\"|\'].*?[\"|\']\s).*?/si',' '.$f.' ',$aa);
 		$a=array();foreach($aa[1] as $v){$t=explode('=',trim(str_replace(array('"'),"'",$v)));$a=array_merge($a,array(trim($t[0]) => trim($t[1])));}
-		if(strpos($a['table'],'$')!==FALSE){$a['table']=trim($a['table'],"'");}
-		$db=$a['table'];
-		if(isset($a['limit'])){$limit=$a['limit'];}else{$limit='null';}
+		if(isset($a['table'])){
+			if(strpos($a['table'],'$')!==FALSE){$a['table']=trim($a['table'],"'");}
+			$db=$a['table'];
+		}else{
+			if(!isset($a['tid'])){ exit('缺少table参数！');}
+			if(strpos($a['tid'],'$')!==false){
+				$db = ' $classtypedata['.trim($a['tid'],"'").']["molds"] ';
+			}else{
+				if(strpos($a['tid'],',')!==false){
+					$tids = explode(',',$a['tid']);
+					$db = ' $classtypedata['.trim($tids[0],"'").']["molds"] ';
+				}else{
+					$db = ' $classtypedata['.trim($a['tid'],"'").']["molds"] ';
+				}
+			}
+			
+		}
+		if(isset($a['limit'])){
+			if(strpos($a['limit'],'$')!==false){
+				$limit=trim($a['limit'],"'");
+			}else{
+				$limit=$a['limit'];
+			}
+		}else{$limit='null';}
 		if(isset($a['notempty'])){$notempty=trim($a['notempty'],"'");}else{$notempty=false;}
 		if(isset($a['empty'])){$empty=trim($a['empty'],"'");}else{$empty=false;}
-		if(isset($a['fields'])){$fields=$a['fields'];}else{$fields='null';}
+		if(isset($a['fields'])){
+			if(strpos($a['fields'],'$')!==false){
+				$fields=trim($a['fields'],"'");
+			}else{
+				$fields=$a['fields'];
+			}
+			
+		}else{$fields='null';}
 		if(isset($a['isall'])){$isall=trim($a['isall'],"'");}else{$isall=false;}
 		if(isset($a['as'])){$as=$a['as'];}else{$as='v';}
+		if(isset($a['day'])){$day=$a['day'];}else{$day=false;}
+		if(isset($a['jzpage'])){$jzpage=trim($a['jzpage'],"'");}else{$jzpage='page';}
+		if(isset($a['sql'])){$sql=trim($a['sql'],"'");}else{$sql='';}
+		if(isset($a['jzcache'])){$jzcache=trim($a['jzcache'],"'");}else{$jzcache=false;}
+		if(isset($a['jzcachetime'])){$jzcachetime=trim($a['jzcachetime'],"'");}else{$jzcachetime=30*60;}
 		if(isset($a['orderby'])){
 			$order=$a['orderby'];
+			if(strpos($a['orderby'],'$')!==FALSE){$order=trim($a['orderby'],"'");}
 			//$order=' '.str_replace('|',' ',$order).' ';
 		}else{$order="' id desc '";}
 		if(isset($a['like'])){
@@ -311,9 +375,14 @@ class View
 				$like = explode(',',trim($a['like'],"'"));
 				foreach($like as $v){
 					$s = explode('|',$v);
-					$lk[]= " ".$s[0]." like \'%".trim($s[1])."%\' ";
+					if(strpos($s[1],'$')!==false){
+						$lk[] = " ".$s[0]." like \'%'.".trim($s[1]).".'%\' ";
+					}else{
+						$lk[]= " ".$s[0]." like \'%".trim($s[1])."%\' ";
+					}
+					
 				}
-				$lk = " and ". implode(" and ",$lk);
+				$lk = " and ( ". implode(" or ",$lk)." )";
 			}else{
 				if(strpos($a['like'],'$')!==false){
 					$like = explode('|',trim($a['like'],"'"));
@@ -339,11 +408,34 @@ class View
 				
 			}
 		}
-		
-		unset($a['table']);unset($a['orderby']);unset($a['limit']);unset($a['as']);unset($a['like']);unset($a['fields']);unset($a['isall']);unset($a['notin']);unset($a['notempty']);unset($a['empty']);
+		//在某个参数范围内
+		$in_sql = '';
+		if(isset($a['in'])){
+			if(strpos($a['in'],'|')!==false){
+				$in = explode('|',trim($a['in'],"'"));
+				if(strpos($in[1],'$')!==false){
+					$in_sql = ' and '.$in[0].' in(\'.'.$in[1].'.\') ';
+				}else{
+					$in_sql = ' and '.$in[0].' in('.$in[1].') ';
+				}
+				
+			}
+		}
+		if($sql){
+			$sql = " and ('.".$sql.".' ) ";
+		}
+		unset($a['table']);unset($a['orderby']);unset($a['limit']);unset($a['as']);unset($a['like']);unset($a['fields']);unset($a['isall']);unset($a['notin']);unset($a['notempty']);unset($a['empty']);unset($a['day']);unset($a['in']);unset($a['sql']);unset($a['jzpage']);unset($a['jzcache']);unset($a['jzcachetime']);
 		$pages='';
 		$w = ' 1=1 ';
 		$ispage=false;
+		if($jzpage!='page'){
+			if(stripos($jzpage,'$')!==false){
+				$jzpage = "'.$jzpage.'";
+			}
+			$pagenum = "\$pagenum = (int)\$_REQUEST['".$jzpage."'] ? (int)\$_REQUEST['".$jzpage."']  : 1; ";
+		}else{
+			$pagenum = "\$pagenum = \$frpage;";
+		}
 		
 		foreach($a as $k=>$v){
 			if(strpos($v,'$')===FALSE){
@@ -398,7 +490,7 @@ class View
 				// }
 			}else{
 				if(strpos($v,'$')!==FALSE){
-					$w.="and ".$k."='.".trim($v,"'").".' ";
+					$w.="and ".$k."=\''.".trim($v,"'").".'\' ";
 				}else{
 					$w.="and ".$k."=\'".$v."\' ";
 				}
@@ -414,11 +506,11 @@ class View
 			if(strpos($notempty,'|')!==false){
 				$notempty = explode('|',$notempty);
 				foreach($notempty as $v){
-					$w.=' and trim('.$v.') !=""  ';
+					$w.=' (and trim('.$v.') !="" && trim('.$v.') is not null) ';
 				}
 				
 			}else{
-				$w.=' and trim('.$notempty.') !=""  ';
+				$w.=' and (trim('.$notempty.') !="" && trim('.$notempty.') is not null)  ';
 			}
 			
 		}
@@ -427,16 +519,22 @@ class View
 			if(strpos($empty,'|')!==false){
 				$empty = explode('|',$empty);
 				foreach($empty as $v){
-					$w.=' and trim('.$v.') =""  ';
+					$w.=' and (trim('.$v.') ="" or  trim('.$v.') is null) ';
 				}
 				
 			}else{
-				$w.=' and trim('.$empty.') =""  ';
+				$w.=' and (trim('.$empty.') ="" or trim('.$empty.') is null) ';
 			}
 			
 		}
+		if($day){
+			$day =str_replace("'",'',$day);
+			$w.=" and DATE_SUB(CURDATE(), INTERVAL ".$day." DAY) <= date(FROM_UNIXTIME(addtime))";
+		}
 		
 		$w .= $notin_sql;
+		$w .= $in_sql;
+		$w .= $sql;
 		$w.= $lk;
 		$as = trim($as,"'");
 		$txt="<?php
@@ -447,31 +545,45 @@ class View
 		\$".$as."_limit=$limit;";
 		
 		if($ispage){
+			
 			$txt .="
+			".$pagenum."
 			\$".$as."_page = new FrPHP\Extend\Page(\$".$as."_table);
 			\$".$as."_page->typeurl = 'tpl';
-			\$".$as."_data = \$".$as."_page->where(\$".$as."_w)->fields(\$".$as."_fields)->orderby(\$".$as."_order)->limit(\$".$as."_limit)->page(\$frpage)->go();
-			\$".$as."_pages = \$".$as."_page->pageList(3,'?page=');
+			\$".$as."_page->paged = '".$jzpage."';
+			\$".$as."_data = \$".$as."_page->where(\$".$as."_w)->fields(\$".$as."_fields)->orderby(\$".$as."_order)->limit(\$".$as."_limit)->page(\$pagenum)->go();
+			\$".$as."_pages = \$".$as."_page->pageList(3,'?".$jzpage."=');
 			\$".$as."_sum = \$".$as."_page->sum;
 			\$".$as."_listpage = \$".$as."_page->listpage;
 			\$".$as."_prevpage = \$".$as."_page->prevpage;
 			\$".$as."_nextpage = \$".$as."_page->nextpage;
 			\$".$as."_allpage = \$".$as."_page->allpage;";
-			
 		}else{
 			
-			$txt .= "
-			$".$as."_data = M(\$".$as."_table)->findAll(\$".$as."_w,\$".$as."_order,\$".$as."_fields,\$".$as."_limit);";
+			if($jzcache){
+				$txt .= "
+				\$cachestr = md5(\$".$as."_table.\$".$as."_w.\$".$as."_order.\$".$as."_fields.\$".$as."_limit);
+				$".$as."_data = getCache(\$cachestr);
+				if(!$".$as."_data){
+					$".$as."_data = M(\$".$as."_table)->findAll(\$".$as."_w,\$".$as."_order,\$".$as."_fields,\$".$as."_limit);
+					setCache(\$cachestr,$".$as."_data,$jzcachetime);
+				}";
+			}else{
+				$txt .= "
+				$".$as."_data = M(\$".$as."_table)->findAll(\$".$as."_w,\$".$as."_order,\$".$as."_fields,\$".$as."_limit);";
+			}
 			
 		}
 		$txt.='$'.$as.'_n=0;foreach($'.$as.'_data as $'.$as.'_key=> $'.$as.'){
 			$'.$as.'_n++;
-			if(isset($'.$as.'[\'htmlurl\']) && !isset($'.$as.'[\'url\'])){
+			if(!array_key_exists(\'url\',$'.$as.')){
 				
 				if($'.$as.'_table==\'classtype\'){
 					$'.$as.'[\'url\'] = $classtypedata[$'.$as.'[\'id\']][\'url\'];
+				}else if($'.$as.'_table==\'message\'){
+					$'.$as.'[\'url\'] = U(\'message/details\',[\'id\'=>$'.$as.'[\'id\']]);
 				}else{
-					$'.$as.'[\'url\'] = gourl($'.$as.'[\'id\'],$'.$as.'[\'htmlurl\']);
+					$'.$as.'[\'url\'] = gourl($'.$as.',$'.$as.'[\'htmlurl\']);
 				}
 				
 			}

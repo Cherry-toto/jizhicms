@@ -7,7 +7,7 @@
 // +----------------------------------------------------------------------
 // | Author: 留恋风 <2581047041@qq.com>
 // +----------------------------------------------------------------------
-// | Date：2018/08
+// | Date：2020/01/01
 // +----------------------------------------------------------------------
 
 
@@ -16,32 +16,10 @@ namespace Home\c;
 use FrPHP\lib\Controller;
 use FrPHP\Extend\Page;
  
-class WechatController extends Controller
+class WechatController extends CommonController
 {
 	public function _init(){
-		$webconf = webConf();
-		$template = get_template();
-		$this->webconf = $webconf;
-		$this->template = $template;
-		$classtypedata = classTypeData();
-		foreach($classtypedata as $k=>$v){
-			$classtypedata[$k]['children'] = get_children($v,$classtypedata);
-		}
-		$this->classtypedata = $classtypedata;
-		$this->common = Tpl_style.'common/';
-		$this->tpl = Tpl_style.$template.'/';
-		$this->frpage = $this->frparam('page');
-		$customconf = get_custom();
-		$this->customconf = $customconf;
-		if(isset($_SESSION['member'])){
-			$this->islogin = true;
-			$this->member = $_SESSION['member'];
-			
-			
-			
-		}else{
-			$this->islogin = false;
-		}
+		parent::_init();
 	}
 	
 	
@@ -79,7 +57,8 @@ class WechatController extends Controller
 					header('location:'.$url);
 				
 			}else{
-				$openid = $this->getpenid();
+				$res = $this->getopenid();
+				$openid = $res['openid'];
 				if(!$openid){
 					$_GET['code']=null;
 					//授权失败重新登录
@@ -128,7 +107,8 @@ class WechatController extends Controller
 				header('location:'.$url);
 			
 		}else{
-			$openid = $this->getpenid();
+			$res = $this->getopenid();
+			$openid = $res['openid'];
 			if(!$openid){
 				$_GET['code']=null;
 				//Error('授权失败，重新登录~',U('bindinguser'));
@@ -165,7 +145,7 @@ class WechatController extends Controller
 			$signature = $_GET["signature"];
 			$timestamp = $_GET["timestamp"];
 			$nonce = $_GET["nonce"];
-			$echostr = $_GET["echostr"];
+			$echostr = format_param($_GET["echostr"],1);
 			$token = $this->webconf['wx_login_token'];
 
 			// 1）将token、timestamp、nonce三个参数进行字典序排序
@@ -221,7 +201,7 @@ class WechatController extends Controller
 					//获取用户信息，并存入数据库
 					$openid = $fromUsername;
 					//查询是否已有账号
-					
+					$openid = format_param($openid,1);
 					$islive = M('member')->find(array('openid'=>$openid));
 					if(!$islive){
 						$access_token = $this->getAccessToken();
@@ -284,7 +264,7 @@ class WechatController extends Controller
 		return  $obj->access_token; 
 	}
 	//获取用户的详情
-	public	function getpenid(){
+	public	function getopenid(){
 			
 		$code = $_GET['code'];
 		$url = "https://api.weixin.qq.com/sns/oauth2/access_token?appid=".$this->webconf['wx_login_appid']."&secret=".$this->webconf['wx_login_appsecret']."&code=".$code."&grant_type=authorization_code ";
@@ -300,7 +280,7 @@ class WechatController extends Controller
 			$access_token = $json_obj['access_token'];
 		
 			$openid = $json_obj['openid'];
-			return $openid;
+			return array('openid'=>$openid,'access_token'=>$access_token);
 		}else{
 			//return false;
 			exit($res);
@@ -321,7 +301,8 @@ class WechatController extends Controller
 			$url = "https://open.weixin.qq.com/connect/oauth2/authorize?appid=".$appid."&redirect_uri=".$redirect_uri."&response_type=code&scope=snsapi_userinfo&state=STATE#wechat_redirect";
 			header('location:'.$url);
 		}else{
-			$openid = $this->getpenid();
+			$res = $this->getopenid();
+			$openid = $res['openid'];
 			if(!$openid){
 				$_GET['code']=null;
 				//Error('登录失败，重新登录~',U('register'));
@@ -331,8 +312,8 @@ class WechatController extends Controller
 			$islive = M('member')->find(array('openid'=>$openid));
 			//查询是否已存在
             if(!$islive){
-				$access_token = $this->getAccessToken();
-				$url = 'https://api.weixin.qq.com/cgi-bin/user/info?access_token='.$access_token.'&openid='.$openid.'&lang=zh_CN';
+				$access_token  =  $res['access_token']; 
+				$url = 'https://api.weixin.qq.com/sns/userinfo?access_token='.$access_token.'&openid='.$openid.'&lang=zh_CN';
 				$user = file_get_contents($url);
 				$user = json_decode($user,true);
 			    $time = time();

@@ -1,0 +1,13 @@
+<script type="text/javascript" charset="utf-8" src="/static/common/user/uedit/ueditor.config.js?v=3"></script>
+<script type="text/javascript" charset="utf-8" src="/static/common/user/uedit/ueditor.all.min.js?v=3"> </script>
+<script type="text/javascript" charset="utf-8" src="/static/common/user/uedit/lang/zh-cn/zh-cn.js"></script>
+
+<script>
+var ue = UE.getEditor('editor',{
+{if($webconf['ueditor_config']!='')}
+toolbars : [[
+		   {$webconf['ueditor_config']}
+			]]
+{/if}			
+			});
+</script>

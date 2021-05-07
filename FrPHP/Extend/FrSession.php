@@ -74,6 +74,7 @@ class FrSession implements SessionHandlerInterface
         if(!is_dir($this->save_path)){
 			$this->checkmkdirs($this->save_path);
 		}
+		$session_id = str_replace(['..','/','\\'],'',$session_id);
         $sfile = $this->save_path.'/'.$this->prefix.$session_id.'.php';
         $res = $this->sesstime($sfile);
 		if($res){
@@ -92,6 +93,7 @@ class FrSession implements SessionHandlerInterface
      */
     public function write($session_id, $session_data)
     {
+		$session_id = str_replace(['..','/','\\'],'',$session_id);
         if(!is_dir($this->save_path)){
 			$this->checkmkdirs($this->save_path);
 		}

@@ -15,10 +15,13 @@
             <a class="layui-btn layui-btn-small" style="line-height:1.6em;margin-top:3px;float:right"  href="javascript:location.replace(location.href);" title="刷新"><i class="iconfont" style="line-height:30px">&#xe6aa;</i></a>
         </div>
         <div class="x-body">
-         <div class="layui-collapse">
+		
+		<div class="layui-card">
+		  <div class="layui-card-body">
+		  <div class="layui-collapse">
 		    <div class="layui-colla-item">
 			<h2 class="layui-colla-title">搜索</h2>
-				<div class="layui-colla-content layui-show">
+				<div class="layui-colla-content">
 				<div class="layui-row">
 					<form class="layui-form layui-col-md12 x-so" method="get" id="myform">
 					<div class="layui-input-inline">
@@ -36,7 +39,7 @@
 				    <input class="layui-input" placeholder="截止日" value="{$endtime}" name="end" id="end">
 				    <input type="text" name="username"  placeholder="请输入用户名" value="{$username}" autocomplete="off" class="layui-input">
 				    {$fields_search}
-					<button class="layui-btn"  lay-submit="" lay-filter="search"><i class="layui-icon">&#xe615;</i></button>
+					<button class="layui-btn"  lay-submit="" lay-filter="search">搜索</button>
 					</form>
 				</div>
 				</div>
@@ -44,23 +47,28 @@
          </div> 
 		  
 		<table class="layui-hide" lay-data="{id: 'jizhi_table'}" id="jizhi_table" lay-filter="jizhi_table"></table>
+		
+		  </div>
+		</div>
+		
+        
 		<input id="select_data" type="hidden" value="" />
 		<script type="text/html" id="rightbar">
 		{if(checkAction('Admin/adminedit'))}
-			<button class="layui-btn layui-btn-xs" lay-event="edit"><i class="layui-icon">&#xe642;</i>编辑</button>
+			<a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>
 		{/if}	
 		{if(checkAction('Admin/admindelete'))}
-			<button class="layui-btn layui-btn-xs layui-btn-danger" lay-event="delete"><i class="layui-icon">&#xe640;</i>删除</button>
+			<a class="layui-btn layui-btn-xs layui-btn-danger" lay-event="delete">删除</a>
 		{/if}	
 			
 		</script>
 		<script type="text/html" id="toolbar">
 		 <div class="layui-btn-container" style="font-size:15px;">
 		 {if(checkAction('Admin/deleteAll'))}
-			   <button class="layui-btn layui-btn-danger" onclick="delAll()"><i class="layui-icon">&#xe640;</i>批量删除</button>
+			   <a class="layui-btn layui-btn-sm layui-btn-danger" onclick="delAll()">批量删除</a>
 		 {/if}	  
 		 {if(checkAction('Admin/adminadd'))}
-			   <button class="layui-btn" onclick="x_admin_show('添加管理员','{fun U('adminadd')}')"><i class="layui-icon">&#xe608;</i>添加管理员</button>
+			   <a class="layui-btn layui-btn-sm" onclick="x_admin_show('添加管理员','{fun U('adminadd')}')">添加管理员</a>
 		 {/if}  
 			
 		 </div>
@@ -94,7 +102,7 @@
 				});
 			  table.render({
 				elem: '#jizhi_table'
-				,height: 650
+				,height: 700
 				,url: window.location.href+'?ajax=1' //数据接口
 				,page: true //开启分页
 				,size:'lg'
@@ -109,17 +117,19 @@
 				  ,last: true //显示尾页
 				  ,count:500
 				  ,limit:10
+				  ,first: '首页' //不显示首页
+				  ,last: '尾页' //不显示尾页
 				  
 				}
 				,cols: [[ //表头
-				  {field: 'id', title: 'ID', width:50, sort: true, fixed:'left'}
+				  {field: 'id', title: 'ID', width:60}
 				  ,{type:'checkbox'}
+				  ,{field: 'name', title: '登录名',edit:'text'}
+				  ,{field: 'group', title: '所属角色',width: 150}
+				  ,{field: 'tel', title: '手机'}
+				  ,{field: 'email', title: '邮箱',width:200}
 				  ,{field: 'isshow', title: '状态',width: 100,templet:'#isshow'}
-				  ,{field: 'name', title: '登录名',width: 100, edit:'text',sort: true}
-				  ,{field: 'tel', title: '手机',width:150, sort: true}
-				  ,{field: 'email', title: '邮箱',width:200,  sort: true}
-				  
-				  {foreach $fields_list as $v},{field: '{$v['field']}',width:150, title: '{$v['fieldname']}'}{/foreach}
+				  {foreach $fields_list as $v},{field: '{$v['field']}', title: '{$v['fieldname']}'  {if($v['fieldtype']==1 || $v['fieldtype']==2)},edit:'text'{/if}   }{/foreach}
 				 
 				  ,{field: 'new_logintime', title: '登录时间',width:160}
 				  ,{field: 'new_regtime', title: '注册时间',width:160}
@@ -206,7 +216,6 @@
 				
 				
 				form.on('submit(search)', function(data){
-					//data.field
 					table.reload('jizhi_table', {
 					  url: window.location.href+'?ajax=1'
 					  ,where: data.field //设定异步数据接口的额外参数

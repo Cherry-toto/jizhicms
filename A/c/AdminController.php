@@ -63,11 +63,14 @@ class AdminController extends CommonController
 		$this->fields_biaoshi = 'level_group';
 		if($this->frparam('go')==1){
 			$data = $this->frparam();
-			if($data['id']==1 && $this->admin['gid']!=1){
+			if($this->admin['gid']!=1){
 				JsonReturn(array('code'=>1,'msg'=>'修改失败，您的权限不足！'));
 			}
-			
+			$data['name'] = $this->frparam('name',1);
+			$data['ischeck'] = $this->frparam('ischeck');
+			$data['description'] = $this->frparam('description',1);
 			$data['paction'] = (count($this->frparam('ruler',2))>0)?','.implode(',',$this->frparam('ruler',2)).',':'';
+			$data['tids'] = (count($this->frparam('tids',2))>0)?','.implode(',',$this->frparam('tids',2)).',':'';
 			if(M('level_group')->update(array('id'=>$data['id']),$data)){
 				JsonReturn(array('code'=>0,'msg'=>'修改成功！'));
 			}else{
@@ -103,7 +106,11 @@ class AdminController extends CommonController
 		$this->fields_biaoshi = 'level_group';
 		if($this->frparam('go')==1){
 			$data = $this->frparam();
+			$data['name'] = $this->frparam('name',1);
+			$data['ischeck'] = $this->frparam('ischeck');
+			$data['description'] = $this->frparam('description',1);
 			$data['paction'] = (count($this->frparam('ruler',2))>0)?','.implode(',',$this->frparam('ruler',2)).',':'';
+			$data['tids'] = (count($this->frparam('tids',2))>0)?','.implode(',',$this->frparam('tids',2)).',':'';
 			if(M('level_group')->add($data)){
 				JsonReturn(array('code'=>0,'msg'=>'新增成功！'));
 			}else{
@@ -198,15 +205,15 @@ class AdminController extends CommonController
 			$sql .= $get_sql;
 			
 			
-			$lists = $page->where($sql)->page($this->frparam('page',0,1))->go();
+			$lists = $page->where($sql)->limit($this->frparam('limit',0,10))->page($this->frparam('page',0,1))->go();
 			$pages = $page->pageList();
 			
 			$ajaxdata = [];
 			foreach($lists as $k=>$v){
-				
+				$v['group'] = get_info_table('level_group',['id'=>$v['gid']],'name');
 				$v['new_logintime'] = $v['logintime']!=0 ? date('Y-m-d H:i:s',$v['logintime']) : '-';
 				$v['new_regtime'] = $v['regtime']!=0 ? date('Y-m-d H:i:s',$v['regtime']) : '-';
-				$v['edit_url'] = U('Admin/adminedit',array('id'=>frencode($v['id'])));
+				$v['edit_url'] = U('Admin/adminedit',array('id'=>$v['id']));
 				foreach($this->fields_list as $vv){
 					$v[$vv['field']] = format_fields($vv,$v[$vv['field']]);
 				}
@@ -226,7 +233,7 @@ class AdminController extends CommonController
 	
 	public function adminedit(){
 		$this->fields_biaoshi = 'level';
-		$id = frdecode($this->frparam('id',1));
+		$id = $this->frparam('id',1);
 		if($this->frparam('go')==1){
 			$data = $this->frparam();
 			$data = get_fields_data($data,'level');
@@ -257,7 +264,7 @@ class AdminController extends CommonController
 			
 			
             
-			if($data['pass']!=''){
+			if($data['pass']){
 				if($data['pass']!=$data['repass']){
 					JsonReturn(array('code'=>1,'msg'=>'两次密码不同！'));
 				}
@@ -270,7 +277,7 @@ class AdminController extends CommonController
           
            
 			
-			if($data['tel']!=''){
+			if($data['tel']){
 				if(M('level')->find("tel='".$data['tel']."' and id!=".$data['id'])){
 					JsonReturn(array('code'=>1,'msg'=>'手机号已被注册！'));
 				}	
@@ -280,7 +287,7 @@ class AdminController extends CommonController
 				JsonReturn(array('code'=>1,'msg'=>'昵称已被使用！'));
 			}
 			
-			if($data['email']!=''){
+			if($data['email']){
 				if(M('level')->find("email='".$data['email']."' and id!=".$data['id'])){
 					JsonReturn(array('code'=>1,'msg'=>'邮箱已被使用！'));
 				}
@@ -304,7 +311,7 @@ class AdminController extends CommonController
         $this->groups = M('level_group')->findAll();
 		$token = getRandChar(10);
 		$_SESSION['token'] = $token;
-		setCache('admin_'.$this->admin['id'].'_token',$token,60);
+		setCache('admin_'.$this->admin['id'].'_token',$token);
 		$this->token = $token;
 		$this->display('admin-edit');
 	}
@@ -343,7 +350,7 @@ class AdminController extends CommonController
 				JsonReturn(array('code'=>1,'msg'=>'两次密码不同！'));
 			}
 			$data['pass'] = md5(md5($data['pass']).'YF');
-			if($data['tel']!=''){
+			if($data['tel']){
 				if(M('level')->find("tel='".$data['tel']."'")){
 					JsonReturn(array('code'=>1,'msg'=>'手机号已被注册！'));
 				}
@@ -352,7 +359,7 @@ class AdminController extends CommonController
 			if(M('level')->find("name='".$data['name']."'")){
 				JsonReturn(array('code'=>1,'msg'=>'昵称已被使用！'));
 			}
-			if($data['email']!=''){
+			if($data['email']){
 				if(M('level')->find("email='".$data['email']."' ")){
 					JsonReturn(array('code'=>1,'msg'=>'邮箱已被使用！'));
 				}
@@ -376,7 +383,7 @@ class AdminController extends CommonController
 		
 		$token = getRandChar(10);
 		$_SESSION['token'] = $token;
-		setCache('admin_'.$this->admin['id'].'_token',$token,60);
+		setCache('admin_'.$this->admin['id'].'_token',$token);
 		$this->token = $token;
 		$this->display('admin-add');
 	

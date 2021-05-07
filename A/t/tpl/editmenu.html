@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html>
+    
+    <head>
+       <meta charset="UTF-8">
+        {include="style"}
+		{include="edit"}
+		
+    </head>
+    
+    <body>
+	 <div class="x-nav">
+            <span class="layui-breadcrumb">
+              <a><cite>首页</cite></a>
+              <a><cite>导航管理</cite></a>
+			  <a><cite>修改导航</cite></a>
+            </span>
+            <a class="layui-btn layui-btn-small" style="line-height:1.6em;margin-top:3px;float:right"  href="javascript:location.replace(location.href);" title="刷新"><i class="iconfont" style="line-height:30px">&#xe6aa;</i></a>
+        </div>
+        <div class="x-body">
+            <form class="layui-form layui-form-pane" >
+			<input type="hidden" name="go" value="1" />
+			<input type="hidden" name="id" value="{$data['id']}" />
+			
+			<div class="layui-tab">
+			  <ul class="layui-tab-title">
+				<li class="layui-this">基本信息</li>
+			  </ul>
+			  <div class="layui-tab-content">
+				<div class="layui-tab-item layui-show">
+				 <div class="layui-form-item">
+                    <label for="name" class="layui-form-label">
+                        <span class="x-red"></span>导航名称
+                    </label>
+                    <div class="layui-input-inline">
+                        <input type="text" id="name" value="{$data['name']}" style="width:500px;" name="name" required="" lay-verify="required"
+                        autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+				<div class="layui-form-item">
+                    <label class="layui-form-label">
+                        <span class="x-red"></span>导航菜单
+                    </label>
+                    <div class="layui-input-block">
+					
+                        <table class="layui-table">
+						  <thead>
+							<tr>
+							  <th>栏目</th>
+							  <th>标题</th>
+							  <th>链接</th>
+							  <th>打开</th>
+							  <th>显示</th>
+							  <th>操作</th>
+							</tr> 
+						  </thead>
+						  <tbody>
+							{if(count($data['nav']))}
+							{foreach $data['nav'] as $s}
+							<tr>
+							  <td>
+								<select name="tid[]" lay-filter="tid">
+									{foreach $classtypetree as $v}
+									 <option {if($s['tid']==$v['id'])} selected{/if}  value="{$v['id']}">{fun str_repeat('--', $v['level'])}{$v['classname']}</option>
+									{/foreach}
+									<option value="0" {if($s['tid']==0)}selected{/if}>自定义链接</option>
+								</select>
+							  </td>
+							  <td><input type="text" name="title[]" value="{$s['title']}" placeholder="不填默认栏目名称" autocomplete="off" class="layui-input"></td>
+							  <td><input type="text" name="gourl[]" value="{$s['gourl']}"  placeholder="自定义链接则需要填写" autocomplete="off" class="layui-input"></td>
+							  <td>
+								<select name="target[]" >
+									<option {if($s['target']=='_self')}selected{/if} value="_self">本页面</option>
+									<option {if($s['target']=='_blank')}selected{/if} value="_blank">新页面</option>
+								</select>
+							  </td>
+							  <td>
+								<select name="status[]" >
+									<option {if($s['status']==1)}selected{/if}  value="1">显示</option>
+									<option {if($s['status']==0)}selected{/if} value="0">不显示</option>
+								</select>
+							  </td>
+							  <td>
+							  <a class="layui-btn layui-btn-xs layui-btn-danger" onclick="del(this)" >删除</a>
+							  <a class="layui-btn layui-btn-xs" onclick="add(this)" >新增</a>
+							  </td>
+							</tr>
+							{/foreach}
+							{else}
+							<tr>
+							  <td>
+								<select name="tid[]" lay-filter="tid">
+									{foreach $classtypetree as $v}
+									 <option  value="{$v['id']}">{fun str_repeat('--', $v['level'])}{$v['classname']}</option>
+									{/foreach}
+									<option value="0">自定义链接</option>
+								</select>
+							  </td>
+							  <td><input type="text" name="title[]"  placeholder="不填默认栏目名称" autocomplete="off" class="layui-input"></td>
+							  <td><input type="text" name="gourl[]"  placeholder="自定义链接则需要填写" autocomplete="off" class="layui-input"></td>
+							  <td>
+								<select name="target[]" >
+									<option value="_self">本页面</option>
+									<option value="_blank">新页面</option>
+								</select>
+							  </td>
+							  <td>
+								<select name="status[]" >
+									<option value="1">显示</option>
+									<option value="0">不显示</option>
+								</select>
+							  </td>
+							  <td>
+							  
+							  <a class="layui-btn layui-btn-xs" onclick="add(this)" >新增</a>
+							  </td>
+							</tr>
+							{/if}
+							
+							
+						  </tbody>
+						</table>
+					
+                    </div>
+                </div>
+				
+				<div class="layui-form-item" pane>
+                    <label for="isshow" class="layui-form-label">
+                        <span class="x-red"></span>是否显示
+                    </label>
+                    <div class="layui-input-block">
+                        <input type="radio" name="isshow" {if($data['isshow']==0)}checked{/if}   value="0" title="不显示">
+						<input type="radio" name="isshow" value="1" title="显示" {if($data['isshow']==1)}checked{/if}  >
+                    </div>
+					 
+					
+                </div>
+				
+				
+					
+				</div>
+				
+			  </div>
+			</div>
+						
+               
+                
+                <div class="layui-form-item"   style="text-align:center;">
+                    
+                     <button  class="layui-btn" lay-filter="save" lay-submit="">
+                        保存
+                    </button>
+                </div>
+            </form>
+        </div>
+		<br/>
+		<br/>
+		<br/>
+		<br/>
+		<br/>
+		<br/>
+		<br/>
+		<br/>
+		<br/>
+      
+        <script>
+		
+            layui.use(['laydate','form','layer','upload'], function(){
+                $ = layui.jquery;
+              var form = layui.form,layer = layui.layer,laydate = layui.laydate;
+			 
+			   form.on('select(tid)', function(data){
+			 
+		
+			  
+			});
+				
+			    //监听提交
+              form.on('submit(save)', function(data){
+				$.post("{fun U('index/editmenu')}",data.field,function(r){
+					var r = JSON.parse(r);
+					if(r.code==0){
+						layer.confirm(r.msg, {
+						  btn: ['返回','确定'] //按钮
+						}, function(){
+						
+							{if($webconf['admintpl']=='tpl')}
+							window.location.href="{fun U('index/menu')}";
+							{else}
+							parent.location.reload();
+							parent.layer.close(index);
+							{/if}
+						
+						  
+						}, function(){
+						   window.location.href=r.url;
+						});
+						
+					
+					}else{
+						layer.alert(r.msg, {icon: 5});
+					}
+				});
+				
+               
+                return false;
+              });
+			  
+			
+
+              
+            });
+			function renderForm(){
+				layui.use('form', function(){
+				var form = layui.form; //只有执行了这一步，部分表单元素才会自动修饰成功
+				  form.render();
+				});
+			}
+			function add(a){
+				var html = '<tr>'+
+							  '<td>'+
+								'<select name="tid[]" lay-filter="tid">'+
+									{foreach $classtypetree as $v}
+									 '<option  value="{$v['id']}">{fun str_repeat('--', $v['level'])}{$v['classname']}</option>'+
+									{/foreach}
+									'<option value="0">自定义链接</option>'+
+								'</select>'+
+							  '</td>'+
+							  '<td><input type="text" name="title[]"  placeholder="不填默认栏目名称" autocomplete="off" class="layui-input"></td>'+
+							  '<td><input type="text" name="gourl[]"  placeholder="自定义链接则需要填写" autocomplete="off" class="layui-input"></td>'+
+							  '<td>'+
+								'<select name="target[]" >'+
+									'<option value="_self">本页面</option>'+
+									'<option value="_blank">新页面</option>'+
+								'</select>'+
+							 ' </td>'+
+							  '<td>'+
+								'<select name="status[]" >'+
+									'<option value="1">显示</option>'+
+									'<option value="0">不显示</option>'+
+								'</select>'+
+							  '</td>'+
+							  '<td>'+
+							  '<a class="layui-btn layui-btn-xs layui-btn-danger" onclick="del(this)" >删除</a>'+
+							  '<a class="layui-btn layui-btn-xs" onclick="add(this)" >新增</a>'+
+							  '</td>'+
+							'</tr>';
+				$(a).parent().parent().after(html);
+				renderForm();
+			}
+			function del(a){
+				$(a).parent().parent().remove();
+			}
+			
+        </script>
+      
+    </body>
+
+</html>

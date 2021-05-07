@@ -16,11 +16,18 @@
         </div>
         <div class="x-body">
           
-          <xblock>
-		  {if(checkAction('Rulers/addrulers'))}
-		  <button class="layui-btn" onclick="x_admin_show('添加权限','{fun U('Rulers/addrulers')}')"><i class="layui-icon"></i>添加权限</button>
-		  {/if}
-		  </xblock>
+		<div class="layui-card">
+			<div class="layui-card-body">
+			 <xblock>
+			<form class="layui-form" action="">
+			 {if(checkAction('Rulers/addrulers'))}
+			 <a class="layui-btn layui-btn-sm" onclick="x_admin_show('添加权限','{fun U('Rulers/addrulers')}')">添加权限</a>
+			 {/if}
+			  <div class="layui-input-inline" style="float: right;">
+				  <input type="checkbox" value="1" name="switch" lay-filter="type"  lay-text="展开|折叠" lay-skin="switch">
+			  </div>
+			</form>
+			</xblock>
             <table class="layui-table">
                 <thead>
                     <tr>
@@ -46,14 +53,14 @@
                 </thead>
                 <tbody class="x-cate">
 		{foreach $lists as $v}
-          <tr cate-id="{$v['id']}" fid="{$v['pid']}" >
+          <tr cate-id="{$v['id']}" fid="{$v['pid']}" {if($v['pid']!=0)}style="display:none;"{/if}>
             
 			
             <td>{$v['id']}</td>
             <td>
 			  {fun str_repeat('&nbsp;&nbsp;&nbsp;',$v['level'])}
 			  {if($v['haschild'])}
-			  <i class="layui-icon x-show" status='false'>&#xe625;</i>
+			  <i class="layui-icon x-show" status='true'>&#xe623;</i>
 			  {else}
 			  {if($v['level'])}|——{/if}
 			  {/if}
@@ -65,15 +72,15 @@
              </td>
             <td class="td-manage">
 			{if(checkAction('Rulers/editrulers'))}
-              <button class="layui-btn layui-btn layui-btn-xs"  onclick="x_admin_show('编辑','{fun U('Rulers/editrulers',array('id'=>$v['id']))}')" ><i class="layui-icon">&#xe642;</i>编辑</button>
+              <a class="layui-btn layui-btn layui-btn-xs"  onclick="x_admin_show('编辑','{fun U('Rulers/editrulers',array('id'=>$v['id']))}')" >编辑</a>
 			{/if}
 			{if(checkAction('Rulers/addrulers'))}
 				{if($v['pid']==0)}
-				<button class="layui-btn layui-btn-warm layui-btn-xs"  onclick="x_admin_show('添加子功能','{fun U('Rulers/addrulers',array('pid'=>$v['id']))}')" ><i class="layui-icon">&#xe642;</i>添加子功能</button>
+				<a class="layui-btn layui-btn-warm layui-btn-xs"  onclick="x_admin_show('添加子功能','{fun U('Rulers/addrulers',array('pid'=>$v['id']))}')" >添加子功能</a>
 				{/if}
 			{/if}
 			{if(checkAction('Rulers/deleterulers'))}
-              <button class="layui-btn-danger layui-btn layui-btn-xs"  onclick="ruler_del(this,'{$v['id']}')" href="javascript:;" ><i class="layui-icon">&#xe640;</i>删除</button>
+              <a class="layui-btn-danger layui-btn layui-btn-xs"  onclick="ruler_del(this,'{$v['id']}')" href="javascript:;" >删除</a>
 			{/if}
             </td>
           </tr>
@@ -81,6 +88,12 @@
          
         </tbody>
             </table>
+			
+			
+			</div>
+		</div>
+		  
+         
 			
             
         </div>
@@ -101,7 +114,24 @@
 					$("#myform").submit();
 				
 			 });
-             
+              form.on('switch(type)', function(data){
+				if(!data.elem.checked){
+					$(".x-cate tr").each(function(){
+						if($(this).attr('fid')!=0){
+							$(this).css('display','none');
+						}
+					});
+					$(".x-show").attr('status','true').html('&#xe623;');
+				}else{
+					
+					$(".x-cate tr").each(function(){
+						if($(this).attr('fid')!=0){
+							$(this).css('display','table-row');
+						}
+					});
+					$(".x-show").attr('status','false').html('&#xe625;');
+				}
+			});  
               
             });
 		 /*删除*/

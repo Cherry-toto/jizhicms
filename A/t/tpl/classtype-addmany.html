@@ -19,178 +19,116 @@
     </div>
     <div class="x-body">
      
-     <form class="layui-form " method="post" id="myform">
+    <form class="layui-form layui-form-pane" >
+
+		<div class="layui-form-item">
+			<label for="molds" class="layui-form-label">
+				<span class="x-red">*</span>选择模块
+			</label>
+			<div class="layui-input-inline">
+				<select name="molds" id="molds" lay-filter="molds" >
+			   
+			   {foreach $moldslist as $v}
+			   {if($v['isshowclass']==1)}
+			   <option   value="{$v['biaoshi']}">{$v['name']}</option>
+			   {/if}
+			   {/foreach}
 			
-       <div style="width:100%;  overflow:scroll;overflow-y: hidden">
-        <table border="1" rules="all" style="width:100%; height:100px; white-space:nowrap" class="layui-table layui-form">
-        <thead>
-          <tr>
-            <th >模型</th>
-            <th >栏目名</th>
-			<th >栏目上级</th>
-			<th >栏目URL</th>
-			<th >列表条数</th>
-			<th >栏目模板</th>
-			<th >详情页模板</th>
-			<th >导航是否显示</th>
-			<th >排序</th>
-            
-           
-        </thead>
-        <tbody class="x-cate">
-		
-          <tr>
-			<td><select name="data_0[]" >
+			   </select>
+			</div>
+        </div>
+		<div class="layui-form-item">
+			<label for="pid" class="layui-form-label">
+				<span class="x-red">*</span>选择上级
+			</label>
+			<div class="layui-input-inline">
+				<select name="pid" lay-search="" id="pid"  lay-filter="pid">
+			   <option value="0">顶级栏目</option>
+			   {foreach $classtypes as $v}
+			   <option   value="{$v['id']}">{fun str_repeat('--', $v['level'])}{$v['classname']}</option>
+			   {/foreach}
+			
+			   </select>
+			</div>
+        </div>
+		<div class="layui-form-item layui-form-text">
+			<label class="layui-form-label">
+				<span class='x-red'>*</span>添加栏目 <span class="x-red">格式：栏目名|栏目URL，一行一个，如：关于我们|about</span>
+			</label>
+			<div class="layui-input-block">
+				<textarea placeholder="格式：栏目名|栏目URL，一行一个" lay-verify="required" name="classname" class="layui-textarea"></textarea>
+			</div>
+		</div>
+		<div class="layui-form-item">
+              <label for="lists_html" class="layui-form-label">
+                  <span class="x-red"></span>栏目模板
+              </label>
+              <div  style="width:350px"  class="layui-input-inline">
+              	<select name="lists_html" lay-search="" id="lists_html"  >
 				
-				{foreach $moldslist as $v}
-				 <option value="{$v['biaoshi']}">{$v['name']}</option>
-				{/foreach}
-			</select></td>
-			<td><input type="text" class="layui-input classname"  name="data_1[]" value=""></td>
-			<td><select name="data_2[]" lay-search="" >
-				<option value="0">顶级</option>
-				{foreach $classtypes as $v}
-				 <option value="{$v['id']}">{fun str_repeat('--', $v['level']), $v['classname']}</option>
-				{/foreach}
-			</select></td>
-			<td><input type="text" class="layui-input htmlurl"  name="data_3[]" value=""></td>
-			<td><input type="number" class="layui-input "  name="data_4[]" value="10"></td>
-			<td><input type="text" class="layui-input "  name="data_5[]" value="list_html"></td>
-			<td><input type="text" class="layui-input "   name="data_6[]" value="details_html"></td>
-			<td><select name="data_7[]" >
-				<option value="1">显示</option>
-				<option value="0">不显示</option>
-			</select></td>
-			<td><input type="number" class="layui-input "   name="data_8[]" value="0"></td>
-          </tr>
-		   <tr>
-			<td><select name="data_0[]" >
-				
-				{foreach $moldslist as $v}
-				 <option value="{$v['biaoshi']}">{$v['name']}</option>
-				{/foreach}
-			</select></td>
-			<td><input type="text" class="layui-input classname"  name="data_1[]" value=""></td>
-			<td><select name="data_2[]" lay-search="" >
-				<option value="0">顶级</option>
-				{foreach $classtypes as $v}
-				 <option value="{$v['id']}">{fun str_repeat('--', $v['level']), $v['classname']}</option>
-				{/foreach}
-			</select></td>
-			<td><input type="text" class="layui-input htmlurl"  name="data_3[]" value=""></td>
-			<td><input type="number" class="layui-input "  name="data_4[]" value="10"></td>
-			<td><input type="text" class="layui-input "  name="data_5[]" value="list_html"></td>
-			<td><input type="text" class="layui-input "   name="data_6[]" value="details_html"></td>
-			<td><select name="data_7[]" >
-				<option value="1">显示</option>
-				<option value="0">不显示</option>
-			</select></td>
-			<td><input type="number" class="layui-input "   name="data_8[]" value="0"></td>
-          </tr>
-		   <tr>
-			<td><select name="data_0[]" >
-				
-				{foreach $moldslist as $v}
-				 <option value="{$v['biaoshi']}">{$v['name']}</option>
-				{/foreach}
-			</select></td>
-			<td><input type="text" class="layui-input classname"  name="data_1[]" value=""></td>
-			<td><select name="data_2[]" lay-search="" >
-				<option value="0">顶级</option>
-				{foreach $classtypes as $v}
-				 <option value="{$v['id']}">{fun str_repeat('--', $v['level']), $v['classname']}</option>
-				{/foreach}
-			</select></td>
-			<td><input type="text" class="layui-input htmlurl"  name="data_3[]" value=""></td>
-			<td><input type="number" class="layui-input "  name="data_4[]" value="10"></td>
-			<td><input type="text" class="layui-input "  name="data_5[]" value="list_html"></td>
-			<td><input type="text" class="layui-input "   name="data_6[]" value="details_html"></td>
-			<td><select name="data_7[]" >
-				<option value="1">显示</option>
-				<option value="0">不显示</option>
-			</select></td>
-			<td><input type="number" class="layui-input "   name="data_8[]" value="0"></td>
-          </tr>
-		   <tr>
-			<td><select name="data_0[]" >
-				
-				{foreach $moldslist as $v}
-				 <option value="{$v['biaoshi']}">{$v['name']}</option>
-				{/foreach}
-			</select></td>
-			<td><input type="text" class="layui-input classname"  name="data_1[]" value=""></td>
-			<td><select name="data_2[]" lay-search="" >
-				<option value="0">顶级</option>
-				{foreach $classtypes as $v}
-				 <option value="{$v['id']}">{fun str_repeat('--', $v['level']), $v['classname']}</option>
-				{/foreach}
-			</select></td>
-			<td><input type="text" class="layui-input htmlurl"  name="data_3[]" value=""></td>
-			<td><input type="number" class="layui-input "  name="data_4[]" value="10"></td>
-			<td><input type="text" class="layui-input "  name="data_5[]" value="list_html"></td>
-			<td><input type="text" class="layui-input "   name="data_6[]" value="details_html"></td>
-			<td><select name="data_7[]" >
-				<option value="1">显示</option>
-				<option value="0">不显示</option>
-			</select></td>
-			<td><input type="number" class="layui-input "   name="data_8[]" value="0"></td>
-          </tr>
-		   <tr>
-			<td><select name="data_0[]" >
-				
-				{foreach $moldslist as $v}
-				 <option value="{$v['biaoshi']}">{$v['name']}</option>
-				{/foreach}
-			</select></td>
-			<td><input type="text" class="layui-input classname"  name="data_1[]" value=""></td>
-			<td><select name="data_2[]" lay-search="" >
-				<option value="0">顶级</option>
-				{foreach $classtypes as $v}
-				 <option value="{$v['id']}">{fun str_repeat('--', $v['level']), $v['classname']}</option>
-				{/foreach}
-			</select></td>
-			<td><input type="text" class="layui-input htmlurl"  name="data_3[]" value=""></td>
-			<td><input type="number" class="layui-input "  name="data_4[]" value="10"></td>
-			<td><input type="text" class="layui-input "  name="data_5[]" value="list_html"></td>
-			<td><input type="text" class="layui-input "   name="data_6[]" value="details_html"></td>
-			<td><select name="data_7[]" >
-				<option value="1">显示</option>
-				<option value="0">不显示</option>
-			</select></td>
-			<td><input type="number" class="layui-input "   name="data_8[]" value="0"></td>
-          </tr>
-		   <tr>
-			<td><select name="data_0[]" >
-				
-				{foreach $moldslist as $v}
-				 <option value="{$v['biaoshi']}">{$v['name']}</option>
-				{/foreach}
-			</select></td>
-			<td><input type="text" class="layui-input classname"  name="data_1[]" value=""></td>
-			<td><select name="data_2[]" lay-search="" >
-				<option value="0">顶级</option>
-				{foreach $classtypes as $v}
-				 <option value="{$v['id']}">{fun str_repeat('--', $v['level']), $v['classname']}</option>
-				{/foreach}
-			</select></td>
-			<td><input type="text" class="layui-input htmlurl"  name="data_3[]" value=""></td>
-			<td><input type="number" class="layui-input "  name="data_4[]" value="10"></td>
-			<td><input type="text" class="layui-input "  name="data_5[]" value="list_html"></td>
-			<td><input type="text" class="layui-input "   name="data_6[]" value="details_html"></td>
-			<td><select name="data_7[]" lay-search="" >
-				<option value="1">显示</option>
-				<option value="0">不显示</option>
-			</select></td>
-			<td><input type="number" class="layui-input "   name="data_8[]" value="0"></td>
-          </tr>
-		  <tr  class="addone"><td colspan="9" style="text-align:center;"><button type="button" class="layui-btn layui-btn-normal " onclick="addone()">新增+</button>
-		  <button  class="layui-btn" lay-filter="save" lay-submit="">提交</button>
-		  </td></tr>
-		
-         
-        </tbody>
-      </table>
-	  </form>
+              	</select>
+                  
+              </div>
+              <div class="layui-form-mid layui-word-aux">
+                 请将模板文件放到对应的模块文件夹下面，如文章(article)模块，那么就要在当前模板目录的article文件夹下面。默认栏目首页
+              </div>
+          </div>
+		  <div class="layui-form-item">
+              <label for="details_html" class="layui-form-label">
+                  <span class="x-red"></span>详情页模板
+              </label>
+              <div  style="width:350px"  class="layui-input-inline">
+              	<select name="details_html" lay-search="" id="details_html"  >
+              	</select>
+                
+              </div>
+              <div class="layui-form-mid layui-word-aux">
+                 请将模板文件放到对应的模块文件夹下面，如文章(article)模块，那么就要在当前模板目录的article文件夹下面，列表内的详情页。
+              </div>
+          </div>
+		<div class="layui-form-item">
+              <label for="lists_num" class="layui-form-label">
+                  <span class="x-red"></span>列表显示
+              </label>
+              <div class="layui-input-inline">
+                  <input type="number" id="lists_num" name="lists_num" value="10" 
+                  autocomplete="off" class="layui-input">
+              </div>
+              <div class="layui-form-mid layui-word-aux">
+                  设置列表页显示的内容条数
+              </div>
+          </div>
+		  <div class="layui-form-item" pane>
+					<label for="ishome" class="layui-form-label">
+						<span class="x-red"></span>发布显示
+					</label>
+					<div class="layui-input-inline">
+						<input type="radio" name="ishome" value="0" title="不显示" >
+						<input type="radio" name="ishome" value="1" title="显示" checked>
+					</div>
+					<div class="layui-form-mid layui-word-aux">
+					 勾选后，前台会员发布会显示该栏目
+					</div>
+					
+			  </div>
+		  <div class="layui-form-item" pane>
+                    <label for="isshow" class="layui-form-label">
+                        <span class="x-red"></span>导航显示
+                    </label>
+                    <div class="layui-input-inline">
+                        <input type="radio" name="isshow" value="0" title="隐藏">
+						<input type="radio" name="isshow" value="1" title="显示" checked>
+                    </div>
+			</div>
+		 <input type="hidden" id="go" name="go" value="1">
+          <div class="layui-form-item" style="text-align:center;">
+              
+              <button  class="layui-btn" lay-filter="add" lay-submit="">
+                  增加
+              </button>
+          </div>
+      
+	</form>
     </div>
     </div>
     <style type="text/css">
@@ -200,9 +138,15 @@
       layui.use(['form'], function(){
         form = layui.form;
        
+	   form.on('select(molds)', function(data){
+			  
+		 get_molds_html($("#molds").val());
+		 form.render('select');
+		  
+		});
 	   
 	     //监听提交
-		  form.on('submit(save)', function(data){
+		  form.on('submit(add)', function(data){
 
 			$.post("{fun U('addmany')}",data.field,function(r){
 				
@@ -226,27 +170,65 @@
 			return false;
 		  });
    
-	   
-      });
 		
-
-		 $(document).on('blur','.classname',function(){
-			var classname = $(this).val();
-			var pinyin = '';
-			$.ajax({
-				url:"{fun U('Classtype/get_pinyin')}",//请求的url地址
+  });	
+		
+		function get_molds_html(molds){
+        	$.ajax({
+				 url:"{fun U('Classtype/get_html')}",//请求的url地址
 				 dataType:"json",//返回格式为json
-				 async:false,//请求是否异步，默认为异步，这也是ajax重要特性
-				 data:{'classname':classname},//参数值
-				 type:"GET",//请求方式
+				 async:false,
+				 data:{molds:molds},//参数值
+				 type:"POST",//请求方式
 				 beforeSend:function(){
 					//请求前的处理
 					},
-					 success:function(res){
-					//请求成功时处理
-						if(res.code==0){
-							pinyin = res.data;
+				 success:function(r){
+					 	var t = '<option value="">请选择模板页面</option>';var tt = '<option value="">请选择模板页面</option>';
+						if(r.code==0){
+							var len = r.data.length;
+							if(len>0){
+								var lists_html = r['lists_html'];
+								var details_html = r['details_html'];
+								for(var i=0;i<len;i++){
+									var isok = 0;
+									if(lists_html==r.data[i].value){
+										t+='<option value="'+r.data[i].value+'" selected>'+r.data[i].html+'</option>';
+										isok = 1;
+									}else{
+										t+='<option value="'+r.data[i].value+'">'+r.data[i].html+'</option>';
+									}
+									
+									
+								}
+								if(!isok){
+									t+='<option value="'+lists_html+'" selected>'+lists_html+'.html</option>';
+									isok = 1;
+								}
+								for(var i=0;i<len;i++){
+									var isok = 0;
+									if(details_html==r.data[i].value){
+										tt+='<option value="'+r.data[i].value+'" selected>'+r.data[i].html+'</option>';
+										isok = 1;
+									}else{
+										tt+='<option value="'+r.data[i].value+'">'+r.data[i].html+'</option>';
+									}
+									
+									
+								}
+								if(!isok){
+									tt+='<option value="'+details_html+'" selected>'+details_html+'.html</option>';
+									isok = 1;
+								}
+									
+								
+							}
+
+						}else{
+							alert(r.msg);
 						}
+						$("#lists_html").html(t);
+						$("#details_html").html(tt);
 					},
 					 complete:function(){
 					//请求完成的处理
@@ -255,31 +237,17 @@
 					//请求出错处理
 					}
 
-						
-				
 			})
-			//console.log(pinyin);
-			$(this).parent().next().next().children('.htmlurl').val(pinyin);
-		
-		
-		});
-	  
-		
+        }
+
+
+        $(document).ready(function(){
+
+        	
+        	get_molds_html($("#molds").val());
+        })
 	
-     function addone(){
-		var html='<tr><td><select name="data_0[]" >'+
-				{foreach $moldslist as $v}
-				 '<option value="{$v['biaoshi']}">{$v['name']}</option>'+
-				{/foreach}
-			'</select></td><td><input type="text" class="layui-input classname"  name="data_1[]" value=""></td><td><select name="data_2[]" lay-search="" ><option value="0">顶级</option>'+
-				{foreach $classtypes as $v}
-				 '<option value="{$v['id']}">{fun str_repeat('--', $v['level']), $v['classname']}</option>'+
-				{/foreach}
-			'</select></td><td><input type="text" class="layui-input htmlurl"  name="data_3[]" value=""></td><td><input type="number" class="layui-input "  name="data_4[]" value="10"></td><td><input type="text" class="layui-input "  name="data_5[]" value="list_html"></td><td><input type="text" class="layui-input "   name="data_6[]" value="details_html"></td><td><select name="data_7[]" ><option value="1">显示</option><option value="0">不显示</option></select></td><td><input type="number" class="layui-input "   name="data_8[]" value="0"></td></tr>';
-		
-		$(".addone").before(html);
-		form.render();
-	 }
+     
 	
 	 
     

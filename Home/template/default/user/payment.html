@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  {include="user/style"}
+  <title>支付订单 - 个人中心</title>
+  <style type="text/css">
+select#paytype {
+    width: 100%;
+    height: 45px;
+    border-radius: 2px;
+}
+  </style>
+</head>
+<body>
+
+{include="user/top"}
+
+<div class="login-page page">
+  <div class="container clearfix">
+    {include="user/left_nav"}
+    <div class="user-right">
+      <div class="user-tips">
+        <p><i class="iconfont iconxiaoxi3"></i> 欢迎注册本站会员，注册会员后您将享受专属会员服务!包括但不限于专属文章浏览权限，会员投稿权限，在线购物权限，下载会员可见附件等实用功能，欢迎注册体验！</p>
+      </div>
+      <div class="common-tab">
+        <h2><a href="" class="active">支付订单</a></h2>
+      </div>
+      <div class="order-details">
+	   <form action="{fun U('order/pay')}"  id="myform"  method="POST">
+        <h4 class="head-title">订单详情</h4>
+        {if($carts)}
+        <div class="display-flex-order">
+         
+          <div class="order-left">
+            <ul class="order-list">
+            {foreach $carts as $v}
+            {if($v['info'])}
+              <li>
+                <div class="order-item">
+                  <div class="img-box">
+                    <a href="{fun gourl($v['info']['id'],$v['info']['htmlurl'])}"><img src="{$v['info']['litpic']}" ></a>
+                  </div>
+                  <div class="order-title">
+                    <h4><a href="{fun gourl($v['info']['id'],$v['info']['htmlurl'])}" target="_blank">[{$v['info']['id']}]{$v['info']['title']}</a></h4>
+                    {php $product_fields = get_fields_show($v['tid'],$classtypedata[$v['tid']]['molds'])/}
+                    {foreach $product_fields as $vv}
+                    <p class="hidden-sm"><span>{$vv['fieldname']}：</span><span>
+                    {if($vv['fieldtype']==7)}
+{fun get_key_field_select($v['info'][$vv['field']],$classtypedata[$v['tid']]['molds'],$vv['field'])}
+                    {else if($vv['fieldtype']==8)}
+{fun implode(' ',get_key_field_select($v['info'][$vv['field']],$classtypedata[$v['tid']]['molds'],$vv['field']))}
+                    {else}
+                    {$v['info'][$vv['field']]}
+                    {/if}
+                    <input id="price_per_{$v['tid']}_{$v['info']['id']}" value="{$v['info']['price']}" type="hidden" />
+                    </span></p>
+                    {/foreach}
+                  </div>
+                </div>
+                <div class="order-item-right">
+                  <div class="order-number">
+                    <p>数量</p>
+                    <p>{$v['num']}</p>
+                  </div>
+                  <input id="price_per_{$v['tid']}_{$v['info']['id']}" value="{$v['info']['price']}" type="hidden" />
+                  <div class="order-money">
+                    <p>单价</p>
+                    <p class="price">￥{$v['price']}</p>
+                  </div>
+                </div>
+              </li>
+            {else}
+              <li>
+                <div class="order-item">
+                  <div class="img-box">
+                    <a >[ 无 ]</a>
+                  </div>
+                  <div class="order-title">
+                    <h4><a >[{$v['id']}][ 商品已被删除 ]</a></h4>
+                   
+                  </div>
+                </div>
+                <div class="order-item-right">
+                  <div class="order-number">
+                    <p>数量</p>
+                    <p>{$v['num']}</p>
+                  </div>
+                  
+                  <div class="order-money">
+                    <p>单价</p>
+                    <p class="price">￥{$v['price']}</p>
+                  </div>
+                </div>
+              </li>
+            {/if}
+            {/foreach}
+            
+            <li>
+            <div class="information">
+          
+            <input name="go" value="1" type="hidden" />
+            <input name="orderno" value="{$order['orderno']}" type="hidden" />
+            <input name="paytype" value="0" id="paytypeinput" type="hidden" />
+             <h3>收货信息</h3>
+              <h4><label>*收货人</label><input class="form-control" type="text" name="username" id="username" value="{$member['username']}" placeholder="填写收货人信息"></h4>
+              <h4><label>*联系手机</label><input class="form-control" name="tel" id="tel" value="{$member['tel']}" type="text" placeholder="填写收货人手机号"></h4>
+              <h4><label>收件邮箱</label><input class="form-control" name="email" id="email" value="{$member['email']}" type="text" placeholder="方便接收发货邮件"></h4>
+              <h4><label>*收货地址</label><input class="form-control" id="address" name="address" value="{$member['address']}" type="text" placeholder="填写收货地址"></h4>
+            
+       
+            </div>
+            </li>
+            
+           
+            </ul>
+          </div>
+          <div class="order-right">
+            <div class="summary">
+           
+             <h3>总计</h3>
+              <h4><span>总金额</span><span class="price fr" id="allmoney">￥{$order['price']+$order['discount']-$order['yunfei']}</span></h4>
+              <h4><span>折扣</span><span class="price fr" id="alldiscount">-￥{$order['discount']}</span></h4>
+              <h4><span>邮费</span><span class="price fr" id="yunfei">+￥{$order['yunfei']}</span></h4>
+              <h4><span>总计</span><span class="price fr" id="summary">￥{$order['price']}</span></h4>
+            
+            {if($webconf['paytype']!=0)}
+           
+             <h3>支付方式</h3>
+           
+             <div class="payment">
+              <select name="paytypeselect" id="paytype">
+              {if($webconf['isopenzfb'])}
+              <option value="1">支付宝（需付：{$order['price']}）</option>
+              <option value="5">支付宝当面付（需付：{$order['price']}）</option>
+              {/if}
+              {if($webconf['isopenweixin'])}
+              <option value="2">微信（需付：{$order['price']}）</option>
+              {/if}
+              {if($webconf['isopenqianbao'])}
+              <option value="3">钱包（需付：{$qianbao} 余额：{$member['money']}）</option>
+              {/if}
+              {if($webconf['isopenjifen'])}
+              <option value="4">积分（需付：{$jifen} 余额：{$member['jifen']}）</option>
+              {/if}
+              </select>
+            
+             </div>
+           
+            
+            {/if}
+			 <button class="btn" onclick="checkpay()" type="button">立即支付</button>
+            
+            </div>
+          </div>
+        </div>
+        {else}
+        暂无商品~
+        {/if}
+       </form>  
+      </div>
+    </div>
+  </div>
+</div>
+
+{include="user/footer"}
+<script>
+  $(function(){
+    $(".pay").click(function(){
+      $(this).removeClass('pay-hide').addClass('pay-active').siblings().removeClass('pay-active').addClass('pay-hide');
+    });
+  
+  })
+
+  //检查订单
+  function checkpay(){
+    var username = $.trim($("#username").val());
+    var tel = $.trim($("#tel").val());
+    var email = $.trim($("#email").val());
+    var address = $.trim($("#address").val());
+    $("#paytypeinput").val($("#paytype").val());
+    if(username==''){
+      alert('收货人不能为空！');$("#username").focus();return false;
+    }
+    if(tel==''){
+      alert('联系手机不能为空！');$("#tel").focus();return false;
+    }
+    if(address==''){
+      alert('收货地址不能为空！');$("#address").focus();return false;
+    }
+
+    
+    $("#myform").submit();
+    
+    
+    
+  }
+  
+</script>
+</body>
+</html>

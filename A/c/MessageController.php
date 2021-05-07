@@ -42,9 +42,18 @@ class MessageController extends CommonController
 		$res = molds_search('message',$data);
 		$this->fields_search = $res['fields_search'];
 		$this->fields_list = M('Fields')->findAll(array('molds'=>'message','islist'=>1),'orders desc');
+		$this->molds = M('molds')->find(['biaoshi'=>'message']);
 		if($this->frparam('ajax')){
 			$page = new Page('Message');
 			$sql = ' 1=1 ';
+			if($this->admin['classcontrol']==1 && $this->admin['isadmin']!=1 && $this->molds['iscontrol']!=0 && $this->molds['isclasstype']==1){
+				$a1 = explode(',',$this->tids);
+				$a2 = array_filter($a1);
+				$tids = implode(',',$a2);
+				$sql.=' and tid in('.$tids.') ';
+
+
+			}
 			if($this->frparam('isshow')){
 				$isshow = $this->frparam('isshow')==1 ? 1 : 0;
 				$sql .= ' and isshow='.$isshow;
@@ -58,7 +67,7 @@ class MessageController extends CommonController
 			}
 			$get_sql = ($res['fields_search_check']!='') ? (' and '.$res['fields_search_check']) : '';
 			$sql .= $get_sql;
-			$data = $page->where($sql)->orderby('id desc')->page($this->frparam('page',0,1))->go();
+			$data = $page->where($sql)->orderby('id desc')->limit($this->frparam('limit',0,10))->page($this->frparam('page',0,1))->go();
 			$ajaxdata = [];
 			foreach($data as $k=>$v){
 				
@@ -97,6 +106,7 @@ class MessageController extends CommonController
 		if($this->frparam('go',1)==1){
 			
 			$data = $this->frparam();
+			$data['title'] = $this->frparam('title',1);
 			$data['addtime'] = strtotime($data['addtime']);
 			$data['body'] = $this->frparam('body',4);
 			$data = get_fields_data($data,'message');
@@ -106,7 +116,7 @@ class MessageController extends CommonController
 					exit;
 				}else{
 					//Error('修改失败！');
-					JsonReturn(array('code'=>1,'msg'=>'修改失败！'));
+					JsonReturn(array('code'=>1,'msg'=>'您未做任何修改，不能提交！'));
 					exit;
 				}
 			}
@@ -119,7 +129,7 @@ class MessageController extends CommonController
 		}
 		//$classtype = M('classtype')->findAll(null,'orders desc');
 		//$classtype = getTree($classtype);
-	
+	    $this->molds = M('molds')->find(['biaoshi'=>'message']);
 		$this->classtypes = $this->classtypetree;
 		$this->display('message-details');
 		

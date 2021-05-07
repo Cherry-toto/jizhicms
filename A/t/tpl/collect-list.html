@@ -15,32 +15,45 @@
             <a class="layui-btn layui-btn-small" style="line-height:1.6em;margin-top:3px;float:right"  href="javascript:location.replace(location.href);" title="刷新"><i class="iconfont" style="line-height:30px">&#xe6aa;</i></a>
         </div>
         <div class="x-body">
-          <div class="layui-row">
-			<form class="layui-form layui-col-md12 x-so" method="get" id="myform">
-			
-			<div class="layui-input-inline">
-			  <select name="tid" lay-filter="tid" lay-search="" class="layui-inline autosubmit">
-			  <option value="">请选择分类</option>
-			   {foreach $collect_type as $v}
-			   <option {if($tid==$v['id'])} selected="selected" {/if}value="{$v['id']}">{$v['name']}</option>
-			   {/foreach}
-			
-			  </select>
+        <div class="layui-card">
+			<div class="layui-card-body">
+			    <div class="layui-collapse">
+			  <div class="layui-colla-item">
+				<h2 class="layui-colla-title">搜索</h2>
+				<div class="layui-colla-content">
+					<div class="layui-row">
+					<form class="layui-form layui-col-md12 x-so" method="get" id="myform">
+					<div class="layui-input-inline">
+					  <select name="tid" lay-filter="tid" lay-search="" class="layui-inline autosubmit">
+					  <option value="">请选择分类</option>
+					   {foreach $collect_type as $v}
+					   <option {if($tid==$v['id'])} selected="selected" {/if}value="{$v['id']}">{$v['name']}</option>
+					   {/foreach}
+					
+					  </select>
+					</div>
+					  <input type="text" name="title" value="{$title}" placeholder="请输入标题" autocomplete="off" class="layui-input">
+					  {$fields_search}
+					  <button class="layui-btn"  lay-submit="" lay-filter="sreach">搜索</button>
+					</form>
+				    </div>
+				
+				</div>
+			  </div>
 			</div>
-			  <input type="text" name="title" value="{$title}" placeholder="请输入标题" autocomplete="off" class="layui-input">
-			  {$fields_search}
-			  <button class="layui-btn"  lay-submit="" lay-filter="sreach"><i class="layui-icon">&#xe615;</i></button>
-			</form>
-		  </div>
+
           <xblock>
 		  {if(checkAction('Collect/deleteAll'))}
-		  <button class="layui-btn layui-btn-danger" onclick="delAll()"><i class="layui-icon"></i>批量删除</button>
+		  <a class="layui-btn layui-btn-sm layui-btn-danger" onclick="delAll()">批量删除</a>
 		  {/if}
 		  {if(checkAction('Collect/addcollect'))}
-		  <button class="layui-btn" onclick="x_admin_show('新增','{fun U('Collect/addcollect')}')"><i class="layui-icon">&#xe608;</i>新增</button>
+		  <a class="layui-btn layui-btn-sm" onclick="x_admin_show('新增图片','{fun U('Collect/addcollect')}')">新增图片</a>
 		  {/if}
 		  {if(checkAction('Collect/collectType'))}
-		  <button class="layui-btn" onclick="x_admin_show('分类列表','{fun U('Collect/collectType')}')">分类列表</button>
+		  <a class="layui-btn layui-btn-sm" onclick="x_admin_show('分类列表','{fun U('Collect/collectType')}')">分类列表</a>
+		  {/if}
+		  {if(checkAction('Collect/collectTypeAdd'))}
+			<a class="layui-btn layui-btn-sm"  onclick="x_admin_show('添加分类','{fun U('Collect/collectTypeAdd')}')" >添加分类</a>
 		  {/if}
 		   <span class="x-right" style="line-height:40px">共有数据：{$sum} 条</span>
 		  </xblock>
@@ -110,7 +123,7 @@
                         </td>
 						
 						 <td>
-                            <img src="{$v['litpic']}" width="100px" />
+                            <a href="{$v['litpic']}" target="_blank"><img src="{$v['litpic']}" width="100px" /></a>
                         </td>
 						<td>
 						{fun get_info_table('collect_type',array('id'=>$v['tid']),'name')}
@@ -137,13 +150,13 @@
                         </td>
                         <td class="td-manage">
 						{if(checkAction('Collect/editcollect'))}
-							<button class="layui-btn layui-btn layui-btn-xs"  onclick="x_admin_show('编辑','{fun U('Collect/editcollect',array('id'=>$v['id']))}')" ><i class="layui-icon">&#xe642;</i>编辑</button>
+							<a class="layui-btn layui-btn layui-btn-xs"  onclick="x_admin_show('编辑','{fun U('Collect/editcollect',array('id'=>$v['id']))}')" >编辑</a>
 						{/if}
 						{if(checkAction('Collect/deletecollect'))}
-							<button class="layui-btn-danger layui-btn layui-btn-xs"  onclick="collect_del(this,'{$v['id']}')" href="javascript:;" ><i class="layui-icon">&#xe640;</i>删除</button>
+							<a class="layui-btn-danger layui-btn layui-btn-xs"  onclick="collect_del(this,'{$v['id']}')" href="javascript:;" >删除</a>
 						{/if}
 						{if(checkAction('Collect/copycollect'))}
-							<button class="layui-btn layui-btn-warm layui-btn-xs"  onclick="collect_copy(this,'{$v['id']}')" ><i class="iconfont">&#xe744;</i>复制</button>
+							<a class="layui-btn layui-btn-warm layui-btn-xs"  onclick="collect_copy(this,'{$v['id']}')" >复制</a>
 						{/if}
 
 							
@@ -159,6 +172,9 @@
 			  </div>
         </div>
      
+			</div>
+		</div> 
+		
        <script>
 	  
 	   

@@ -23,10 +23,7 @@ class ArticleController extends CommonController
 	//内容管理
 	function articlelist(){
 		$page = new Page('Article');
-		$classtypedata = classTypeData();
-		foreach($classtypedata as $k=>$v){
-			$classtypedata[$k]['children'] = get_children($v,$classtypedata);
-		}
+		$classtypedata = $this->classtypedata;
 		$this->fields_list = M('Fields')->findAll(array('molds'=>'article','islist'=>1),'orders desc');
 		$this->isshow = $this->frparam('isshow');
 		$this->tid=  $this->frparam('tid');
@@ -40,8 +37,23 @@ class ArticleController extends CommonController
 		
 		if($this->frparam('ajax')){
 			$sql = ' 1=1 ';
+			if($this->admin['classcontrol']==1 && $this->admin['isadmin']!=1 && $this->molds['iscontrol']!=0 && $this->molds['isclasstype']==1){
+				$a1 = explode(',',$this->tids);
+				$a2 = array_filter($a1);
+				$tids = implode(',',$a2);
+				$sql.=' and tid in('.$tids.') ';
+
+
+			}
+			
 			if($this->frparam('isshow')){
-				$isshow = $this->frparam('isshow')==1 ? 1 : 0;
+				if($this->frparam('isshow')==1){
+					$isshow=1;
+				}else if($this->frparam('isshow')==2){
+					$isshow=0;
+				}else{
+					$isshow = 2;
+				}
 				$sql .= ' and isshow='.$isshow;
 			}
 			
@@ -67,7 +79,7 @@ class ArticleController extends CommonController
 				}
 				
 			}
-			$data = $page->where($sql)->orderby('istop desc,orders desc,addtime desc,id desc')->limit($this->frparam('limit',0,10))->page($this->frparam('page',0,1))->go();
+			$data = $page->where($sql)->orderby('istop desc,orders desc,id desc')->limit($this->frparam('limit',0,10))->page($this->frparam('page',0,1))->go();
 			$ajaxdata = [];
 			foreach($data as $k=>$v){
 				
@@ -86,9 +98,9 @@ class ArticleController extends CommonController
 					$v['new_tid'] = '[未分类]';
 				}
 				$v['new_litpic'] = $v['litpic']=='' ? '' : get_domain().$v['litpic'];
-				$v['new_isshow'] = $v['isshow']==1 ? '显示' : '隐藏';
+				$v['new_isshow'] = $v['isshow']==1 ? '已审' : '未审';
 				$v['new_addtime'] = "\t".date('Y-m-d H:i:s',$v['addtime'])."\t";
-				$v['view_url'] = get_domain().'/'.$v['htmlurl'].'/'.$v['id'];
+				$v['view_url'] = gourl($v,$v['htmlurl']);
 				$v['edit_url'] = U('Article/editarticle',array('id'=>$v['id']));
 			
 				foreach($this->fields_list as $vv){
@@ -118,23 +130,28 @@ class ArticleController extends CommonController
 			
 			$data = $this->frparam();
 			$data['addtime'] = strtotime($data['addtime']);
+			$data['title'] = $this->frparam('title',1);
+			$data['keywords'] = $this->frparam('keywords',1);
+			$data['seo_title'] = $this->frparam('seo_title',1) ? $this->frparam('seo_title',1) : $this->frparam('title',1);
 			$data['body'] = $this->frparam('body',4);
 			$data['userid'] = $_SESSION['admin']['id'];
-			$data['description'] = ($this->frparam('description',1)=='') ? newstr(strip_tags($data['body']),200) : $this->frparam('description',1);
+			$data['description'] = ($this->frparam('description',1)=='') ? newstr(strip_tags($data['body']),160) : $this->frparam('description',1);
+			if(strlen($data['description'])>255){
+				$data['description'] = newstr($data['description'],160);
+			}
 			if($this->frparam('litpic',1)==''){
-				$pattern='/<img.+src=\"?(.+\.(jpg|gif|bmp|bnp|PNG))\"?.+>/i';
+				$pattern='/<img.*?src="(.*?)".*?>/is';
 				if($this->frparam('body',1)!=''){
-					preg_match_all($pattern,$_POST['body'],$matchContent);
-				
-					if(isset($matchContent[1][0])){
-						$data['litpic'] = $matchContent[1][0];
+					$r = preg_match($pattern,$_POST['body'],$matchContent);
+					if($r){
+						$data['litpic'] = $matchContent[1];
 					}else{
 						$data['litpic'] = '';
 					}
+					
 				}else{
 					$data['litpic'] = '';
 				}
-				
 			}
 			$pclass = get_info_table('classtype',array('id'=>$data['tid']));
 			$data['molds'] = $pclass['molds'];
@@ -143,6 +160,7 @@ class ArticleController extends CommonController
 			$data['ishot'] = $this->frparam('ishot',0,0);
 			$data['istuijian'] = $this->frparam('istuijian',0,0);
 			$data = get_fields_data($data,'article');
+			$data['tags'] = $data['tags'] ? $data['tags'] : str_replace('，',',',$data['keywords']);
 			if($data['tags']!=''){
 				$data['tags'] = ','.$data['tags'].',';
 			}
@@ -187,8 +205,25 @@ class ArticleController extends CommonController
 					}
 				}
 			}
-
-			if(M('Article')->add($data)){
+			//处理自定义URL
+			if($data['ownurl']){
+				if(M('customurl')->find(['url'=>$data['ownurl']])){
+					JsonReturn(array('code'=>1,'msg'=>'已存在相同的自定义URL！'));
+				}
+				
+			}
+			
+			if($this->admin['isadmin']==1 || ($this->admin['isadmin']!=1 && $this->admin['ischeck']==0)){
+				$data['isshow'] = $this->frparam('isshow',0,1);
+			}else{
+				$data['isshow'] = 0;
+			}
+			
+			$r = M('Article')->add($data);
+			if($r){
+				if($data['ownurl']){
+					M('customurl')->add(['molds'=>'article','url'=>$data['ownurl'],'tid'=>$data['tid'],'addtime'=>time(),'aid'=>$r]);
+				}
 				//tags处理
 				if($data['tags']!=''){
 					$tags = explode(',',$data['tags']);
@@ -222,7 +257,7 @@ class ArticleController extends CommonController
 		//$classtype = M('classtype')->findAll(null,'orders desc');
 		//$classtype = getTree($classtype);
 		$this->tid = $this->frparam('tid');
-		$this->classtypes = $this->classtypetree;;
+		$this->classtypes = $this->classtypetree;
 		$this->display('article-add');
 	}
 	public function editarticle(){
@@ -232,18 +267,25 @@ class ArticleController extends CommonController
 			$data = $this->frparam();
 			$data['addtime'] = strtotime($data['addtime']);
 			$data['body'] = $this->frparam('body',4);
-
-			$data['description'] = ($this->frparam('description',1)=='') ? newstr(strip_tags($data['body']),200) : $this->frparam('description',1);
+			$data['title'] = $this->frparam('title',1);
+			$data['tid'] = $this->frparam('tid',0,0);
+			$data['keywords'] = $this->frparam('keywords',1);
+			$data['seo_title'] = $this->frparam('seo_title',1) ? $this->frparam('seo_title',1) : $this->frparam('title',1);
+			$data['description'] = ($this->frparam('description',1)=='') ? newstr(strip_tags($data['body']),160) : $this->frparam('description',1);
+			if(strlen($data['description'])>255){
+				$data['description'] = newstr($data['description'],160);
+			}
+			
 			if($this->frparam('litpic',1)==''){
-				$pattern='/<img.+src=\"?(.+\.(jpg|gif|bmp|bnp|PNG))\"?.+>/i';
+				$pattern='/<img.*?src="(.*?)".*?>/is';
 				if($this->frparam('body',1)!=''){
-					preg_match_all($pattern,$_POST['body'],$matchContent);
-				
-					if(isset($matchContent[1][0])){
-						$data['litpic'] = $matchContent[1][0];
+					$r = preg_match($pattern,$_POST['body'],$matchContent);
+					if($r){
+						$data['litpic'] = $matchContent[1];
 					}else{
 						$data['litpic'] = '';
 					}
+					
 				}else{
 					$data['litpic'] = '';
 				}
@@ -256,6 +298,7 @@ class ArticleController extends CommonController
 			$data['ishot'] = $this->frparam('ishot',0,0);
 			$data['istuijian'] = $this->frparam('istuijian',0,0);
 			$data = get_fields_data($data,'article');
+			$data['tags'] = $data['tags'] ? $data['tags'] : str_replace('，',',',$data['keywords']);
 			if($data['tags']!=''){
 				$data['tags'] = ','.$data['tags'].',';
 			}
@@ -304,6 +347,34 @@ class ArticleController extends CommonController
 
 			if($this->frparam('id')){
 				$old_tags = M('Article')->getField(['id'=>$this->frparam('id')],'tags');
+				//处理自定义URL
+				
+				if($data['ownurl']){
+					$customurl = M('customurl')->find(['url'=>$data['ownurl']]);
+					if($customurl){
+						if($customurl['aid']!=$this->frparam('id')){
+							JsonReturn(array('code'=>1,'msg'=>'已存在相同的自定义URL！'));
+						}else if($customurl['url']!=$data['ownurl']){
+							M('customurl')->update(['tid'=>$data['tid'],'aid'=>$this->frparam('id')],['url'=>$data['ownurl'],'molds'=>'article']);
+						}
+						
+					}else{
+						if(M('customurl')->find(['aid'=>$this->frparam('id'),'molds'=>'article'])){
+							M('customurl')->update(['aid'=>$this->frparam('id'),'molds'=>'article'],['url'=>$data['ownurl'],'molds'=>'article','tid'=>$data['tid']]);
+						}else{
+							M('customurl')->add(['molds'=>'article','tid'=>$data['tid'],'url'=>$data['ownurl'],'addtime'=>time(),'aid'=>$this->frparam('id')]);
+						}
+						
+					}
+					
+				}else{
+					M('customurl')->delete(['molds'=>'article','aid'=>$this->frparam('id')]);
+				}
+				if($this->admin['isadmin']==1 || ($this->admin['isadmin']!=1 && $this->admin['ischeck']==0)){
+					$data['isshow'] = $this->frparam('isshow',0,1);
+				}else{
+					$data['isshow'] = 0;
+				}
 				if(M('Article')->update(array('id'=>$this->frparam('id')),$data)){
 					if($old_tags!=$data['tags']){
 						
@@ -325,9 +396,12 @@ class ArticleController extends CommonController
 									M('tags')->add($w);
 								}else{
 									
-									$num1 = M('article')->getCount(" tags like '%,".$v.",%' ");
-									$num2 = M('product')->getCount(" tags like '%,".$v.",%' ");
-									M('tags')->update(['keywords'=>$v],['number'=>$num1+$num2]);
+									if(strpos(','.$v.',',$old_tags)===false){
+										M('tags')->goInc(['keywords'=>$v],'number');
+									}else if(strpos(','.$v.',',$data['tags'])===false){
+										M('tags')->goDec(['keywords'=>$v],'number');
+									}
+									
 								}
 								
 								$new[]=$v;
@@ -338,10 +412,49 @@ class ArticleController extends CommonController
 						
 						
 					}
+					if($this->webconf['release_award_open']==1 && $data['isshow']==1){
+						$award = round($this->webconf['release_award'],2);
+						$max_award = round($this->webconf['release_max_award'],2);
+						$member_id = M('Article')->getField(['id'=>$this->frparam('id')],'member_id');
+						
+						if($member_id!=0 && $award>0){
+							$rr = M('buylog')->find(['userid'=>$member_id,'type'=>3,'molds'=>'article','aid'=>$this->frparam('id'),'msg'=>'发布奖励']);
+							if(!$rr){
+								$start = mktime(0, 0, 0, date('m'), date('d'), date('Y'));
+								$end = mktime(23, 59, 59, date('m'), date('d'), date('Y'));
+
+								$sql = " addtime>=".$start." and addtime<".$end." and userid=".$member_id." and type=3 and msg='发布奖励' ";
+								$all = M('buylog')->findAll($sql,null,'amount');
+								$all_jifen = 0;
+								if($all){
+									foreach($all as $v){
+										$all_jifen+=$v['amount'];
+									}
+								}
+								
+								if($max_award==0 || ($all_jifen<$max_award && $max_award!=0)){
+									$w['userid'] = $member_id;
+		                			$w['buytype'] = 'jifen';
+						   	  		$w['type'] = 3;
+						   	  		$w['molds'] = 'article';
+						   	  		$w['aid'] = $this->frparam('id');
+						   	  		$w['msg'] = '发布奖励';
+						   	  		$w['addtime'] = time();
+						   	  		$w['orderno'] = 'No'.date('YmdHis');
+						   	  		$w['amount'] = $award;
+						   	  		$w['money'] = $w['amount']/($this->webconf['money_exchange']);
+						   	  		$r = M('buylog')->add($w);
+						   	  		M('member')->goInc(['id'=>$member_id],'jifen',$award);
+								}
+							}
+							
+						}
+					}
+
 					
 					JsonReturn(array('code'=>0,'msg'=>'修改成功！','url'=>U('index')));
 				}else{
-					JsonReturn(array('code'=>1,'msg'=>'修改失败！'));
+					JsonReturn(array('code'=>1,'msg'=>'您未做任何修改，不能提交！'));
 				}
 			}
 			
@@ -352,7 +465,7 @@ class ArticleController extends CommonController
 			$this->data = M('Article')->find(array('id'=>$this->frparam('id')));
 		}
 		$this->molds = M('molds')->find(['biaoshi'=>'article']);
-		$this->classtypes = $this->classtypetree;;
+		$this->classtypes = $this->classtypetree;
 		$this->display('article-edit');
 		
 	}
@@ -360,6 +473,7 @@ class ArticleController extends CommonController
 		$id = $this->frparam('id');
 		if($id){
 			if(M('Article')->delete('id='.$id)){
+				M('customurl')->delete(['molds'=>'article','aid'=>$id]);
 				JsonReturn(array('code'=>0,'msg'=>'删除成功！'));
 			}else{
 				JsonReturn(array('code'=>1,'msg'=>'删除失败！'));
@@ -386,6 +500,7 @@ class ArticleController extends CommonController
 		$data = $this->frparam('data',1);
 		if($data!=''){
 			if(M('article')->delete('id in('.$data.')')){
+				M('customurl')->delete(" aid in(".$data.") and molds='article' ");
 				JsonReturn(array('code'=>0,'msg'=>'批量删除成功！'));
 				
 			}else{
@@ -463,11 +578,66 @@ class ArticleController extends CommonController
 	function checkAll(){
 		$data = $this->frparam('data',1);
 		if($data!=''){
-			$isshow = $this->frparam('isshow')==1 ? 1 : 0;
+			if($this->frparam('isshow')==1){
+				$isshow = 1;
+			}else if($this->frparam('isshow')==2){
+				$isshow = 0;
+			}else{
+				$isshow = 2;
+			}
+			if($isshow==1){
+				$all = M('article')->findAll('id in('.$data.')');
+				$award = round($this->webconf['release_award'],2);
+				$max_award = round($this->webconf['release_max_award'],2);
+				$start = mktime(0, 0, 0, date('m'), date('d'), date('Y'));
+				$end = mktime(23, 59, 59, date('m'), date('d'), date('Y'));
+
+				foreach ($all as $k => $v) {
+					if($v['isshow']!=1){
+						//start
+						if($this->webconf['release_award_open']==1){
+							$member_id = $v['member_id'];
+							if($member_id!=0 && $award>0){
+								$rr = M('buylog')->find(['userid'=>$member_id,'type'=>3,'molds'=>'article','aid'=>$v['id'],'msg'=>'发布奖励']);
+								if(!$rr){
+									
+									$sql = " addtime>=".$start." and addtime<".$end." and userid=".$member_id." and type=3 and msg='发布奖励' ";
+									$all = M('buylog')->findAll($sql,null,'amount');
+									$all_jifen = 0;
+									if($all){
+										foreach($all as $vv){
+											$all_jifen+=$vv['amount'];
+										}
+									}
+									
+									if($max_award==0 || ($all_jifen<$max_award && $max_award!=0)){
+										$w['userid'] = $member_id;
+			                			$w['buytype'] = 'jifen';
+							   	  		$w['type'] = 3;
+							   	  		$w['molds'] = 'article';
+							   	  		$w['aid'] = $v['id'];
+							   	  		$w['msg'] = '发布奖励';
+							   	  		$w['addtime'] = time();
+							   	  		$w['orderno'] = 'No'.date('YmdHis');
+							   	  		$w['amount'] = $award;
+							   	  		$w['money'] = $w['amount']/($this->webconf['money_exchange']);
+							   	  		$r = M('buylog')->add($w);
+							   	  		M('member')->goInc(['id'=>$member_id],'jifen',$award);
+									}
+								}
+								
+							}
+						}
+						//end
+					}
+				}
+				
+			}
+			
 			M('article')->update('id in('.$data.')',['isshow'=>$isshow]);
-			JsonReturn(array('code'=>0,'msg'=>'批量审核成功！'));
+			JsonReturn(array('code'=>0,'msg'=>'批量操作成功！'));
 		}else{
-			JsonReturn(array('code'=>1,'msg'=>'批量审核失败！'));
+			JsonReturn(array('code'=>1,'msg'=>'批量操作失败！'));
 		}
 	}
 	

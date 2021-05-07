@@ -42,12 +42,16 @@ class Model {
 	public function getCount($conditions=null){
 		$where = '';
 		if(is_array($conditions)){
+			$conditions = $this->__prepera_format($conditions);
 			$join = array();
 			foreach( $conditions as $key => $value ){
 				$value =  '\''.$value.'\'';
 				$join[] = "{$key} = {$value}";
 			}
-			$where = "WHERE ".join(" AND ",$join);
+			if(count($join)){
+				$where = "WHERE ".join(" AND ",$join);
+			}
+			
 		}else{
 			if(null != $conditions) $where = "WHERE ".$conditions;
 		}
@@ -62,12 +66,15 @@ class Model {
 	public function goInc($conditions,$field,$vp=1){
 		$where = "";
 		if(is_array($conditions)){
+			$conditions = $this->__prepera_format($conditions);
 			$join = array();
 			foreach( $conditions as $key => $value ){
 				$value = '\''.$value.'\'';
 				$join[] = "{$key} = {$value}";
 			}
-			$where = "WHERE ".join(" AND ",$join);
+			if(count($join)){
+				$where = "WHERE ".join(" AND ",$join);
+			}
 		}else{
 			if(null != $conditions)$where = "WHERE ".$conditions;
 		}
@@ -90,18 +97,26 @@ class Model {
 		$row = $this->__prepera_format($row);
 		if(empty($row))return FALSE;
 		if(is_array($conditions)){
+			$conditions = $this->__prepera_format($conditions);
 			$join = array();
 			foreach( $conditions as $key => $condition ){
 				$condition = '\''.$condition.'\'';
 				$join[] = "{$key} = {$condition}";
 			}
-			$where = "WHERE ".join(" AND ",$join);
+			if(count($join)){
+				$where = "WHERE ".join(" AND ",$join);
+			}
 		}else{
 			if(null != $conditions)$where = "WHERE ".$conditions;
 		}
 		foreach($row as $key => $value){
-			$value = '\''.$value.'\'';
-			$vals[] = "{$key} = {$value}";
+			if($value!==null){
+				$value = '\''.$value.'\'';
+				$vals[] = "{$key} = {$value}";
+			}else{
+				$vals[] = "{$key} = null";
+			}
+			
 		}
 		$values = join(", ",$vals);
 		$table = self::$table;
@@ -117,12 +132,15 @@ class Model {
     {
 		$where = '';
 		if(is_array($conditions)){
+			$conditions = $this->__prepera_format($conditions);
 			$join = array();
 			foreach( $conditions as $key => $value ){
 				$value =  '\''.$value.'\'';
 				$join[] = "{$key} = {$value}";
 			}
-			$where = "WHERE ".join(" AND ",$join);
+			if(count($join)){
+				$where = "WHERE ".join(" AND ",$join);
+			}
 		}else{
 			if(null != $conditions)$where = "WHERE ".$conditions;
 		}
@@ -133,7 +151,12 @@ class Model {
          if($order!=null)$where .= " ORDER BY  ".$order;
       }
 		
-		if(!empty($limit))$where .= " LIMIT {$limit}";
+		if(!empty($limit)){
+			if(strpos($limit,',')===false){
+				$limit = ($limit<=0) ? 1 : $limit;
+			}
+			$where .= " LIMIT {$limit}";
+		}
 		$fields = empty($fields) ? "*" : $fields;
 		$table = self::$table;
 		$sql = "SELECT {$fields} FROM {$table} {$where}";
@@ -184,12 +207,15 @@ class Model {
     {
        $where = "";
 		if(is_array($conditions)){
+			$conditions = $this->__prepera_format($conditions);
 			$join = array();
 			foreach( $conditions as $key => $condition ){
 				$condition = '\''.$condition.'\'';
 				$join[] = "{$key} = {$condition}";
 			}
-			$where = "WHERE ( ".join(" AND ",$join). ")";
+			if(count($join)){
+				$where = "WHERE ".join(" AND ",$join);
+			}
 		}else{
 			if(null != $conditions)$where = "WHERE ( ".$conditions. ")";
 		}
@@ -205,8 +231,10 @@ class Model {
 		$row = $this->__prepera_format($row);
 		if(empty($row))return FALSE;
 		foreach($row as $key => $value){
-			$cols[] = $key;
-			$vals[] = '\''.$value.'\'';
+			if($value!==null){
+				$cols[] = $key;
+				$vals[] = '\''.$value.'\'';
+			}
 		}
 		$col = join(',', $cols);
 		$val = join(',', $vals);
@@ -229,12 +257,34 @@ class Model {
 		$table = self::$table;
 		$stmt = $this->db->getTable($table);  
 		$stmt->execute();  
-		$columns = $stmt->fetchAll(PDO::FETCH_COLUMN);
+		$columns = $stmt->fetchAll(PDO::FETCH_CLASS);
 		$newcol = array();
-		foreach( $columns as $col ){
-			$newcol[$col] = null;
+		foreach ($columns as $key => $value) {
+			$field = strtolower($value->Field);
+			if(stripos($value->Type,'int')!==false || stripos($value->Type,'decimal')!==false){
+				
+				if(isset($rows[$field])){
+					if($rows[$field]!=='' && $rows[$field]!==false){
+						$newcol[$field] = $rows[$field];
+					}else{
+						$newcol[$field] = 0;
+					}
+				}
+				
+			}else{
+				if(isset($rows[$field])){
+					if($rows[$field]!=='' && $rows[$field]!==false ){
+						$newcol[$field] = $rows[$field];
+					}else{
+						$newcol[$field] = null;
+					}
+				}
+				
+				
+			}
 		}
-		return array_intersect_key($rows,$newcol);
+		return $newcol;
+		//return array_intersect_key($rows,$newcol);
 	}
 	
 	

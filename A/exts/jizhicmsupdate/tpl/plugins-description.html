@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	{include="style"}
+	<style>
+	blockquote.layui-elem-quote {
+		font-size: 14px;
+	}
+	</style>
+
+</head>
+<body >
+ <div class="layui-rows" style="    margin: 10px;">
+    <h1 style="text-align:center">极致CMS在线升级插件</h1>
+    <div class="layui-content" style="margin: 20px 40px;text-align: center;"><p style="font-size: 16px;">作者：留恋风2581047041@qq.com&nbsp;&nbsp;</span></p>
+    </div>
+    
+	<div style=" margin: 25px; font-size: 20px;">
+		<fieldset class="layui-elem-field" style="border: none;padding: 0;border-top: 1px solid #eee;">
+		  <legend>插件功能</legend>
+		  <div class="layui-field-box">
+		    <blockquote class="layui-elem-quote">为了方便用户无需手动下载升级文件到系统，可以通过此插件进行升级，以及修复一些紧急的bug。<br/>随着时间推移，该插件会根据不同的情况进行升级，但不会强制使用者升级系统，只有你需要升级的时候，有选择的进行升级。<br/>如果要使用该升级插件，请先安装，安装后无需开启，在下次有修复或者更新的时候，点击“版本”栏下的 <span class="layui-badge">新</span> 即可主动升级。[ 如未安装插件，则需要点击“安装”插件才会进行处理 ]
+			</blockquote>
+		  </div>
+		</fieldset>
+		<fieldset class="layui-elem-field" style="border: none;padding: 0;border-top: 1px solid #eee;">
+		  <legend>如何找回升级前的文件？</legend>
+		  <div class="layui-field-box">
+		    <blockquote class="layui-elem-quote">
+			v1.7+版本在线升级的文件都会被存储到更新插件文件备份目录（back）内。<br/>
+			文件对应目录如下：<br/>
+			mysql版本：A/exts/jizhiupdate/file/mysql/<br/>
+			sqlite版本：A/exts/jizhiupdate/file/sqlite/<br/>
+			系统文件目录：frphp<br/>
+			后台文件目录：admin<br/>
+			前台文件目录：home<br/>
+			系统配置文件目录：A/exts/jizhiupdate/file/conf/<br/>
+			系统公共资源文件目录：A/exts/jizhiupdate/file/static/<br/>
+			<span style="color:#f00;">每次升级，系统将自动为您执行备份数据库操作</span><br/>
+			举个例子：<br/>
+			假设：A/t/tpl/article-add.html升级时被覆盖了<br/>
+			源文件备份路径[mysql版本]：A/exts/jizhiupdate/file/mysql/admin/tpl/back/article-add.html<br/>
+			源文件备份路径[sqlite版本]：A/exts/jizhiupdate/file/sqlite/admin/tpl/back/article-add.html
+			</blockquote>
+		  </div>
+		</fieldset>
+		
+		
+	</div>
+	
+	
+  </div>
+  </div>
+
+  
+    <script>
+	layui.use('code', function(){ //加载code模块
+		  layui.code({'encode':true}); //引用code方法
+		});
+    </script>
+ 
+</body>
+</html>

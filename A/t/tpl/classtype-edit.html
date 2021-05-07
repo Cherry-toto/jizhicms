@@ -3,22 +3,8 @@
   
   <head>
     <meta charset="UTF-8">
-  {include="style"}
-    <!--新增编辑器-->
-		<script type="text/javascript" charset="utf-8" src="{__Tpl_style__}/uedit/ueditor.config.js"></script>
-		<script type="text/javascript" charset="utf-8" src="{__Tpl_style__}/uedit/editor_api.js?v=123"> </script>
-		<!--建议手动加在语言，避免在ie下有时因为加载语言失败导致编辑器加载失败-->
-		<!--这里加载的语言文件会覆盖你在配置项目里添加的语言类型，比如你在配置项目里配置的是英文，这里加载的中文，那最后就是中文-->
-		<script type="text/javascript" charset="utf-8" src="{__Tpl_style__}/uedit/lang/zh-cn/zh-cn.js"></script>
-		<script>
-		var ue = UE.getEditor('editor',{
-		{if($webconf['ueditor_config']!='')}
-		toolbars : [[
-				   {$webconf['ueditor_config']}
-					]]
-		{/if}			
-					});
-		</script>
+	{include="style"}
+    {include="edit"}
   </head>
   
   <body>
@@ -37,10 +23,10 @@
 				<span class="x-red">*</span>选择模块
 			</label>
 			<div class="layui-input-inline">
-				<select name="molds" id="molds" >
+				<select name="molds" id="molds" lay-filter="molds" >
 			   
 			   {foreach $molds as $v}
-			   {if($v['biaoshi']!='classtype')}
+			   {if($v['biaoshi']!='classtype' && $v['isshowclass']==1)}
 			   <option {if($data['molds']==$v['biaoshi'])} selected="selected" {/if}  value="{$v['biaoshi']}">{$v['name']}</option>
 			   {/if}
 			   {/foreach}
@@ -56,7 +42,9 @@
 				<select name="pid" id="pid" lay-search="" lay-filter="pid">
 			   <option value="0">顶级栏目</option>
 			   {foreach $classtypes as $v}
-			   <option {if($data['pid']==$v['id'])} selected="selected" {/if}  value="{$v['id']}">{fun str_repeat('--', $v['level']), $v['classname']}</option>
+			   {if($admin['classcontrol']==0 || $admin['isadmin']==1 || strpos($tids,','.$v['id'].',')!==false || $molds['iscontrol']==0)}
+			   <option {if($data['pid']==$v['id'])} selected="selected" {/if}  value="{$v['id']}">{fun str_repeat('--', $v['level'])}{$v['classname']}</option>
+			   {/if}
 			   {/foreach}
 			
 			   </select>
@@ -71,12 +59,24 @@
                   autocomplete="off" class="layui-input">
               </div>
               <div class="layui-form-mid layui-word-aux">
-                  <span class="x-red">*</span>
+                  <span class="x-red"></span>
+              </div>
+          </div>
+		   <div class="layui-form-item">
+              <label for="seo_classname" class="layui-form-label">
+                  <span class="x-red"></span>SEO标题
+              </label>
+              <div class="layui-input-inline">
+                  <input type="text" id="seo_classname" name="seo_classname" value="{$data['seo_classname']}" 
+                  autocomplete="off" class="layui-input">
+              </div>
+              <div class="layui-form-mid layui-word-aux">
+                  <span class="x-red"></span>
               </div>
           </div>
 		  <div class="layui-form-item">
               <label for="keywords" class="layui-form-label">
-                  <span class="x-red">*</span>关键词
+                  <span class="x-red"></span>关键词
               </label>
               <div  style="width:500px"  class="layui-input-inline">
                   <input type="text" id="keywords" name="keywords" value="{$data['keywords']}" 
@@ -88,7 +88,7 @@
           </div>
 		 <div class="layui-form-item">
 				<label for="litpic" class="layui-form-label">
-					<span class="x-red">*</span>图片  
+					<span class="x-red"></span>图片  
 				</label>
 				
 				<div class="layui-input-inline">
@@ -113,10 +113,10 @@
                     </div>
 				 <div class="layui-form-item layui-form-text">
                     <label for="body" class="layui-form-label">
-                        <span class="x-red">*</span>内容
+                        <span class="x-red"></span>内容
                     </label>
                     <div class="layui-input-block" style="clear:both;" >
-					<script id="editor" name="body" type="text/plain" style="width:100%;height:400px;">{$data['body']}</script>
+					   {include="content"}
                     </div>
                 </div>
 				 
@@ -133,24 +133,42 @@
 				{/if}
 				
 				 <div class="layui-form-item">
-              <label for="orders" class="layui-form-label">
-                  <span class="x-red">*</span>排序
-              </label>
-              <div class="layui-input-inline">
-                  <input type="number" id="orders" name="orders" value="{$data['orders']}"
-                  autocomplete="off" class="layui-input">
-              </div>
-              <div class="layui-form-mid layui-word-aux">
-                  <span class="x-red">*</span>
-              </div>
-          </div>
-		  
+					  <label for="orders" class="layui-form-label">
+						  <span class="x-red"></span>排序
+					  </label>
+					  <div class="layui-input-inline">
+						  <input type="number" id="orders" name="orders" value="{$data['orders']}"
+						  autocomplete="off" class="layui-input">
+					  </div>
+					  <div class="layui-form-mid layui-word-aux">
+						  <span class="x-red"></span>
+					  </div>
+				  </div>
+					<div class="layui-form-item">
+					  <label for="orderstype" class="layui-form-label">
+						  <span class="x-red"></span>排序规则
+					  </label>
+					  <div class="layui-input-inline">
+						  <select name="orderstype" id="orderstype">
+						  <option value="1" {if($data['orderstype']==1)}selected{/if}>1 排序倒序，2 时间倒序，3 ID倒序</option>
+						  <option value="2" {if($data['orderstype']==2)}selected{/if}>1 排序倒序，2 ID正序</option>
+						  <option value="3" {if($data['orderstype']==3)}selected{/if}>排序正序</option>
+						  <option value="4" {if($data['orderstype']==4)}selected{/if}>时间倒序</option>
+						  <option value="5" {if($data['orderstype']==5)}selected{/if}>ID正序</option>
+						  <option value="6" {if($data['orderstype']==6)}selected{/if}>热度倒序</option>
+						  <option value="7" {if($data['orderstype']==7)}selected{/if}>时间正序</option>
+						  </select>
+					  </div>
+					  <div class="layui-form-mid layui-word-aux">
+						  <span class="x-red">默认不需要更改</span>
+					  </div>
+				  </div>
 		  
 		  <div class="layui-form-item">
               <label for="htmlurl" class="layui-form-label">
                   <span class="x-red"></span>URL命名
               </label>
-              <div class="layui-input-inline">
+              <div class="layui-input-block">
                   <input type="text" placeholder="请填写完整文件名，如:index，不填请留空" style="width:350px"  id="htmlurl" name="htmlurl" value="{$data['htmlurl']}" autocomplete="off" class="layui-input">
               </div>
               <div class="layui-form-mid layui-word-aux">
@@ -174,8 +192,12 @@
                   <span class="x-red"></span>栏目模板
               </label>
               <div  style="width:350px"  class="layui-input-inline">
-                  <input type="text" placeholder="请填写完整文件名，如:index，不填请留空" id="lists_html" name="lists_html" 
-                  autocomplete="off" value="{$data['lists_html']}" class="layui-input">
+                 <select name="lists_html" lay-search="" id="lists_html"  >
+              	 </select>
+              </div>
+			   <div class="layui-input-inline">
+                  <input type="text" id="lists_html_write" name="lists_html_write" placeholder="手动填写，不填请留空" value="{$data['lists_html']}" 
+                  autocomplete="off" class="layui-input">
               </div>
               <div class="layui-form-mid layui-word-aux">
                  请将模板文件放到对应的模块文件夹下面，如文章(article)模块，那么就要在当前模板目录的article文件夹下面。默认栏目首页
@@ -186,8 +208,12 @@
                   <span class="x-red"></span>详情页模板
               </label>
               <div  style="width:350px"  class="layui-input-inline">
-                  <input type="text" placeholder="请填写完整文件名，如:index，不填请留空" id="details_html" name="details_html" 
-                  autocomplete="off" value="{$data['details_html']}" class="layui-input">
+                  <select name="details_html" lay-search="" id="details_html"  >
+              	  </select>
+              </div>
+			  <div class="layui-input-inline">
+                  <input type="text" id="details_html_write" name="details_html_write" placeholder="手动填写，不填请留空" value="{$data['details_html']}" 
+                  autocomplete="off" class="layui-input">
               </div>
               <div class="layui-form-mid layui-word-aux">
                  请将模板文件放到对应的模块文件夹下面，如文章(article)模块，那么就要在当前模板目录的article文件夹下面，列表内的详情页。
@@ -197,14 +223,26 @@
               <label for="gourl" class="layui-form-label">
                   <span class="x-red"></span>栏目外链
               </label>
-              <div class="layui-input-inline">
+              <div class="layui-input-block">
                   <input type="text" placeholder="栏目外链，如:htt://xxx.com/abc，不填请留空" style="width:350px"  id="gourl" name="gourl" value="{$data['gourl']}" autocomplete="off" class="layui-input">
               </div>
               <div class="layui-form-mid layui-word-aux">
                填写栏目外链后，访问栏目链接将会跳到外链，不填请留空！
               </div>
           </div>
-		  
+		  <div class="layui-form-item" pane>
+				<label for="ishome" class="layui-form-label">
+					<span class="x-red"></span>发布显示
+				</label>
+				<div class="layui-input-block">
+					<input type="radio" name="ishome" value="0" title="不显示" {if($data['ishome']==0)}checked{/if}>
+					<input type="radio" name="ishome" value="1" title="显示" {if($data['ishome']==1)}checked{/if}>
+				</div>
+				<div class="layui-form-mid layui-word-aux">
+				 勾选后，前台会员发布会显示该栏目
+				</div>
+					
+			</div>
 		  <div class="layui-form-item" pane>
 				<label for="isshow" class="layui-form-label">
 					<span class="x-red"></span>导航显示
@@ -221,7 +259,7 @@
 				<label for="iscover" class="layui-form-label">
 					<span class="x-red"></span>模板覆盖
 				</label>
-				<div class="layui-input-inline">
+				<div class="layui-input-block">
 					<input type="radio" name="iscover" value="0" title="不覆盖" checked>
 					<input type="radio" name="iscover" value="1" title="覆盖" >
 				</div>
@@ -233,7 +271,7 @@
 			
 			<div class="layui-form-item">
 				<label for="gid" class="layui-form-label">
-					<span class="x-red">*</span>访问限制
+					<span class="x-red"></span>访问限制
 				</label>
 				<div class="layui-input-inline">
 					<select name="gid" id="gid" >
@@ -248,7 +286,18 @@
 				   </select>
 				</div>
 			</div>
-				
+			 <div class="layui-form-item" pane>
+                    <label for="isclose" class="layui-form-label">
+                        <span class="x-red"></span>是否关闭
+                    </label>
+                    <div class="layui-input-inline">
+                        <input type="radio" name="isclose" value="1" title="关闭"  {if($data['isclose']==1)}checked{/if}>
+						<input type="radio" name="isclose" value="0" title="开启"  {if($data['isclose']==0)}checked{/if}>
+                    </div>
+					<div class="layui-form-mid layui-word-aux">
+					 栏目关闭后，前台不显示，也无法访问！
+					</div>
+			</div>		
 				
 				</div>
 			  </div>
@@ -286,8 +335,8 @@
 			,done: function(res){ //上传成功后的回调
 			 
 				if(res.code==0){
-					 $('#litpic_img').attr('src','/'+res.url);
-					 $('#litpic').val('/'+res.url);
+					 $('#litpic_img').attr('src',res.url);
+					 $('#litpic').val(res.url);
 				}else{
 					 layer.alert(res.error, {icon: 5});
 				}
@@ -309,17 +358,23 @@
 					  icon:5
 					});
 				}else{
-					layer.msg('修改成功！', {
-					 time:1000,icon:6
-					},function(){
-						
+				
+					layer.confirm('修改成功！', {
+					  btn: ['返回列表','取消'] //按钮
+					}, function(){
+					  // 获得frame索引
 					  {if($webconf['admintpl']=='tpl')}
 					   window.location.href="{fun U('Classtype/index')}";
 					  {else}
 					   parent.location.reload();
-					   parent.layer.close(index);
+					    parent.layer.close(index);
 					  {/if}
+					  
+					}, function(){
+					  
 					});
+				
+				
 					
 				}
 			});
@@ -332,9 +387,75 @@
 			  
 			  
 			});
+
+			form.on('select(molds)', function(data){
+			  
+			 get_molds_html($("#molds").val());
+			 form.render('select');
+			  
+			});
 			
           
         });
+
+        function get_molds_html(molds){
+        	$.ajax({
+				 url:"{fun U('Classtype/get_html')}",//请求的url地址
+				 dataType:"json",//返回格式为json
+				 async:false,
+				 data:{molds:molds},//参数值
+				 type:"POST",//请求方式
+				 beforeSend:function(){
+					//请求前的处理
+					},
+					 success:function(r){
+					 	var t = '<option value="">请选择模板页面/使用自定义</option>';var tt = '<option value="">请选择模板页面/使用自定义</option>';
+						if(r.code==0){
+							var len = r.data.length;
+							if(len>0){
+								var lists_html = "{$data['lists_html']}";
+								var details_html = "{$data['details_html']}";
+								for(var i=0;i<len;i++){
+									if(lists_html==r.data[i].value){
+										t+='<option value="'+r.data[i].value+'" selected>'+r.data[i].html+'</option>';
+									}else{
+										t+='<option value="'+r.data[i].value+'">'+r.data[i].html+'</option>';
+									}
+									
+								}
+								for(var i=0;i<len;i++){
+									if(details_html==r.data[i].value){
+										tt+='<option value="'+r.data[i].value+'" selected>'+r.data[i].html+'</option>';
+									}else{
+										tt+='<option value="'+r.data[i].value+'">'+r.data[i].html+'</option>';
+									}
+									
+								}
+								
+							}
+
+						}else{
+							alert(r.msg);
+						}
+						$("#lists_html").html(t);
+						$("#details_html").html(tt);
+					},
+					 complete:function(){
+					//请求完成的处理
+					},
+					 error:function(){
+					//请求出错处理
+					}
+
+			})
+        	}
+
+
+        $(document).ready(function(){
+
+        	
+        	get_molds_html($("#molds").val());
+        })
     </script>
     
   </body>

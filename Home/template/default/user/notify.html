@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+{include="user/style"}
+  <title>消息中心 - 个人中心</title>
+
+</head>
+<body>
+
+{include="user/top"}
+
+<div class="login-page page">
+  <div class="container clearfix">
+    {include="user/left_nav"}
+    <div class="user-right">
+      <div class="user-tips">
+        <p><i class="iconfont iconxiaoxi3"></i> 欢迎注册本站会员，注册会员后您将享受专属会员服务!包括但不限于专属文章浏览权限，会员投稿权限，在线购物权限，下载会员可见附件等实用功能，欢迎注册体验！</p>
+      </div>
+      <div class="common-tab">
+        <h2><a href="{fun U('user/notify')}" {if(!$msgtype)}class="active"{/if}>全部消息</a><a href="{fun U('user/notify',['msgtype'=>1])}" {if($msgtype==1)}class="active"{/if} >评论提醒</a><a href="{fun U('user/notify',['msgtype'=>2])}" {if($msgtype==2)}class="active"{/if}>收藏提醒</a><a href="{fun U('user/notify',['msgtype'=>3])}" {if($msgtype==3)}class="active"{/if}>赞同提醒</a><a href="{fun U('user/notify',['msgtype'=>4])}" {if($msgtype==4)}class="active"{/if}>@提到我</a><a href="{fun U('user/notify',['msgtype'=>5])}" {if($msgtype==5)}class="active"{/if}>交易提醒</a></h2>
+      </div>
+      <div class="table release-table">
+        <ul class="shop-record-list">
+        {if($lists)}
+        {foreach $lists as $v}
+        {if($v['type']=='comment' || $v['type']=='reply')}
+          <li>
+            <div class="record-item">
+            <p><span>时间：{$v['date']}</span>{if(!$v['isread'])}<span class="fr btn-sm btn-warning">未读</span>{else}<span class="fr btn-sm btn-success">已读</span>{/if}</p>
+              <p><span>{if($v['puserid'])}{fun memberInfo($v['puserid'],'username')}{else}管理员{/if} 回复了： <a href="{$v['turl']}">{fun newstr(htmldecode($v['body']),30)}</a></span></p>
+              <h4><span class="text-info">【{$classtypedata[$v['tid']]['classname']}】</span><span class="fr"><a href="javascript:;" onclick="javascript:if(confirm('您确定要删除吗?'))window.location.href='{$v['del']}'" class="change" title="删除">删除</a><a href="{$v['turl']}" class="btn-more" title="回复">回复</a></span></h4>
+            </div>
+          </li>
+        {else if($v['type']=='likes')}
+          <li>
+            <div class="record-item">
+            <p><span>时间：{$v['date']}</span></p>
+              <p><span>{fun memberInfo($v['puserid'],'username')} 点赞了： <a href="{$v['turl']}">{fun newstr($v['body'],30)}</a></span></p>
+              <h4><span class="text-info">【{$classtypedata[$v['tid']]['classname']}】</span><span class="fr"><a href="javascript:;" onclick="javascript:if(confirm('您确定要删除吗?'))window.location.href='{$v['del']}'" class="change" title="删除">删除</a><a href="{$v['turl']}" class="btn-more" title="查看详情">查看详情</a></span></h4>
+            </div>
+          </li>
+        {else if($v['type']=='collect')}
+          <li>
+            <div class="record-item">
+            <p><span>时间：{$v['date']}</span></p>
+              <p><span>{fun memberInfo($v['puserid'],'username')} 收藏了： <a href="{$v['turl']}">{fun newstr($v['body'],30)}</a></span></p>
+              <h4><span class="text-info">【{$classtypedata[$v['tid']]['classname']}】</span><span class="fr"><a href="javascript:;" onclick="javascript:if(confirm('您确定要删除吗?'))window.location.href='{$v['del']}'" class="change" title="删除">删除</a><a href="{$v['turl']}" class="btn-more" title="查看详情">查看详情</a></span></h4>
+            </div>
+          </li>
+        {else if($v['type']=='at')}
+          <li>
+            <div class="record-item">
+            <p><span>时间：{$v['date']}</span>{if(!$v['isread'])}<span class="fr btn-sm btn-warning">未读</span>{else}<span class="fr btn-sm btn-success">已读</span>{/if}</p>
+              <p><span>{fun memberInfo($v['puserid'],'username')} @了您： <a href="{$v['turl']}">{fun newstr($v['body'],30)}</a> </span></p>
+              <h4><span class="text-info">【{$classtypedata[$v['tid']]['classname']}】</span><span class="fr"><a href="javascript:;" onclick="javascript:if(confirm('您确定要删除吗?'))window.location.href='{$v['del']}'" class="change" title="删除">删除</a><a href="{$v['turl']}" class="btn-more" title="回复">回复</a></span></h4>
+            </div>
+          </li>
+        {else}
+          <li>
+            <div class="record-item">
+            <p><span>时间：{$v['date']}</span>{if(!$v['isread'])}<span class="fr btn-sm btn-warning">未读</span>{else}<span class="fr btn-sm btn-success">已读</span>{/if}</p>
+              <p><span>交易提醒： <a href="{$v['turl']}">{$v['body']}</a> </span></p>
+              <h4><span class="text-info">  </span><span class="fr"><a href="javascript:;" onclick="javascript:if(confirm('您确定要删除吗?'))window.location.href='{$v['del']}'" class="change" title="删除">删除</a><a href="{$v['turl']}" class="btn-more" title="查看详情">查看详情</a></span></h4>
+            </div>
+          </li>
+        {/if}
+
+
+        {/foreach}
+        {else}
+        <p style="text-align: center;width: 100%;display: block;height: 50px;line-height: 50px;"> 暂无消息~ </p>
+        {/if}
+       
+        </ul>
+        <div class="pagebar-common">
+          {if($listpage['list'])}
+          <ul class="pagination">
+          <li class="page-item {if(!$listpage['prev'])}disabled{/if}">
+          <a class="page-link" href="{$listpage['prev']}" aria-label="Previous"><span aria-hidden="true">«</span></a></li>
+          {foreach $listpage['list'] as $ss}
+          <li class="page-item {if($ss['num']==$listpage['current_num'])}active background{/if}"><a href="{$ss['url']}" class="page-link">{$ss['num']}</a></li>
+          {/foreach}
+          <li class="page-item {if(!$listpage['next'])}disabled{/if}"><a class="page-link" href="{$listpage['next']}" aria-label="Next"><span aria-hidden="true">»</span></a></li>
+          </ul>
+          {/if}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+{include="user/footer"}
+</body>
+</html>

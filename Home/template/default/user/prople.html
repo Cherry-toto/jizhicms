@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <link rel="stylesheet" href="css/reset.css">
+  <link rel="stylesheet" href="css/user.css">
+  <link rel="stylesheet" href="http://at.alicdn.com/t/font_1546140_sw4m5ivcrg9.css">
+  <script src="https://www.jq22.com/jquery/jquery-1.10.2.js"></script>
+  <title>个人中心-已登录</title>
+</head>
+<body>
+
+<header>
+  <div class="container">
+    <div class="brand">
+      <a href="#" class="logo"><i class="iconfont iconhome"></i> 返回网站</a>
+    </div>
+    <div class="user-center">
+      <ul class="unlogin" style="display: none;">
+        <li><a href="#" title="登录">登录</a></li>
+        <li><a href="#" title="注册">注册</a></li>
+      </ul>
+      <ul class="user-login">
+        <li class="user-message"><a href="#" title="消息"><i class="iconfont iconxinxi"></i> <span>2</span></a></li>
+        <li class="user-icon">
+          <a href="#" title="我的"><img src="images/login.png" alt=""></a>
+          <ul class="user-menu">
+            <li class="bt1"><a href="#" title="资料与账户">资料与账户</a></li>
+            <li class="bt1"><a href="#" title="我的关注">我的关注</a></li>
+            <li class="hidden-md"><a href="#" title="我的粉丝">我的粉丝</a></li>
+            <li><a href="#" title="我的投稿">我的投稿</a></li>
+            <li><a href="#" title="我的收藏">我的收藏</a></li>
+            <li class="hidden-md"><a href="#" title="我的喜欢">我的喜欢</a></li>
+            <li class="hidden-md"><a href="#" title="我的评论">我的评论</a></li>
+            <li class="bt1"><a href="#" title="我的钱包">我的钱包</a></li>
+            <li class="hidden-md"><a href="#" title="购物车">购物车</a></li>
+            <li><a href="#" title="我的订单">我的订单</a></li>
+            <li class="bt1"><a href="#" title="修改密码">修改密码</a></li>
+            <li><a href="#" title="退出登录">退出登录</a></li>
+          </ul>
+        </li>
+      </ul>
+    </div>
+  </div>
+</header>
+<style>
+/* 关注用户 */
+.user-follow-top {
+  display: flex;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+}
+/* 关注左侧 */
+.user-top-left {
+  width: 220px;
+  background: #fff;
+  margin-right: 20px;
+  border-radius: 5px;
+  padding: 20px 0;
+}
+.user-top-left .img-box {
+  width: 100%;
+  margin-bottom: 15px;
+}
+.user-top-left .img-box img {
+  width: 80px;
+  margin: 0 auto;
+  border-radius: 5px;
+}
+.user-top-left .username-info {
+  text-align: center;
+  margin-bottom: 5px;
+}
+.user-top-left .username-info a {
+  color: #242424;
+  font-size: 18px;
+  line-height: 24px;
+  font-weight: 700;
+  text-align: center;
+}
+.user-top-left .username-info a:hover {
+  color: #007bff;
+}
+.user-top-left .autograph-info {
+  text-align: center;
+  color: #808080;
+  font-size: 12px;
+  line-height: 18px;
+  margin-bottom: 20px;
+}
+.user-top-left .btn-area {
+  padding: 0 20px;
+}
+.user-top-left .btn-area .btn-default {
+  display: block;
+  height: 40px;
+  line-height: 38px;
+  text-align: center;
+  width: 100%;
+  font-size: 14px;
+  border-radius: 5px;
+}
+.user-top-left .btn-area .btn-follow {
+  color: #fff;
+  background: #007bff;
+  border: 1px solid #007bff;
+}
+.user-top-left .btn-area .btn-follow:hover {
+  background: #005bbd;
+  border: 1px solid #005bbd;
+}
+/* 关注右侧 */
+.user-top-right {
+  flex: 1;
+  background: #fff;
+  border-radius: 5px;
+  padding: 15px;
+}
+.user-top-right .user-tab {
+  display: flex;
+  flex-wrap: wrap;
+}
+.user-top-right .user-tab .num {
+  width: 25%;
+  padding: 28px 0;
+}
+/* 关注底部 */
+.user-follow-bottom {
+  background: #fff;
+  border-radius: 5px;
+  padding: 15px 20px;
+  margin-bottom: 10px;
+}
+.tab-hd {
+  display: flex;
+  flex-wrap: wrap;
+  border-bottom: 1px solid #e1e1e1;
+  margin-bottom: 20px;
+}
+.tab-hd li {
+  margin-right: 10px;
+  position: relative;
+}
+.tab-hd li.active:after {
+  content: "";
+  width: 100%;
+  height: 3px;
+  background: #007bff;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+}
+.tab-hd li.active a {
+  font-weight: 700;
+  color: #007bff;
+}
+.tab-hd li a {
+  color: #242424;
+  font-size: 16px;
+  line-height: 36px;
+  padding: 0 10px;
+}
+.tab-item-follow .follow-list {
+  width: 100%;
+  border-top: 1px solid #f1f1f1;
+}
+.follow-list-item {
+  padding-top: 10px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid #f1f1f1;
+}
+.follow-list-item > p {
+  color: #8590a6;
+  font-size: 14px;
+  line-height: 30px;
+}
+.follow-list-item > p span {
+  float: right;
+}
+.follow-list-item h3 {
+  margin-bottom: 10px;
+}
+.follow-list-item h3 a {
+  display: block;
+  font-size: 20px;
+  line-height: 30px;
+  font-weight: 700;
+  color: #242424;
+}
+.follow-list-item .user-top {
+  display: flex;
+  margin-bottom: 15px;
+}
+.follow-list-item .user-top .img-box {
+  height: 40px;
+  border-radius: 3px;
+  overflow: hidden;
+  margin-right: 20px;
+}
+.follow-list-item .user-top img {
+  width: 40px;
+  height: 40px;
+  border-radius: 5px;
+}
+.follow-list-item .user-top h4 {
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 20px;
+}
+.follow-list-item .user-top p {
+  font-size: 14px;
+  line-height: 20px;
+}
+.follow-list-item .list-content {
+  display: flex;
+}
+.follow-list-item .list-content .img-box {
+  height: 150px;
+  margin-right: 20px;
+}
+.follow-list-item .list-content img {
+  height: 150px;
+}
+.follow-list-item .list-content .cont {
+  color: #444;
+  font-size: 14px;
+  line-height: 30px;
+}
+</style>
+<div class="login-page page">
+  <div class="container clearfix">
+    <div class="user-follow-top">
+      <div class="user-top-left user-card">
+        <div class="img-box">
+          <a href="#" title="登录"><img src="images/user.png" alt=""></a>
+        </div>
+        <div class="username-info">
+          <a href="#" title="登录">她的主页</a>
+        </div>
+        <div class="autograph-info">
+          她的个性签名
+        </div>
+        <div class="btn-area">
+          <a href="#" class="btn-default btn-follow"><i class="iconfont iconguanzhu2"></i> 关注</a>
+        </div>
+      </div>
+      <div class="user-top-right">
+        <div class="user-tab">
+          <div class="num">
+            <a href="#" title="">
+              <h4>21</h4>
+              <p>文章</p>
+            </a>
+          </div>
+          <div class="num">
+            <a href="#" title="">
+              <h4>0</h4>
+              <p>商品</p>
+            </a>
+          </div>
+          <div class="num">
+            <a href="#" title="">
+              <h4>10</h4>
+              <p>关注</p>
+            </a>
+          </div>
+          <div class="num">
+            <a href="#" title="">
+              <h4>23</h4>
+              <p>粉丝</p>
+            </a>
+          </div>
+          <div class="num">
+            <a href="#" title="">
+              <h4>123</h4>
+              <p>收藏</p>
+            </a>
+          </div>
+          <div class="num">
+            <a href="#" title="">
+              <h4>3</h4>
+              <p>评论</p>
+            </a>
+          </div>
+          <div class="num">
+            <a href="#" title="">
+              <h4>3</h4>
+              <p>点赞</p>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="user-follow-bottom">
+      <div class="tab-hd">
+        <li class="active"><a href="#" title="文章">文章</a></li>
+        <li><a href="#" title="评论">评论</a></li>
+        <li><a href="#" title="商品">商品</a></li>
+      </div>
+      <div class="tab-bd">
+        <div class="tab-item-follow">
+          <ul class="follow-list">
+            <li>
+              <div class="follow-list-item">
+                <p>发表了文章 <span>1天前</span></p>
+                <h3><a href="#" title="不管在哪里，都好希望身边的人是你">不管在哪里，都好希望身边的人是你</a></h3>
+                <div class="user-top">
+                  <div class="img-box">
+                    <img src="images/user.png" alt="">
+                  </div>
+                  <div class="user-name">
+                    <h4>她</h4>
+                    <p>她的个性签名</p>
+                  </div>
+                </div>
+                <div class="list-content">
+                  <div class="img-box">
+                    <img src="images/article.jpg" alt="">
+                  </div>
+                  <div class="cont">
+                    大胖墩这两天去景德镇出差，参加一个会议，主办方带着他们参观了当地的瓷器城，我几乎是跟着他游览了个遍。 弹古筝的少女，梳着小辫子吹笛子的少年，清澈的人工湖和绒绒的让人想躺上去打滚的绿草地，全都一一拍下来给大胖墩这两天去景德镇出差，参加一个会议，主办方带着他们参观了当地的瓷器城，我几乎是跟着他游览了个遍。 弹古筝的少女，梳着小辫子吹笛子的少年，清澈的人工湖和绒绒的让人想躺上去打滚的绿草地，全都一一拍下来给
+                  </div>
+                </div>
+              </div>
+            </li>
+            <li>
+              <div class="follow-list-item">
+                <p>发表了文章 <span>10天前</span></p>
+                <h3><a href="#" title="不管在哪里，都好希望身边的人是你">不管在哪里，都好希望身边的人是你</a></h3>
+                <div class="user-top">
+                  <div class="img-box">
+                    <img src="images/user.png" alt="">
+                  </div>
+                  <div class="user-name">
+                    <h4>她</h4>
+                    <p>她的个性签名</p>
+                  </div>
+                </div>
+                <div class="list-content">
+                  <div class="img-box">
+                    <img src="images/article.jpg" alt="">
+                  </div>
+                  <div class="cont">
+                    大胖墩这两天去景德镇出差，参加一个会议，主办方带着他们参观了当地的瓷器城，我几乎是跟着他游览了个遍。 弹古筝的少女，梳着小辫子吹笛子的少年，清澈的人工湖和绒绒的让人想躺上去打滚的绿草地，全都一一拍下来给大胖墩这两天去景德镇出差，参加一个会议，主办方带着他们参观了当地的瓷器城，我几乎是跟着他游览了个遍。 弹古筝的少女，梳着小辫子吹笛子的少年，清澈的人工湖和绒绒的让人想躺上去打滚的绿草地，全都一一拍下来给
+                  </div>
+                </div>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <div class="copyright">
+    <p><span>Copyright &copy; 2019-2099</span><span><a href="#" title="ICP备案号">京ICP备100001234523号</a></span><span>Theme By Shubinqi</span></p>
+  </div>
+</footer>
+
+<script src="js/user.js"></script>
+</body>
+</html>

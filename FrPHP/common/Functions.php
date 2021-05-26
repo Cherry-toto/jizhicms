@@ -309,8 +309,8 @@ function get_domain(){
 	
     if(isset($_SERVER['HTTP_X_FORWARDED_HOST'])) {
         $host = $_SERVER['HTTP_X_FORWARDED_HOST'];
-    }elseif (isset($_SERVER['HTTP_HOST'])) {
-        $host = $_SERVER['HTTP_HOST'];
+    }elseif (isset($_SERVER['SERVER_NAME'])) {
+        $host = $_SERVER['SERVER_NAME'];
     }else{
         if(isset($_SERVER['SERVER_PORT'])) {
             $port = ':' . $_SERVER['SERVER_PORT'];

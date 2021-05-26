@@ -213,11 +213,11 @@ class CommonController extends Controller
 			}else{  
 				$data['error'] =  "Error: 请检查目录[Public/Home]写入权限";
 				$data['code'] = 1001;
-				JsonReturn($data,true);
+				JsonReturn($data);
 			} 
 		}
 		$data = ['code'=>0,'urls'=>$response,'msg'=>'上传成功！'];
-		JsonReturn($data,true);
+		JsonReturn($data);
 
 
 		
@@ -327,7 +327,7 @@ class CommonController extends Controller
 		  }
 		  
 		  
-		  JsonReturn($data,true);
+		  JsonReturn($data);
 		  exit;
 		  
 		

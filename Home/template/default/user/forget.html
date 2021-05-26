@@ -83,11 +83,6 @@
       <div class="user-content">
         <h2>忘记密码</h2>
         <form method="POST" onsubmit="return checklogin()" class="user-form">
-        
-        <div class="form-control">
-        <label for="username">您的账户</label>
-        <input class="form-control item" type="text" name="username" id="username">
-        </div>
         <div class="form-control">
         <label for="email">绑定邮箱</label>
         <input class="form-control item" type="email" name="email" id="email">
@@ -112,10 +107,6 @@
 
 
 function checklogin(){
-  if($.trim($("#username").val())==''){
-    alert('账号不能为空~');
-    return false;
-  }
   if($.trim($("#email").val())==''){
     alert('邮箱不能为空~');
     return false;

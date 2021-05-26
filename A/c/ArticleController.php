@@ -135,9 +135,9 @@ class ArticleController extends CommonController
 			$data['seo_title'] = $this->frparam('seo_title',1) ? $this->frparam('seo_title',1) : $this->frparam('title',1);
 			$data['body'] = $this->frparam('body',4);
 			$data['userid'] = $_SESSION['admin']['id'];
-			$data['description'] = ($this->frparam('description',1)=='') ? newstr(strip_tags($data['body']),160) : $this->frparam('description',1);
-			if(strlen($data['description'])>255){
-				$data['description'] = newstr($data['description'],160);
+			$data['description'] = !$this->frparam('description',1) ? strip_tags($data['body']) : $this->frparam('description',1);
+			if(strlen($data['description'])>500){
+				$data['description'] = newstr($data['description'],1000);
 			}
 			if($this->frparam('litpic',1)==''){
 				$pattern='/<img.*?src="(.*?)".*?>/is';
@@ -271,9 +271,9 @@ class ArticleController extends CommonController
 			$data['tid'] = $this->frparam('tid',0,0);
 			$data['keywords'] = $this->frparam('keywords',1);
 			$data['seo_title'] = $this->frparam('seo_title',1) ? $this->frparam('seo_title',1) : $this->frparam('title',1);
-			$data['description'] = ($this->frparam('description',1)=='') ? newstr(strip_tags($data['body']),160) : $this->frparam('description',1);
-			if(strlen($data['description'])>255){
-				$data['description'] = newstr($data['description'],160);
+			$data['description'] = !$this->frparam('description',1) ? strip_tags($data['body']) : $this->frparam('description',1);
+			if(strlen($data['description'])>500){
+				$data['description'] = newstr($data['description'],1000);
 			}
 			
 			if($this->frparam('litpic',1)==''){

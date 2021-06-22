@@ -133,9 +133,7 @@ class ProductController extends CommonController
 			$data['keywords'] = $this->frparam('keywords',1);
 			$data['seo_title'] = $this->frparam('seo_title',1) ? $this->frparam('seo_title',1) : $this->frparam('title',1);
 			$data['description'] = !$this->frparam('description',1) ? strip_tags($data['body']) : $this->frparam('description',1);
-			if(strlen($data['description'])>500){
-				$data['description'] = newstr($data['description'],1000);
-			}
+			$data['description'] = newstr($data['description'],500);
 			
 			if($this->frparam('litpic',1)==''){
 				$pattern='/<img.*?src="(.*?)".*?>/is';
@@ -251,9 +249,7 @@ class ProductController extends CommonController
 			$data['keywords'] = $this->frparam('keywords',1);
 			$data['seo_title'] = $this->frparam('seo_title',1) ? $this->frparam('seo_title',1) : $this->frparam('title',1);
 			$data['description'] = !$this->frparam('description',1) ? strip_tags($data['body']) : $this->frparam('description',1);
-			if(strlen($data['description'])>500){
-				$data['description'] = newstr($data['description'],1000);
-			}
+			$data['description'] = newstr($data['description'],500);
 			
 			if($this->frparam('litpic',1)==''){
 				$pattern='/<img.*?src="(.*?)".*?>/is';

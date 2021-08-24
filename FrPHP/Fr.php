@@ -359,7 +359,7 @@ class FrPHP
     // 检测开发环境
     public function setReporting()
     {
-     
+		ini_set("session.cookie_httponly", 1);
         if (APP_DEBUG === true) {
             //error_reporting(E_ALL);
 			error_reporting(E_ALL & ~E_NOTICE & ~E_WARNING);
@@ -381,19 +381,10 @@ class FrPHP
     // 检测敏感字符并删除
     public function removeMagicQuotes()
     {
-        if(version_compare(PHP_VERSION,'7.4','>=')){
-			$_GET = isset($_GET) ? $this->stripSlashesDeep($_GET ) : '';
-			$_POST = isset($_POST) ? $this->stripSlashesDeep($_POST ) : '';
-			$_COOKIE = isset($_COOKIE) ? $this->stripSlashesDeep($_COOKIE) : '';
-			$_SESSION = isset($_SESSION) ? $this->stripSlashesDeep($_SESSION) : '';
-		}else{
-			if (get_magic_quotes_gpc()) {
-				$_GET = isset($_GET) ? $this->stripSlashesDeep($_GET ) : '';
-				$_POST = isset($_POST) ? $this->stripSlashesDeep($_POST ) : '';
-				$_COOKIE = isset($_COOKIE) ? $this->stripSlashesDeep($_COOKIE) : '';
-				$_SESSION = isset($_SESSION) ? $this->stripSlashesDeep($_SESSION) : '';
-			}
-		}
+        $_GET = isset($_GET) ? $this->stripSlashesDeep($_GET ) : '';
+		$_POST = isset($_POST) ? $this->stripSlashesDeep($_POST ) : '';
+		$_COOKIE = isset($_COOKIE) ? $this->stripSlashesDeep($_COOKIE) : '';
+		$_SESSION = isset($_SESSION) ? $this->stripSlashesDeep($_SESSION) : '';
     }
 
     // 检测自定义全局变量并移除。因为 register_globals 已经弃用，如果

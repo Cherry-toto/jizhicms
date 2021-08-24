@@ -133,8 +133,10 @@ class MemberController extends CommonController
 		if($this->frparam('go')==1){
 			$data = $this->frparam();
 			$data = get_fields_data($data,'member');
+			$data['id'] = $this->frparam('id');
 			$data['username'] = $this->frparam('username',1);
 			$data['email'] = $this->frparam('email',1);
+			$data['tel'] = $this->frparam('tel',1);
 			$data['money'] = $this->frparam('money',3);
 			$data['jifen'] = $this->frparam('jifen');
 			$data['gid'] = $this->frparam('gid');
@@ -152,6 +154,20 @@ class MemberController extends CommonController
 			}else{
 				unset($data['pass']);
 			}
+			
+			//检查是否邮箱/手机号重复
+			if($data['email']){
+				if(M('member')->find("email='".$data['email']."' and id!=".$data['id'])){
+					JsonReturn(array('code'=>1,'msg'=>'邮箱已被注册！'));
+				}
+			}
+			if($data['tel']){
+				if(M('member')->find("tel='".$data['tel']."' and id!=".$data['id'])){
+					JsonReturn(array('code'=>1,'msg'=>'手机号已被注册！'));
+				}
+			}
+			
+			
 			if(M('member')->update(array('id'=>$data['id']),$data)){
 				JsonReturn(array('code'=>0,'msg'=>'修改成功！'));
 			}else{

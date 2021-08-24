@@ -20,7 +20,7 @@ CREATE TABLE `jz_article` (
   `seo_title` varchar(255) DEFAULT NULL,
   `userid` int(11) NOT NULL DEFAULT '0',
   `litpic` varchar(255) DEFAULT NULL,
-  `body` text,
+  `body` mediumtext  DEFAULT NULL,
   `addtime` int(11) NOT NULL DEFAULT '0',
   `orders` int(4) NOT NULL DEFAULT '0',
   `hits` int(11) NOT NULL DEFAULT '0',
@@ -449,7 +449,7 @@ CREATE TABLE `jz_product` (
   `pictures` text COMMENT '图集',
   `isshow` tinyint(1) NOT NULL DEFAULT '1' COMMENT '1显示,0不显示',
   `comment_num` int(11) NOT NULL DEFAULT '0',
-  `body` text COMMENT '内容',
+  `body` mediumtext  DEFAULT NULL,
   `userid` int(11) NOT NULL DEFAULT '0' COMMENT '录入管理员',
   `orders` int(11) NOT NULL DEFAULT '0',
   `addtime` int(11) NOT NULL DEFAULT '0' COMMENT '更新时间',
@@ -963,7 +963,7 @@ INSERT INTO `jz_ruler` (`id`,`name`,`fc`,`pid`,`isdesktop`,`sys`) VALUES ('198',
 -- ----------------------------
 -- Records of jz_sysconfig
 -- ----------------------------
-INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`) VALUES ('1','web_version','系统版号', NULL,'0','1.9.4');
+INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`) VALUES ('1','web_version','系统版号', NULL,'0','1.9.5');
 INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`) VALUES ('2','web_name','网站SEO名称', NULL,'0','极致CMS建站系统');
 INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`) VALUES ('3','web_keyword','网站SEO关键词', NULL,'0','极致CMS');
 INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`) VALUES ('4','web_desc','网站SEO描述', NULL,'0','极致CMS');

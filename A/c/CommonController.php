@@ -34,9 +34,9 @@ class CommonController extends Controller
 			   $ac = M('Ruler')->find(array('fc'=>$action));
 			   if($this->frparam('ajax')){
 				   
-				   JsonReturn(['code'=>1,'msg'=>'您没有【'.$ac['name'].'】的权限！','url'=>U('Index/index')]);
+				   JsonReturn(['code'=>1,'msg'=>'您没有【'.$ac['name'].'】的权限！','url'=>U('Index/welcome')]);
 			   }
-			   Error('您没有【'.$ac['name'].'】的权限！',U('Index/index'));
+			   Error('您没有【'.$ac['name'].'】的权限！',U('Index/welcome'));
 			}
 		}
        
@@ -192,7 +192,7 @@ class CommonController extends Controller
 				
 				
 			}else{
-				$data['error'] =  "Error: 请检查目录[Public/Admin]写入权限";
+				$data['error'] =  "Error: 请检查目录[".$admin_save_path."]写入权限";
 				$data['code'] = 1001;
 				  
 			} 

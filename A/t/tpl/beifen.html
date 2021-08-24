@@ -41,8 +41,17 @@
 				{foreach $lists as $v}
                     <tr>
                        <td>{$v}</td>
-                       
-                       <td>{fun get_file_byte('backup/'.$v)}</td>
+                       {php
+					    $filename_arr = explode('.php',$v);
+						$filename = $filename_arr[0];
+					    $dir = APP_PATH.'backup';
+						$filesize = filesize($dir.'/'.$filename.'.php');
+						for($i=1;file_exists($dir.'/'.$filename.'_v'.$i.'.php')===true;$i++){
+						   $filesize+=filesize($dir.'/'.$filename.'_v'.$i.'.php');
+						}
+					    $filesize = round($filesize/1024,2).'KB';
+					   /}
+                       <td>{$filesize}</td>
                        
                         <td class="td-manage">
                         {if(strpos($v,'_v')!==false)}

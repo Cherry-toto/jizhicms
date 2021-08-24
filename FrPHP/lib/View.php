@@ -560,17 +560,18 @@ class View
 			\$".$as."_allpage = \$".$as."_page->allpage;";
 		}else{
 			
-			$txt .= "
-			if(\$jzcache){
+			if($jzcache){
+				$txt .= "
 				\$cachestr = md5(\$".$as."_table.\$".$as."_w.\$".$as."_order.\$".$as."_fields.\$".$as."_limit);
-				\$cachedata = getCache(\$cachestr);
-				if(!\$cachedata){
+				$".$as."_data = getCache(\$cachestr);
+				if(!$".$as."_data){
 					$".$as."_data = M(\$".$as."_table)->findAll(\$".$as."_w,\$".$as."_order,\$".$as."_fields,\$".$as."_limit);
-					setCache(\$cachestr,\$".$as."_data,\$jzcachetime);
-				}
+					setCache(\$cachestr,$".$as."_data,$jzcachetime);
+				}";
 			}else{
-				$".$as."_data = M(\$".$as."_table)->findAll(\$".$as."_w,\$".$as."_order,\$".$as."_fields,\$".$as."_limit);
-			}";
+				$txt .= "
+				$".$as."_data = M(\$".$as."_table)->findAll(\$".$as."_w,\$".$as."_order,\$".$as."_fields,\$".$as."_limit);";
+			}
 			
 		}
 		$txt.='$'.$as.'_n=0;foreach($'.$as.'_data as $'.$as.'_key=> $'.$as.'){

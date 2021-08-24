@@ -34,9 +34,9 @@ class ExtmoldsController extends Controller
 				   $ac = M('Ruler')->find(array('fc'=>$action));
 				   if($this->frparam('ajax')){
 					   
-					   JsonReturn(['code'=>1,'msg'=>'您没有【'.$ac['name'].'】的权限！','url'=>U('Index/index')]);
+					   JsonReturn(['code'=>1,'msg'=>'您没有【'.$ac['name'].'】的权限！','url'=>U('Index/welcome')]);
 				   }
-				   Error('您没有'.$ac['name'].'的权限！');
+				   Error('您没有'.$ac['name'].'的权限！',U('Index/welcome'));
 				}
 			}
 		   
@@ -311,12 +311,12 @@ class ExtmoldsController extends Controller
 									$w['target'] = '_blank';
 									M('tags')->add($w);
 								}else{
-									
-									if(strpos(','.$v.',',$old_tags)===false){
-										M('tags')->goInc(['keywords'=>$v],'number');
-									}else if(strpos(','.$v.',',$data['tags'])===false){
-										M('tags')->goDec(['keywords'=>$v],'number');
-									}
+
+                                    if(strpos($old_tags,','.$v.',')===false){
+                                        M('tags')->goInc(['keywords'=>$v],'number');
+                                    }else if(strpos($data['tags'],','.$v.',')===false && strpos($old_tags,','.$v.',')!==false){
+                                        M('tags')->goDec(['keywords'=>$v],'number');
+                                    }
 									
 									
 								}

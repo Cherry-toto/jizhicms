@@ -311,12 +311,12 @@ class ExtmoldsController extends Controller
 									$w['target'] = '_blank';
 									M('tags')->add($w);
 								}else{
-									
-									if(strpos(','.$v.',',$old_tags)===false){
-										M('tags')->goInc(['keywords'=>$v],'number');
-									}else if(strpos(','.$v.',',$data['tags'])===false){
-										M('tags')->goDec(['keywords'=>$v],'number');
-									}
+
+                                    if(strpos($old_tags,','.$v.',')===false){
+                                        M('tags')->goInc(['keywords'=>$v],'number');
+                                    }else if(strpos($data['tags'],','.$v.',')===false && strpos($old_tags,','.$v.',')!==false){
+                                        M('tags')->goDec(['keywords'=>$v],'number');
+                                    }
 									
 									
 								}

@@ -192,7 +192,7 @@ class CommonController extends Controller
 				
 				
 			}else{
-				$data['error'] =  "Error: 请检查目录[Public/Admin]写入权限";
+				$data['error'] =  "Error: 请检查目录[".$admin_save_path."]写入权限";
 				$data['code'] = 1001;
 				  
 			} 

@@ -262,6 +262,8 @@ class View
 					$arr_tid[]=" (tids like '%,".$v.",%') ";
 				}
 			$tids = ' ( '. implode('or',$arr_tid).' ) ';
+			}else if(strpos($a['tid'],'$')!==false){
+				$tids = " tids like  '%,".trim($a['table'],"'").",%'  ";
 			}else{
 				$tids = " tids like  '%,".$a['tid'].",%'  ";
 			}

@@ -132,8 +132,15 @@ class ProductController extends CommonController
 			$data['title'] = $this->frparam('title',1);
 			$data['keywords'] = $this->frparam('keywords',1);
 			$data['seo_title'] = $this->frparam('seo_title',1) ? $this->frparam('seo_title',1) : $this->frparam('title',1);
+<<<<<<< HEAD
 			$data['description'] = !$this->frparam('description',1) ? strip_tags($data['body']) : $this->frparam('description',1);
 			$data['description'] = newstr($data['description'],500);
+=======
+			$data['description'] = ($this->frparam('description',1)=='') ? newstr(strip_tags($data['body']),160) : $this->frparam('description',1);
+			if(strlen($data['description'])>500){
+				$data['description'] = newstr($data['description'],160);
+			}
+>>>>>>> 3edb2c175c2fc976ce14021dffd1c7d70fde1f73
 			
 			if($this->frparam('litpic',1)==''){
 				$pattern='/<img.*?src="(.*?)".*?>/is';
@@ -248,8 +255,15 @@ class ProductController extends CommonController
 			$data['tid'] = $this->frparam('tid',0,0);
 			$data['keywords'] = $this->frparam('keywords',1);
 			$data['seo_title'] = $this->frparam('seo_title',1) ? $this->frparam('seo_title',1) : $this->frparam('title',1);
+<<<<<<< HEAD
 			$data['description'] = !$this->frparam('description',1) ? strip_tags($data['body']) : $this->frparam('description',1);
 			$data['description'] = newstr($data['description'],500);
+=======
+			$data['description'] = ($this->frparam('description',1)=='') ? newstr(strip_tags($data['body']),160) : $this->frparam('description',1);
+			if(strlen($data['description'])>500){
+				$data['description'] = newstr($data['description'],160);
+			}
+>>>>>>> 3edb2c175c2fc976ce14021dffd1c7d70fde1f73
 			
 			if($this->frparam('litpic',1)==''){
 				$pattern='/<img.*?src="(.*?)".*?>/is';
@@ -350,11 +364,11 @@ class ProductController extends CommonController
 									$w['target'] = '_blank';
 									M('tags')->add($w);
 								}else{
-									if(strpos(','.$v.',',$old_tags)===false){
-										M('tags')->goInc(['keywords'=>$v],'number');
-									}else if(strpos(','.$v.',',$data['tags'])===false){
-										M('tags')->goDec(['keywords'=>$v],'number');
-									}
+                                    if(strpos($old_tags,','.$v.',')===false){
+                                        M('tags')->goInc(['keywords'=>$v],'number');
+                                    }else if(strpos($data['tags'],','.$v.',')===false && strpos($old_tags,','.$v.',')!==false){
+                                        M('tags')->goDec(['keywords'=>$v],'number');
+                                    }
 								}
 								
 								$new[]=$v;

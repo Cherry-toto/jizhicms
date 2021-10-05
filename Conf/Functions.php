@@ -1184,7 +1184,7 @@ function get_fields_show($tid,$molds){
 //发送邮件处理
 function send_mail($send_mail,$password,$send_name,$to_mail,$title,$body,$email_ext=''){
 	
-	require APP_PATH.'FrPHP/Extend/PHPMailer/PHPMailerAutoload.php';
+	require_once(APP_PATH.'FrPHP/Extend/PHPMailer/PHPMailerAutoload.php');
 	require_once(APP_PATH.'FrPHP/Extend/PHPMailer/class.phpmailer.php');
 	require_once(APP_PATH."FrPHP/Extend/PHPMailer/class.smtp.php");
 	

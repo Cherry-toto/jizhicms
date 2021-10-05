@@ -531,7 +531,12 @@ class View
 		}
 		if($day){
 			$day =str_replace("'",'',$day);
-			$w.=" and DATE_SUB(CURDATE(), INTERVAL ".$day." DAY) <= date(FROM_UNIXTIME(addtime))";
+			if(strpos($day,'$')!==false){
+				$day = trim($day,"'");
+				$w.=" and DATE_SUB(CURDATE(), INTERVAL '".".$day."."' DAY) <= date(FROM_UNIXTIME(addtime))";
+			}else{
+				$w.=" and DATE_SUB(CURDATE(), INTERVAL ".$day." DAY) <= date(FROM_UNIXTIME(addtime))";
+			}
 		}
 		
 		$w .= $notin_sql;

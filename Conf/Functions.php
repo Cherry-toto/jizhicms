@@ -1257,7 +1257,10 @@ function send_mail($send_mail,$password,$send_name,$to_mail,$title,$body,$email_
 					$mail->AddAddress($v, $send_name);
 				}
 			}else if($email_ext!=''){
-				$mail->AddAddress($email_ext, $send_name);
+				$email_ext = explode(',',$email_ext);
+				foreach($email_ext as $v){
+					$mail->AddAddress($v, $send_name);
+				}
 			}
 
 	        $mail->AddAddress($address, $send_name);

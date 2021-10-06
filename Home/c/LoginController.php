@@ -295,16 +295,16 @@ class LoginController extends CommonController
   
   function forget(){
 	  if($_POST && !isset($_POST['reset'])){
-		  $username = $this->frparam('username',1);
+		
 		  $email = $this->frparam('email',1);
 		  $vercode = strtolower($this->frparam('vercode',1));
-		  if(!$username || !$email){
+		  if(!$email){
 			  Error('请输入账号和邮箱！');
 		  }
 		  if($_SESSION['forget_code']!=md5(md5($vercode))){
 			  Error('图形验证码错误！');
 		  }
-		  $user = M('member')->find(['username'=>$username,'email'=>$email]);
+		  $user = M('member')->find(['email'=>$email]);
 		  if($user){
 			  //生成随机秘钥
 			  $w['logintime'] = time();
@@ -313,7 +313,8 @@ class LoginController extends CommonController
 			  //发送邮件
 			  if($this->webconf['email_server'] && $this->webconf['email_port'] &&  $this->webconf['send_email'] &&  $this->webconf['send_pass']){
 				$title = '找回密码-'.$this->webconf['web_name'];
-				$body = '您的账号正在进行找回密码操作，如果确定是本人操作，请在10分钟内点击<a href="'.U('login/forget',['token'=>$w['token'],'username'=>$username]).'" target="_blank">《立即找回密码》</a>，过期失效！';
+				$url = U('login/forget').'?token='.$w['token'].'&email='.$email;
+				$body = '您的账号正在进行找回密码操作，如果确定是本人操作，请在10分钟内点击<a href="'.$url.'" target="_blank">《立即找回密码》</a>，过期失效！';
 				
 				send_mail($this->webconf['send_email'],$this->webconf['send_pass'],$this->webconf['send_name'],$user['email'],$title,$body);
 				if(!isset($_SESSION['forget_time'])){
@@ -345,10 +346,10 @@ class LoginController extends CommonController
 			   Error('输入的信息有误！');
 		  }
 	  }
-	  if(!isset($_POST['reset']) && $this->frparam('token',1) && $this->frparam('username',1)){
+	  if(!isset($_POST['reset']) && $this->frparam('token',1) && $this->frparam('email',1)){
 		  //检查token是否正确
-		  if($this->frparam('token',1)!='' && $this->frparam('username',1)!=''){
-			  $user = M('member')->find(['token'=>$this->frparam('token',1),'username'=>$this->frparam('username',1)]);
+		  if($this->frparam('token',1)!='' && $this->frparam('email',1)!=''){
+			  $user = M('member')->find(['token'=>$this->frparam('token',1),'email'=>$this->frparam('email',1)]);
 			  if($user){
 				  //检查是否已过期
 				  $t = (time()-$user['logintime'])/60;

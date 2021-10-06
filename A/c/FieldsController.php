@@ -28,7 +28,7 @@ class FieldsController extends CommonController
 		$sql = ['molds'=>$this->frparam('molds',1)];
 		$this->molds = M('Molds')->find(array('biaoshi'=>$this->frparam('molds',1)));
 		$this->pages = '';
-		$data = M('fields')->findAll(array('molds'=>$this->frparam('molds',1)));
+		$data = M('fields')->findAll(array('molds'=>$this->frparam('molds',1)),'orders desc');
 		$this->lists = $data;
 		$this->sum = count($data);
 		

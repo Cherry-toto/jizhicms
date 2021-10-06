@@ -262,6 +262,8 @@ class View
 					$arr_tid[]=" (tids like '%,".$v.",%') ";
 				}
 			$tids = ' ( '. implode('or',$arr_tid).' ) ';
+			}else if(strpos($a['tid'],'$')!==false){
+				$tids = " tids like  '%,".trim($a['table'],"'").",%'  ";
 			}else{
 				$tids = " tids like  '%,".$a['tid'].",%'  ";
 			}
@@ -529,7 +531,12 @@ class View
 		}
 		if($day){
 			$day =str_replace("'",'',$day);
-			$w.=" and DATE_SUB(CURDATE(), INTERVAL ".$day." DAY) <= date(FROM_UNIXTIME(addtime))";
+			if(strpos($day,'$')!==false){
+				$day = trim($day,"'");
+				$w.=" and DATE_SUB(CURDATE(), INTERVAL '".".$day."."' DAY) <= date(FROM_UNIXTIME(addtime))";
+			}else{
+				$w.=" and DATE_SUB(CURDATE(), INTERVAL ".$day." DAY) <= date(FROM_UNIXTIME(addtime))";
+			}
 		}
 		
 		$w .= $notin_sql;

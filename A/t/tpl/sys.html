@@ -1093,16 +1093,14 @@
                                 <input type="radio" name="isopenemail" value="1" title="开启" {if($config['isopenemail']==1)}checked{/if}>
                             </div>
                         </div>
-                        {if($admin['gid']==1)}
+                        
                         <div class="layui-form-item">
                             <label style="width:150px" class="layui-form-label">
                                 <span class='x-red'>*</span>邮件服务器
                             </label>
                             <div   style="margin-left: 150px;" class="layui-input-block">
-                                <select id="email_server" name="email_server">
-                                <option value="smtp.163.com" {if($config['email_server']=='smtp.163.com')}selected{/if}>163邮件服务器</option>
-                                <option value="smtp.qq.com" {if($config['email_server']=='smtp.qq.com')}selected{/if}>QQ邮件服务器</option>
-                                </select>
+                                <input type="text" name="email_server" value="{$config['email_server']}" autocomplete="off" placeholder=""
+                                class="layui-input">
                             </div>
                         </div>
                         <div class="layui-form-item">
@@ -1110,11 +1108,12 @@
                                 <span class='x-red'>*</span>收发端口
                             </label>
                             <div   style="margin-left: 150px;" class="layui-input-block">
-                                <select id="email_port" name="email_port">
-                                <option value="465" {if($config['email_port']==465)}selected{/if}>163邮件端口(465)</option>
-                                <option value="587" {if($config['email_port']==587)}selected{/if}>QQ邮件端口(587)</option>
-                                </select>
+								<input type="number" name="email_port" value="{$config['email_port']}" autocomplete="off" placeholder=""
+                                class="layui-input">
                             </div>
+							<div class="layui-form-mid layui-word-aux">
+                                  163、126邮件端口(465)，QQ邮件端口(587)
+                            </div> 
                         </div>
                         <div class="layui-form-item">
                             <label style="width:150px" class="layui-form-label">
@@ -1134,7 +1133,7 @@
                                 class="layui-input">
                             </div>
                         </div>
-                        {/if}
+                        
                         <div class="layui-form-item">
                             <label style="width:150px" class="layui-form-label">
                                 <span class='x-red'>*</span>收件邮箱

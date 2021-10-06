@@ -1184,7 +1184,7 @@ function get_fields_show($tid,$molds){
 //发送邮件处理
 function send_mail($send_mail,$password,$send_name,$to_mail,$title,$body,$email_ext=''){
 	
-	require APP_PATH.'FrPHP/Extend/PHPMailer/PHPMailerAutoload.php';
+	require_once(APP_PATH.'FrPHP/Extend/PHPMailer/PHPMailerAutoload.php');
 	require_once(APP_PATH.'FrPHP/Extend/PHPMailer/class.phpmailer.php');
 	require_once(APP_PATH."FrPHP/Extend/PHPMailer/class.smtp.php");
 	
@@ -1207,8 +1207,13 @@ function send_mail($send_mail,$password,$send_name,$to_mail,$title,$body,$email_
 		    $mail->Port = $port;
 		    $mail->SetFrom($send_mail, $send_name);
 		    $address = $to_mail;
-		    if($email_ext!=''){
-				 $mail->AddAddress($email_ext, $send_name);
+
+			if(is_array($email_ext)){
+				foreach($email_ext as $v){
+					$mail->AddAddress($v, $send_name);
+				}
+			}else if($email_ext!=''){
+				$mail->AddAddress($email_ext, $send_name);
 			}
 	        $mail->AddAddress($address, $send_name);
 		    $mail->isHTML(true);
@@ -1246,16 +1251,21 @@ function send_mail($send_mail,$password,$send_name,$to_mail,$title,$body,$email_
 	        $mail->CharSet = "utf-8"; // 这里指定字符集！
 
 	        $address = $to_mail;
-			if($email_ext!=''){
-				
-				 $mail->AddAddress($email_ext, $send_name);
+			
+			if(is_array($email_ext)){
+				foreach($email_ext as $v){
+					$mail->AddAddress($v, $send_name);
+				}
+			}else if($email_ext!=''){
+				$email_ext = explode(',',$email_ext);
+				foreach($email_ext as $v){
+					$mail->AddAddress($v, $send_name);
+				}
 			}
+
 	        $mail->AddAddress($address, $send_name);
 
 		}
-
-        
-
         if(!$mail->Send()) {
 
            // echo "Mailer Error: " . $mail->ErrorInfo;

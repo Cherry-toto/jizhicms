@@ -1221,7 +1221,11 @@ class UserController extends CommonController
 					$w['keywords'] = $this->frparam('keywords',1);
 					$w['litpic'] = $this->frparam('litpic',1);
 					$w['body'] = $data['body'];
-					$w['description'] = newstr(strip_tags($data['body']),200);
+					if($this->frparam('description',1)){
+						$w['description'] = $this->frparam('description',1);
+					}else{
+						$w['description'] = newstr(strip_tags($data['body']),200);
+					}
 					
 
 				break;

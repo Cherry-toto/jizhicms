@@ -70,16 +70,16 @@
 			   <a class="layui-btn layui-btn-danger layui-btn-sm" onclick="delAll()">{fun JZLANG('批量删除')}</a>
 		 {/if}	 
          {if(checkAction('Member/memberadd'))}		 
-			   <a class="layui-btn layui-btn-sm" onclick="x_admin_show('{fun JZLANG('新增会员')},'{fun U('Member/memberadd')}')">{fun JZLANG('新增会员')}</a>
+			   <a class="layui-btn layui-btn-sm" onclick="x_admin_show('{fun JZLANG('新增会员')}','{fun U('Member/memberadd')}')">{fun JZLANG('新增会员')}</a>
 		 {/if}  
 			
 		 </div>
 		</script>
 		<script type="text/html" id="isshow">
 		{if(checkAction('Member/change_status'))}
-		<input type="checkbox" value="{{d.id}}" name="switch" lay-filter="status"   lay-text="{fun JZLANG('正常|封禁')}}"  lay-skin="switch" {{#  if(d.isshow == 1){ }}checked{{#  } }}>
+		<input type="checkbox" value="{{d.id}}" name="switch" lay-filter="status"   lay-text="{fun JZLANG('正常|封禁')}"  lay-skin="switch" {{#  if(d.isshow == 1){ }}checked{{#  } }}>
 		{else}
-		{{#  if(d.isshow == 1){ }}<span class="layui-badge layui-bg-green">{fun JZLANG('正常')}}</span>{{# }else{ }}<span class="layui-badge">{fun JZLANG('封禁')}}</span>{{#  } }}
+		{{#  if(d.isshow == 1){ }}<span class="layui-badge layui-bg-green">{fun JZLANG('正常')}</span>{{# }else{ }}<span class="layui-badge">{fun JZLANG('封禁')}</span>{{#  } }}
 		{/if}
 		</script>
 

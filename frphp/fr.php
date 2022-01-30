@@ -58,16 +58,16 @@ class frphp
 		//引入系统函数
 		require(CORE_PATH.'/common/Functions.php');
 		//引入项目函数
-		$ext_fun = APP_PATH.'Conf/Functions.php';
+		$ext_fun = APP_PATH.'conf/Functions.php';
 		if(file_exists($ext_fun)){
 			require($ext_fun);
 		}
 		//引入扩展函数
-		$Extend = scandir(CORE_PATH.'/Extend');
+		$Extend = scandir(CORE_PATH.'/extend');
 		//var_dump($Extend);
 		foreach($Extend as $v){
 			if(strpos($v,'.php')!==false){
-				include  CORE_PATH.'/Extend/'.$v;
+				include  CORE_PATH.'/extend/'.$v;
 			}
 		}
 		

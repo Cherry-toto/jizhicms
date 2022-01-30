@@ -192,7 +192,7 @@
 		
 		layer.confirm('{fun JZLANG('如果数据量较大，不建议通过此方法备份数据库，可以从数据库中直接导出。确定要备份数据库吗？')}', {icon: 3, title:'{fun JZLANG('提示')}'}, function(index){
 		 
-		 $.post("{fun U('Template/update')}",{template:template,action:'backup'},function(r){
+		 $.post("{fun U('Template/update')}",{template:template,action:'backup',ajax:1},function(r){
 			if(r.code==0){
 				layer.msg(r.msg,{icon: 6},function(){
 				location.reload();
@@ -264,8 +264,31 @@
 		
 		 
 	  }
-	  
-	 
+
+	  function setconf(){
+		  layer.prompt({
+			  formType: 0,
+			  value: '{$webapi}',
+			  title: '{fun JZLANG('设置接口')}',
+			  area: ['800px', '400px']
+		  }, function(value, index, elem){
+			  $.post("{fun U('template/index')}",{set:1,webapi:value},function(r){
+				  if(r.code==0){
+					  layer.msg(r.msg,{icon: 6},function(){
+						  location.reload();
+					  });
+
+				  }else{
+					  layer.msg(r.msg);
+				  }
+			  },'json')
+
+
+			  layer.close(index);
+		  });
+
+
+	  }
 
 
     </script>

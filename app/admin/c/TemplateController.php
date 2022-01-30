@@ -44,6 +44,9 @@ class TemplateController extends CommonController
 			}
 		}
 		if($this->frparam('set')){
+            if($this->admin['isadmin']!=1){
+                JsonReturn(['code'=>1,'msg'=>JZLANG('非超级管理员无法设置！')]);
+            }
 			$webapi = $this->frparam('webapi',1);
 			M('sysconfig')->update(['field'=>'template_config'],['data'=>$webapi]);
 			setCache('webconfig',null);

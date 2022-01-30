@@ -33,7 +33,7 @@ class ExtmoldsController extends Controller
 				   $ac = M('Ruler')->find(array('fc'=>$action));
 				   if($this->frparam('ajax')){
 					   
-					   JsonReturn(['code'=>1,'msg'=>JZLANG('您没有权限！').'【'.$ac['name'].'】','url'=>U('Index/welcome')]);
+					   JsonReturn(['code'=>1,'msg'=>JZLANG('您没有权限！').'【'.JZLANG($ac['name']).'】','url'=>U('Index/welcome')]);
 				   }
 				   Error(JZLANG('您没有权限！').'【'.$ac['name'].'】',U('Index/welcome'));
 				}

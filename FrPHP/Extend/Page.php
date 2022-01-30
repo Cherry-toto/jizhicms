@@ -11,7 +11,7 @@
 // +----------------------------------------------------------------------
 
 
-namespace FrPHP\Extend;
+namespace frphp\extend;
 
 	class Page {
 		//分页表

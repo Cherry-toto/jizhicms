@@ -375,8 +375,8 @@ class Uploader
 	
 	//引入系统，并存入数据库
 	public function save_files($filename){
-		include_once('../../../../../FrPHP/Extend/DB_API.php');
-		$config = include('../../../../../Conf/config.php');
+		include_once('../../../../../frphp/extend/DB_API.php');
+		$config = include('../../../../../conf/config.php');
 		
 		$conf['db_host'] = $config['db']['host'];
 		$conf['db_port'] = $config['db']['port'];

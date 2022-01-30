@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html>
+  
+  <head>
+    <meta charset="UTF-8">
+   {include="style"}
+  </head>
+  
+  <body>
+    <div class="x-nav">
+      <span class="layui-breadcrumb">
+        <a href="/">{fun JZLANG('首页')}</a>
+        <a >{fun JZLANG('管理员管理')}</a>
+        <a><cite>{fun JZLANG('角色管理')}</cite></a>
+      </span>
+      <a class="layui-btn layui-btn-small" style="line-height:1.6em;margin-top:3px;float:right" href="javascript:location.replace(location.href);" title="{fun JZLANG('刷新')}">
+        <i class="iconfont" style="line-height:30px">&#xe6aa;</i></a>
+    </div>
+    <div class="x-body">
+	
+		<div class="layui-card">
+			<div class="layui-card-body">
+			<xblock>
+		    {if(checkAction('Admin/groupadd'))}
+			<a class="layui-btn layui-btn-sm" onclick="x_admin_show('{fun JZLANG('添加角色')}','{fun U('Admin/groupadd')}')">{fun JZLANG('添加角色')}</a>
+		    {/if}
+			<span class="x-right" style="line-height:40px">{fun JZLANG('共有数据：')}{$sum} {fun JZLANG('条')}</span>
+		    </xblock>
+      <table class="layui-table layui-form">
+        <thead>
+          <tr>
+           
+            <th>ID</th>
+            <th>{fun JZLANG('角色名')}</th>
+            <th>{fun JZLANG('描述')}</th>
+            <th>{fun JZLANG('状态')}</th>
+            <th>{fun JZLANG('操作')}</th>
+        </thead>
+        <tbody>
+		 {foreach $lists as $v}
+          <tr>
+           
+            <td>{$v['id']}</td>
+            <td>{$v['name']}</td>
+            <td>{$v['description']}</td>
+           
+            <td class="td-status">
+			{if(checkAction('Admin/change_group_status'))}
+              <input type="checkbox" value="{$v['id']}" name="switch" lay-filter="status"   lay-text="{fun JZLANG('正常|封禁')}"  lay-skin="switch" {if($v['isagree']==1)}checked{/if}></td>
+			{else}
+				{if($v['isagree']==1)}
+				<span class="layui-badge layui-bg-green">{fun JZLANG('正常')}</span>
+				{else}
+				<span class="layui-badge">{fun JZLANG('封禁')}</span>
+				{/if}
+			{/if}
+            <td class="td-manage">
+              {if(checkAction('Admin/groupedit'))}
+              <a class="layui-btn layui-btn layui-btn-xs"  onclick="x_admin_show('{fun JZLANG('编辑')}','{fun U('Admin/groupedit',array('id'=>$v['id']))}')" >{fun JZLANG('编辑')}</a>
+			  {/if}
+			  {if(checkAction('Admin/group_del'))}
+              <a class="layui-btn-danger layui-btn layui-btn-xs"  onclick="member_del(this,'{$v['id']}')" href="javascript:;" >{fun JZLANG('删除')}</a>
+			  {/if}
+              </a>
+            </td>
+          </tr>
+		  {/foreach}
+        </tbody>
+      </table>
+      <div class="page">
+         {$pages}
+      </div>
+			</div>
+		</div>
+    </div>
+    <script>
+      layui.use(['laydate','form'], function(){
+        var laydate = layui.laydate;
+        var form = layui.form;
+       
+		form.on('switch(status)', function (data) {
+			$.post("{fun U('change_group_status')}",{id:data.elem.value},function(r){ });
+		});
+      });
+
+    
+
+      /*用户-删除*/
+      function member_del(obj,id){
+          layer.confirm('{fun JZLANG('确认要删除吗？')}',function(index){
+              //发异步删除数据
+			  
+			  $.post("{fun U('Admin/group_del')}",{id:id},function(r){
+					var r = JSON.parse(r);
+					if(r.code==0){
+						$(obj).parents("tr").remove();
+						layer.msg('{fun JZLANG('已删除!')}',{icon:1,time:1000});
+					}else{
+						layer.msg(r.msg,{icon:5,time:1000});
+					}
+				 
+			  });
+			  
+             
+          });
+      }
+
+
+
+    </script>
+   
+  </body>
+
+</html>

@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html>
+    <head>
+	<meta charset="UTF-8">
+        {include="style"}
+    </head>
+    <body>
+        <div class="x-nav">
+            <span class="layui-breadcrumb">
+              <a><cite>{fun JZLANG('首页')}</cite></a>
+              <a><cite>{fun JZLANG('扩展管理')}</cite></a>
+              <a><cite>{fun JZLANG('权限列表')}</cite></a>
+              
+            </span>
+            <a class="layui-btn layui-btn-small" style="line-height:1.6em;margin-top:3px;float:right"  href="javascript:location.replace(location.href);" title="{fun JZLANG('刷新')}"><i class="iconfont" style="line-height:30px">&#xe6aa;</i></a>
+        </div>
+        <div class="x-body">
+          
+		<div class="layui-card">
+			<div class="layui-card-body">
+			 <xblock>
+			<form class="layui-form" action="">
+			 {if(checkAction('Rulers/addrulers'))}
+			 <a class="layui-btn layui-btn-sm" onclick="x_admin_show('{fun JZLANG('添加权限')}','{fun U('Rulers/addrulers')}')">{fun JZLANG('添加权限')}</a>
+			 {/if}
+			  <div class="layui-input-inline" style="float: right;">
+				  <input type="checkbox" value="1" name="switch" lay-filter="type"  lay-text="{fun JZLANG('展开|折叠')}" lay-skin="switch">
+			  </div>
+			</form>
+			</xblock>
+            <table class="layui-table">
+                <thead>
+                    <tr>
+                        
+                        <th>
+                            ID
+                        </th>
+                       
+                        <th>
+                            {fun JZLANG('功能')}
+                        </th>
+						
+						<th>
+                            {fun JZLANG('控制器/方法')}
+                        </th>
+						<th>
+                            {fun JZLANG('归属')}
+                        </th>
+                        <th>
+                            {fun JZLANG('操作')}
+                        </th>
+                    </tr>
+                </thead>
+                <tbody class="x-cate">
+		{foreach $lists as $v}
+          <tr cate-id="{$v['id']}" fid="{$v['pid']}" {if($v['pid']!=0)}style="display:none;"{/if}>
+            
+			
+            <td>{$v['id']}</td>
+            <td>
+			  {fun str_repeat('&nbsp;&nbsp;&nbsp;',$v['level'])}
+			  {if($v['haschild'])}
+			  <i class="layui-icon x-show" status='true'>&#xe623;</i>
+			  {else}
+			  {if($v['level'])}|——{/if}
+			  {/if}
+			  {fun JZLANG($v['name'])}
+            </td>
+			<td>{$v['fc']}</td>
+			<td class="td-status" >
+			{if($v['sys']==1)}<span class="layui-badge layui-bg-gray">{fun JZLANG('系统')}</span>{else}<span class="layui-badge layui-bg-orange">{fun JZLANG('插件')}</span>{/if}
+             </td>
+            <td class="td-manage">
+			{if(checkAction('Rulers/editrulers'))}
+              <a class="layui-btn layui-btn layui-btn-xs"  onclick="x_admin_show('{fun JZLANG('编辑')}','{fun U('Rulers/editrulers',array('id'=>$v['id']))}')" >{fun JZLANG('编辑')}</a>
+			{/if}
+			{if(checkAction('Rulers/addrulers'))}
+				{if($v['pid']==0)}
+				<a class="layui-btn layui-btn-warm layui-btn-xs"  onclick="x_admin_show('{fun JZLANG('添加子功能')}','{fun U('Rulers/addrulers',array('pid'=>$v['id']))}')" >{fun JZLANG('添加子功能')}</a>
+				{/if}
+			{/if}
+			{if(checkAction('Rulers/deleterulers'))}
+              <a class="layui-btn-danger layui-btn layui-btn-xs"  onclick="ruler_del(this,'{$v['id']}')" href="javascript:;" >{fun JZLANG('删除')}</a>
+			{/if}
+            </td>
+          </tr>
+		 {/foreach}
+         
+        </tbody>
+            </table>
+			
+			
+			</div>
+		</div>
+		  
+         
+			
+            
+        </div>
+     
+       <script>
+	  
+	   
+	    layui.use(['laydate','form','element','laypage','layer'], function(){
+                $ = layui.jquery;//jquery
+              laydate = layui.laydate;//日期插件
+              lement = layui.element;//面包导航
+            //  laypage = layui.laypage;//分页
+              layer = layui.layer;//弹出层
+			  form = layui.form;
+             
+              form.on('select(tid)', function(data){
+					
+					$("#myform").submit();
+				
+			 });
+              form.on('switch(type)', function(data){
+				if(!data.elem.checked){
+					$(".x-cate tr").each(function(){
+						if($(this).attr('fid')!=0){
+							$(this).css('display','none');
+						}
+					});
+					$(".x-show").attr('status','true').html('&#xe623;');
+				}else{
+					
+					$(".x-cate tr").each(function(){
+						if($(this).attr('fid')!=0){
+							$(this).css('display','table-row');
+						}
+					});
+					$(".x-show").attr('status','false').html('&#xe625;');
+				}
+			});  
+              
+            });
+		 /*删除*/
+            function ruler_del(obj,id){
+                layer.confirm('{fun JZLANG('确认要删除吗？')}',function(index){
+				
+					$.post("{fun U('Rulers/deleterulers')}",{id:id},function(r){
+							var r = JSON.parse(r);
+							if(r.code==0){
+							 //发异步删除数据
+								$(obj).parents("tr").remove();
+								
+								layer.msg(r.msg,{icon: 1,time:1000});
+								window.location.reload();
+								
+								
+							}else{
+								
+								layer.msg(r.msg,{icon: 5,time:1000});
+							}
+					})
+					
+				
+                   
+                });
+            }
+			
+			
+			
+       </script>
+    </body>
+</html>

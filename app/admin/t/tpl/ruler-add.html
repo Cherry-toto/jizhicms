@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html>
+  
+  <head>
+    <meta charset="UTF-8">
+  {include="style"}
+ 
+  </head>
+  
+  <body>
+    <div class="x-body">
+        <form class="layui-form layui-form-pane">
+		
+		<div class="layui-tab">
+			  <ul class="layui-tab-title">
+				<li class="layui-this">{fun JZLANG('基本信息')}</li>
+				<!--li>扩展信息</li-->
+				
+			  </ul>
+			  <div class="layui-tab-content">
+				<div class="layui-tab-item layui-show">
+				
+		<div class="layui-form-item">
+			<label for="pid" class="layui-form-label">
+				<span class="x-red">*</span>{fun JZLANG('选择上级')}
+			</label>
+			<div class="layui-input-inline">
+				<select name="pid" id="pid" >
+			   <option value="0">{fun JZLANG('顶级')}</option>
+			   {foreach $rulers as $v}
+			   <option {if($pid==$v['id'])} selected="selected" {/if}  value="{$v['id']}">{$v['name']}</option>
+			   {/foreach}
+			
+			   </select>
+			</div>
+        </div>
+		 <div class="layui-form-item">
+              <label for="name" class="layui-form-label">
+                  <span class="x-red">*</span>{fun JZLANG('功能')}
+              </label>
+              <div class="layui-input-inline">
+                  <input type="text" id="name" name="name" required="" lay-verify="required"
+                  autocomplete="off" class="layui-input">
+              </div>
+              <div class="layui-form-mid layui-word-aux">
+                 
+              </div>
+          </div>
+          <div class="layui-form-item">
+              <label for="fc" class="layui-form-label">
+                  <span class="x-red">*</span>{fun JZLANG('函数名')}
+              </label>
+              <div class="layui-input-inline">
+                  <input type="text" id="fc" name="fc" required="" lay-verify="required"
+                  autocomplete="off" class="layui-input">
+              </div>
+              <div class="layui-form-mid layui-word-aux">
+                {fun JZLANG('对应的控制器/函数，如果是顶级，则只需要写控制器名')}
+              </div>
+          </div>
+		  
+		
+		  <div class="layui-form-item" pane>
+				<label for="sys" class="layui-form-label">
+					<span class="x-red"></span>{fun JZLANG('归属')}
+				</label>
+				<div class="layui-input-inline">
+					<input type="radio" name="sys" value="0" title="{fun JZLANG('插件')}" checked>
+					<input type="radio" name="sys" value="1" title="{fun JZLANG('系统')}" >
+				</div>
+				 
+				
+		  </div>
+		  <div class="layui-form-item" pane>
+				<label for="isdesktop" class="layui-form-label">
+					<span class="x-red"></span>{fun JZLANG('独立功能')}
+				</label>
+				<div class="layui-input-inline">
+					<input type="radio" name="isdesktop" value="0" title="{fun JZLANG('否')}" checked>
+					<input type="radio" name="isdesktop" value="1" title="{fun JZLANG('是')}" >
+				</div>
+				<div class="layui-form-mid layui-word-aux">
+                {fun JZLANG('桌面管理配置时，将调用独立功能')}
+				</div>
+				
+		  </div>
+		  
+		  {if($webconf['isrelative']==1)}
+			<span id="ext_fields"></span>
+		  {/if}
+		  
+				</div>
+				<div class="layui-tab-item">
+				
+				{if($webconf['isrelative']==0)}
+				<span id="ext_fields"></span>
+				{/if}
+				
+				</div>
+			  </div>
+		</div>
+				
+		
+		
+		
+          <input type="hidden" id="go" name="go" value="1">
+          <div class="layui-form-item" style="text-align:center;">
+              
+              <button  class="layui-btn" lay-filter="add" lay-submit="">
+                  {fun JZLANG('添加')}
+              </button>
+          </div>
+      </form>
+    </div>
+    <script>
+	{include="fields"}
+        layui.use(['form','layer','upload'], function(){
+            $ = layui.jquery;
+          var form = layui.form
+          ,layer = layui.layer;
+         var upload = layui.upload;
+         get_fields(0);
+		
+          //监听提交
+          form.on('submit(add)', function(data){
+            
+					$.post('{fun U('Rulers/addrulers')}',data.field,function(r){
+					
+					
+						r = JSON.parse(r);
+
+						if(r.status==0){
+							layer.msg(r.info, {
+							  icon:5
+							});
+						}else{
+							layer.msg('{fun JZLANG('添加成功！')}', {
+							 time:1000,icon:6
+							},function(){
+								  {if($webconf['admintpl']=='tpl')}
+								  window.location.href="{fun U('Rulers/index')}";
+								  {else}
+								 
+								  parent.location.reload();
+								  parent.layer.close(index);
+								  {/if}
+							});
+							 
+						}
+					});
+                return false;
+          });
+		  
+		   
+          
+          
+        });
+    </script>
+    
+  </body>
+
+</html>

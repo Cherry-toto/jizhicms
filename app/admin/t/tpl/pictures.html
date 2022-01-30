@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html>
+    <head>
+	<meta charset="UTF-8">
+        {include="style"}
+    </head>
+    <body>
+        <div class="x-nav">
+            <span class="layui-breadcrumb">
+              <a><cite>{fun JZLANG('首页')}</cite></a>
+              <a><cite>{fun JZLANG('图库管理')}</cite></a>
+              
+            </span>
+            <a class="layui-btn layui-btn-small" style="line-height:1.6em;margin-top:3px;float:right"  href="javascript:location.replace(location.href);" title="{fun JZLANG('刷新')}"><i class="iconfont" style="line-height:30px">&#xe6aa;</i></a>
+        </div>
+        <div class="x-body">
+		<div class="layui-card">
+		  <div class="layui-card-body">
+          <div class="layui-row">
+			<div class="layui-collapse">
+		    <div class="layui-colla-item">
+			<h2 class="layui-colla-title">{fun JZLANG('搜索')}</h2>
+				<div class="layui-colla-content layui-show">
+				<div class="layui-row">
+					<form class="layui-form layui-col-md12 x-so" method="get" id="myform">
+					<div class="layui-input-inline">
+					  <select name="path" lay-filter="path" class="layui-inline autosubmit">
+					  <option value="">{fun JZLANG('筛选上传入口')}</option>
+					   <option {if($path=='Admin')} selected="selected" {/if}value="Admin">{fun JZLANG('后台')}</option>
+					   <option {if($path=='Home')} selected="selected" {/if}value="Home">{fun JZLANG('前台')}</option>
+					  </select>
+					</div>
+					<div class="layui-input-inline">
+					  <select name="molds" lay-filter="molds" lay-search="" class="layui-inline autosubmit">
+					   <option value="">{fun JZLANG('筛选模块')}</option>
+					   <option value="other" {if($molds=='other')} selected="selected" {/if}>{fun JZLANG('其他杂项')}</option>
+					   <option value="sysconfig" {if($molds=='sysconfig')} selected="selected" {/if}>{fun JZLANG('系统配置')}</option>
+					   {loop table="molds" orderby="id asc" isopen="1" as="v"}
+					   <option {if($molds==$v['biaoshi'])} selected="selected" {/if}value="{$v['biaoshi']}">{$v['name']}</option>
+					   {/loop}
+					  
+					  </select>
+					</div>
+					<div class="layui-input-inline">
+					  <select name="tid" lay-filter="tid" lay-search="" class="layui-inline autosubmit">
+					  <option value="">{fun JZLANG('筛选栏目')}</option>
+					   {foreach $classtypes as $v}
+					 
+					   <option {if($tid==$v['id'])} selected="selected" {/if}value="{$v['id']}">{fun str_repeat('--', $v['level'])}{$v['classname']}</option>
+					  
+					   {/foreach}
+					
+					  </select>
+					</div>
+					
+					  <button class="layui-btn"  lay-submit="" lay-filter="search"><i class="layui-icon">&#xe615;</i></button>
+					</form>
+				</div>
+				</div>
+		    </div>
+         </div> 
+		  
+		  </div>
+          <xblock>
+		  <a class="layui-btn layui-btn-danger layui-btn-sm" onclick="delAll()">{fun JZLANG('批量删除')}</a>
+		  
+		
+		   <span class="x-right" style="line-height:40px">{fun JZLANG('共有数据：')}{$sum} {fun JZLANG('条')}</span>
+		  </xblock>
+          
+        <table border="1" rules="all" style="width:100%; height:100px; text-align:center;white-space:nowrap" class="layui-table layui-form">
+                <thead>
+                    <tr>
+                        <th>
+						  <div class="layui-unselect header layui-form-checkbox" lay-skin="primary"><i class="layui-icon">&#xe605;</i></div>
+						</th>
+                        <th>
+                            ID
+                        </th>
+                        <th>
+                            {fun JZLANG('上传前台')}
+                        </th>
+						<th>
+                            {fun JZLANG('缩略图')}
+                        </th>
+                        <th>
+                            {fun JZLANG('所属栏目')}
+                        </th>
+                        <th>
+                            {fun JZLANG('所属模块')}
+                        </th>
+						<th>
+                            {fun JZLANG('本地文件')}
+                        </th>
+						<th>
+                            {fun JZLANG('文件大小')}
+                        </th>
+						<th>
+                            {fun JZLANG('添加时间')}
+                        </th>
+						
+                        <th>
+                            {fun JZLANG('操作')}
+                        </th>
+                    </tr>
+                </thead>
+                <tbody id="x-link">
+				  {foreach $lists as $v}
+                    <tr>
+                     <td>
+					  <div class="layui-unselect layui-form-checkbox" lay-skin="primary" data-id='{$v['id']}'><i class="layui-icon">&#xe605;</i></div>
+					</td>
+                        <td>
+                            {$v['id']}
+                        </td>
+                        <td>
+                            {if($v['path']=='Home')}{fun JZLANG('前台')}{else}{fun JZLANG('后台')}{/if}
+                        </td>
+                        
+						<td>
+                           {if(in_array($v['filetype'],['png','gif','jpg','jpeg']))}<img src="{$v['litpic']}" width="100px" />{else}{$v['filetype']}{/if}
+                        </td>
+                        <td>
+						 {if($v['tid']==0)}-{else}{$classtypedata[$v['tid']]['classname']}{/if}
+						</td>
+						 <td>
+						 {if($v['molds']=='' || empty($v['molds']))}{fun JZLANG('其他')}{else}{if($v['molds']=='sysconfig')}{fun JZLANG('系统配置')}{else}{fun get_info_table('molds',['biaoshi'=>$v['molds']],'name')}{/if}{/if}
+						</td>
+						<td>
+						{$v['litpic']}
+						</td>
+						
+						<td>
+						{$v['size']} kb
+						</td>
+						
+					
+						<td>
+                            {fun date('Y-m-d H:i:s',$v['addtime'])} 
+                        </td>
+                        <td class="td-manage">
+							<button class="layui-btn-danger layui-btn layui-btn-xs"  onclick="article_del(this,'{$v['id']}')" href="javascript:;" >{fun JZLANG('删除')}</button>
+                        </td>
+						
+                    </tr>
+					{/foreach}
+                </tbody>
+            </table>
+		 
+            <div class="page">
+				{$pages}
+			  </div>
+        </div>
+        </div>
+        </div>
+       <script>
+	  
+	   
+	    layui.use(['laydate','form','element','laypage','layer'], function(){
+                $ = layui.jquery;//jquery
+              laydate = layui.laydate;//日期插件
+              lement = layui.element;//面包导航
+              layer = layui.layer;//弹出层
+			  form = layui.form;
+              //以上模块根据需要引入
+              form.on('select(tid)', function(data){
+				$("#myform").submit();
+			  });
+			  form.on('select(molds)', function(data){
+				$("#myform").submit();
+			  });
+			  form.on('select(path)', function(data){
+				$("#myform").submit();
+			  });
+			 
+              
+            });
+			
+			
+			  
+			
+		 /*删除*/
+            function article_del(obj,id){
+                layer.confirm('{fun JZLANG('确认要删除吗？')}',function(index){
+				
+					$.get("{__APP_URL__}/Sys/deletePic/id/"+id,{},function(r){
+							var r = JSON.parse(r);
+							if(r.code==0){
+							 //发异步删除数据
+								$(obj).parents("tr").remove();
+								
+								layer.msg(r.msg,{icon: 1,time:1000});
+								window.location.reload();
+								
+							}else{
+								
+								layer.msg(r.msg,{icon: 5,time:1000});
+							}
+					})
+					
+				
+                   
+                });
+            }
+			
+			
+			
+			 function delAll () {
+
+				var data = tableCheck.getData();
+				if(data==''){
+					alert('{fun JZLANG('请选择对象！')}');return false;
+				}
+				layer.confirm('{fun JZLANG('确认要删除吗？')}'+data,function(index){
+					
+					$.get("{__APP_URL__}/Sys/deletePicAll/data/"+data,{},function(r){
+					
+							var r = JSON.parse(r);
+							if(r.code==0){
+							  layer.msg('{fun JZLANG('批量删除成功')}', {icon: 1});
+							  $(".layui-form-checked").not('.header').parents('tr').remove();
+								
+							}else{
+								
+								layer.msg(r.msg,{icon: 5,time:1000});
+							}
+					})
+					
+					
+					
+				});
+			  }
+			
+			  
+			
+			
+       </script>
+    </body>
+</html>

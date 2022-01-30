@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html>
+    
+    <head>
+       <meta charset="UTF-8">
+        {include="style"}
+		{include="edit"}
+		
+    </head>
+    
+    <body>
+	 <div class="x-nav">
+            <span class="layui-breadcrumb">
+              <a><cite>{fun JZLANG('首页')}</cite></a>
+              <a><cite>{fun JZLANG('扩展管理')}</cite></a>
+             
+			 <a><cite>{fun JZLANG('修改轮播图')}</cite></a>
+            </span>
+            <a class="layui-btn layui-btn-small" style="line-height:1.6em;margin-top:3px;float:right"  href="javascript:location.replace(location.href);" title="{fun JZLANG('刷新')}"><i class="iconfont" style="line-height:30px">&#xe6aa;</i></a>
+        </div>
+        <div class="x-body">
+            <form class="layui-form layui-form-pane" >
+			<input type="hidden" name="go" value="1" />
+			<input type="hidden" name="id" value="{$data['id']}" />
+			
+			<div class="layui-tab">
+			  <ul class="layui-tab-title">
+				<li class="layui-this">{fun JZLANG('基本')}</li>
+				<li>{fun JZLANG('扩展')}</li>
+				
+			  </ul>
+			  <div class="layui-tab-content">
+				<div class="layui-tab-item layui-show">
+				 <div class="layui-form-item">
+                    <label for="title" class="layui-form-label">
+                        <span class="x-red">*</span>{fun JZLANG('标题')}
+                    </label>
+                    <div class="layui-input-inline">
+                        <input type="text" id="title" value="{$data['title']}" style="width:500px;"  name="title" required="" lay-verify="required"
+                        autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+				<div class="layui-form-item">
+                    <label for="tid" class="layui-form-label">
+                        <span class="x-red">*</span>{fun JZLANG('所属分类')}
+                    </label>
+                    <div class="layui-input-inline">
+						<select name="tid" id="tid" lay-search="" >
+						<option value="0">{fun JZLANG('选择分类')}</option>
+					   {foreach $collect_type as $v}
+					   <option {if($data['tid']==$v['id'])} selected="selected" {/if}  value="{$v['id']}">{$v['name']}</option>
+					   {/foreach}
+					   </select>
+                    </div>
+                </div>
+				
+				
+				<div class="layui-form-item layui-form-text">
+                        <label for="description" class="layui-form-label">
+                            <span class="x-red"></span>{fun JZLANG('简介')}
+                        </label>
+                        <div class="layui-input-block">
+                            <textarea  name="description" class="layui-textarea">{$data['description']}</textarea>
+                        </div>
+                </div>
+				<div class="layui-form-item">
+                    <label for="litpic" class="layui-form-label">
+						<span class="x-red">*</span>{fun JZLANG('图片')}
+                    </label>
+                    
+					<div class="layui-input-inline">
+						<input name="litpic" placeholder="{fun JZLANG('上传图片')}" type="text" class="layui-input" id="litpic"  value="{$data['litpic']}" />
+					</div>
+					<div class="layui-input-inline">
+						<button class="layui-btn layui-btn-primary" id="litpic_upload" type="button" >{fun JZLANG('选择图片')}</button>
+					</div>
+					<div class="layui-input-inline">
+						<img id="litpic_img" class="img-responsive img-thumbnail" style="max-width: 200px;" src="{$data['litpic']}" onerror="javascipt:this.src='{__Tpl_style__}/style/images/nopic.jpg'; this.title='{fun JZLANG('图片未找到')}';this.onerror=''">
+						<button type="button" onclick="deleteImage(this)" class="layui-btn layui-btn-sm layui-btn-radius layui-btn-danger " title="{fun JZLANG('删除这张图片')}" >{fun JZLANG('删除')}</button>
+					</div>
+                </div>
+				
+				<div class="layui-form-item">
+                    <label for="h" class="layui-form-label">
+                        <span class="x-red"></span>{fun JZLANG('图片高')}
+                    </label>
+                    <div class="layui-input-inline">
+                        <input type="text"  placeholder="{fun JZLANG('0表示不限制')}" value="{$data['h']}" style="width:500px;" name="h"
+                        autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+				<div class="layui-form-item">
+                    <label for="w" class="layui-form-label">
+                        <span class="x-red"></span>{fun JZLANG('图片宽')}
+                    </label>
+                    <div class="layui-input-inline">
+                        <input type="text"  placeholder="{fun JZLANG('0表示不限制')}" value="{$data['w']}" style="width:500px;" name="w"
+                        autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+				
+				 <div class="layui-form-item">
+                    <label for="url" class="layui-form-label">
+                        <span class="x-red"></span>{fun JZLANG('跳转链接')}
+                    </label>
+                    <div class="layui-input-inline">
+                        <input type="text" id="url" value="{$data['url']}" style="width:500px;"  name="url" 
+                        autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+				<span id="content_fields"></span>
+				<div class="layui-form-item">
+                    <label for="orders" class="layui-form-label">
+                        <span class="x-red"></span>{fun JZLANG('排序')}
+                    </label>
+                    <div class="layui-input-inline">
+                        <input type="number" id="orders" value="{$data['orders']}" name="orders" 
+                        autocomplete="off" class="layui-input">
+                    </div>
+					 <div class="layui-form-mid layui-word-aux">
+					  {fun JZLANG('数字越大越靠前')}
+				  </div>
+					
+                </div>
+				<div class="layui-form-item" pane>
+                    <label for="isshow" class="layui-form-label">
+                        <span class="x-red"></span>{fun JZLANG('是否显示')}
+                    </label>
+                    <div class="layui-input-inline">
+                        <input type="radio" name="isshow" value="0" title="{fun JZLANG('不显示')}" {if($data['isshow']==0)}checked{/if}>
+						<input type="radio" name="isshow" value="1" title="{fun JZLANG('显示')}" {if($data['isshow']==1)}checked{/if}>
+                    </div>
+					 
+					
+                </div>
+				
+				 <div class="layui-form-item">
+                    <label for="addtime" class="layui-form-label">
+                        <span class="x-red"></span>{fun JZLANG('更新时间')}
+                    </label>
+                    <div class="layui-input-inline">
+                      <input class="layui-input" value="{if($data)}{fun date('Y-m-d H:i:s',$data['addtime'])}{else}{fun date('Y-m-d H:i:s')}{/if}" name="addtime" placeholder="{fun JZLANG('选择时间')}" id="LAY_demorange_s">
+                    </div>
+                   
+                </div>
+				
+
+				</div>
+				<div class="layui-tab-item">
+				<span id="ext_fields"></span>
+				
+				</div>
+			  </div>
+			</div>
+               
+                <div class="layui-form-item" style="text-align:center;">
+                    
+                     <button  class="layui-btn" lay-filter="save" lay-submit="">
+                        {fun JZLANG('保存')}
+                    </button>
+                </div>
+            </form>
+        </div>
+		<br/>
+		<br/>
+		<br/>
+		<br/>
+		<br/>
+		<br/>
+		<br/>
+		<br/>
+		<br/>
+      
+        <script>
+			{include="fields"}
+			function deleteImage(elm){
+				$(elm).prev().attr("src", "{__Tpl_style__}/style/images/nopic.jpg");
+				$('#litpic').val("");
+			}
+            layui.use(['laydate','form','layer','upload'], function(){
+                $ = layui.jquery;
+              var form = layui.form
+              ,layer = layui.layer,laydate = layui.laydate;
+		
+			  laydate.render({
+				elem: '#LAY_demorange_s', //指定元素
+				type:'datetime'
+			  });
+			  var upload = layui.upload;
+			
+              //图片上传接口
+              upload.render({
+			    elem: '#litpic_upload',
+                url: "{fun U('Common/uploads')}" //上传接口
+                ,data:{tid:function(){ return $("#tid").val();},molds:'collect'}
+                ,done: function(res){ //上传成功后的回调
+                 
+					if(res.code==0){
+						 $('#litpic_img').attr('src',res.url);
+						 $('#litpic').val(res.url);
+					}else{
+						 layer.alert(res.error, {icon: 5});
+					}
+                 
+                }
+              });
+			  
+			    //监听提交
+              form.on('submit(save)', function(data){
+                
+				$.post("{fun U('editcollect')}",data.field,function(r){
+					var r = JSON.parse(r);
+					if(r.code==0){
+						 layer.msg(r.msg, {icon: 6,time: 2000},function () {
+							{if($webconf['admintpl']=='tpl')}
+							window.location.href="{fun U('Collect/index')}";
+							{else}
+							parent.location.reload();
+							{/if}
+							
+						});
+					}else{
+						layer.alert(r.msg, {icon: 5});
+					}
+				});
+				
+               
+                return false;
+              });
+            get_fields(0,{$data['id']});
+            get_fields_ext(0,{$data['id']});
+			
+           
+              
+              
+            });
+        </script>
+      
+    </body>
+
+</html>

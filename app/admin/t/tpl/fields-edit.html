@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html>
+    
+    <head>
+       <meta charset="UTF-8">
+        {include="style"}
+		<style>
+		.layui-form-item .layui-input-inline {
+			width: 210px;
+		}
+		</style>
+    </head>
+    
+    <body>
+	 <div class="x-nav">
+            <span class="layui-breadcrumb">
+              <a><cite>{fun JZLANG('首页')}</cite></a>
+              <a><cite>{fun JZLANG('系统扩展')}</cite></a>
+              <a><cite>{fun JZLANG('模块管理')}</cite></a>
+              <a><cite>{fun JZLANG('字段管理')}</cite></a>
+			  <a><cite>{fun JZLANG('修改字段')}</cite></a>
+            </span>
+            <a class="layui-btn layui-btn-small" style="line-height:1.6em;margin-top:3px;float:right"  href="javascript:location.replace(location.href);" title="{fun JZLANG('刷新')}"><i class="iconfont" style="line-height:30px">&#xe6aa;</i></a>
+        </div>
+        <div class="x-body">
+            <form class="layui-form layui-form-pane" >
+			<input type="hidden" name="go" value="1" />
+			<input type="hidden" name="id" value="{$data['id']}" />
+			<input type="hidden" name="molds" value="{$data['molds']}" />
+			
+			
+			<div class="layui-tab">
+			  <ul class="layui-tab-title">
+				<li class="layui-this">{fun JZLANG('基本信息')}</li>
+				{if($data['molds']=='level')}
+				<li>{fun JZLANG('角色绑定')}</li>
+				{else}
+				<li>{fun JZLANG('栏目绑定')}</li>
+				{/if}
+				
+			  </ul>
+			  <div class="layui-tab-content">
+				<div class="layui-tab-item layui-show">
+				 <div class="layui-form-item">
+                    <label for="fieldname" class="layui-form-label">
+                        <span class="x-red">*</span>{fun JZLANG('字段名称')}
+                    </label>
+                    <div class="layui-input-inline">
+                        <input type="text" id="fieldname" value="{$data['fieldname']}"  name="fieldname" required="" lay-verify="required"
+                        autocomplete="off" class="layui-input">
+                    </div>
+					<div class="layui-form-mid layui-word-aux" >
+					  {fun JZLANG('简短的名称')}
+				    </div>
+                </div>
+				
+				 <div class="layui-form-item">
+                    <label for="field" class="layui-form-label">
+                        <span class="x-red">*</span>{fun JZLANG('字段标识')}
+                    </label>
+                    <div class="layui-input-inline">
+                        <input type="text" id="field"  value="{$data['field']}" name="field" 
+                        autocomplete="off" required="" lay-verify="required" class="layui-input">
+                    </div>
+					<div class="layui-form-mid layui-word-aux" >
+					  {fun JZLANG('只能英文字母[或者后面+数字]，必须含有英文字母，小写字母，简短')}
+				    </div>
+                </div>
+				<div class="layui-form-item" pane>
+                    <label for="fieldtxt" class="layui-form-label">
+                        <span class="x-red">*</span>{fun JZLANG('字段类型')}
+                    </label>
+                    <div class="layui-input-block">
+					  <table class="layui-table">
+						<tbody>
+						  <tr>
+							<td>{fun JZLANG('选择')}</td>
+							<td>{fun JZLANG('长度')}</td>
+							<td>{fun JZLANG('内容')}</td>
+							<td>{fun JZLANG('说明')}</td>
+						
+						  </tr>
+						  <tr>
+							<td><input type="radio" name="fieldtype" {if($data['fieldtype']==1)} checked {/if} value="1" /></td>
+							<td><input type="text" class="layui-input" name="fieldlong_1" value="{if($data['fieldtype']==1)}{$data['fieldlong']}{else}255{/if}" ></td>
+							<td>{fun JZLANG('无')}</td>
+							<td>{fun JZLANG('单行文本')}</td>
+						  </tr>
+						  <tr>
+							<td><input type="radio" name="fieldtype" {if($data['fieldtype']==2)} checked {/if} value="2" /></td>
+							<td><input type="text" class="layui-input" name="fieldlong_2"  value="{if($data['fieldtype']==2)}{$data['fieldlong']}{else}500{/if}"></td>
+							<td>{fun JZLANG('无')}</td>
+							<td>{fun JZLANG('多行文本')}</td>
+						  </tr>
+						  <tr>
+							<td><input type="radio" name="fieldtype" {if($data['fieldtype']==3)} checked {/if} value="3" /></td>
+							<td>{fun JZLANG('不限')}</td>
+							<td>{fun JZLANG('无')}</td>
+							<td>{fun JZLANG('带编辑器文本')}</td>
+						   </tr>
+						   <tr>
+							<td><input type="radio" name="fieldtype" {if($data['fieldtype']==4)} checked {/if} value="4" /></td>
+							<td><input type="text" class="layui-input" name="fieldlong_4"  value="{if($data['fieldtype']==4)}{$data['fieldlong']}{else}11{/if}"></td>
+							<td>{fun JZLANG('无')}</td>
+							<td>{fun JZLANG('只能填写数字，长度不能超过11位')}</td>
+						   </tr>
+						   <tr>
+							<td><input type="radio" name="fieldtype" {if($data['fieldtype']==14)} checked {/if} value="14" /></td>
+							<td><input type="text" class="layui-input" name="fieldlong_14" value="{if($data['fieldtype']==14)}{$data['fieldlong']}{else}10,2{/if}"></td>
+							<td><input type="text" class="layui-input" name="body_14" value="{if($data['fieldtype']==14)}{$data['body']}{else}0.00{/if}"></div></td>
+							<td>{fun JZLANG('金钱，小数等，保留2位')}</td>
+						   </tr>
+						    <tr>
+							<td><input type="radio" name="fieldtype" {if($data['fieldtype']==11)} checked {/if} value="11" /></td>
+							<td><input type="hidden" class="layui-input" name="fieldlong_11"  value="{if($data['fieldtype']==11)}{$data['fieldlong']}{else}11{/if}">11</td>
+							<td>{fun JZLANG('无')}</td>
+							<td>{fun JZLANG('时间日期')}</td>
+						   </tr>
+						   
+						   <tr>
+							<td><input type="radio" name="fieldtype" {if($data['fieldtype']==5)} checked {/if} value="5" /></td>
+							<td><input type="text" class="layui-input" name="fieldlong_5" value="{if($data['fieldtype']==5)}{$data['fieldlong']}{else}255{/if}"></td>
+							<td>{fun JZLANG('无')}</td>
+							<td>{fun JZLANG('单图片')}</td>
+						   </tr>
+						   <tr>
+							<td><input type="radio" name="fieldtype" {if($data['fieldtype']==6)} checked {/if} value="6" /></td>
+							<td>{fun JZLANG('不限')}</td>
+							<td>{fun JZLANG('无')}</td>
+							<td>{fun JZLANG('多图，图集')}</td>
+						   </tr>
+						   <tr>
+							<td><input type="radio" name="fieldtype" {if($data['fieldtype']==7)} checked {/if} value="7" /></td>
+							<td><input type="text" class="layui-input" name="fieldlong_7" value="{if($data['fieldtype']==7)}{$data['fieldlong']}{else}500{/if}"></td>
+							<td><textarea placeholder="{fun JZLANG('红=1,黄=2,蓝=3')}"  name="body_7" class="layui-textarea">{if($data['fieldtype']==7)}{$data['body']}{else}{/if}</textarea></td>
+							<td>{fun JZLANG('单项选择，下拉选择，如：红=1,黄=2,蓝=3')}</td>
+						   </tr>
+						   <tr>
+							<td><input type="radio" name="fieldtype" {if($data['fieldtype']==12)} checked {/if} value="12" /></td>
+							<td><input type="text" class="layui-input" name="fieldlong_12" value="{if($data['fieldtype']==12)}{$data['fieldlong']}{else}500{/if}"></td>
+							<td><textarea placeholder="{fun JZLANG('红=1,黄=2,蓝=3')}"  name="body_12" class="layui-textarea">{if($data['fieldtype']==12)}{$data['body']}{else}{/if}</textarea></td>
+							<td>{fun JZLANG('单项选择，按钮选择，如：红=1,黄=2,蓝=3')}</td>
+						   </tr>
+						   <tr>
+							<td><input type="radio" name="fieldtype" {if($data['fieldtype']==8)} checked {/if} value="8" /></td>
+							<td><input type="text" class="layui-input" name="fieldlong_8" value="{if($data['fieldtype']==8)}{$data['fieldlong']}{else}500{/if}"></td>
+							<td><textarea placeholder="{fun JZLANG('红=1,黄=2,蓝=3')}"  name="body_8" class="layui-textarea">{if($data['fieldtype']==8)}{$data['body']}{else}{/if}</textarea></td>
+							<td>{fun JZLANG('多项选择，如：红=1,黄=2,蓝=3')}</td>
+						   </tr>
+						   <tr>
+							<td><input type="radio" name="fieldtype" {if($data['fieldtype']==9)} checked {/if}  value="9" /></td>
+							<td><input type="text" class="layui-input" name="fieldlong_9" value="{if($data['fieldtype']==9)}{$data['fieldlong']}{else}255{/if}"></td>
+							<td>{fun JZLANG('无')}</td>
+							<td>{fun JZLANG('一个附件，压缩包，Excel，Word文档')}</td>
+						   </tr>
+						   <tr>
+							<td><input type="radio" name="fieldtype" {if($data['fieldtype']==10)} checked {/if}  value="10" /></td>
+							<td>{fun JZLANG('不限')}</td>
+							<td>{fun JZLANG('无')}</td>
+							<td>{fun JZLANG('多个附件，压缩包，Excel，Word文档')}</td>
+						   </tr>
+						    <tr>
+							<td><input type="radio" name="fieldtype" {if($data['fieldtype']==13)} checked {/if} value="13" /></td>
+							<td><input type="text" class="layui-input" name="fieldlong_13" value="{if($data['fieldtype']==13)}{$data['fieldlong']}{else}2{/if}"></td>
+							<td>
+							{if($data['fieldtype']==13)}
+							{php $vdata = explode(',',$data['body']) /}
+							<select name="molds_select">
+							{loop table="molds"  as="v"}
+							<option {if($vdata[0]==$v['id'])}selected{/if}  value="{$v['id']}">{$v['name']}</option>
+							{/loop}
+							</select>
+							<input type="text" placeholder="{fun JZLANG('列表显示字段')}" class="layui-input" name="molds_list_field" value="{$vdata[1]}">
+							{else}
+							<select name="molds_select">
+							{loop table="molds"  as="v"}
+							<option  value="{$v['id']}">{$v['name']}</option>
+							{/loop}
+							</select>
+							<input type="text" placeholder="{fun JZLANG('列表显示字段')}" class="layui-input" name="molds_list_field" value="">
+							{/if}
+							
+							</td>
+							<td>{fun JZLANG('关联模块内容ID')}</td>
+						   </tr>
+						    <tr>
+							<td><input type="radio" name="fieldtype" {if($data['fieldtype']==15)} checked {/if} value="15" /></td>
+							<td>{fun JZLANG('多行录入')}<br/>txt</td>
+							<td>{fun JZLANG('不限')}</td>
+							<td>{fun JZLANG('无')}</td>
+							<td>{fun JZLANG('可以在页面动态新增内容输入框')}</td>
+						   </tr>
+							<tr>
+							<td><input type="radio" name="fieldtype" value="16" {if($data['fieldtype']==16)} checked {/if}  /></td>
+							<td><input type="text" class="layui-input" name="fieldlong_16" value="{if($data['fieldtype']==16)}{$data['fieldlong']}{else}255{/if}"></td>
+							<td>
+								{if($data['fieldtype']==16)}
+								{php $vdata = explode(',',$data['body']) /}
+								<select name="molds_select_muti" id="molds_select_muti">
+								<option  value="">{fun JZLANG('请选择关联模块')}</option>
+								{loop table="molds"  as="v"}
+								<option {if($vdata[0]==$v['id'])}selected{/if} value="{$v['id']}">{$v['name']}</option>
+								{/loop}
+							</select><input type="text"  placeholder="{fun JZLANG('列表显示字段')}" class="layui-input" name="molds_list_field_muti" id="molds_list_field_muti" value="{$vdata[1]}">{else}
+								<select name="molds_select_muti" id="molds_select_muti">
+									<option  value="">{fun JZLANG('请选择关联模块')}</option>
+									{loop table="molds"  as="v"}
+									<option  value="{$v['id']}">{$v['name']}</option>
+									{/loop}
+								</select><input type="text"  placeholder="{fun JZLANG('列表显示字段')}" class="layui-input" name="molds_list_field_muti" id="molds_list_field_muti" value="">
+								{/if}
+							</td>
+							<td>{fun JZLANG('多选关联，可以直接调用关联模块内容列表，列表显示对应字段内容')}</td>
+							</tr>
+							<tr>
+								<td><input type="radio" name="fieldtype" {if($data['fieldtype']==17)} checked {/if} value="17" /></td>
+								<td><input type="hidden"  class="layui-input" name="fieldlong_17" value="{if($data['fieldtype']==17)}{$data['fieldlong']}{else}11{/if}">{if($data['fieldtype']==17)}{$data['fieldlong']}{else}11{/if}</td>
+								<td>{fun JZLANG('无')}</td>
+								<td>{fun JZLANG('系统栏目，不可修改')}</td>
+							</tr>
+							<tr>
+								<td><input type="radio" name="fieldtype" {if($data['fieldtype']==18)} checked {/if} value="18" /></td>
+								<td><input type="hidden"  class="layui-input" name="fieldlong_18" value="{if($data['fieldtype']==18)}{$data['fieldlong']}{else}255{/if}">{if($data['fieldtype']==18)}{$data['fieldlong']}{else}255{/if}</td>
+								<td>{fun JZLANG('无')}</td>
+								<td>{fun JZLANG('系统副栏目，不可修改')}</td>
+							</tr>
+							<tr>
+								<td><input type="radio" name="fieldtype" {if($data['fieldtype']==19)} checked {/if} value="19" /></td>
+								<td><input type="hidden"  class="layui-input" name="fieldlong_19" value="{if($data['fieldtype']==19)}{$data['fieldlong']}{else}255{/if}">{if($data['fieldtype']==19)}{$data['fieldlong']}{else}255{/if}</td>
+								<td>{fun JZLANG('无')}</td>
+								<td>{fun JZLANG('系统TAG，不可修改')}</td>
+							</tr>
+						   
+						</tbody>
+					  </table>
+				    </div>
+                </div>
+				<div class="layui-form-item">
+                    <label for="vdata" class="layui-form-label">
+                        <span class="x-red"></span>{fun JZLANG('默认值')}
+                    </label>
+                    <div class="layui-input-inline" style="width:200px;">
+                        <input type="text" id="vdata" value="{$data['vdata']}"   name="vdata" 
+                        autocomplete="off"  class="layui-input">
+                    </div>
+					<div class="layui-form-mid layui-word-aux" >
+					  {fun JZLANG('默认字段值，不填默认int类型的值是0，string类型的值是null。多选参数的值是两边带【,】，如【,1,】表示值为1')}
+				    </div>
+                </div>
+				<div class="layui-form-item">
+                    <label for="tips" class="layui-form-label">
+                        <span class="x-red"></span>{fun JZLANG('字段提示')}
+                    </label>
+                    <div class="layui-input-inline" style="width:500px;">
+                        <input type="text" id="tips" value="{$data['tips']}"   name="tips" 
+                        autocomplete="off"  class="layui-input">
+                    </div>
+					<div class="layui-form-mid layui-word-aux" >
+					  {fun JZLANG('用于填写时的提示信息，50字以内')}
+				    </div>
+                </div>
+				<div class="layui-form-item">
+                    <label for="orders" class="layui-form-label">
+                        <span class="x-red"></span>{fun JZLANG('表单排序')}
+                    </label>
+                    <div class="layui-input-inline">
+                        <input type="number" id="orders" value="{$data['orders']}" name="orders" 
+                        autocomplete="off" class="layui-input">
+                    </div>
+					<div class="layui-form-mid layui-word-aux">
+					  {fun JZLANG('数字越大越靠前')}
+					</div>
+					
+                </div>
+				<div class="layui-form-item" pane>
+                    <label for="ismust" class="layui-form-label">
+                        <span class="x-red"></span>{fun JZLANG('是否必填')}
+                    </label>
+                    <div class="layui-input-inline">
+                        <input type="radio" name="ismust" value="0" title="{fun JZLANG('非必填')}" {if($data['ismust']==0)}checked{/if}>
+						<input type="radio" name="ismust" value="1" title="{fun JZLANG('必填')}" {if($data['ismust']==1)}checked{/if}>
+                    </div>
+					 
+					
+                </div>
+				<div class="layui-form-item" pane>
+                    <label for="isshow" class="layui-form-label">
+                        <span class="x-red"></span>{fun JZLANG('前台显示')}
+                    </label>
+                    <div class="layui-input-inline">
+                        <input type="radio" name="isshow" value="0" title="{fun JZLANG('不显示')}" {if($data['isshow']==0)}checked{/if}>
+						<input type="radio" name="isshow" value="1" title="{fun JZLANG('显示')}" {if($data['isshow']==1)}checked{/if}>
+                    </div>
+					 
+					
+                </div>
+				<div class="layui-form-item" pane>
+                    <label for="ishome" class="layui-form-label">
+                        <span class="x-red"></span>{fun JZLANG('前台表单')}
+                    </label>
+                    <div class="layui-input-inline">
+                        <input type="radio" name="ishome" value="0" title="{fun JZLANG('不显示')}" {if($data['ishome']==0)}checked{/if}>
+						<input type="radio" name="ishome" value="1" title="{fun JZLANG('显示')}" {if($data['ishome']==1)}checked{/if}>
+                    </div>
+					 
+					
+                </div>
+                <div class="layui-form-item" pane>
+                    <label for="isadmin" class="layui-form-label">
+                        <span class="x-red"></span>{fun JZLANG('后台显示')}
+                    </label>
+                    <div class="layui-input-inline">
+                        <input type="radio" name="isadmin" value="0" title="{fun JZLANG('不显示')}" {if($data['isadmin']==0)}checked{/if}>
+						<input type="radio" name="isadmin" value="1" title="{fun JZLANG('显示')}" {if($data['isadmin']==1)}checked{/if}>
+                    </div>
+					 
+					
+                </div>
+				<div class="layui-form-item" pane>
+                    <label for="issearch" class="layui-form-label">
+                        <span class="x-red"></span>{fun JZLANG('后台搜索')}
+                    </label>
+                    <div class="layui-input-inline">
+						<input type="radio" name="issearch" value="1" title="{fun JZLANG('显示')}" {if($data['issearch']==1)}checked{/if}>
+						<input type="radio" name="issearch" value="0" title="{fun JZLANG('不显示')}" {if($data['issearch']==0)}checked{/if}>
+						
+                    </div>
+					<div class="layui-form-mid layui-word-aux">
+					  {fun JZLANG('仅用于后台列表头部带有该字段搜索')}
+					</div> 
+					
+                </div>
+				<div class="layui-form-item" pane>
+                    <label for="islist" class="layui-form-label">
+                        <span class="x-red"></span>{fun JZLANG('列表中显示')}
+                    </label>
+                    <div class="layui-input-inline">
+						<input type="radio" name="islist" value="1" title="{fun JZLANG('显示')}"  {if($data['islist']==1)}checked{/if}>
+						<input type="radio" name="islist" value="0" title="{fun JZLANG('不显示')}" {if($data['islist']==0)}checked{/if}>
+                    </div>
+					<div class="layui-form-mid layui-word-aux">
+					  {fun JZLANG('仅用于后台列表显示该字段')}
+					</div> 
+					
+                </div>
+				<div class="layui-form-item">
+                    <label for="format" class="layui-form-label">
+                        <span class="x-red"></span>{fun JZLANG('显示格式化')}
+                    </label>
+                    <div class="layui-input-inline">
+						<select name="format" lay-filter="format" id="format" >
+						<option value="">{fun JZLANG('不做处理')}</option>
+						{foreach format_fields() as $k=>$v}
+						<option value="{$k}" {if($data['format']==$k)} selected {/if}>{$v}</option>
+						{/foreach}
+					   
+					   </select>
+                    </div>
+					<div class="layui-form-mid layui-word-aux">
+					  {fun JZLANG('仅用于后台列表显示该字段内容处理')}
+					</div>
+                </div>
+				<div class="layui-form-item" pane>
+                    <label for="isajax" class="layui-form-label">
+                        <span class="x-red"></span>{fun JZLANG('ajax可访问')}
+                    </label>
+                    <div class="layui-input-inline">
+                        <input type="radio" name="isajax" value="0" title="{fun JZLANG('不能')}" {if($data['isajax']==0)}checked{/if}>
+						<input type="radio" name="isajax" value="1" title="{fun JZLANG('能')}" {if($data['isajax']==1)}checked{/if}>
+                    </div>
+					<div class="layui-form-mid layui-word-aux">
+					  {fun JZLANG('由于本系统对json数据封装，限制访问可以提高安全性')}
+					</div> 
+					
+                </div>
+				
+				</div>
+				<div class="layui-tab-item">
+				 {if($data['molds']=='level')}
+				<table class="layui-table layui-form">
+					<thead>
+					  <tr>
+						<th width="20">
+						  <div class="layui-unselect header layui-form-checkbox" lay-skin="primary"><i class="layui-icon">&#xe605;</i></div>
+						</th>
+						
+						<th>{fun JZLANG('角色名')}</th>
+						
+					</thead>
+					<tbody class="x-cate">
+					{php 
+					
+					if($admin['gid']!=1){
+					$levelgroup = M('level_group')->findAll('id!=1');
+					}else{
+					$levelgroup = M('level_group')->findAll();
+					}
+					$levelgroup = set_class_haschild($levelgroup);
+					$levelgroup = getTree($levelgroup);
+					
+					
+					/}
+					 {foreach $levelgroup as $v}
+					  <tr cate-id="{$v['id']}" fid="{$v['pid']}" >
+						<td>
+						  <div class="layui-unselect layui-form-checkbox {if(strpos($data['tids'],','.$v['id'].',')!==false)} layui-form-checked {/if}" lay-skin="primary" data-id='{$v['id']}'><i class="layui-icon">&#xe605;</i></div>
+						</td>
+						
+						<td>
+						  {fun str_repeat('&nbsp;&nbsp;&nbsp;',$v['level'])}
+						  {if($v['haschild'])}
+						  <i class="layui-icon x-show" status='false'>&#xe625;</i>
+						  {else}
+						  {if($v['level'])}|——{/if}
+						  {/if}
+						  {$v['name']}
+						</td>
+						
+					  </tr>
+					 {/foreach}
+					 
+					 
+					</tbody>
+				  </table>
+				{else}
+				 <table class="layui-table layui-form">
+					<thead>
+					  <tr>
+						<th width="20">
+						  <div class="layui-unselect header layui-form-checkbox" lay-skin="primary"><i class="layui-icon">&#xe605;</i></div>
+						</th>
+						
+						<th>{fun JZLANG('栏目名')}</th>
+						
+					</thead>
+					<tbody class="x-cate">
+					
+					{foreach $classtypes as $v}
+					{if($v['molds']==$data['molds']  || $data['molds']=='classtype')}
+					  <tr cate-id="{$v['id']}" fid="{$v['pid']}" >
+						<td>
+						  <div class="layui-unselect layui-form-checkbox {if(strpos($data['tids'],','.$v['id'].',')!==false)} layui-form-checked {/if}" lay-skin="primary" data-id='{$v['id']}'><i class="layui-icon">&#xe605;</i></div>
+						</td>
+						
+						<td>
+						  {fun str_repeat('&nbsp;&nbsp;&nbsp;',$v['level'])}
+						  {if($v['haschild'])}
+						  <i class="layui-icon x-show" status='false'>&#xe625;</i>
+						  {else}
+						  {if($v['level'])}|——{/if}
+						  {/if}
+						  {$v['classname']}
+						</td>
+						
+					  </tr>
+					{/if}
+					{/foreach}
+					 
+					</tbody>
+				  </table>
+				
+				{/if}
+				</div>
+				
+			  </div>
+			</div>
+			
+			
+			
+               
+				
+				
+                <div class="layui-form-item" style="text-align:center;">
+                    
+                     <button  class="layui-btn" lay-filter="save" lay-submit="">
+                        {fun JZLANG('保存')}
+                    </button>
+                </div>
+            </form>
+        </div>
+		<br/>
+		<br/>
+		<br/>
+		<br/>
+		<br/>
+		<br/>
+		<br/>
+		<br/>
+		<br/>
+      
+        <script>
+            layui.use(['laydate','form','layer','upload'], function(){
+                $ = layui.jquery;
+              var form = layui.form
+              ,layer = layui.layer;
+			  laydate = layui.laydate;
+			
+			  
+			    //监听提交
+              form.on('submit(save)', function(data){
+                var tids = tableCheck.getData().join(',');
+				if(tids==''){
+					//layer.alert('请选择绑定栏目！', {icon: 5});
+					//return false;
+					tids = 0;
+				}
+				data.field.tids = tids;
+				
+                //发异步，把数据提交给php
+				$.post("{fun U('Fields/editFields')}",data.field,function(r){
+				//console.log(r);return false;
+					var r = JSON.parse(r);
+					if(r.code==0){
+						layer.msg(r.msg, {icon: 6,time: 2000},function () {
+							// 获得frame索引
+							{if($webconf['admintpl']=='tpl')}
+							window.location.href="{fun U('Fields/index',['molds'=>$data['molds']])}";
+							{else}
+							parent.layer.close();
+							parent.location.reload();
+							{/if}
+							
+						});
+						
+						 
+					}else{
+						layer.alert(r.msg, {icon: 5});
+					}
+				});
+				
+               
+                return false;
+              });
+            
+
+           
+              
+              
+            });
+        </script>
+      
+    </body>
+
+</html>

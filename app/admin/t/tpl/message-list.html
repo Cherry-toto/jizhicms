@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html>
+    <head>
+	<meta charset="UTF-8">
+        {include="style"}
+    </head>
+    <body>
+        <div class="x-nav">
+            <span class="layui-breadcrumb">
+              <a><cite>{fun JZLANG('首页')}</cite></a>
+              <a><cite>{fun JZLANG('留言管理')}</cite></a>
+              <a><cite>{fun JZLANG('留言列表')}</cite></a>
+              
+            </span>
+            <a class="layui-btn layui-btn-small" style="line-height:1.6em;margin-top:3px;float:right"  href="javascript:location.replace(location.href);" title="{fun JZLANG('刷新')}"><i class="iconfont" style="line-height:30px">&#xe6aa;</i></a>
+        </div>
+        <div class="x-body">
+		
+		<div class="layui-card">
+			<div class="layui-card-body">
+			
+			  <div class="layui-collapse">
+		    <div class="layui-colla-item">
+			<h2 class="layui-colla-title">{fun JZLANG('搜索')}</h2>
+				<div class="layui-colla-content">
+				<div class="layui-row">
+					<form class="layui-form layui-col-md12 x-so" method="get" id="myform">
+					<div class="layui-input-inline">
+					  <select name="isshow" lay-filter="isshow" class="layui-inline autosubmit">
+					  <option value="">{fun JZLANG('是否审核')}</option>
+					   
+					   <option {if($isshow==1)} selected="selected" {/if}value="1">{fun JZLANG('已审核')}</option>
+					   <option {if($isshow==2)} selected="selected" {/if}value="2">{fun JZLANG('未审核')}</option>
+					   
+					
+					  </select>
+					</div>
+					<div class="layui-input-inline">
+					  <select name="tid" lay-filter="tid" lay-search class="layui-inline">
+					  <option value="">{fun JZLANG('请选择栏目')}</option>
+					   {foreach $classtypes as $v}
+					   <option {if($tid==$v['id'])} selected="selected" {/if}value="{$v['id']}">{fun str_repeat('--', $v['level'])}{$v['classname']}</option>
+					   {/foreach}
+					
+					  </select>
+					</div>
+					  <input type="number" name="aid" value="{$aid}" placeholder="{fun JZLANG('请输入相关内容ID')}" autocomplete="off" class="layui-input">
+					  {$fields_search}
+					  <button class="layui-btn"  lay-submit="" lay-filter="search">{fun JZLANG('搜索')}</button>
+					</form>
+				</div>
+				</div>
+		    </div>
+         </div> 
+		  
+		<table class="layui-hide" lay-data="{id: 'jizhi_table'}" id="jizhi_table" lay-filter="jizhi_table"></table>
+		<input id="select_data" type="hidden" value="" />
+		
+		
+			</div>
+		</div>
+		
+       
+		<script type="text/html" id="rightbar">
+		{if(checkAction('Message/editmessage'))}
+			<a class="layui-btn layui-btn-xs" lay-event="edit">{fun JZLANG('编辑')}</a>
+		{/if}
+		{if(checkAction('Message/deletemessage'))}
+			<a class="layui-btn layui-btn-xs layui-btn-danger" lay-event="delete">{fun JZLANG('删除')}</a>
+		{/if}
+		</script>
+		<script type="text/html" id="toolbar">
+		 <div class="layui-btn-container" style="font-size:15px;">
+		 {if(checkAction('Message/deleteAll'))}
+			   <a class="layui-btn layui-btn-danger layui-btn-sm" onclick="delAll()">{fun JZLANG('批量删除')}</a>
+		 {/if}   
+			
+		 {if(checkAction('Message/checkAll'))}	
+		  <div class="layui-input-inline" style="margin-right: 10px;margin-bottom: 10px;width:150px;">
+			   <select class="layui-btn" id="change_isshow"  lay-filter="change_isshow" >
+			   <option value="0">{fun JZLANG('批量审核')}</option>
+			   <option   value="1">{fun JZLANG('审核')}</option>
+			   <option   value="2">{fun JZLANG('未审核')}</option>
+			  
+			   </select>
+			   </div>
+		  {/if}
+
+		 </div>
+		</script>
+		<script type="text/html" id="isshow">
+			{{#  if(d.isshow ==1){ }}
+			<span class="layui-badge layui-bg-green">{fun JZLANG('已审核')}</span>
+		    {{#  } else{ }}
+		    <span class="layui-badge">{fun JZLANG('未审核')}</span>
+		    {{#  } }}
+		</script>
+	 
+		<script>
+	 
+	   
+	    layui.use(['laydate','form','element','laypage','layer','table'], function(){
+                $ = layui.jquery;//jquery
+              var laydate = layui.laydate;//日期插件
+              var lement = layui.element;//面包导航
+              var layer = layui.layer;//弹出层
+			  var form = layui.form;
+			  var table = layui.table;
+			  
+			  table.render({
+				elem: '#jizhi_table'
+				,height: 700
+				,cellMinWidth: 80
+				,url: window.location.href+'?ajax=1' //数据接口
+				,page: true //开启分页
+				,size:'lg'
+				,count:100
+				,toolbar:"#toolbar"
+				,data:{}
+				,page: { //支持传入 laypage 组件的所有参数（某些参数除外，如：jump/elem） - 详见文档
+				  layout: ['limit', 'count', 'prev', 'page', 'next', 'skip'] //自定义分页布局
+				  //,curr: 5 //设定初始在第 5 页
+				  ,groups: 5 //只显示 1 个连续页码
+				  ,first: true //显示首页
+				  ,last: true //显示尾页
+				  ,count:500
+				  ,limit:10
+				  ,first: '{fun JZLANG('首页')}' //不显示首页
+				  ,last: '{fun JZLANG('尾页')}' //不显示尾页
+				  
+				}
+				,cols: [[ //表头
+				  {field: 'id', title: 'ID', width:60}
+				  ,{type:'checkbox'}
+				  ,{field: 'new_isshow', title: '{fun JZLANG('是否审核')}', width: 100,templet: '#isshow'}
+				  ,{field: 'orders', title: '{fun JZLANG('排序')}',width: 100}
+				  ,{field: 'new_tid', title: '{fun JZLANG('栏目')}',width:100}
+				  ,{field: 'aid', title: '{fun JZLANG('内容ID')}',width:100}
+				  ,{field: 'title', title: '{fun JZLANG('标题')}'}
+				  {foreach $fields_list as $k=>$v},{field: '{$v['field']}', title: '{$v['fieldname']}'}{/foreach}
+				  ,{field: 'body', title: '{fun JZLANG('内容')}'}
+				  ,{field: 'new_addtime', title: '{fun JZLANG('时间')}',width:160}
+				  ,{field: '', title: '{fun JZLANG('操作')}',width:160, toolbar: '#rightbar', fixed:'right'}
+				 
+				 
+				]]
+			  });
+			  
+			    table.on('tool(jizhi_table)', function(obj){
+					var data = obj.data; //获得当前行数据
+					var layEvent = obj.event; //获得 lay-event 对应的值（也可以是表头的 event 参数对应的值）
+					var tr = obj.tr; //获得当前行 tr 的DOM对象
+					 
+					switch(layEvent){
+					  case 'edit':
+						//console.log(data);
+						 x_admin_show('{fun JZLANG('编辑')}',data.edit_url);
+					  break;
+					  case 'view':
+						    
+					  break;
+					  case 'delete':
+							layer.confirm('{fun JZLANG('确认要删除吗？')}',function(index){
+				
+								$.post("{fun U('Message/deletemessage')}",{id:data.id},function(r){
+										var r = JSON.parse(r);
+										if(r.code==0){
+										 //发异步删除数据
+											$(tr).remove();
+											layer.msg(r.msg,{icon: 1,time:1000},function(){
+												table.reload('jizhi_table', {
+												  url: window.location.href+'?ajax=1'
+												  ,where: {} //设定异步数据接口的额外参数
+												 
+												});
+											
+											});
+											
+											
+											
+										}else{
+											
+											layer.msg(r.msg,{icon: 5,time:1000});
+										}
+								})
+								
+							
+							   
+							});
+					  break;
+					  case 'copy':
+					  
+							
+					  break;
+					  
+					 
+					}
+				});
+			  
+			  table.on('checkbox(jizhi_table)', function(obj){
+				
+				   var checkStatus = table.checkStatus('jizhi_table'); //idTest 即为基础参数 id 对应的值
+				   var len = checkStatus.data.length;
+				   var arr=[];
+				   if(len>0){
+					for(var i=0;i<len;i++){
+						arr.push(checkStatus.data[i].id);
+					}
+				   }
+				   $("#select_data").val(arr);
+				   
+					
+				});
+				
+				form.on('select(change_isshow)', function(data){
+					var datas =  $("#select_data").val();
+					var isshow = parseInt(data.value);
+					if(isshow==0){
+						alert('{fun JZLANG('请选择审核选项！')}');return false;
+					}
+					if(datas==''){
+						alert('{fun JZLANG('请选择审核对象！')}');return false;
+					}
+					if(isshow==1){
+						var tip = '{fun JZLANG('已审核')}';
+					}else if(isshow==2){
+						var tip = '{fun JZLANG('未审核')}';
+					}
+					layer.confirm('{fun JZLANG('确认要批量处理吗？')}['+datas+']=>['+tip+']',function(index){
+						
+						$.post("{fun U('Message/checkAll')}",{data:datas,isshow:isshow},function(r){
+								
+								var r = JSON.parse(r);
+								if(r.code==0){
+									$("#select_data").val('');
+									layer.msg('{fun JZLANG('批量处理成功')}', {icon: 1,time:1000},function(){
+										table.reload('jizhi_table', {
+										  url: window.location.href+'?ajax=1'
+										  ,where: {} //设定异步数据接口的额外参数
+										 
+										});
+									});
+									
+								}else{
+									
+									layer.msg(r.msg,{icon: 5,time:1000});
+								}
+						})
+						
+						
+						
+					});
+					
+				
+			    });
+				
+				
+				form.on('submit(search)', function(data){
+					
+					table.reload('jizhi_table', {
+					  url: window.location.href+'?ajax=1'
+					  ,where: data.field //设定异步数据接口的额外参数
+					 
+					});
+				   
+					return false;
+				  });
+					
+			   
+			 
+              
+            });
+			
+			
+			 function delAll () {
+				
+				var data = $("#select_data").val();
+				if(data==''){
+					alert('{fun JZLANG('请选择对象！')}');return false;
+				}
+				layer.confirm('{fun JZLANG('确认要删除吗？')}'+data,function(index){
+					
+					$.post("{fun U('Message/deleteAll')}",{data:data},function(r){
+					
+							var r = JSON.parse(r);
+							if(r.code==0){
+							  
+							  layer.msg('{fun JZLANG('批量删除成功')}', {icon: 1,time:1000},function(){
+								window.location.reload();
+							  });
+							  
+							}else{
+								
+								layer.msg(r.msg,{icon: 5,time:1000});
+							}
+					})
+					
+					
+					
+				});
+			  }
+			 
+			  
+			  
+			
+			
+       </script>
+    </body>
+</html>

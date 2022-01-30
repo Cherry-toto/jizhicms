@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html>
+    <head>
+	<meta charset="UTF-8">
+        {include="style"}
+    </head>
+    <body>
+        <div class="x-nav">
+            <span class="layui-breadcrumb">
+              <a><cite>{fun JZLANG('首页')}</cite></a>
+              <a><cite>{fun JZLANG('系统扩展')}</cite></a>
+              <a><cite>{fun JZLANG('模型管理')}</cite></a>
+              <a><cite>{fun JZLANG('重构字段')}</cite></a>
+              
+            </span>
+            <a class="layui-btn layui-btn-small" style="line-height:1.6em;margin-top:3px;float:right"  href="javascript:location.replace(location.href);" title="{fun JZLANG('刷新')}"><i class="iconfont" style="line-height:30px">&#xe6aa;</i></a>
+        </div>
+        <div class="x-body">
+        
+		<div class="layui-card">
+			<div class="layui-card-body">
+			<blockquote class="layui-elem-quote">
+			{fun JZLANG('重构字段可以快速将外部表引入CMS内，使其兼容CMS模型。')}<br/>
+			{fun JZLANG('重构字段 => 简单选择录入类型 => 字段列表 => 详细字段修改')}<br/>
+			{fun JZLANG('温馨提示：外部表必须有个字段为id，且必须是自增主键。如果没有，请先在数据库手动增加这个字段或者把已有的自增字段改成id。')}
+			</blockquote>
+                <form class="layui-form">
+            <table class="layui-table">
+                <thead>
+                    <tr>
+                        
+                        <th>
+                            {fun JZLANG('字段标识')}
+                        </th>
+                        <th>
+                            {fun JZLANG('数据类型')}
+                        </th>
+                        <th>
+                            {fun JZLANG('字段名称')}
+                        </th>
+						<th>
+                            {fun JZLANG('录入类型')}
+                        </th>
+						<th>
+                            {fun JZLANG('前台显示')}
+                        </th>
+						<th>
+                            {fun JZLANG('后台显示')}
+                        </th>
+                        <th>
+                            {fun JZLANG('列表显示')}
+                        </th>
+                    </tr>
+                </thead>
+                <tbody id="x-link">
+				  {foreach $fields as $v}
+                    <tr>
+                        <input name="len[]"  type="hidden"  value="{$v['length']}" />
+                        <input name="molds"  type="hidden"  value="{$molds}" />
+                        <td>
+                            {$v['field']}
+                            <input name="field[]"  type="hidden"  value="{$v['field']}" />
+                        </td>
+                        <td>
+                            {$v['type']}
+
+                        </td>
+                        <td>
+                            <input name="title[]"  class="layui layui-input"type="text"  value="{$v['title']}" />
+                        </td>
+						
+						<td>
+                           <select name="fieldtype[]" >
+						   {foreach $fieldstype as $sk=>$s}
+						   <option {if($v['fieldtype']==$sk)}selected{/if} value="{$sk}">{$s}</option>
+						   {/foreach}
+						   </select>
+                        </td>
+						<td>
+                           <select name="isshow[]" >
+						   <option {if($v['isshow']==1)}selected{/if} value="1">{fun JZLANG('显示')}</option>
+						   <option {if($v['isshow']==0)}selected{/if} value="0">{fun JZLANG('隐藏')}</option>
+						   </select>
+              
+                        </td>
+						<td>
+                           <select name="isadmin[]" >
+						   <option {if($v['isadmin']==1)}selected{/if} value="1">{fun JZLANG('显示')}</option>
+						   <option {if($v['isadmin']==0)}selected{/if} value="0">{fun JZLANG('隐藏')}</option>
+						   </select>
+              
+                        </td>
+						<td>
+                           <select name="islist[]" >
+						   <option {if($v['islist']==1)}selected{/if} value="1">{fun JZLANG('显示')}</option>
+						   <option {if($v['islist']==0)}selected{/if} value="0">{fun JZLANG('隐藏')}</option>
+						   </select>
+              
+                        </td>
+						
+                    </tr>
+					{/foreach}
+                </tbody>
+            </table>
+                    <button class="layui-btn" lay-submit type="button" lay-filter="tj">{fun JZLANG('提交')}</button>
+                </form>
+			
+			</div>
+		</div>
+          
+        </div>
+     
+       <script>
+	  
+	    layui.use(['laydate','element','laypage','layer','form'], function(){
+                $ = layui.jquery;//jquery
+             var laydate = layui.laydate;//日期插件
+             var lement = layui.element;//面包导航
+             var layer = layui.layer;//弹出层
+             var form = layui.form;
+
+              //以上模块根据需要引入
+            form.on('submit(tj)', function(data){
+                $.post("{fun U('restrucfields')}",data.field,function(r){
+                    if(r.code==0){
+                        layer.msg(r.msg,{icon: 6,time: 2000},function(){
+                            window.location.href=r.url;
+                        })
+                    }else{
+                        layer.alert(r.msg);
+                    }
+                },'json')
+            })
+             
+              
+            });
+		 /*删除*/
+            function molds_del(obj,id){
+                layer.confirm('{fun JZLANG('确认要删除吗？删除的同时将删除对应的表！')}',function(index){
+				
+					$.get("{fun U('deleteMolds')}?id="+id,{},function(s){
+						
+							var r = JSON.parse(s);
+							if(r.code==0){
+							 //发异步删除数据
+								layer.alert(r.msg, {icon: 1,time:1000},function () {
+									$(obj).parents("tr").remove();
+									window.location.reload();
+									
+								});
+								
+								
+								
+							}else{
+								
+								layer.msg(r.msg,{icon: 5,time:1000});
+							}
+					})
+					
+				
+                   
+                });
+            }
+			
+			
+			
+			
+       </script>
+    </body>
+</html>

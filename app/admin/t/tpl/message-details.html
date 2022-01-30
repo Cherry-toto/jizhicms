@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html>
+    
+    <head>
+       <meta charset="UTF-8">
+        {include="style"}
+		{include="edit"}
+		
+    </head>
+    
+    <body>
+	 <div class="x-nav">
+            <span class="layui-breadcrumb">
+              <a><cite>{fun JZLANG('首页')}</cite></a>
+              <a><cite>{fun JZLANG('留言管理')}</cite></a>
+             
+			  <a><cite>{fun JZLANG('查看留言')}</cite></a>
+            </span>
+            <a class="layui-btn layui-btn-small" style="line-height:1.6em;margin-top:3px;float:right"  href="javascript:location.replace(location.href);" title="{fun JZLANG('刷新')}"><i class="iconfont" style="line-height:30px">&#xe6aa;</i></a>
+        </div>
+        <div class="x-body">
+            <form class="layui-form  layui-form-pane" >
+			<input type="hidden" name="go" value="1" />
+			<input type="hidden" name="id" value="{$data['id']}" />
+			
+			<div class="layui-tab">
+			  <ul class="layui-tab-title">
+				<li class="layui-this">{fun JZLANG('基本')}</li>
+				<li>{fun JZLANG('扩展')}</li>
+				
+			  </ul>
+			  <div class="layui-tab-content">
+				<div class="layui-tab-item layui-show">
+				
+				<div class="layui-form-item">
+                    <label for="title" class="layui-form-label">
+                        <span class="x-red"></span>{fun JZLANG('问题描述')}
+                    </label>
+                    <div class="layui-input-block">
+                        <input type="text" id="title" value="{$data['title']}"  name="title" 
+                        autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+				
+				<div class="layui-form-item">
+                    <label for="user" class="layui-form-label">
+                        <span class="x-red"></span>{fun JZLANG('用户昵称')}
+                    </label>
+                    <div class="layui-input-block">
+                        <input type="text" id="user" value="{$data['user']}"  name="user" 
+                        autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+				{if($molds['isclasstype']==1)}
+				<div class="layui-form-item">
+                    <label for="tid" class="layui-form-label">
+                        <span class="x-red"></span>{fun JZLANG('留言栏目')}
+                    </label>
+                    <div class="layui-input-block">
+						<select name="tid" lay-search="" {if($molds['ismust']==1)}lay-verify="required"{/if} id="tid" >
+						<option value="0">{fun JZLANG('不指定栏目')}</option>
+					   {foreach $classtypes as $v}
+					   <option {if($data['tid']==$v['id'])} selected="selected" {/if}  value="{$v['id']}">{fun str_repeat('--', $v['level'])}{$v['classname']}</option>
+					   {/foreach}
+					   </select>
+                    </div>
+                </div>
+				{else}
+				<input type="hidden" name="tid" value="{$data['tid']}" />
+				{/if}
+				<div class="layui-form-item">
+                    <label for="email" class="layui-form-label">
+                        <span class="x-red"></span>{fun JZLANG('邮箱')}
+                    </label>
+                    <div class="layui-input-block">
+                        <input type="text" id="email" value="{$data['email']}"  name="email" 
+                        autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+				<div class="layui-form-item">
+                    <label for="tel" class="layui-form-label">
+                        <span class="x-red"></span>{fun JZLANG('联系电话')}
+                    </label>
+                    <div class="layui-input-block">
+                        <input type="text" id="tel" value="{$data['tel']}"  name="tel" 
+                        autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+				
+				
+				<span id="content_fields"></span>
+				
+				
+				<div class="layui-form-item">
+                    <label for="ip" class="layui-form-label">
+                        <span class="x-red"></span>{fun JZLANG('留言IP')}
+                    </label>
+                    <div class="layui-input-block">
+                        <input type="text" id="ip" value="{$data['ip']}"   name="ip" 
+                        autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+             
+				
+				<div class="layui-form-item layui-form-text">
+					<label  class="layui-form-label">
+						<span class='x-red'></span>{fun JZLANG('留言内容')}
+					</label>
+					<div class="layui-input-block" style="clear:both;">
+						{include="content"}
+					</div>
+				</div>
+				<div class="layui-form-item" pane>
+                    <label for="isshow" class="layui-form-label">
+                        <span class="x-red"></span>{fun JZLANG('是否审核')}
+                    </label>
+                    <div class="layui-input-inline">
+                        <input type="radio" name="isshow" value="0" title="{fun JZLANG('未审核')}" {if($data['isshow']==0)}checked{/if}>
+						<input type="radio" name="isshow" value="1" title="{fun JZLANG('已审核')}" {if($data['isshow']==1)}checked{/if}>
+                    </div>
+					 
+					
+                </div>
+				
+				
+				 <div class="layui-form-item">
+                    <label for="addtime" class="layui-form-label">
+                        <span class="x-red"></span>{fun JZLANG('提交时间')}
+                    </label>
+                    <div class="layui-input-block">
+                      <input class="layui-input" value="{if($data)}{fun date('Y-m-d H:i:s',$data['addtime'])}{else}{fun date('Y-m-d H:i:s')}{/if}" name="addtime" placeholder="{fun JZLANG('选择时间')}" id="addtime">
+                    </div>
+                   
+                </div>
+
+				</div>
+				<div class="layui-tab-item">
+					<span id="ext_fields"></span>
+				</div>
+			  </div>
+			</div>
+               
+                <div class="layui-form-item" style="text-align:center;">
+                   
+                     <button  class="layui-btn" lay-filter="save" lay-submit="">
+                        {fun JZLANG('修改保存')}
+                    </button>
+                </div>
+            </form>
+        </div>
+		<br/>
+		<br/>
+		<br/>
+		<br/>
+		<br/>
+		<br/>
+		<br/>
+		<br/>
+		<br/>
+      
+        <script>
+		{include="fields"}
+            layui.use(['laydate','form','layer','upload'], function(){
+                $ = layui.jquery;
+              var form = layui.form,layer = layui.layer,laydate = layui.laydate;
+			  var upload = layui.upload;
+			 laydate.render({
+				elem: '#addtime', //指定元素
+				type:'datetime'
+			  });
+			
+              //图片上传接口
+              upload.render({
+			    elem: '#LAY_demo_upload',
+                url: '{fun U('Common/uploads')}' //上传接口
+                ,done: function(res){ //上传成功后的回调
+                   // console.log(res);
+					
+					if(res.code==0){
+						 $('#fileimg').attr('src',res.url);
+						 $('#litpic').val(res.url);
+					}else{
+						 layer.alert(res.error, {icon: 5});
+					}
+                 
+                }
+              });
+			  
+			    //监听提交
+              form.on('submit(save)', function(data){
+                //console.log(data);
+                //发异步，把数据提交给php
+				$.post("{fun U('editmessage')}",data.field,function(r){
+					var r = JSON.parse(r);
+					if(r.code==0){
+						 layer.msg(r.msg, {icon: 6,time: 2000},function () {
+							// 获得frame索引
+							{if($webconf['admintpl']=='tpl')}
+							 window.location.href="{fun U('messagelist')}";
+							{else}
+							parent.location.reload();
+							{/if}
+							
+						});
+					}else{
+						layer.alert(r.msg, {icon: 5});
+					}
+				});
+				
+               
+                return false;
+              });
+            get_fields({$data['tid']},{$data['id']});
+            get_fields_ext({$data['tid']},{$data['id']});
+				form.on('select(tid)', function(data){
+				 
+				  get_fields(data.value,{$data['id']}); 
+				  get_fields_ext(data.value,{$data['id']});
+				  
+				  
+				});
+			
+			
+           
+              
+              
+            });
+        </script>
+      
+    </body>
+
+</html>

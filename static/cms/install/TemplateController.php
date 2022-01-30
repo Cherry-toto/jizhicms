@@ -10,8 +10,8 @@
 // | Date：2022/01
 // +----------------------------------------------------------------------
 
-use FrPHP\lib\Controller;
-use FrPHP\Extend\Page;
+use frphp\lib\Controller;
+use frphp\extend\Page;
 class TemplateController extends Controller {
 	
 	private $backupPath = '';

@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html>
+    <head>
+	<meta charset="UTF-8">
+        {include="style"}
+    </head>
+    <body>
+        <div class="x-nav">
+            <span class="layui-breadcrumb">
+              <a><cite>{fun JZLANG('首页')}</cite></a>
+              <a><cite>{fun JZLANG('系统扩展')}</cite></a>
+              <a><cite>{fun JZLANG('模块管理')}</cite></a>
+              <a><cite>{fun JZLANG('字段管理')}</cite></a>
+              
+            </span>
+            <a class="layui-btn layui-btn-small" style="line-height:1.6em;margin-top:3px;float:right"  href="javascript:location.replace(location.href);" title="{fun JZLANG('刷新')}"><i class="iconfont" style="line-height:30px">&#xe6aa;</i></a>
+        </div>
+        <div class="x-body">
+        <div class="layui-card">
+			<div class="layui-card-body">
+			<blockquote class="layui-elem-quote">
+			{fun JZLANG('温馨提示：排序和宽度在列表点击也可以更改。')}<br/>
+			{fun JZLANG('排序：当前列表显示排序，不会影响录入排序，越大越靠前。')}<br/>
+			{fun JZLANG('搜索：在列表顶部的搜索中，可以搜索该字段。')}<br/>
+			{fun JZLANG('宽度：列表显示的宽度。由于屏幕宽度问题，可以根据自己关注的字段在列表中显示更清晰，默认100。')}<br/>
+			</blockquote>
+		    <table id="fieldtable" lay-filter="fieldtable"></table>
+			<input id="select_data" type="hidden" value="" />
+
+			</div>
+		</div>
+          
+        </div>
+		<script type="text/html" id="adminbar">
+			<input type="checkbox" name="isadmin" data-id="{{d.id}}" lay-filter="sw" {{#if(d.isadmin=='{fun JZLANG('显示')}'){ }}checked value="0" {{# }else{ }} value="1" {{# } }}  lay-skin="switch">
+		</script>
+		<script type="text/html" id="homebar">
+			<input type="checkbox" name="isshow" data-id="{{d.id}}"  lay-filter="sw"  {{#if(d.isshow=='{fun JZLANG('显示')}'){ }}checked value="0" {{# }else{ }} value="1"{{# } }} value="1" lay-skin="switch">
+		</script>
+		<script type="text/html" id="searchbar">
+			<input type="checkbox" name="issearch" data-id="{{d.id}}" lay-filter="sw"  {{#if(d.issearch=='{fun JZLANG('显示')}'){ }}checked value="0" {{# }else{ }} value="1"{{# } }} value="1" lay-skin="switch">
+		</script>
+		<script type="text/html" id="listbar">
+			<input type="checkbox" name="islist" data-id="{{d.id}}"  lay-filter="sw"  {{#if(d.islist=='{fun JZLANG('显示')}'){ }}checked value="0" {{# }else{ }} value="1"{{# } }} value="1" lay-skin="switch">
+		</script>
+		<script type="text/html" id="mustbar">
+			<input type="checkbox" name="ismust" data-id="{{d.id}}"  lay-filter="sw"  {{#if(d.ismust=='{fun JZLANG('是')}'){ }}checked value="0" {{# }else{ }} value="1"{{# } }} value="1" lay-skin="switch">
+		</script>
+		<script type="text/html" id="extbar">
+			<input type="checkbox" name="isext" data-id="{{d.id}}" lay-filter="sw"  {{#if(d.isext=='{fun JZLANG('是')}'){ }}checked value="0" {{# }else{ }} value="1"{{# } }} value="1" lay-skin="switch">
+		</script>
+		<script type="text/html" id="rightbar">
+		 
+		 {if(checkAction('Fields/editFields'))}	
+			<a class="layui-btn layui-btn-xs layui-btn-primary" lay-event="edit">{fun JZLANG('设置')}</a>
+		 {/if}
+		 {if(checkAction('Fields/deleteFields'))}	
+			<a class="layui-btn layui-btn-xs layui-btn-danger" lay-event="delete">{fun JZLANG('删除')}</a>
+		 {/if}
+		 
+		</script>
+       <script>
+	   $(document).ready(function(){
+			
+	   
+	   });
+	   
+	    layui.use(['laydate','element','table','form','laypage','layer'], function(){
+                $ = layui.jquery;//jquery
+             var  laydate = layui.laydate;//日期插件
+             var  lement = layui.element;//面包导航
+             var  layer = layui.layer;//弹出层
+			 var  form = layui.form;
+			 var  table = layui.table;
+			
+			
+			  table.render({
+				elem: '#fieldtable'
+				,height: 500
+				,url: "{fun U('Fields/fieldsList')}?molds={$molds['biaoshi']}&ajax=1" //数据接口
+				,page: false //开启分页
+				,cols: [[ //表头
+				  {field: 'listorders', title: '{fun JZLANG('排序')}', width:80, edit: 'text'}
+				  ,{field: 'fieldname', title: '{fun JZLANG('名称')}',width:150}
+				  ,{field: 'issearch', title: '{fun JZLANG('搜索')}', toolbar: '#searchbar'}
+				  ,{field: 'islist', title: '{fun JZLANG('列表')}' , toolbar: '#listbar'}
+				  ,{field: 'width', title: '{fun JZLANG('宽度')}' , edit: 'text'}
+				  ,{field: 'fieldtypename', title: '{fun JZLANG('类型')}'}
+
+				]]
+			  });
+			  
+			  table.on('tool(fieldtable)', function(obj){
+					var data = obj.data; //获得当前行数据
+					var layEvent = obj.event; //获得 lay-event 对应的值（也可以是表头的 event 参数对应的值）
+					var tr = obj.tr; //获得当前行 tr 的DOM对象
+					 
+					switch(layEvent){
+					  case 'edit':
+						 x_admin_show('{fun JZLANG('设置')}',data.edit_url);
+					  break;
+					  case 'view':
+						    var a = $('<a href="'+data.view_url+'" target="_blank">{fun JZLANG('预览')}</a>').get(0);
+							var e = document.createEvent('MouseEvents');
+							e.initEvent( 'click', true, true );
+							a.dispatchEvent(e);
+					  break;
+					  
+					  
+					 
+					}
+				});
+			  
+			  table.on('edit(fieldtable)', function(obj){ 
+				  var id = obj.data.id;
+				  var value = obj.value;
+				  var field = obj.field;
+				  $.post("{fun U('Fields/changeFieldList')}",{id:id,value:value,field:field},function(r){
+						var r = JSON.parse(r);
+						if(r.code==0){
+							$("#select_data").val('');
+							table.reload('fieldtable', {
+							  url: '{fun U('Fields/fieldsList')}?molds={$molds['biaoshi']}&ajax=1'
+							  ,where: {} //设定异步数据接口的额外参数
+							 
+							});
+						}else{
+							layer.msg(r.info,{icon: 5,time:1000});
+						}
+						
+					});
+				  
+				  
+				});
+						
+              form.on('select(change_tid)', function(data){
+			  
+			  	var datas =  $("#select_data").val();
+				if(datas==''){
+					alert('{fun JZLANG('请选择对象！')}');return false;
+				}
+				$.post("{fun U('changeTid')}",{data:datas,tid:data.value},function(r){
+						if(r.code==0){
+							layer.msg(r.msg,{icon: 1,time:1000});
+						}else{
+							layer.msg(r.msg,{icon: 5,time:1000});
+						}
+				},'json')
+		
+				});
+
+			  form.on('switch(sw)', function(data){
+				console.log(data.value)
+				var field = $(data.elem).attr('name');
+				var id = $(data.elem).attr('data-id');
+					$.post("{fun U('changeFieldList')}",{id:id,field:field,value:data.value},function(res){
+					
+						table.reload('fieldtable', {
+							  url: '{fun U('Fields/fieldsList')}?molds={$molds['biaoshi']}&ajax=1'
+							  ,where: {} //设定异步数据接口的额外参数
+							 
+							});
+					
+					},'json')
+					return false;
+			  });
+		});
+		 
+			$(document).ready(function(){
+			$(".orderchange").bind('input propertychange',function(){
+				if($(this).val()!=''){
+					var orders = $(this).val();
+					var id = $(this).attr('data-id');
+					$.get("{fun U('changeListOrders')}",{id:id,orders:orders},function(r){
+							if(r.code==0){
+								window.location.reload();
+							}else{
+								
+								layer.msg(r.msg,{icon: 5,time:1000});
+							}
+					},'json')
+					
+				}
+			
+			})
+		
+		})	
+			
+			
+       </script>
+    </body>
+</html>

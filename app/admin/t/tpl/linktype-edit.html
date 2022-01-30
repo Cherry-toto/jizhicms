@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+  
+  <head>
+    <meta charset="UTF-8">
+	  {include="style"}
+	  
+  </head>
+  
+  <body>
+    <div class="x-body">
+        <form class="layui-form  layui-form-pane">
+		<input name="go" type="hidden" value="1" />
+		<input name="id" type="hidden" value="{$data['id']}" />
+		<div class="layui-tab">
+			  <ul class="layui-tab-title">
+				<li class="layui-this">{fun JZLANG('基本信息')}</li>
+				
+			  </ul>
+			  <div class="layui-tab-content">
+				<div class="layui-tab-item layui-show">
+				
+	
+          <div class="layui-form-item">
+              <label for="name" class="layui-form-label">
+                  <span class="x-red">*</span>{fun JZLANG('分类名')}
+              </label>
+              <div class="layui-input-inline">
+                  <input type="text" id="name" name="name" value="{$data['name']}" required="" lay-verify="required"
+                  autocomplete="off" class="layui-input">
+              </div>
+              <div class="layui-form-mid layui-word-aux">
+                  
+              </div>
+			</div>
+		  
+	
+				</div>
+				
+			  </div>
+		</div>
+				
+		
+		
+		
+          <input type="hidden" id="go" name="go" value="1">
+          <div class="layui-form-item" style="text-align:center;">
+              
+              <button  class="layui-btn" lay-filter="add" lay-submit="">
+                  {fun JZLANG('修改')}
+              </button>
+          </div>
+      </form>
+    </div>
+    <script>
+
+        layui.use(['form','layer','upload'], function(){
+            $ = layui.jquery;
+          var form = layui.form
+          ,layer = layui.layer;
+         var upload = layui.upload;
+         
+		
+          //监听提交
+          form.on('submit(add)', function(data){
+            
+					$.post('{fun U('Links/linktypeedit')}',data.field,function(r){
+					
+					
+						r = JSON.parse(r);
+
+						if(r.status==0){
+							layer.msg(r.info, {
+							  icon:5
+							});
+						}else{
+							layer.msg('{fun JZLANG('修改成功！')}', {
+							 time:1000,icon:6
+							},function(){
+								{if($webconf['admintpl']=='tpl')}
+								window.location.href="{fun U('Links/linktype')}";
+								{else}
+								parent.location.reload();
+								parent.layer.close(index);
+								{/if}
+							});
+							// parent.layer.close(index);
+						}
+					});
+                return false;
+          });
+		  
+		  
+			
+          
+          
+        });
+    </script>
+    
+  </body>
+
+</html>

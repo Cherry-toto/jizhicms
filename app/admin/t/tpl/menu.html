@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html>
+  
+  <head>
+    <meta charset="UTF-8">
+   {include="style"}
+
+  </head>
+  
+  <body>
+    <div class="x-nav">
+      <span class="layui-breadcrumb">
+        <a>{fun JZLANG('首页')}</a>
+        <a><cite>{fun JZLANG('导航管理')}</cite></a>
+      </span>
+      <a class="layui-btn layui-btn-small" style="line-height:1.6em;margin-top:3px;float:right" href="javascript:location.replace(location.href);" title="{fun JZLANG('刷新')}">
+        <i class="iconfont" style="line-height:30px">&#xe6aa;</i></a>
+    </div>
+    <div class="x-body">
+	
+	<div class="layui-card">
+		<div class="layui-card-body">
+		<form class="layui-form" action="">
+		<xblock>
+		<div class="layui-form-item">
+	    
+        {if(checkAction('index/addmenu'))}	
+		<div class="layui-input-inline"  style="width:auto;">
+		<a class="layui-btn layui-btn-sm"  onclick="x_admin_show('{fun JZLANG('新增导航')}','{fun U('index/addmenu')}')" >{fun JZLANG('新增导航')}</a>
+		</div>
+		{/if}
+
+		</div>
+		
+		</xblock>
+      
+        <table border="1" rules="all" style="width:100%; height:100px;" class="layui-table layui-form">
+        <thead>
+          <tr>
+            <th width="70">ID</th>
+            <th >{fun JZLANG('导航名称')}</th>
+            <th >{fun JZLANG('导航菜单')}</th>
+            <th >{fun JZLANG('显示')}</th>
+            <th >{fun JZLANG('操作')}</th>
+        </thead>
+        <tbody class="x-cate">
+		{foreach $lists as $v}
+          <tr >
+		    <td>
+			{$v['id']}
+			</td>
+            <td>{$v['name']}</td>
+			<td>
+			{php 
+			$nav = unserialize($v['nav']);
+			/}
+			{foreach $nav as $vv}
+			{if($vv['tid'])}
+			<a class="layui-btn {if($vv['status']!=1)}layui-btn-disabled{/if} layui-btn-xs" href="{$classtypedata[$vv['tid']]['url']}" target="_blank" >{if($vv['title'])}{$vv['title']}{else}{$classtypedata[$vv['tid']]['classname']}{/if}</a>
+			{else}
+			<a class="layui-btn {if($vv['status']!=1)}layui-btn-disabled{/if} layui-btn-xs" href="{$vv['gourl']}" target="_blank" >{$vv['title']}</a>
+			{/if}
+			{/foreach}
+			</td>
+            <td>
+			{if($v['isshow']==1)}<span class="layui-badge layui-bg-green">{fun JZLANG('显示')}</span>{else}<span class="layui-badge">{fun JZLANG('隐藏')}</span>{/if}
+			</td>
+            
+			
+            <td class="td-manage" style="width: 90px;">
+			{if(checkAction('index/editmenu'))}
+              <a class="layui-btn layui-btn layui-btn-xs"  onclick="x_admin_show('{fun JZLANG('编辑')}','{fun U('index/editmenu',array('id'=>$v['id']))}')" >{fun JZLANG('编辑')}</a>
+			{/if}
+			{if(checkAction('index/delmenu'))}
+              <a class="layui-btn-danger layui-btn layui-btn-xs"  onclick="menu_del(this,'{$v['id']}')" href="javascript:;" >{fun JZLANG('删除')}</a>
+			{/if}
+            </td>
+
+
+          </tr>
+		 {/foreach}
+         
+        </tbody>
+		</table>
+ 
+		</form>
+		
+		</div>
+
+	</div>
+    </div>
+
+    <script>
+      layui.use(['form'], function(){
+        form = layui.form;
+
+		
+      });
+		
+      function menu_del(obj,id){
+          layer.confirm('{fun JZLANG('确认要删除吗？')}',function(index){
+              //发异步删除数据
+			  $.post('{fun U('index/delmenu')}',{id:id},function(r){
+					r = JSON.parse(r);
+
+					if(r.status==0){
+						layer.msg(r.info, {
+						  icon:5
+						});
+					}else{
+						layer.msg('{fun JZLANG('删除成功！')}', {
+						 time:1000,icon:6
+						},function(){
+							 $(obj).parents("tr").remove();
+								layer.msg('{fun JZLANG('已删除!')}',{icon:1,time:1000});
+						});
+						
+						}
+				
+			  });
+		
+			  
+			  
+              
+          });
+      }
+
+
+
+     
+    </script>
+    
+  </body>
+
+</html>

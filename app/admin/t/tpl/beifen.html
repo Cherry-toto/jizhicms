@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html>
+    <head>
+      
+      <meta charset="UTF-8">
+        {include="style"}
+    </head>
+    <body>
+        <div class="x-nav">
+            <span class="layui-breadcrumb">
+              <a><cite>{fun JZLANG('首页')}</cite></a>
+              <a><cite>{fun JZLANG('系统设置')}</cite></a>
+              <a><cite>{fun JZLANG('数据库管理')}</cite></a>
+            </span>
+            <a class="layui-btn layui-btn-small" style="line-height:1.6em;margin-top:3px;float:right"  href="javascript:location.replace(location.href);" title="{fun JZLANG('刷新')}"><i class="iconfont" style="line-height:30px">&#xe6aa;</i></a>
+        </div>
+        <div class="x-body">
+            <div class="layui-card">
+		    <div class="layui-card-body">
+            <xblock>
+			 {if(checkAction('Index/backup'))}
+			<button class="layui-btn" onclick="beifen();"><i class="layui-icon">&#xe608;</i>{fun JZLANG('备份数据库')}</button>
+			{/if}
+			<span class="x-right" style="line-height:40px">{fun JZLANG('备份数：')}{fun count($lists)} </span></xblock>
+            <table class="layui-table">
+                <thead>
+                    <tr>
+                        
+                        <th>
+                            {fun JZLANG('数据库备份名')}
+                        </th>
+                        <th>
+                            {fun JZLANG('大小')}
+                        </th>
+                        <th>
+                            {fun JZLANG('操作')}
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+				{foreach $lists as $v}
+                    <tr>
+                       <td>{$v}</td>
+                       {php
+					    $filename_arr = explode('.php',$v);
+						$filename = $filename_arr[0];
+					    $dir = APP_PATH.'backup';
+						$filesize = filesize($dir.'/'.$filename.'.php');
+						for($i=1;file_exists($dir.'/'.$filename.'_v'.$i.'.php')===true;$i++){
+						   $filesize+=filesize($dir.'/'.$filename.'_v'.$i.'.php');
+						}
+					    $filesize = round($filesize/1024,2).'KB';
+					   /}
+                       <td>{$filesize}</td>
+                       
+                        <td class="td-manage">
+                        {if(strpos($v,'_v')!==false)}
+                            <a title="{fun JZLANG('备份副本')}"  href="javascript:;"
+                            class="ml-5" style="text-decoration:none">
+                                <button class="layui-btn layui-btn-disabled">{fun JZLANG('备份副本')}</button>
+                            </a>
+                        {else}
+						{if(checkAction('Index/huanyuan'))}
+                            <a title="{fun JZLANG('还原数据')}" onclick="huanyuan('{$v}')" href="javascript:;"
+                            class="ml-5" style="text-decoration:none">
+                                <button class="layui-btn">{fun JZLANG('还原数据')}</button>
+                            </a>
+						{/if}
+						{if(checkAction('Index/shanchu'))}
+                            <a title="{fun JZLANG('删除备份')}" onclick="shanchu('{$v}')"  href="javascript:;"
+                            style="text-decoration:none">
+                               <button class="layui-btn layui-btn-danger">{fun JZLANG('删除备份')}</button>
+                            </a>
+						{/if}
+                        {/if}
+                        </td>
+                    </tr>
+				{/foreach}
+                </tbody>
+            </table>
+			</div>
+			</div>
+            
+        </div>
+       
+        <script>
+            layui.use(['laydate','element','laypage','layer'], function(){
+                $ = layui.jquery;//jquery
+              laydate = layui.laydate;//日期插件
+              lement = layui.element;//面包导航
+              laypage = layui.laypage;//分页
+              layer = layui.layer;//弹出层
+
+            });
+
+           
+			 
+			 function huanyuan(file){
+				layer.confirm('{fun JZLANG('还原数据库将覆盖现有的数据库，您确认要还原数据库吗？')}',function(index){
+                    //捉到所有被选中的，发异步进行删除
+                   // layer.msg('删除成功', {icon: 1});
+				  // console.log(file);
+				  window.location.href="{fun U('Index/huanyuan')}?file="+file;
+                });
+			 }
+			  function shanchu(file){
+				layer.confirm('{fun JZLANG('您确定要删除备份数据库吗？删除后将不可找回！')}',function(index){
+                    //捉到所有被选中的，发异步进行删除
+                   // layer.msg('删除成功', {icon: 1});
+				   //console.log(file);
+				    window.location.href="{fun U('Index/shanchu')}?file="+file;
+                });
+			 }
+			 
+			 
+			 function beifen(){
+				window.location.href="{fun U('Index/backup')}";
+			 }
+
+            
+            </script>
+           
+    </body>
+</html>

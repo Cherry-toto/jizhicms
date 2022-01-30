@@ -26,7 +26,7 @@
 
 function M($name=null) {
 	if(empty($name)){
-		$path = 'FrPHP\\lib\\Model';
+		$path = 'frphp\\lib\\Model';
 		return $path::getInstance();
 	}
     $name = ucfirst($name);
@@ -36,7 +36,7 @@ function M($name=null) {
 		$table = $name;
 		$name = APP_HOME.'\\'.HOME_MODEL.'\\'.$name.'Model';
 		if(!class_exists($name)){
-			$path = 'FrPHP\\lib\\Model';
+			$path = 'frphp\\lib\\Model';
 			return $path::getInstance($table);
 		}else{
 			return $name::getInstance($table);
@@ -656,13 +656,13 @@ function getCache($str=false){
 //引入扩展文件
 function extendFile($filepath){
 	if(strpos($filepath,'.')!==false){
-		require_once(CORE_PATH.'/Extend/'.$filepath);
+		require_once(CORE_PATH.'/extend/'.$filepath);
 	}else{
-		$Extend = scandir(CORE_PATH.'/Extend'.$filepath);
+		$Extend = scandir(CORE_PATH.'/extend'.$filepath);
 		
 		foreach($Extend as $v){
 			if(strpos($v,'.php')!==false){
-				require_once CORE_PATH.'/Extend/'.$filepath.'/'.$v;
+				require_once CORE_PATH.'/extend/'.$filepath.'/'.$v;
 			}
 		}
 	}
@@ -676,7 +676,7 @@ function JZLANG($str=null){
 		if(isset($_SESSION['lang'])){
 			$_lang = $_SESSION['lang'];
 		}else{
-			$_lang = APP_LANG;
+			$_lang = LANG;
 		}
 		
 		$lang_common_file = APP_PATH.APP_HOME.'/lang/common.php';//公共语言包

@@ -11,7 +11,7 @@
 // +----------------------------------------------------------------------
 
 
-namespace FrPHP\lib;
+namespace frphp\lib;
 
 /**
  * 控制器基类
@@ -32,6 +32,11 @@ class Controller
 		//对语言包获取优先处理
 		if(!empty($_GET) && isset($_GET[APP_LANG_REQUREST])){
 			$_SESSION['lang'] = $_GET[APP_LANG_REQUREST];
+            define('LANG',$_SESSION['lang']);
+		}else if(isset($_SESSION['lang'])){
+            define('LANG',$_SESSION['lang']);
+        }else{
+			define('LANG',APP_LANG);
 		}
 		
         $this->_view = new View(APP_CONTROLLER, APP_ACTION);

@@ -87,7 +87,7 @@ function get_admin_url(){
 				
 				if(strpos($file,'.php')!==false && $file!='index.php'){
 					$data = file_get_contents('../'.$file);
-					if(strpos($data,"define('APP_HOME','A')")!==false){
+					if(strpos($data,"define('APP_HOME','app/admin')")!==false){
 						$admin_url = $file;
 						break;
 					}

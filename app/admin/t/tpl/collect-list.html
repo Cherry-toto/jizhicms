@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html>
+    <head>
+	<meta charset="UTF-8">
+        {include="style"}
+    </head>
+    <body>
+        <div class="x-nav">
+            <span class="layui-breadcrumb">
+              <a><cite>{fun JZLANG('首页')}</cite></a>
+              <a><cite>{fun JZLANG('扩展管理')}</cite></a>
+              <a><cite>{fun JZLANG('轮播图列表')}</cite></a>
+              
+            </span>
+            <a class="layui-btn layui-btn-small" style="line-height:1.6em;margin-top:3px;float:right"  href="javascript:location.replace(location.href);" title="{fun JZLANG('刷新')}"><i class="iconfont" style="line-height:30px">&#xe6aa;</i></a>
+        </div>
+        <div class="x-body">
+        <div class="layui-card">
+			<div class="layui-card-body">
+			    <div class="layui-collapse">
+			  <div class="layui-colla-item">
+				<h2 class="layui-colla-title">{fun JZLANG('搜索')}</h2>
+				<div class="layui-colla-content">
+					<div class="layui-row">
+					<form class="layui-form layui-col-md12 x-so" method="get" id="myform">
+					<div class="layui-input-inline">
+					  <select name="tid" lay-filter="tid" lay-search="" class="layui-inline autosubmit">
+					  <option value="">{fun JZLANG('请选择分类')}</option>
+					   {foreach $collect_type as $v}
+					   <option {if($tid==$v['id'])} selected="selected" {/if}value="{$v['id']}">{$v['name']}</option>
+					   {/foreach}
+					
+					  </select>
+					</div>
+					  <input type="text" name="title" value="{$title}" placeholder="{fun JZLANG('请输入标题')}" autocomplete="off" class="layui-input">
+					  {$fields_search}
+					  <button class="layui-btn"  lay-submit="" lay-filter="sreach">{fun JZLANG('搜索')}</button>
+					</form>
+				    </div>
+				
+				</div>
+			  </div>
+			</div>
+
+          <xblock>
+		  {if(checkAction('Collect/deleteAll'))}
+		  <a class="layui-btn layui-btn-sm layui-btn-danger" onclick="delAll()">{fun JZLANG('批量删除')}</a>
+		  {/if}
+		  {if(checkAction('Collect/addcollect'))}
+		  <a class="layui-btn layui-btn-sm" onclick="x_admin_show('{fun JZLANG('新增图片')}','{fun U('Collect/addcollect')}')">{fun JZLANG('新增图片')}</a>
+		  {/if}
+		  {if(checkAction('Collect/collectType'))}
+		  <a class="layui-btn layui-btn-sm" onclick="x_admin_show('{fun JZLANG('分类列表')}','{fun U('Collect/collectType')}')">{fun JZLANG('分类列表')}</a>
+		  {/if}
+		  {if(checkAction('Collect/collectTypeAdd'))}
+			<a class="layui-btn layui-btn-sm"  onclick="x_admin_show('{fun JZLANG('添加分类')}','{fun U('Collect/collectTypeAdd')}')" >{fun JZLANG('添加分类')}</a>
+		  {/if}
+		   <span class="x-right" style="line-height:40px">{fun JZLANG('共有数据：')}{$sum} {fun JZLANG('条')}</span>
+		  </xblock>
+           <div style="width:100%;  overflow:scroll;overflow-y: hidden">
+        <table border="1" rules="all" style="width:100%; height:100px; text-align:center;white-space:nowrap" class="layui-table layui-form">
+                <thead>
+                    <tr>
+                        <th>
+						  <div class="layui-unselect header layui-form-checkbox" lay-skin="primary"><i class="layui-icon">&#xe605;</i></div>
+						</th>
+                        <th>
+                            ID
+                        </th>
+                        <th>
+                            {fun JZLANG('排序')}
+                        </th>
+                        <th>
+                            {fun JZLANG('标题')}
+                        </th>
+						
+						<th>
+                            {fun JZLANG('图片')}
+                        </th>
+						<th>
+                            {fun JZLANG('所属分类')}
+                        </th>
+						
+						{foreach $fields_list as $v}
+						<th>
+                            {$v['fieldname']}
+                        </th>
+						{/foreach}
+						
+						<th>
+                            {fun JZLANG('长')}
+                        </th>
+						
+						<th>
+                            {fun JZLANG('宽')}
+                        </th>
+						<th>
+                            {fun JZLANG('是否显示')}
+                        </th>
+						<th>
+                            {fun JZLANG('时间')}
+                        </th>
+						
+                        <th>
+                            {fun JZLANG('操作')}
+                        </th>
+                    </tr>
+                </thead>
+                <tbody id="x-link">
+				  {foreach $lists as $v}
+                    <tr>
+                     <td>
+					  <div class="layui-unselect layui-form-checkbox" lay-skin="primary" data-id='{$v['id']}'><i class="layui-icon">&#xe605;</i></div>
+					</td>
+                        <td>
+                            {$v['id']}
+                        </td>
+                        <td>
+                            {$v['orders']}
+                        </td>
+                        <td>
+                            {fun newstr($v['title'],30)}
+                        </td>
+						
+						 <td>
+                            <a href="{$v['litpic']}" target="_blank"><img src="{$v['litpic']}" width="100px" /></a>
+                        </td>
+						<td>
+						{fun get_info_table('collect_type',array('id'=>$v['tid']),'name')}
+						</td>
+						
+						{foreach $fields_list as $vv}
+                        <td>
+                            {fun format_fields($vv,$v[$vv['field']])}
+                        </td>
+						{/foreach}
+						
+						
+						 <td>
+                            {$v['h']}
+                        </td>
+						 <td>
+                            {$v['w']}
+                        </td>
+						<td>
+						{if($v['isshow']==1)}<span class="layui-badge layui-bg-green">{fun JZLANG('显示')}</span>{else}<span class="layui-badge">{fun JZLANG('不显示')}</span>{/if}
+						</td>
+						<td>
+                            {fun date('Y-m-d H:i:s',$v['addtime'])} 
+                        </td>
+                        <td class="td-manage">
+						{if(checkAction('Collect/editcollect'))}
+							<a class="layui-btn layui-btn layui-btn-xs"  onclick="x_admin_show('{fun JZLANG('编辑')}','{fun U('Collect/editcollect',array('id'=>$v['id']))}')" >{fun JZLANG('编辑')}</a>
+						{/if}
+						{if(checkAction('Collect/deletecollect'))}
+							<a class="layui-btn-danger layui-btn layui-btn-xs"  onclick="collect_del(this,'{$v['id']}')" href="javascript:;"> {fun JZLANG('删除')}</a>
+						{/if}
+						{if(checkAction('Collect/copycollect'))}
+							<a class="layui-btn layui-btn-warm layui-btn-xs"  onclick="collect_copy(this,'{$v['id']}')" >{fun JZLANG('复制')}</a>
+						{/if}
+
+							
+                        </td>
+						
+                    </tr>
+					{/foreach}
+                </tbody>
+            </table>
+			</div>
+            <div class="page">
+				{$pages}
+			  </div>
+        </div>
+     
+			</div>
+		</div> 
+		
+       <script>
+	  
+	   
+	    layui.use(['laydate','form','element','laypage','layer'], function(){
+                $ = layui.jquery;//jquery
+              laydate = layui.laydate;//日期插件
+              lement = layui.element;//面包导航
+            //  laypage = layui.laypage;//分页
+              layer = layui.layer;//弹出层
+			  form = layui.form;
+              //以上模块根据需要引入
+              form.on('select(tid)', function(data){
+					
+					$("#myform").submit();
+				
+			 });
+			 
+              
+            });
+			
+			
+			
+		 /*删除*/
+            function collect_del(obj,id){
+                layer.confirm('{fun JZLANG('确认要删除吗？')}',function(index){
+				
+					$.get("{__APP_URL__}/Collect/deletecollect/id/"+id,{},function(r){
+							var r = JSON.parse(r);
+							if(r.code==0){
+							 //发异步删除数据
+								$(obj).parents("tr").remove();
+								
+								layer.msg(r.msg,{icon: 1,time:1000});
+								window.location.reload();
+								
+							}else{
+								
+								layer.msg(r.msg,{icon: 5,time:1000});
+							}
+					})
+					
+				
+                   
+                });
+            }
+			
+			 function collect_copy(obj,id){
+                $.get("{__APP_URL__}/Collect/copycollect/id/"+id,{},function(r){
+							var r = JSON.parse(r);
+							if(r.code==0){
+								
+								layer.msg(r.msg,{icon: 1,time:1000});
+								window.location.reload();
+								
+							}else{
+								
+								layer.msg(r.msg,{icon: 5,time:1000});
+							}
+					})
+            }
+			
+			 function delAll (argument) {
+
+				var data = tableCheck.getData();
+				if(data==''){
+					alert('{fun JZLANG('请选择对象！')}');return false;
+				}
+				layer.confirm('{fun JZLANG('确认要删除吗？')}'+data,function(index){
+					
+					$.get("{__APP_URL__}/Collect/deleteAll/data/"+data,{},function(r){
+					
+							var r = JSON.parse(r);
+							if(r.code==0){
+							  layer.msg('{fun JZLANG('删除成功')}', {icon: 1});
+							  $(".layui-form-checked").not('.header').parents('tr').remove();
+								
+							}else{
+								
+								layer.msg(r.msg,{icon: 5,time:1000});
+							}
+					})
+					
+					
+					
+				});
+			  }
+			
+       </script>
+    </body>
+</html>

@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html>
+  
+  <head>
+    <meta charset="UTF-8">
+   {include="style"}
+   {include="edit"}
+  </head>
+  
+  <body>
+  <div class="x-nav">
+      <span class="layui-breadcrumb">
+        <a href="">{fun JZLANG('首页')}</a>
+        <a href="">{fun JZLANG('管理员管理')}</a>
+        <a><cite>{fun JZLANG('个人信息')}</cite></a>
+      </span>
+      <a class="layui-btn layui-btn-small" style="line-height:1.6em;margin-top:3px;float:right" href="javascript:location.replace(location.href);" title="刷新">
+        <i class="iconfont" style="line-height:30px">&#xe6aa;</i></a>
+    </div>
+    <div class="x-body">
+	<div class="layui-card">
+	    <div class="layui-card-body">
+        <form class="layui-form  layui-form-pane">
+		<input name="go" value="1" type="hidden">
+		 <input type="hidden" name="token" value="{$token}">
+		<input name="id" value="{fun frencode($member['id'])}" type="hidden">
+          <div class="layui-form-item">
+              <label for="name" class="layui-form-label">
+                  <span class="x-red">*</span>{fun JZLANG('登录名')}
+              </label>
+              <div class="layui-input-inline">
+                  <input type="text" id="name" name="name" required="" lay-verify="required"
+                  autocomplete="off" value="{$member['name']}" class="layui-input">
+              </div>
+              <div class="layui-form-mid layui-word-aux">
+                  <span class="x-red">*</span>{fun JZLANG('将会成为您唯一的登入名')}
+              </div>
+          </div>
+          <div class="layui-form-item">
+              <label for="tel" class="layui-form-label">
+                  <span class="x-red"></span>{fun JZLANG('手机')}
+              </label>
+              <div class="layui-input-inline">
+                  <input type="text" value="{$member['tel']}" id="tel" name="tel" required="" lay-verify="tel"
+                  autocomplete="off" class="layui-input">
+              </div>
+              
+          </div>
+          <div class="layui-form-item">
+              <label for="email" class="layui-form-label">
+                  <span class="x-red"></span>{fun JZLANG('邮箱')}
+              </label>
+              <div class="layui-input-inline">
+                  <input type="text" value="{$member['email']}" id="email" name="email"
+                  autocomplete="off" class="layui-input">
+              </div>
+              <div class="layui-form-mid layui-word-aux">
+                  <span class="x-red"></span>
+              </div>
+          </div>
+		  {if($isadmin)}
+		    <div class="layui-form-item">
+              <label class="layui-form-label"><span class="x-red">*</span>{fun JZLANG('角色')}</label>
+              <div class="layui-input-inline">
+			  
+                <select class="layui-input" name="gid"  lay-filter="gid" lay-verify="required">
+				{foreach $groups as $v}
+				<option value="{$v['id']}" {if($member['gid']==$v['id'])}selected{/if}>{$v['name']}</option>
+				{/foreach}
+				
+				</select>
+              </div>
+          </div>
+		  {else}
+		  <input name="gid" value="{$member['gid']}" type="hidden" /> 
+		  {/if}
+		   <span id="ext_fields"></span>
+
+          <div class="layui-form-item">
+              <label for="L_pass" class="layui-form-label">
+                  <span class="x-red">*</span>{fun JZLANG('密码')}
+              </label>
+              <div class="layui-input-inline">
+                  <input type="password" id="L_pass" name="pass" required="" lay-verify="pass"
+                  autocomplete="off" class="layui-input">
+              </div>
+              <div class="layui-form-mid layui-word-aux">
+                  {fun JZLANG('6到16个字符,不改请留空')}
+              </div>
+          </div>
+		  
+          <div class="layui-form-item">
+              <label for="L_repass" class="layui-form-label">
+                  <span class="x-red">*</span>{fun JZLANG('确认密码')}
+              </label>
+              <div class="layui-input-inline">
+                  <input type="password" id="L_repass" name="repass" required="" lay-verify="repass"
+                  autocomplete="off" class="layui-input">
+              </div>
+			  <div class="layui-form-mid layui-word-aux">
+                  {fun JZLANG('6到16个字符,不改请留空')}
+              </div>
+          </div>
+		   <div class="layui-form-item">
+			<label class="layui-form-label">{fun JZLANG('状态')}</label>
+			<div class="layui-input-inline">
+			  <select name="status" lay-verify="required">
+				
+				<option {if($member['status']==1)}selected="selected"{/if}value="1">{fun JZLANG('正常')}</option>
+				<option {if($member['status']==0)}selected="selected"{/if} value="0">{fun JZLANG('禁用')}</option>
+				
+			  </select>
+			</div>
+		  </div>
+          <div class="layui-form-item" style="text-align:center;">
+             
+              <button  class="layui-btn" lay-filter="add" lay-submit="">
+                  {fun JZLANG('保存')}
+              </button>
+          </div>
+      </form>
+    </div>
+    </div>
+    </div>
+    <script>
+	{include="fields"}
+        layui.use(['form','layer'], function(){
+            $ = layui.jquery;
+          var form = layui.form
+          ,layer = layui.layer;
+        
+         
+          //监听提交
+          form.on('submit(add)', function(data){
+           
+			$.post("{fun U('Index/details')}",data.field,function(res){
+				// console.log(res);
+				 var res = JSON.parse(res);
+				 
+				 if(res.code==1){
+				 layer.msg(res.msg);
+				 }else{
+					 layer.alert("{fun JZLANG('提交成功！')}", {icon: 6},function () {
+						
+						  {if($webconf['admintpl']=='tpl')}
+						   window.location.reload();
+						  {else}
+						  var index = parent.layer.getFrameIndex(window.name);
+						   //关闭当前frame
+						   parent.layer.close(index);
+						   parent.location.reload();
+						  {/if}
+						
+						
+					});
+				 }
+				 
+			});
+           
+            return false;
+          });
+             get_fields({$member['gid']},{$member['id']});
+          form.on('select(gid)', function(data){
+			  /*
+			  console.log(data.elem); //得到select原始DOM对象
+			  console.log(data.value); //得到被选中的值
+			  console.log(data.othis); //得到美化后的DOM对象
+			  */
+			  get_fields(data.value,{$member['id']});
+			});
+          
+        });
+    </script>
+ 
+  </body>
+
+</html>

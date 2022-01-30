@@ -1,0 +1,649 @@
+<!DOCTYPE html>
+<html>
+    
+    <head>
+       <meta charset="UTF-8">
+        {include="style"}
+		<style>
+		.nav li {
+    list-style: none;
+    margin: 5px;
+}
+	.nav li span {
+    margin: 0 10px;
+}
+		</style>
+    </head>
+    
+    <body>
+	 <div class="x-nav">
+            <span class="layui-breadcrumb">
+              <a><cite>{fun JZLANG('首页')}</cite></a>
+              <a><cite>{fun JZLANG('系统扩展')}</cite></a>
+              <a><cite>{fun JZLANG('桌面管理')}</cite></a>
+              <a><cite>{fun JZLANG('修改配置')}</cite></a>
+            </span>
+            <a class="layui-btn layui-btn-small" style="line-height:1.6em;margin-top:3px;float:right"  href="javascript:location.replace(location.href);" title="{fun JZLANG('刷新')}"><i class="iconfont" style="line-height:30px">&#xe6aa;</i></a>
+        </div>
+        <div class="x-body">
+            <form  class="layui-form layui-form-pane" >
+			<input type="hidden" name="go" value="1" />
+			<input type="hidden" name="type" value="{$type}" />
+			<input type="hidden" name="id" value="{$data['id']}" />
+			<input type="hidden" name="left_num" id="left_num" value="{if($left_num==0)}1{else}{$left_num}{/if}" />
+			<input type="hidden" name="top_num" id="top_num" value="{if($top_num==0)}1{else}{$top_num}{/if}" />
+			
+			
+                 <div class="layui-form-item">
+                    <label for="name" class="layui-form-label">
+                        <span class="x-red">*</span>{fun JZLANG('配置名称')}
+                    </label>
+                    <div class="layui-input-inline">
+                        <input type="text" id="name" value="{if($type=='edit')}{$data['name']}{/if}" required="" lay-verify="required"   name="name" 
+                        autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+				
+				<div class="layui-form-item layui-form-text">
+                    <label class="layui-form-label">
+                        {fun JZLANG('左侧菜单栏')} <span class="x-red">{fun JZLANG('没有二级菜单不会生效')}</span>
+                    </label>
+                    <table  class="layui-table layui-input-block">
+                        <tbody id="leftNav">
+						
+                           
+                           
+                        </tbody>
+                    </table>
+                </div>
+				
+				 <div class="layui-form-item layui-form-text">
+                    <label class="layui-form-label">
+                        {fun JZLANG('顶部菜单栏')} <span class="x-red">{fun JZLANG('没有二级菜单不会生效')}</span>
+                    </label>
+                    <table  class="layui-table layui-input-block">
+                        <tbody id="topNav">
+						
+                        </tbody>
+                    </table>
+                </div>
+				
+				
+				<div class="layui-form-item layui-form-text">
+					<label class="layui-form-label">
+						<span class='x-red'>*</span>{fun JZLANG('备注')}
+					</label>
+					<div class="layui-input-block">
+						<textarea placeholder="{fun JZLANG('备注')}"  name="ext" class="layui-textarea">{$data['ext']}</textarea>
+					</div>
+				</div>
+				
+				
+				<div class="layui-form-item">
+                    <label for="isopen" class="layui-form-label">
+                        <span class="x-red"></span>{fun JZLANG('适用角色')}
+                    </label>
+                    <div class="layui-input-inline">
+						<select name="gid" lay-filter="gid" id="gid" >
+						<option value="0">{fun JZLANG('默认所有')}</option>
+					   {foreach get_all_info_table('level_group') as $v}
+					   <option  value="{$v['id']}" {if($data['gid']==$v['id'])}selected{/if}>{$v['name']}</option>
+					   {/foreach}
+					   </select>
+					</div>
+					 
+					
+                </div>
+				<div class="layui-form-item" pane>
+                    <label for="isdefault" class="layui-form-label">
+                        <span class="x-red"></span>{fun JZLANG('系统默认')}
+                    </label>
+                    <div class="layui-input-inline">
+                        <input type="radio" name="isdefault" value="0" title="{fun JZLANG('否')}" {if($data['isdefault']==0)}checked{/if}>
+						<input type="radio" name="isdefault" value="1" title="{fun JZLANG('是')}" {if($data['isdefault']==1)}checked{/if}>
+                    </div>
+					<div class="layui-form-mid layui-word-aux">
+					  {fun JZLANG('系统默认指没有指定桌面配置的管理员，进入后台后默认的配置')}
+					</div>
+					
+                </div>
+                
+                <div class="layui-form-item" style="text-align:center;">
+                   
+                     <button  class="layui-btn" lay-filter="save" lay-submit="">
+                        {fun JZLANG('保存')}
+                    </button>
+					<input type="hidden" id="savekey" value="1">
+				<input type="hidden" id="currentNav" value="1">
+                </div>
+            </form>
+        </div>
+		<br/>
+		<br/>
+		<br/>
+		<br/>
+		<br/>
+		<br/>
+		<br/>
+		<br/>
+		<br/>
+      
+        <script>
+			{if($top_num)}
+			
+			var topNav = [
+				{foreach $top_layout as $k=>$v}
+				{
+					key:{$k+1},
+					title:'{$v['name']}',
+					value:'',
+					icon:'{fun htmlspecialchars_decode($v['icon'])}',
+					children:[
+						{foreach $v['nav'] as $kk=>$vv}
+						
+						{if(!is_array($vv) && $vv)}
+							{if(strpos($vv,'class')!==false)}
+								{
+									key:{$k+10000+rand(500,10000)},
+									title:'{$classnav[$vv]['classname']}',
+									value:'{$vv}',
+									icon:''
+								},
+							{else}
+								{
+									key:{$k+10000+rand(500,10000)},
+									title:'{$rulers[$vv]['name']}',
+									value:'{$vv}',
+									icon:''
+								},
+							
+							{/if}
+						
+						{else if(is_array($vv))}
+								{
+									key:{$k+10000+rand(500,10000)},
+									title:'{$vv['title']}',
+									value:'{$vv['value']}',
+									icon:'{fun htmlspecialchars_decode($vv['icon'])}'
+								},
+						{/if}
+						
+						{/foreach}
+						
+					]
+				},
+				
+				{/foreach}
+			];
+			
+			
+			{else}
+			var topNav = [
+				{
+					key:1,
+					title:'{fun JZLANG('一个菜单名称')}',
+					value:'',
+					icon:'',
+					children:[
+						
+					]
+				},
+				
+			
+			];
+			{/if}
+			{if($left_num)}
+			var leftNav = [
+				{foreach $left_layout as $k=>$v}
+				{
+					key:{$k+1},
+					title:'{$v['name']}',
+					value:'',
+					icon:'{fun htmlspecialchars_decode($v['icon'])}',
+					children:[
+						{foreach $v['nav'] as $kk=>$vv}
+						
+						{if(!is_array($vv) && $vv)}
+							{if(strpos($vv,'class')!==false)}
+								{
+									key:{$k+10000+rand(500,10000)},
+									title:'{$classnav[$vv]['classname']}',
+									value:'{$vv}',
+									icon:''
+								},
+							{else}
+								{
+									key:{$k+10000+rand(500,10000)},
+									title:'{$rulers[$vv]['name']}',
+									value:'{$vv}',
+									icon:''
+								},
+							
+							{/if}
+						
+						{else if(is_array($vv))}
+								
+								{
+									key:{$k+10000+rand(500,10000)},
+									title:'{$vv['title']}',
+									value:'{$vv['value']}',
+									icon:'{fun htmlspecialchars_decode($vv['icon'])}'
+								},
+								
+						{/if}
+						
+						{/foreach}
+						
+					]
+				},
+				
+				{/foreach}
+			];
+			
+			{else}
+			var leftNav = [
+				{
+					key:1,
+					title:'{fun JZLANG('一个菜单名称')}',
+					value:'',
+					icon:'',
+					children:[
+						
+					]
+				},
+				
+			
+			];
+			{/if}
+			
+			function getCurrentNav(n){
+				var n = parseInt(n);
+				if(n==1){
+					return leftNav;
+				}else{
+					return topNav;
+				}
+			}
+			
+			
+			function createNavHtml(n){
+				var obj = getCurrentNav(n);
+				var len = obj.length;
+				var html = '<tr><td>{fun JZLANG('顶级菜单')}</td><td>{fun JZLANG('菜单图标')}</td><td>{fun JZLANG('二级菜单')}</td><td>{fun JZLANG('操作')}</td></tr>';
+				var children = [];
+				for(var i=0;i<len;i++){
+					html+='<tr>';
+                    html+='<td>'+obj[i].title+'</td>';
+					html+='<td><i class="iconfont">'+obj[i].icon+'</i></td>';
+                    html+='<td>';
+					var llen = obj[i].children.length;
+					children =  obj[i].children;
+					html+='<ul class="nav">';
+					for(var ii=0;ii<llen;ii++){
+						html+='<li><span><i class="iconfont">'+children[ii].icon+'</i></span>';
+						html+='<span>'+children[ii].title+'</span>';
+						html+='<div class="layui-btn-group"><button type="button" class="layui-btn layui-btn-sm" onclick="selectIcon('+n+','+children[ii].key+')">{fun JZLANG('图标')}</button><button  type="button" class="layui-btn layui-btn-sm" onclick="editNav('+n+','+children[ii].key+',1)">{fun JZLANG('修改')}</button><button type="button" class="layui-btn layui-btn-sm layui-btn-danger" onclick="delNav('+n+','+children[ii].key+',1)">{fun JZLANG('删除')}</button></div>';
+						html+='</li>';
+						
+					}
+					html+='<li><button type="button" class="layui-btn layui-btn-sm" onclick="addNav('+n+','+obj[i].key+',1)">{fun JZLANG('新增')}</button></li>';
+					html+='</ul>';
+					html+='</td>';
+					html+='<td><button type="button" class="layui-btn layui-btn-sm" onclick="addNav('+n+','+obj[i].key+',0)">{fun JZLANG('新增')}</button><button type="button" class="layui-btn layui-btn-sm" onclick="selectIcon('+n+','+obj[i].key+')">{fun JZLANG('图标')}</button><button  type="button" class="layui-btn layui-btn-sm" onclick="editNav('+n+','+obj[i].key+',0)">{fun JZLANG('修改')}</button><button type="button" class="layui-btn layui-btn-sm layui-btn-danger" onclick="delNav('+n+','+obj[i].key+',0)">{fun JZLANG('删除')}</button></td>';
+					html+='</tr>';
+				
+				}
+				if(parseInt(n)==1){
+				$("#leftNav").html(html);
+				leftNav = obj;
+				}else{
+				$("#topNav").html(html);
+				topNav = obj;
+				}
+				
+				
+			
+			}
+			function changeNav(n,key,type,value){
+				var obj = getCurrentNav(n);
+				var len = obj.length;
+				for(var i=0;i<len;i++){
+					if(obj[i].key==key){
+						obj[i][type] = value;
+						break;
+					}
+					var llen = obj[i].children.length;
+					if(llen>0){
+						for(var ii=0;ii<llen;ii++){
+							if(obj[i].children[ii].key==key){
+								obj[i].children[ii][type] = value;
+								break;
+							}
+						}
+					}
+					
+				}
+				
+				createNavHtml(n);
+				
+			}
+			function getNav(n,key,type){
+				var obj = getCurrentNav(n);
+				var len = obj.length;
+				for(var i=0;i<len;i++){
+					if(obj[i].key==key){
+						return obj[i][type];
+						break;
+					}
+					var llen = obj[i].children.length;
+					if(llen>0){
+					for(var ii=0;ii<llen;ii++){
+						if(obj[i].children[ii].key==key){
+							return obj[i].children[ii][type];
+							break;
+						}
+					}
+					}
+					
+				}
+			}
+			function newKey(obj){
+				//理论上是一个随机的key
+				var k = Math.round(Math.random()*10000);
+				if(checkKey(k,obj)){
+					return newKey(obj);
+				}
+				return k;
+				
+			}
+			function checkKey(key,obj){
+				var len = obj.length;
+				for(var i=0;i<len;i++){
+					if(obj[i].key==key){
+						return true;
+					}
+					var llen = obj[i].children.length;
+					var children = obj[i].children;
+					if(llen>0){
+					for(var ii=0;ii<llen;ii++){
+						if(children[ii].key==key){
+							return true;
+						}
+					}
+					}
+					
+				}
+				return false;
+			}
+			function editNav(n,key,t){
+				var t = parseInt(t);
+				$("#savekey").val(key);
+				var old = getNav(n,key,'title');
+				layer.prompt({
+				  formType: 0,
+				  value: old,
+				  title: '{fun JZLANG('修改菜单名称')}',
+				  area: ['800px', '350px'] //自定义文本域宽高
+				}, function(value, index, elem){
+				  //alert(value); //得到value
+				  changeNav(n,key,'title',value);
+				  layer.close(index);
+				});
+			}
+			function delNav(n,key,t){
+				var i=layer.confirm('{fun JZLANG('确定要删除吗？')}', {
+				  btn: ['{fun JZLANG('取消')}','{fun JZLANG('确定')}'] //按钮
+				}, function(){
+				  layer.close(i);
+				}, function(){
+				    var t = parseInt(t);
+					var obj = getCurrentNav(n);
+					var len = obj.length;
+					var newNav = [];
+					console.log(t);
+					if(len==1 && t!=1){
+						layer.msg('{fun JZLANG('最后一个索引不能删除！')}',{icon:5});
+						return false;
+					}
+					for(var i=0;i<len;i++){
+						if(obj[i].key==key){
+							obj[i] = [];
+							
+						}
+						if(obj[i].key){
+							newNav[i] = obj[i];
+							var llen = obj[i].children.length;
+							if(llen>0){
+								var children = [];
+								for(var ii=0;ii<llen;ii++){
+									if(obj[i].children[ii].key==key){
+										obj[i].children[ii] = [];
+									}
+									if(obj[i].children[ii].key){
+										children.push(obj[i].children[ii]);
+									}
+								}
+								
+								newNav[i].children = children;
+								
+							}
+							
+						}
+					}
+					var newNav=$.grep(newNav,function(n,i){  
+						return n;  
+					},false);  
+					if(parseInt(n)==1){
+						leftNav = newNav;
+					}else{
+						topNav = newNav;
+					}
+					createNavHtml(n);
+				});
+				
+				
+			}
+			//获取key对应的索引
+			function getNavS(key,obj){
+				var len = obj.length;
+				for(var i=0;i<len;i++){
+					if(obj[i].key==key){
+						return i;
+					}
+					var llen = obj[i].children.length;
+					if(llen>0){
+						for(var ii=0;ii<llen;ii++){
+							if(obj[i].children[ii].key==key){
+								return i;
+							}
+						}
+					}
+					
+				}
+			}
+			//根据数组索引，数组中间插入一个值
+			function getNewNav(arrayList,index,value){
+				arrayList.splice(index,0,value);
+				return arrayList;
+			}
+			function addNav(n,key,t){
+				var t = parseInt(t);
+				$("#savekey").val(key);
+				if(t==0){
+					//顶级菜单
+					
+					layer.prompt({
+					  formType: 0,
+					  value: '',
+					  title: '{fun JZLANG('添加菜单名称')}',
+					  area: ['800px', '350px'] //自定义文本域宽高
+					}, function(title, index, elem){
+					  //alert(value); //得到value
+					  var obj = getCurrentNav(n);
+					  var nkey = newKey(obj);
+					  var len = obj.length;
+					  var newNav = [];
+					  var ikey = getNavS(key,obj)+1;//获取key对应的索引+1向下一位
+					  var nav = {
+							key:nkey,
+							title:title,
+							value:'',
+							icon:'',
+							children:[]
+						};
+						obj = getNewNav(obj,ikey,nav);
+						if(parseInt(n)==1){
+							leftNav = obj;
+						}else{
+							topNav = obj;
+						}
+					  createNavHtml(n);
+					  layer.close(index);
+					});
+					
+				}else{
+					//二级菜单
+					$("#currentNav").val(n);
+					var addnav = layer.open({
+					  type: 2,
+					  title: '{fun JZLANG('菜单选择')}',
+					  shadeClose: true,
+					  shade: 0.8,
+					  area: ['80%', '90%'],
+					  content: '{fun U('viewPower')}' //iframe的url
+					}); 
+					
+				}
+				
+			}
+			
+			function setNavChildren(nav){
+				$.post("{fun U('getNav')}",{ids:nav},function(res){
+					if(res.code==0){
+						var n = $("#currentNav").val();
+						var obj = getCurrentNav(n);
+						var key = $("#savekey").val();
+						var len = obj.length;
+						var children = [];
+						var m = 0;
+						for(var i=0;i<len;i++){
+							if(key==obj[i].key){
+								children = obj[i].children;
+								m = i;
+								break;
+							}
+						}
+						var ll = res.data.length;
+						for(var i=0;i<ll;i++){
+							var nkey = newKey(obj);
+							children.push({
+								key:nkey,
+								title:res.data[i].title,
+								value:res.data[i].id,
+								icon:'',
+							});
+						}
+						obj[m].children = children;
+						if(parseInt(n)==1){
+							leftNav = obj;
+						}else{
+							topNav = obj;
+						}
+						createNavHtml(n);
+						
+						
+						
+					}else{
+						layer.alert(res.msg)
+					}
+				},'json')
+			}
+			
+			function selectIcon(n,key){
+				$("#savekey").val(key);
+				$("#currentNav").val(n);
+				var iconiframe = layer.open({
+				  type: 2,
+				  title: '{fun JZLANG('图标选择')}',
+				  shadeClose: true,
+				  shade: 0.8,
+				  area: ['80%', '90%'],
+				  content: '{fun U('unicode')}' //iframe的url
+				}); 
+			}
+			
+			function getSelectIcon(icon){
+				console.log('获取'+icon);
+				var key = $("#savekey").val();
+				var n = $("#currentNav").val();
+				changeNav(n,key,'icon',icon);
+				
+			}
+			
+			function closeiframe(){
+				layer.closeAll();
+			}
+			
+			
+			$(function(){
+			
+				createNavHtml(1);
+				createNavHtml(2);
+			})
+			   
+		
+            layui.use(['laydate','form','layer','upload'], function(){
+                $ = layui.jquery;
+              var form = layui.form
+              ,layer = layui.layer;
+			  laydate = layui.laydate;
+			
+			  
+			    //监听提交
+              form.on('submit(save)', function(data){
+                
+                data.field.topNav = topNav;
+				data.field.leftNav = leftNav;
+				$.post("{fun U('desktop_edit')}",data.field,function(r){
+					//console.log(r);return false;
+					var r = JSON.parse(r);
+					if(r.code==0){
+						layer.msg(r.msg, {icon: 6,time: 2000},function () {
+							// 获得frame索引
+							{if($webconf['admintpl']=='tpl')}
+							window.location.href="{fun U('Index/desktop')}";
+							{else}
+							parent.location.reload();
+							{/if}
+							
+						});
+						// parent.layer.close(index);
+						 
+					}else{
+						layer.alert(r.msg, {icon: 5});
+					}
+				});
+				
+               
+                return false;
+              });
+            
+			
+              
+              
+            });
+			//重新渲染表单
+			function renderForm(){
+				layui.use('form', function(){
+				var form = layui.form; //只有执行了这一步，部分表单元素才会自动修饰成功
+				  form.render();
+				});
+			}
+		
+			
+			
+        </script>
+      
+    </body>
+
+</html>

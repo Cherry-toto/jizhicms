@@ -1,0 +1,587 @@
+<!DOCTYPE html>
+<html>
+    <head>
+    <meta charset="UTF-8">
+    {include="style"}
+	{include="edit"}
+	<style>
+	body .layui-layer-demo .layui-layer-title{background:#009688; color:#fff; border: none;}
+	body .layui-layer-demo .layui-layer-content{padding:20px;line-height: 24px;}
+	.layui-sys-icon {
+		font-size: 20px;
+		cursor: pointer;
+		color: #01AAED;
+	}
+	
+	.layui-form-pane .layui-form-label {
+		width: 150px;
+	}
+	@media screen and (max-width: 900px) {
+		.layui-form-item .layui-input-inline {
+			width: 100%;
+		}
+		.layui-form-item.layui-form-text{
+			width:100%;
+		}
+	}
+	@media screen and (min-width: 900px) {
+		.layui-form-item .layui-input-inline {
+			width: 45%;
+		}
+		.layui-form-item.layui-form-text{
+			width:60%;
+		}
+	}
+	.copy{ cursor:pointer;}
+	</style>
+	
+  </head>
+    <body>
+        <div class="x-nav">
+            <span class="layui-breadcrumb">
+              <a><cite>{fun JZLANG('首页')}</cite></a>
+              <a><cite>{fun JZLANG('系统设置')}</cite></a>
+              <a><cite>{fun JZLANG('网站设置')}</cite></a>
+            </span>
+            <a class="layui-btn layui-btn-sm" style="line-height:1.6em;margin-top:3px;float:right"  href="javascript:location.replace(location.href);" title="{fun JZLANG('刷新')}"><i class="iconfont" style="line-height:30px">&#xe6aa;</i></a>
+        </div>
+        <form class="layui-form layui-form-pane" >
+        <div class="x-body">
+            <div class="layui-tab layui-tab-brief" lay-filter="docDemoTabBrief">
+              <ul class="layui-tab-title">
+			  {php 
+			  $ctype = [];
+			  $i = 0;
+			  /}
+			  {loop table="ctype" orderby="id asc" as="v"}
+			  {if(checkAction('Sys/'.$v['action']))}
+                <li {if($i==0)}class="layui-this"{/if}>{fun JZLANG($v['title'])}</li>
+				{php
+				$ctype[]=$v;
+				$i++;
+				/}
+			  {/if}
+				
+			  {/loop}
+			  {if($admin['gid']==1)}
+			  <li>{fun JZLANG('自定义配置')}</li>
+              {/if}
+              </ul>
+
+              <div class="layui-tab-content" >
+				{foreach $ctype as $s}
+                <div class="layui-tab-item {if($s_n==1)}layui-show{/if}">
+						{loop table="sysconfig" typeid="$s['id']" orderby="orders desc,id asc" as="v"}
+						{if($v['type']==1)}
+						
+						<div class="layui-form-item" >
+                            <label  class="layui-form-label">
+                                {fun JZLANG($v['title'])}
+                            </label>
+                            <div class="layui-inline">
+                               
+                              <input name="{$v['field']}" type="text" class="layui-input" id="{$v['field']}" value="{$v['data']}">
+                            </div>
+                             <div class="layui-inline">
+                                <button type="button" class="layui-btn" id="{$v['field']}_upload">
+                                <i class="layui-icon layui-icon-add-circle"></i>{fun JZLANG('上传图片')}
+                                </button><input class="layui-upload-file" type="file" accept="image/*" name="file">
+                             </div>
+							{if($v['tip'])}
+							<i data-info="{fun JZLANG($v['tip'])}" data-field="f{$v['id']}" class="layui-sys-icon layui-icon layui-icon-about f{$v['id']}"></i>
+							{/if}
+							{if($admin['gid']==1)}
+							<div  class="layui-inline">
+							<span data-clipboard-action="copy" id="copy_{$v['field']}_text"  data-clipboard-target="#copy_{$v['field']}_text" title="{fun JZLANG('点击复制')}" class="layui-badge-rim copy">{$v['field']}</span>
+							</div>
+							{if($v['sys']!=1)}
+							<div class="layui-inline">
+							<button type="button" lay-filter="del" data="custom_{$v['field']}"  lay-submit=""  class="layui-btn layui-btn-danger layui-btn-sm">{fun JZLANG('删除')}</button>
+							</div>
+							{/if}
+							{/if}
+							 
+                            <div class="layui-block">
+                            <img src="{$v['data']}"  id="{$v['field']}_img">
+                            </div>
+							
+                        </div>
+						<script>
+                
+                        layui.use("upload", function(){
+                              var upload_{$v['field']} = layui.upload;
+                               
+                              //执行实例
+                              var uploadInst = upload_{$v['field']}.render({
+                                elem: "#{$v['field']}_upload" //绑定元素
+                                ,url: "{fun U('Common/uploads')}" //上传接口
+                                ,accept:"images"
+                                ,acceptMime:"image/*"
+                                ,data:{molds:"sysconfig"}
+                                ,done: function(res){
+                                  
+                                    if(res.code==0){
+                                         $("#{$v['field']}_img").attr("src",res.url);
+                                         $("#{$v['field']}").val(res.url);
+                                    }else{
+                                         layer.alert(res.error, {icon: 5});
+                                    }
+                                }
+                                ,error: function(){
+                                  //请求异常回调
+                                  layer.alert("{fun JZLANG('上传异常！')}");
+                                }
+                              });
+                            });
+                        </script>
+						
+						{else if($v['type']==2)}
+						
+						<div class="layui-form-item">
+                            <label class="layui-form-label">
+                                {$v['title']}
+                            </label>
+                            <div  class="layui-input-inline">
+                                <input type="text" name="{$v['field']}" value="{$v['data']}" autocomplete="off" 
+                                class="layui-input">
+								
+                            </div>
+							{if($v['tip'])}
+							<i data-info="{$v['tip']}" data-field="f{$v['id']}" class="layui-sys-icon layui-icon layui-icon-about f{$v['id']}"></i>
+							{/if}
+							{if($admin['gid']==1)}
+							<div  class="layui-inline">
+							<span data-clipboard-action="copy" id="copy_{$v['field']}_text"  data-clipboard-target="#copy_{$v['field']}_text" title="{fun JZLANG('点击复制')}" class="layui-badge-rim copy">{$v['field']}</span>
+							</div>
+							{if($v['sys']!=1)}
+							<div class="layui-inline">
+							<button type="button" lay-filter="del" data="custom_{$v['field']}"  lay-submit=""  class="layui-btn layui-btn-danger layui-btn-sm">{fun JZLANG('删除')}</button>
+							</div>
+							{/if}
+							{/if}
+							
+                        </div>
+						
+						{else if($v['type']==3)}
+						<div class="layui-form-item layui-form-text">
+                            <label  class="layui-form-label">
+                                {$v['title']}  {if($v['tip'])}
+							<i data-info="{$v['tip']}" data-field="f{$v['id']}" class="layui-sys-icon layui-icon layui-icon-about f{$v['id']}"></i>
+							{/if}
+							{if($admin['gid']==1)}
+							<span data-clipboard-action="copy" id="copy_{$v['field']}_text"  data-clipboard-target="#copy_{$v['field']}_text" title="{fun JZLANG('点击复制')}" class="layui-badge-rim copy">{$v['field']}</span>
+							{/if}
+                            </label>
+							
+                            <div class="layui-input-block">
+                                <textarea  name="{$v['field']}" class="layui-textarea">{$v['data']}</textarea>
+								
+                            </div>
+							
+							{if($v['sys']!=1 && $admin['gid']==1)}
+							<div class="layui-inline">
+							<button type="button" lay-filter="del" data="custom_{$v['field']}"  lay-submit=""  class="layui-btn layui-btn-danger layui-btn-sm">{fun JZLANG('删除')}</button>
+							</div>
+							{/if}
+							
+							
+                        </div>
+						{else if($v['type']==4)}
+						{php
+						$edit = include(APP_PATH.APP_HOME.'/'.HOME_VIEW.'/'.Tpl_template.'common/uediter.php');
+						echo $edit;
+						/}
+						{if($admin['gid']==1)}
+						<div  class="layui-inline">
+						<span data-clipboard-action="copy" id="copy_{$v['field']}_text"  data-clipboard-target="#copy_{$v['field']}_text" title="{fun JZLANG('点击复制')}" class="layui-badge-rim copy">{$v['field']}</span>
+						</div>
+							{if($v['sys']!=1)}
+							<div class="layui-inline">
+							<button type="button" lay-filter="del" data="custom_{$v['field']}"  lay-submit=""  class="layui-btn layui-btn-danger layui-btn-sm">{fun JZLANG('删除')}</button>
+							{/if}
+						{/if}
+						{else if($v['type']==5)}
+						<div class="layui-form-item" >
+                            <label  class="layui-form-label">
+                                {$v['title']}
+                            </label>
+                            <div class="layui-inline">
+                               
+                              <input name="{$v['field']}" type="text" class="layui-input" id="{$v['field']}" value="{$v['data']}">
+                            </div>
+                             <div class="layui-inline">
+                                <button type="button" class="layui-btn" id="{$v['field']}_upload">
+                                <i class="layui-icon layui-icon-add-circle"></i>{fun JZLANG('上传文件')}
+                                </button><input class="layui-upload-file" type="file" name="file">
+                             </div>
+							{if($v['tip'])}
+							<i data-info="{$v['tip']}" data-field="f{$v['id']}" class="layui-sys-icon layui-icon layui-icon-about f{$v['id']}"></i>
+							{/if}
+							{if($admin['gid']==1)}
+							<div  class="layui-inline">
+							<span data-clipboard-action="copy" id="copy_{$v['field']}_text"  data-clipboard-target="#copy_{$v['field']}_text" title="{fun JZLANG('点击复制')}" class="layui-badge-rim copy">{$v['field']}</span>
+							</div>
+							{if($v['sys']!=1)}
+							<div class="layui-inline">
+							<button type="button" lay-filter="del" data="custom_{$v['field']}"  lay-submit=""  class="layui-btn layui-btn-danger layui-btn-sm">{fun JZLANG('删除')}</button>
+							</div>
+							{/if}
+							{/if}
+                            
+                        </div>
+						<script>
+                
+                        layui.use("upload", function(){
+                              var upload_{$v['field']} = layui.upload;
+                               
+                              //执行实例
+                              var uploadInst = upload_{$v['field']}.render({
+                                elem: "#{$v['field']}_upload" //绑定元素
+                                ,url: "{fun U('Common/uploads')}" //上传接口
+                                ,accept:"file"
+								,exts: "{$webconf['fileType']}"
+                                ,data:{molds:"sysconfig"}
+                                ,done: function(res){
+                                  
+                                    if(res.code==0){
+                                        
+                                         $("#{$v['field']}").val(res.url);
+                                    }else{
+                                         layer.alert(res.error, {icon: 5});
+                                    }
+                                }
+                                ,error: function(){
+                                  //请求异常回调
+                                  layer.alert("{fun JZLANG('上传异常！')}");
+                                }
+                              });
+                            });
+                        </script>
+						
+						{else if($v['type']==6)}
+						<div  class="layui-form-item">
+                            <label   class="layui-form-label">
+                                {$v['title']}
+                            </label>
+                            <div  class="layui-input-inline">
+							<select name="{$v['field']}" class="layui-btn layui-btn-normal">
+							<option value="">{fun JZLANG('请选择')}</option>
+							{php
+							$v['config'] = str_replace('，',',',$v['config']);
+							$select = explode(',',$v['config']);
+							/}
+							{foreach $select as $vv}
+							{php
+							$d = explode('=',$vv);
+							/}
+							<option value="{$d[1]}" {if($v['data']==$d[1])}selected{/if}>{$d[0]}</option>
+							{/foreach}
+							
+							</select>
+                            </div>
+							{if($v['tip'])}
+							<i data-info="{$v['tip']}" data-field="f{$v['id']}" class="layui-sys-icon layui-icon layui-icon-about f{$v['id']}"></i>
+							{/if}
+							{if($admin['gid']==1)}
+							<div  class="layui-inline">
+							<span data-clipboard-action="copy" id="copy_{$v['field']}_text"  data-clipboard-target="#copy_{$v['field']}_text" title="{fun JZLANG('点击复制')}" class="layui-badge-rim copy">{$v['field']}</span>
+							</div>
+							{if($v['sys']!=1)}
+							<div class="layui-inline">
+							<button type="button" lay-filter="del" data="custom_{$v['field']}"  lay-submit=""  class="layui-btn layui-btn-danger layui-btn-sm">{fun JZLANG('删除')}</button>
+							</div>
+							{/if}
+							{/if}
+                        </div>
+						
+						{else if($v['type']==7)}
+						<div  class="layui-form-item">
+							<label   class="layui-form-label">
+								{$v['title']}
+							</label>
+							<div  class="layui-input-inline">
+							<select name="{$v['field']}" id="{$v['field']}" class="layui-btn layui-btn-normal">
+							<option value="0" >{fun JZLANG('不选')}</option>
+							{foreach $classtypetree as $vv}
+							{if($vv['id']==$v['data'])}
+							<option selected value="{$vv['id']}">{fun str_repeat('--', $vv['level']).$vv['classname']}</option>
+							{else}
+							<option  value="{$vv['id']}">{fun str_repeat('--', $vv['level']).$vv['classname']}</option>
+							{/if}
+							{/foreach}
+							</select>
+							</div>
+							{if($v['tip'])}
+							<i data-info="{$v['tip']}" data-field="f{$v['id']}" class="layui-sys-icon layui-icon layui-icon-about f{$v['id']}"></i>
+							{/if}
+							{if($admin['gid']==1)}
+							<div  class="layui-inline">
+							<span data-clipboard-action="copy" id="copy_{$v['field']}_text"  data-clipboard-target="#copy_{$v['field']}_text" title="{fun JZLANG('点击复制')}" class="layui-badge-rim copy">{$v['field']}</span>
+							</div>
+							{if($v['sys']!=1)}
+							<div class="layui-inline">
+							<button type="button" lay-filter="del" data="custom_{$v['field']}"  lay-submit=""  class="layui-btn layui-btn-danger layui-btn-sm">{fun JZLANG('删除')}</button>
+							</div>
+							{/if}
+							{/if}
+						</div>
+						{else if($v['type']==8)}
+						<div class="layui-form-item layui-form-text">
+                            <label  class="layui-form-label">
+                                {$v['title']}  <span class="x-red">{$v['tip']}</span>{if($admin['gid']==1)}
+								<span data-clipboard-action="copy" id="copy_{$v['field']}_text"  data-clipboard-target="#copy_{$v['field']}_text" title="{fun JZLANG('点击复制')}" class="layui-badge-rim copy">{$v['field']}</span>
+								{/if}
+                            </label>
+                            <div class="layui-input-block">
+                                <textarea  name="{$v['field']}" class="layui-textarea">{$v['data']}</textarea>
+								
+                            </div>
+							{if($v['sys']!=1 && $admin['gid']==1)}
+							<div class="layui-inline">
+							<button type="button" lay-filter="del" data="custom_{$v['field']}"  lay-submit=""  class="layui-btn layui-btn-danger layui-btn-sm">{fun JZLANG('删除')}</button>
+							</div>
+							{/if}
+							
+							
+                        </div>
+						{/if}
+                        
+                        {/loop}
+                        
+                       
+                     {if($s['id']>7 && $admin['gid']==1)}
+					<div class="layui-inline">
+					<button type="button" lay-filter="delconfig" data="{$s['id']}"  lay-submit=""  class="layui-btn layui-btn-danger layui-btn-sm">{fun JZLANG('删除配置栏')}</button>
+					</div>
+					 {/if}
+                    
+                    <div style="height:100px;"></div>
+                </div>
+                
+				
+				{/foreach}
+				<div class="layui-tab-item ">
+				 {if($admin['gid']==1)}
+						
+						<fieldset class="layui-elem-field">
+						  <legend>{fun JZLANG('自定义配置')}</legend>
+						  <div class="layui-field-box">
+								<label  class="layui-form-label">
+									{fun JZLANG('新增配置')}
+								</label>
+								
+								<div class="layui-inline" >
+									<select class="layui-btn layui-btn-normal" name="custom_type" id="custom_type" >
+									<option value="0">{fun JZLANG('选择类型')}</option>
+									<option value="1">{fun JZLANG('图片')}</option>
+									<option value="2">{fun JZLANG('单行文本')}</option>
+									<option value="3">{fun JZLANG('多行文本')}</option>
+									<option value="4">{fun JZLANG('编辑器')}</option>
+									<option value="5">{fun JZLANG('文件上传')}</option>
+									<option value="6">{fun JZLANG('下拉选项')}</option>
+									<option value="7">{fun JZLANG('栏目选项')}</option>
+									<option value="8">{fun JZLANG('代码')}</option>
+									
+									</select>
+									
+									
+								</div>
+								
+								<div class="layui-inline">
+									<input type="text" id="custom_title" name="custom_title" autocomplete="off" placeholder="{fun JZLANG('请填写配置名(中文)')}"
+									class="layui-input">
+								</div>
+								<div class="layui-inline">
+									<input type="text" id="custom_fields" name="custom_fields" autocomplete="off" placeholder="{fun JZLANG('配置标识(字母或数字)')}"
+									class="layui-input">
+								</div>
+								
+								<div class="layui-inline">
+								 <button lay-filter="*" lay-submit="" class="layui-btn"><i class="iconfont">&#xe6b9;</i>{fun JZLANG('添加')}</button>
+								</div>
+								<br/>
+								<label  class="layui-form-label">
+									{fun JZLANG('配置栏目')}
+								</label>
+								<div class="layui-inline" >
+									<select class="layui-btn layui-btn-normal" name="custom_ctype" id="custom_ctype" >
+									{foreach $ctype as $v}
+									<option value="{$v['id']}">{$v['title']}</option>
+									{/foreach}
+									</select>
+								</div>
+								<div class="layui-inline">
+									<input type="text" id="custom_tips" name="custom_tips" autocomplete="off" placeholder="{fun JZLANG('提示信息')}"
+									class="layui-input">
+								</div>
+								<i data-info="{fun JZLANG('自定义配置可以配置对应配置栏下的自定义内容')}" data-field="fcustom" class="layui-sys-icon layui-icon layui-icon-about fcustom"></i>
+								<br/>
+								<div class="layui-input-block" style="margin-left:0;">
+                                <textarea  name="custom_config" placeholder="{fun JZLANG('下拉选项配置，如：开启=1,关闭=0')}" class="layui-textarea"></textarea>
+								
+								</div>
+						  </div>
+						</fieldset>
+						<fieldset class="layui-elem-field">
+						    <legend>{fun JZLANG('自定义配置栏')}</legend>
+						    <div class="layui-field-box">
+							
+								<div class="layui-inline">
+									<input type="text" id="custom_new_title" name="custom_new_title" autocomplete="off" placeholder="{fun JZLANG('请填写配置栏名(中文)')}"
+									class="layui-input">
+								</div>
+								<div class="layui-inline">
+									<input type="text" id="custom_new_fields" name="custom_new_fields" autocomplete="off" placeholder="{fun JZLANG('配置标识(必须是字母)')}"
+									class="layui-input">
+								</div>
+								<div class="layui-inline">
+								 <button lay-filter="*" lay-submit="" class="layui-btn"><i class="iconfont">&#xe6b9;</i>{fun JZLANG('添加')}</button>
+								</div>
+								<i data-info="{fun JZLANG('配置标识用于权限控制，必填且不能与原系统配置栏重复')}" data-field="fcustomnew" class="layui-sys-icon layui-icon layui-icon-about fcustomnew"></i>
+							</div>	
+						</fieldset>
+						 
+                       
+                        {/if}
+				<div style="height:100px;"></div>
+				</div>
+				
+				
+
+                        
+						
+                        <div class="layui-form-item">
+                            <button class="layui-btn" lay-submit="" lay-filter="*">
+                                {fun JZLANG('保存')}
+                            </button>
+                        </div>
+				
+                
+              </div>
+            </div> 
+            
+        </div>
+        </form>
+     
+        <script>
+		
+            layui.use(['element','layer','form','upload'], function(){
+                $ = layui.jquery;//jquery
+            var  lement = layui.element;//面包导航
+            var  layer = layui.layer;//弹出层
+            var  form = layui.form;
+             var upload = layui.upload;
+            
+           
+			
+          
+             //监听提交
+              form.on('submit(*)', function(data){
+            
+                $.post("{fun U('Sys/index')}",data.field,function(r){
+                    //console.log(r);
+                    var r = JSON.parse(r);
+                    if(r.code==0){
+                         layer.alert(r.msg, {icon: 6},function(){
+                             
+                             window.location.reload();
+                             
+                             });
+                        
+                    }else{
+                         layer.alert(r.msg, {icon: 5});
+                         
+                    }
+                
+                });
+                
+                return false;
+               
+                
+              });
+              
+               form.on('submit(del)', function(data){
+               
+                var s = $(this).attr('data');
+                layer.confirm('{fun JZLANG('确认要删除吗？')}',function(index){
+                     $("#"+s).remove();
+                     layer.close(index);
+                     var ss = s.split('custom_');
+                    $.post("{fun U('Sys/custom_del')}",{field:ss[1]},function(r){
+                        var r = JSON.parse(r);
+                        if(r.code==0){
+                             layer.alert(r.msg, {icon: 6},function(){
+                             window.location.reload();
+                             });
+                             
+                        }else{
+                             layer.alert(r.msg, {icon: 5});
+                             
+                        }
+                    
+                    });
+                    
+                });
+				
+                return false;
+
+              });
+			  
+			  form.on('submit(delconfig)', function(data){
+               
+                var ctype = $(this).attr('data');
+                layer.confirm('{fun JZLANG('确认要删除吗？')}',function(index){
+                     
+                     layer.close(index);
+                     
+                    $.post("{fun U('Sys/index')}",{ctype:ctype,deltype:1},function(r){
+                        var r = JSON.parse(r);
+                        if(r.code==0){
+                             layer.alert(r.msg, {icon: 6},function(){
+                             window.location.reload();
+                             });
+                             
+                        }else{
+                             layer.alert(r.msg, {icon: 5});
+                             
+                        }
+                    
+                    });
+                    
+                });
+				return false;
+                });
+			  
+              
+			  
+              $(".layui-sys-icon").click(function(){
+					var fclass = $(this).attr('data-field');
+					layer.tips($(this).attr('data-info'), '.'+fclass);
+				})
+
+              })
+              
+              function custom_delete(s){
+                layer.confirm('{fun JZLANG('确认要删除吗？')}',function(index){
+                     $("#"+s).remove();
+                     layer.close(index);
+                    
+            
+                });
+              }
+			  var clipboard = new ClipboardJS('.copy');
+				clipboard.on('success', function(e) {
+					layer.msg('{fun JZLANG('复制成功！')}', {icon: 6,time: 1000});
+					e.clearSelection();
+				});
+
+				clipboard.on('error', function(e) {
+					
+					layer.alert('{fun JZLANG('失败！')}');
+				});
+					 
+              
+            </script>
+            
+    </body>
+</html>

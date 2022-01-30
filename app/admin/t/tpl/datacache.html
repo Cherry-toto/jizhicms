@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html>
+  
+  <head>
+    <meta charset="UTF-8">
+   {include="style"}
+
+  </head>
+  
+  <body>
+    <div class="x-nav">
+      <span class="layui-breadcrumb">
+        <a>{fun JZLANG('首页')}</a>
+        <a><cite>{fun JZLANG('碎片化管理')}</cite></a>
+      </span>
+      <a class="layui-btn layui-btn-small" style="line-height:1.6em;margin-top:3px;float:right" href="javascript:location.replace(location.href);" title="{fun JZLANG('刷新')}">
+        <i class="iconfont" style="line-height:30px">&#xe6aa;</i></a>
+    </div>
+    <div class="x-body">
+	
+	<div class="layui-card">
+		<div class="layui-card-body">
+		<form class="layui-form" action="">
+		<xblock>
+		<div class="layui-form-item">
+	    
+        {if(checkAction('sys/addcache'))}	
+		<div class="layui-input-inline"  style="width:auto;">
+		<a class="layui-btn layui-btn-sm"  onclick="x_admin_show('{fun JZLANG('新增碎片')}','{fun U('sys/addcache')}')" >{fun JZLANG('新增碎片')}</a>
+		</div>
+		{/if}
+
+		</div>
+		
+		</xblock>
+		
+		<div class="layui-collapse">
+		<div class="layui-colla-item">
+		<h2 class="layui-colla-title">{fun JZLANG('调用方式')}</h2>
+		<div class="layui-colla-content">
+		<div class="row">
+
+		<p>{!--php $jzdata=jzcachedata('碎片标识');/--}</p>
+		<p>{!--foreach $jzdata as $v--}</p>
+		<p>{fun JZLANG('这里输出想要的内容，如：')}{!--$v['title']--}</p>
+		<p>{!--/foreach--}</p>
+		
+
+		</div>
+		</div>
+		</div>
+		</div>
+		
+		
+		
+       
+        <table border="1" rules="all" style="width:100%; height:100px; white-space:nowrap" class="layui-table layui-form">
+        <thead>
+          <tr>
+            <th width="70">ID</th>
+            <th >{fun JZLANG('碎片名称')}</th>
+            <th >{fun JZLANG('碎片标识')}</th>
+            <th >{fun JZLANG('更新周期')}</th>
+            <th >{fun JZLANG('操作')}</th>
+        </thead>
+        <tbody class="x-cate">
+		{foreach $lists as $v}
+          <tr >
+		    <td>
+			{$v['id']}
+			</td>
+            <td>{$v['title']}</td>
+			<td>
+			{$v['field']}
+			</td>
+			<td>{$v['times']}{fun JZLANG('分钟')}</td>
+           
+			
+            <td class="td-manage">
+			{if(checkAction('sys/viewcache'))}
+              <a class="layui-btn layui-btn layui-btn-xs"  onclick="x_admin_show('{fun JZLANG('查看SQL')}','{fun U('sys/viewcache',array('id'=>$v['id']))}')"  >{fun JZLANG('查看SQL')}</a>
+			{/if}
+			{if(checkAction('sys/editcache'))}
+              <a class="layui-btn layui-btn layui-btn-xs"  onclick="x_admin_show('{fun JZLANG('编辑')}','{fun U('sys/editcache',array('id'=>$v['id']))}')" >{fun JZLANG('编辑')}</a>
+			{/if}
+			{if(checkAction('sys/delcache'))}
+              <a class="layui-btn-danger layui-btn layui-btn-xs"  onclick="cache_del(this,'{$v['id']}')" href="javascript:;" >{fun JZLANG('删除')}</a>
+			{/if}
+            </td>
+
+
+          </tr>
+		 {/foreach}
+         
+        </tbody>
+		</table>
+ 
+		</form>
+		
+		</div>
+
+	</div>
+    </div>
+
+    <script>
+      layui.use(['form'], function(){
+        form = layui.form;
+
+		
+      });
+		
+      function cache_del(obj,id){
+          layer.confirm('{fun JZLANG('确认要删除吗？')}',function(index){
+              //发异步删除数据
+			  $.post('{fun U('sys/delcache')}',{id:id},function(r){
+					r = JSON.parse(r);
+
+					if(r.status==0){
+						layer.msg(r.info, {
+						  icon:5
+						});
+					}else{
+						layer.msg('{fun JZLANG('删除成功！')}', {
+						 time:1000,icon:6
+						},function(){
+							 $(obj).parents("tr").remove();
+								layer.msg('{fun JZLANG('已删除!')}',{icon:1,time:1000});
+						});
+						
+						}
+				
+			  });
+		
+			  
+			  
+              
+          });
+      }
+	  
+    </script>
+    
+  </body>
+
+</html>

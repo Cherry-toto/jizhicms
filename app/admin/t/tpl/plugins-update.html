@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	{include="style"}
+
+</head>
+<body >
+  <div class="layui-rows" style="    margin-top: 10px;">
+    <h1 style="text-align:center">{$plugin['name']}</h1>
+    <div class="layui-content" style="margin: 20px 40px;text-align: center;"><p style="font-size: 16px;">{fun JZLANG('当前版本：')}<span class="layui-badge layui-bg-gray">v{$plugin['version']}</span>&nbsp;&nbsp;{fun JZLANG('最新版本：')}<span class="layui-badge layui-bg-green">v{$data['version']}</span>&nbsp;&nbsp;{fun JZLANG('作者：')}{$plugin['author']}&nbsp;&nbsp;{fun JZLANG('更新时间：')}{$data['time']}</span></p>
+    </div>
+    
+	<div style=" margin: 25px; font-size: 20px;">
+		<fieldset class="layui-elem-field" style="border: none;padding: 0;border-top: 1px solid #eee;">
+		  <legend>{fun JZLANG('更新内容')}</legend>
+		  <div class="layui-field-box">
+		    <blockquote class="layui-elem-quote">{fun nl2br($data['data'])}</blockquote>
+		  </div>
+		</fieldset>
+		
+		
+	</div>
+	<form class="layui-form layui-form-pane" action="">
+	<div id="update-plugins" style="display: none;"><h3  style="text-align:center" id="down-text">{fun JZLANG('正在下载文件')}</h3>
+	<div class="layui-progress  layui-progress-big"   id="down-action" lay-showpercent="true" lay-filter="demo-progress" style="margin: 30px;">
+	  <div class="layui-progress-bar" lay-percent="0%"></div>
+	</div>
+	</div>
+	<input type="hidden" name="filepath" id="filepath" value="{$filepath}">
+	<input type="hidden" name="download_url" id="download_url" value="{$data['url']}">
+	<input type="hidden" name="filesize" id="filesize" value="{$filesize}">
+	<input type="hidden" name="action" id="action" value="start-download">
+		<div class="layui-form-item" >
+		<div  style="text-align:center;">
+		  <button class="layui-btn" id="update-submit" lay-submit lay-filter="formDemo">{fun JZLANG('升级插件')}</button>
+
+		</div>
+		</div>
+	</form>
+  </div>
+
+  
+    <script>
+	layui.use(['code','form','element'], function(){ //加载code模块
+		  layui.code({'encode':true}); //引用code方法
+		  var form = layui.form;
+		  var element = layui.element;
+		  var $ = layui.jquery;
+		  //监听提交
+          form.on('submit(formDemo)', function(data){
+       		$("#update-submit").addClass('layui-btn-disabled');
+       		$("#update-plugins").show();
+       		var othis = $("#down-action");
+          	var DISABLED = 'layui-btn-disabled';
+		    if(othis.hasClass(DISABLED)) return;
+		    $.post("{fun U('plugins/update')}",data.field,function(res){
+			    //开始下载
+			    console.log(res);
+			},'json');
+			
+		      //模拟loading
+		    var n = 0, timer = setInterval(function(){
+		        //n = n + Math.random()*10|0;  
+		        data.field.action = 'get-file-size';
+		        $.post("{fun U('plugins/update')}",data.field,function(res){
+		        	console.log(res);
+				    var cur_size = parseInt(res.size);
+				    console.log(cur_size);
+				    var filesize = parseInt($("#filesize").val());
+				    n = Math.round(cur_size/filesize)*100;
+				    if(cur_size==filesize){
+			          $("#down-text").html('{fun JZLANG('文件下载完成！正在解压~')}');
+			          clearInterval(timer);
+			          othis.removeClass(DISABLED);
+			          element.progress('demo-progress', n+'%');
+			           $.post("{fun U('plugins/update')}",{filepath:$("#filepath").val(),download_url:$("#download_url").val(),'filesize':$("#filesize").val(),'action':'file-upzip'},function(res){
+				        	if(res.code==0){
+				        		if(res.isinstall){
+				        			$("#down-text").html('{fun JZLANG('文件解压完成！正在进行安装~')}');
+					        		//element.progress('demo-progress', '80%');
+					        		$.post("{fun U('plugins/update')}",{filepath:$("#filepath").val(),download_url:$("#download_url").val(),'filesize':$("#filesize").val(),'action':'plugin-install'},function(res){
+							        	if(res.code==0){
+							        		$("#down-text").html('{fun JZLANG('插件升级成功！')}');
+							        		element.progress('demo-progress', '100%');
+							        		
+							        	}else{
+							        		
+							        		layer.msg(res.msg);return false;
+							        	}
+
+
+									   
+									},'json');
+				        		}else{
+				        			$("#down-text").html('{fun JZLANG('插件已升级完毕！')}');
+				        			element.progress('demo-progress', '100%');
+				        		}
+				        		
+				        		
+
+				        	}else{
+				        		
+				        		layer.msg(res.msg);return false;
+				        	}
+
+						   
+						},'json');
+
+			        }
+			        //升级分三步，70%下载，10%解压，20%安装
+			        n = Math.round(n*0.7);
+			        element.progress('demo-progress', n+'%');
+				},'json');
+
+		       
+		    }, 1000);
+
+			
+			
+            return false;
+          });
+
+
+
+		});
+
+    </script>
+ 
+</body>
+</html>

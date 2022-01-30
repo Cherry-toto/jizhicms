@@ -11,7 +11,7 @@
 // +----------------------------------------------------------------------
 
 
-namespace FrPHP\db;
+namespace frphp\db;
 
 use PDO;
 use PDOException;

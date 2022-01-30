@@ -18,7 +18,7 @@ define('APP_PATH', __DIR__ . '/');
 //define('APP_DEBUG', true);
 
 //定义项目目录
-define('APP_HOME','A');
+define('APP_HOME','app/admin');
 
 //定义项目模板文件目录
 define('HOME_VIEW','t');
@@ -42,10 +42,10 @@ define('DefaultAction','Index');
 define('StopLog',false);
 
 //定义静态文件路径
-define('Tpl_style','/A/t/tpl');
+define('Tpl_style','/app/admin/t/tpl');
 
 // 加载框架文件
-require(APP_PATH . 'FrPHP/Fr.php');
+require(APP_PATH . 'frphp/fr.php');
 
 // 就这么简单~
 

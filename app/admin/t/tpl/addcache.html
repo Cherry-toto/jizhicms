@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html>
+    
+    <head>
+       <meta charset="UTF-8">
+        {include="style"}
+		{include="edit"}
+		
+    </head>
+    
+    <body>
+	 <div class="x-nav">
+            <span class="layui-breadcrumb">
+              <a><cite>{fun JZLANG('首页')}</cite></a>
+              <a><cite>{fun JZLANG('碎片化管理')}</cite></a>
+			  <a><cite>{fun JZLANG('新增碎片')}</cite></a>
+            </span>
+            <a class="layui-btn layui-btn-small" style="line-height:1.6em;margin-top:3px;float:right"  href="javascript:location.replace(location.href);" title="{fun JZLANG('刷新')}"><i class="iconfont" style="line-height:30px">&#xe6aa;</i></a>
+        </div>
+        <div class="x-body">
+            <form class="layui-form layui-form-pane" >
+			<input type="hidden" name="go" value="1" />
+			
+			<div class="layui-tab">
+			  <ul class="layui-tab-title">
+				<li class="layui-this">{fun JZLANG('基本信息')}</li>
+			  </ul>
+			  <div class="layui-tab-content">
+				<div class="layui-tab-item layui-show">
+				
+				<div class="layui-collapse">
+		        <div class="layui-colla-item">
+			    <h2 class="layui-colla-title">{fun JZLANG('使用说明')}</h2>
+				<div class="layui-colla-content">
+				<div class="row">
+				<p>1. {fun JZLANG('指定几个id或者几个tid的内容输出')}(栏目：不限制栏目)</p>
+				<p>{fun JZLANG('SQL中输入')}：  id in(1,2,3)  {fun JZLANG('或者')}  tid in(2,3,4)</p>
+				<p>2. {fun JZLANG('模糊查询，查询标题跟 “网站建设” 相关的内容')}</p>
+				<p>{fun JZLANG('SQL中输入')}： title like '%{fun JZLANG('网站建设')}%' </p>
+				<p>3. {fun JZLANG('模糊查询，查询标题/内容跟 “网站建设” 相关的内容')}</p>
+				<p>{fun JZLANG('SQL中输入')}： (title like '%{fun JZLANG('网站建设')}%' or body like '%{fun JZLANG('网站建设')}%' ) </p>
+				<p>4. {fun JZLANG('不支持联表查询')} </p>
+				<p>5. {fun JZLANG('注意字符串都要使用英文单引号')}</p>
+				<p>{fun JZLANG('如')}：  title='{fun JZLANG('网站建设')}' </p>
+				</div>
+				</div>
+				</div>
+				</div>
+				
+				
+				<div class="layui-form-item">
+                    <label  class="layui-form-label">
+                        <span class="x-red">*</span>{fun JZLANG('碎片名称')}
+                    </label>
+                    <div class="layui-input-inline">
+                        <input type="text" id="title" value="" style="width:500px;" name="title" required="" lay-verify="required"
+                        autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+				<div class="layui-form-item">
+                    <label  class="layui-form-label">
+                        <span class="x-red">*</span>{fun JZLANG('碎片标识')}
+                    </label>
+                    <div class="layui-input-inline">
+                        <input type="text" id="field" value=""  name="field" required="" lay-verify="required"
+                        autocomplete="off" class="layui-input">
+                    </div>
+					<div class="layui-form-mid layui-word-aux">
+					  {fun JZLANG('建议英文，不要重复')}
+					</div>
+                </div>
+				<div class="layui-form-item">
+					  <label class="layui-form-label">{fun JZLANG('模型')}</label>
+					  <div class="layui-input-inline">
+						<select class="layui-input" name="molds" lay-filter="molds">
+						{loop table="molds" isopen="1" orderby="id asc" as="v"}
+						<option value="{$v['biaoshi']}">{$v['name']}</option>
+						{/loop}
+						</select>
+					  </div>
+				</div>
+				<div class="layui-form-item">
+					  <label class="layui-form-label">{fun JZLANG('栏目')}</label>
+					  <div class="layui-input-inline">
+						<select class="layui-input" name="tid" lay-filter="tid">
+						<option value="0">{fun JZLANG('不限栏目')}</option>
+						{foreach $classtypetree as $v}
+						<option value="{$v['id']}">{fun str_repeat('--', $v['level'])}{$v['classname']}</option>
+						{/foreach}
+						
+						</select>
+					  </div>
+				</div>
+				<div class="layui-form-item" pane>
+                    <label for="isall" class="layui-form-label">
+                        <span class="x-red"></span>{fun JZLANG('子栏目包含')}
+                    </label>
+                    <div class="layui-input-block">
+						<input type="radio" name="isall" value="1" title="{fun JZLANG('包含')}" checked>
+						<input type="radio" name="isall" value="0" title="{fun JZLANG('不包含')}">
+                    </div>
+                </div>
+				<div class="layui-form-item layui-form-text">
+					<label for="sql" class="layui-form-label">
+						<span class="x-red"></span>SQL
+					</label>
+					<div class="layui-input-block">
+						<textarea  name="sqls" placeholder="{fun JZLANG('可留空')}" class="layui-textarea"></textarea>
+					</div>
+				</div>
+				<div class="layui-form-item">
+                    <label  class="layui-form-label">
+                        <span class="x-red"></span>{fun JZLANG('排序')}
+                    </label>
+                    <div class="layui-input-inline">
+                        <input type="text" id="orders" value="id desc" style="width:500px;" name="orders" 
+                        autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+				
+				
+				<div class="layui-form-item">
+                    <label  class="layui-form-label">
+                        <span class="x-red"></span>{fun JZLANG('输出条数')}
+                    </label>
+                    <div class="layui-input-inline">
+                        <input type="number" id="limits" value="10"  name="limits"  
+                        autocomplete="off" class="layui-input">
+                    </div>
+					<div class="layui-form-mid layui-word-aux">
+					  {fun JZLANG('0表示输出所有')}
+					</div>
+                </div>
+				
+				<div class="layui-form-item">
+                    <label  class="layui-form-label">
+                        <span class="x-red"></span>{fun JZLANG('更新周期')}
+                    </label>
+                    <div class="layui-input-inline">
+                        <input type="number" id="times" value="720"  name="times" 
+                        autocomplete="off" class="layui-input">
+                    </div>
+					<div class="layui-form-mid layui-word-aux">
+					  {fun JZLANG('单位')}：{fun JZLANG('分钟')}
+					</div>
+                </div>
+					
+				</div>
+				
+			  </div>
+			</div>
+						
+               
+                
+                <div class="layui-form-item"   style="text-align:center;">
+                    
+                     <button  class="layui-btn" lay-filter="save" lay-submit="">
+                        {fun JZLANG('保存')}
+                    </button>
+                </div>
+            </form>
+        </div>
+		<br/>
+		<br/>
+		<br/>
+		<br/>
+		<br/>
+		<br/>
+		<br/>
+		<br/>
+		<br/>
+      
+        <script>
+		
+            layui.use(['laydate','form','layer','upload'], function(){
+                $ = layui.jquery;
+              var form = layui.form,layer = layui.layer,laydate = layui.laydate;
+			 
+			   form.on('select(tid)', function(data){
+			 
+			 
+			  
+			});
+				
+			    //监听提交
+              form.on('submit(save)', function(data){
+				$.post("{fun U('sys/addcache')}",data.field,function(r){
+					var r = JSON.parse(r);
+					if(r.code==0){
+						layer.confirm(r.msg, {
+						  btn: ['{fun JZLANG('返回')}','{fun JZLANG('确定')}'] //按钮
+						}, function(){
+						
+							{if($webconf['admintpl']=='tpl')}
+							window.location.href="{fun U('sys/datacache')}";
+							{else}
+							parent.location.reload();
+							parent.layer.close(index);
+							{/if}
+						
+						  
+						}, function(){
+						   window.location.href=r.url;
+						});
+						
+					
+					}else{
+						layer.alert(r.msg, {icon: 5});
+					}
+				});
+				
+               
+                return false;
+              });
+			  
+			
+
+              
+            });
+		
+			
+        </script>
+      
+    </body>
+
+</html>

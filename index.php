@@ -19,7 +19,7 @@ define('APP_PATH', __DIR__ . '/');
 //define('APP_DEBUG', true);
 
 //定义项目目录
-define('APP_HOME','Home');
+define('APP_HOME','app/home');
 
 //定义模板文件夹
 define('TPL_PATH','static');
@@ -47,7 +47,7 @@ define('StopLog',false);
 define('Tpl_style','/static/');
 
 // 加载框架文件
-require(APP_PATH . 'FrPHP/Fr.php');
+require(APP_PATH . 'frphp/fr.php');
 
 // 就这么简单~
 

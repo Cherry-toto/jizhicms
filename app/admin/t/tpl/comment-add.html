@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html>
+    
+    <head>
+       <meta charset="UTF-8">
+        {include="style"}
+		{include="edit"}
+		<style>
+		.layui-form-select.layui-form-selected {
+			z-index: 9999;
+		}
+		</style>
+    </head>
+    
+    <body>
+	 <div class="x-nav">
+            <span class="layui-breadcrumb">
+              <a><cite>{fun JZLANG('首页')}</cite></a>
+              <a><cite>{fun JZLANG('评论管理')}</cite></a>
+             
+			  <a><cite>{fun JZLANG('添加评论')}</cite></a>
+            </span>
+            <a class="layui-btn layui-btn-small" style="line-height:1.6em;margin-top:3px;float:right"  href="javascript:location.replace(location.href);" title="{fun JZLANG('刷新')}"><i class="iconfont" style="line-height:30px">&#xe6aa;</i></a>
+        </div>
+        <div class="x-body">
+            <form class="layui-form layui-form-pane" >
+			<input type="hidden" name="go" value="1" />
+	
+			
+			<div class="layui-tab">
+			  <ul class="layui-tab-title">
+				<li class="layui-this">{fun JZLANG('基本')}</li>
+				<li>{fun JZLANG('扩展')}</li>
+				
+			  </ul>
+			  <div class="layui-tab-content">
+				<div class="layui-tab-item layui-show">
+				 <div class="layui-form-item">
+                    <label for="userid" class="layui-form-label">
+                        <span class="x-red"></span>{fun JZLANG('用户ID')}
+                    </label>
+                    <div class="layui-input-inline">
+                        <input type="number" id="userid" value=""  name="userid" 
+                        autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+				<div class="layui-form-item">
+                    <label for="tid" class="layui-form-label">
+                        <span class="x-red"></span>{fun JZLANG('评论栏目')}
+                    </label>
+                    <div class="layui-input-inline">
+						<select name="tid" lay-search="" id="tid" >
+						<option value="0">{fun JZLANG('选择栏目')}</option>
+					   {foreach $classtypes as $v}
+					   <option   value="{$v['id']}">{fun str_repeat('--', $v['level'])}{$v['classname']}</option>
+					   {/foreach}
+					   </select>
+                    </div>
+                </div>
+				<div class="layui-form-item">
+                    <label for="aid" class="layui-form-label">
+                        <span class="x-red"></span>{fun JZLANG('文章ID')}
+                    </label>
+                    <div class="layui-input-inline">
+                        <input type="number" id="aid" value=""   name="aid" 
+                        autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+				<div class="layui-form-item">
+                    <label for="zid" class="layui-form-label">
+                        <span class="x-red"></span>{fun JZLANG('主回复ID')}
+                    </label>
+                    <div class="layui-input-inline">
+                        <input type="number" id="zid" value="" name="zid" 
+                        autocomplete="off" class="layui-input">
+                    </div>
+					<div class="layui-form-mid layui-word-aux">
+						<span class="x-red"></span>{fun JZLANG('同属于一个评论的ID，如果没有评论中的评论，则为0')}
+					</div>
+                </div>
+				<div class="layui-form-item">
+                    <label for="pid" class="layui-form-label">
+                        <span class="x-red"></span>{fun JZLANG('回复帖子ID')}
+                    </label>
+                    <div class="layui-input-inline">
+                        <input type="number" id="pid" value="" name="pid" 
+                        autocomplete="off" class="layui-input">
+                    </div>
+					<div class="layui-form-mid layui-word-aux">
+					  <span class="x-red"></span>{fun JZLANG('回复帖子ID')}
+				    </div>
+                </div>
+             
+				
+				 <div class="layui-form-item layui-form-text">
+                    <label for="body" class="layui-form-label">
+                        <span class="x-red"></span>{fun JZLANG('评论内容')}
+                    </label>
+                    <div class="layui-input-block" style="clear:both;" >
+					{include="content"}
+                    </div>
+                </div>
+				
+				 <div class="layui-form-item layui-form-text">
+                    <label for="reply" class="layui-form-label">
+                        <span class="x-red"></span>{fun JZLANG('管理员回复')}
+                    </label>
+                    <div class="layui-input-block" style="clear:both;" >
+					<textarea  name="reply" class="layui-textarea"></textarea>
+                    </div>
+                </div>
+				<div class="layui-form-item" pane>
+                    <label for="ismsg" class="layui-form-label">
+                        <span class="x-red"></span>{fun JZLANG('是否提醒回复')}
+                    </label>
+                    <div class="layui-input-inline">
+                        <input type="radio" name="ismsg" value="1" title="{fun JZLANG('提醒')}" >
+						<input type="radio" name="ismsg" value="0" title="{fun JZLANG('不提醒')}" checked>
+                    </div>
+					
+					
+                </div>
+				<div class="layui-form-item">
+                    <label for="likes" class="layui-form-label">
+                        <span class="x-red"></span>{fun JZLANG('喜欢/点赞')}
+                    </label>
+                    <div class="layui-input-inline">
+                        <input type="number" id="likes" value="0" name="likes" 
+                        autocomplete="off" class="layui-input">
+                    </div>
+					 
+					
+                </div>
+				<div class="layui-form-item" pane>
+                    <label for="isread" class="layui-form-label">
+                        <span class="x-red"></span>{fun JZLANG('是否已读')}
+                    </label>
+                    <div class="layui-input-inline">
+                        <input type="radio" name="isread" value="0" title="{fun JZLANG('未读')}" checked>
+						<input type="radio" name="isread" value="1" title="{fun JZLANG('已读')}" >
+                    </div>
+					
+					
+                </div>
+				<div class="layui-form-item" pane>
+                    <label for="isshow" class="layui-form-label">
+                        <span class="x-red"></span>{fun JZLANG('是否删除')}
+                    </label>
+                    <div class="layui-input-inline">
+                        <input type="radio" name="isshow" value="0" title="{fun JZLANG('已删除')}" >
+						<input type="radio" name="isshow" value="1" title="{fun JZLANG('未删除')}"  checked>
+                    </div>
+					 <div class="layui-form-mid layui-word-aux">
+					 {fun JZLANG('只能管理员删除评论，用户只能软删除评论')}
+				     </div>
+					
+                </div>
+				
+				 <div class="layui-form-item">
+                    <label for="addtime" class="layui-form-label">
+                        <span class="x-red"></span>{fun JZLANG('更新时间')}
+                    </label>
+                    <div class="layui-input-inline">
+                      <input class="layui-input" value="{fun date('Y-m-d H:i:s')}" name="addtime" placeholder="{fun JZLANG('选择时间')}" id="LAY_demorange_s">
+                    </div>
+                   
+                </div>
+				
+				<span id="content_fields"></span>
+
+				</div>
+				<div class="layui-tab-item">
+				<span id="ext_fields"></span>
+				
+				</div>
+			  </div>
+			</div>
+               
+                <div class="layui-form-item" style="text-align:center;">
+                    
+                     <button  class="layui-btn" lay-filter="save" lay-submit="">
+                        {fun JZLANG('保存')}
+                    </button>
+                </div>
+            </form>
+        </div>
+		<br/>
+		<br/>
+		<br/>
+		<br/>
+		<br/>
+		<br/>
+		<br/>
+		<br/>
+		<br/>
+      
+        <script>
+		{include="fields"}
+			$(function() {
+			 
+			  get_fields(0);
+			  get_fields_ext(0);
+
+			})
+            layui.use(['laydate','form','layer','upload'], function(){
+                $ = layui.jquery;
+              var form = layui.form
+              ,layer = layui.layer;
+			  laydate = layui.laydate;
+			   var upload = layui.upload;
+			     laydate.render({
+				elem: '#LAY_demorange_s', //指定元素
+				type:'datetime'
+			  });
+              //图片上传接口
+              upload.render({
+			    elem: '#LAY_demo_upload',
+                url: '{fun U('Common/uploads')}' //上传接口
+                ,done: function(res){ //上传成功后的回调
+                   // console.log(res);
+					
+					if(res.code==0){
+						 $('#fileimg').attr('src',res.url);
+						 $('#litpic').val(res.url);
+					}else{
+						 layer.alert(res.error, {icon: 5});
+					}
+                 
+                }
+              });
+			  
+			    //监听提交
+              form.on('submit(save)', function(data){
+                
+				$.post("{fun U('addcomment')}",data.field,function(r){
+					var r = JSON.parse(r);
+					if(r.code==0){
+						 layer.msg(r.msg, {icon: 6,time: 2000},function () {
+							// 获得frame索引
+							
+							{if($webconf['admintpl']=='tpl')}
+							window.location.href="{fun U('commentlist')}";
+							{else}
+							parent.location.reload();
+							{/if}
+						});
+					}else{
+						layer.alert(r.msg, {icon: 5});
+					}
+				});
+				
+               
+                return false;
+              });
+          
+           
+              
+              
+            });
+        </script>
+      
+    </body>
+
+</html>

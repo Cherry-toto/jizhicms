@@ -11,8 +11,8 @@
 // +----------------------------------------------------------------------
 
 
-namespace FrPHP\lib;
-use FrPHP\db\DBholder;
+namespace frphp\lib;
+use frphp\db\DBholder;
 use PDO;
 class Model {
 	protected $model;

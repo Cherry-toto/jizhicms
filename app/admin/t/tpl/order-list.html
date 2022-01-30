@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html>
+    <head>
+	<meta charset="UTF-8">
+        {include="style"}
+    </head>
+    <body>
+        <div class="x-nav">
+            <span class="layui-breadcrumb">
+              <a><cite>{fun JZLANG('首页')}</cite></a>
+              <a><cite>{fun JZLANG('订单管理')}</cite></a>
+              <a><cite>{fun JZLANG('订单列表')}</cite></a>
+              
+            </span>
+            <a class="layui-btn layui-btn-small" style="line-height:1.6em;margin-top:3px;float:right"  href="javascript:location.replace(location.href);" title="{fun JZLANG('刷新')}"><i class="iconfont" style="line-height:30px">&#xe6aa;</i></a>
+        </div>
+        <div class="x-body">
+		
+		<div class="layui-card">
+			<div class="layui-card-body">
+			 <div class="layui-collapse">
+		    <div class="layui-colla-item">
+			<h2 class="layui-colla-title">{fun JZLANG('搜索')}</h2>
+				<div class="layui-colla-content">
+				<div class="layui-row">
+					<form class="layui-form layui-col-md12 x-so" method="get" id="myform">
+					<div class="layui-input-inline">
+					  <select name="isshow" lay-filter="isshow" class="layui-inline autosubmit">
+					  <option value="">{fun JZLANG('选择状态')}</option>
+					   
+					   <option {if($isshow==1)} selected="selected" {/if}value="1">{fun JZLANG('待付款')}</option>
+					   <option {if($isshow==2)} selected="selected" {/if}value="2">{fun JZLANG('已付')}</option>
+					   <option {if($isshow==3)} selected="selected" {/if}value="3">{fun JZLANG('超时')}</option>
+					   <option {if($isshow==4)} selected="selected" {/if}value="4">{fun JZLANG('待审核待支付')}</option>
+					   <option {if($isshow==5)} selected="selected" {/if}value="5">{fun JZLANG('已发货')}</option>
+					   <option {if($isshow==6)} selected="selected" {/if}value="6">{fun JZLANG('已废弃')}</option>
+					   <option {if($isshow==7)} selected="selected" {/if}value="7">{fun JZLANG('被删除')}</option>
+					   
+					
+					  </select>
+					</div>
+					<div class="layui-input-inline">
+					  <select name="paytype" lay-filter="paytype" class="layui-inline autosubmit">
+					  <option value="">{fun JZLANG('支付方式')}</option>
+					   
+					   <option {if($paytype=='{fun JZLANG('线下支付')}')} selected="selected" {/if}value="{fun JZLANG('线下支付')}">{fun JZLANG('线下支付')}</option>
+					   <option {if($paytype=='{fun JZLANG('钱包支付')}')} selected="selected" {/if}value="{fun JZLANG('钱包支付')}">{fun JZLANG('钱包支付')}</option>
+					   <option {if($paytype=='{fun JZLANG('积分兑换')}')} selected="selected" {/if}value="{fun JZLANG('积分兑换')}">{fun JZLANG('积分兑换')}</option>
+					   <option {if($paytype=='{fun JZLANG('支付宝支付')}')} selected="selected" {/if}value="{fun JZLANG('支付宝支付')}">{fun JZLANG('支付宝支付')}</option>
+					   <option {if($paytype=='{fun JZLANG('微信支付')}')} selected="selected" {/if}value="{fun JZLANG('微信支付')}">{fun JZLANG('微信支付')}</option>
+					   <option {if($paytype=='{fun JZLANG('微信H5支付')}')} selected="selected" {/if}value="{fun JZLANG('微信H5支付')}">{fun JZLANG('微信H5支付')}</option>
+					   <option {if($paytype=='{fun JZLANG('微信扫码支付')}')} selected="selected" {/if}value="{fun JZLANG('微信扫码支付')}">{fun JZLANG('微信扫码支付')}</option>
+					   <option {if($paytype=='{fun JZLANG('支付宝H5支付')}')} selected="selected" {/if}value="{fun JZLANG('支付宝H5支付')}">{fun JZLANG('支付宝H5支付')}</option>
+					   
+					
+					  </select>
+					</div>
+					
+					  <input class="layui-input" value="{$starttime}" placeholder="{fun JZLANG('开始日')}" name="start" id="start">
+					  <input class="layui-input" value="{$endtime}" placeholder="{fun JZLANG('截止日')}" name="end" id="end">
+					  
+					  <input type="text" name="tel"  style="width:200px" placeholder="{fun JZLANG('请输入前台用户手机号')}" value="{$tel}" autocomplete="off" class="layui-input">
+					  
+					  <input type="text" name="username" style="width:200px"   placeholder="{fun JZLANG('请输入用户昵称')}"  value="{$username}"  autocomplete="off" class="layui-input"><br/>
+					 
+					  <input type="text" name="orderno" style="width:200px"   placeholder="{fun JZLANG('请输入订单号')}"  value="{$orderno}"  autocomplete="off" class="layui-input">
+					 
+					  {$fields_search}
+					  <button class="layui-btn"  lay-submit="" lay-filter="search">{fun JZLANG('搜索')}</button>
+					</form>
+				</div>
+				</div>
+		    </div>
+         </div> 
+		  
+		<table class="layui-hide" lay-data="{id: 'jizhi_table'}" id="jizhi_table" lay-filter="jizhi_table"></table>
+		<input id="select_data" type="hidden" value="" />
+			</div>
+		</div>
+		
+        
+		<script type="text/html" id="rightbar">
+		{if(checkAction('Order/details'))}
+			<a class="layui-btn layui-btn-xs" lay-event="edit">{fun JZLANG('查看')}</a>
+		{/if}
+		{if(checkAction('Order/deleteorder'))}
+			<a class="layui-btn layui-btn-xs layui-btn-danger" lay-event="delete">{fun JZLANG('删除')}</a>
+		{/if}	
+			
+		</script>
+		<script type="text/html" id="toolbar">
+		 <div class="layui-btn-container" style="font-size:15px;">
+		 {if(checkAction('Order/deleteAll'))}
+			   <a class="layui-btn layui-btn-sm layui-btn-danger" onclick="delAll()">{fun JZLANG('批量删除')}</a>
+		 {/if}	  
+			  
+			  <a class="layui-btn layui-btn-sm">{fun JZLANG('总订单')}<span id="all_num" class="layui-badge layui-bg-gray"></span></a>
+			  <a class="layui-btn layui-btn-sm">{fun JZLANG('已支付')}<span id="overpay_num" class="layui-badge layui-bg-blue"></span></a>
+			  <a class="layui-btn layui-btn-sm">{fun JZLANG('未支付')}<span id="notpay_num" class="layui-badge "></span></a>
+			  <a class="layui-btn layui-btn-sm">{fun JZLANG('总收入')}<span id="allmoney" class="layui-badge layui-bg-orange"></span></a>
+
+		 </div>
+		</script>
+		<script type="text/html" id="ispay">
+			{{#  if(d.ispay ==1){ }}
+			<span class="layui-badge layui-bg-green">{fun JZLANG('已付')}}</span>
+		    {{#  } else{ }}
+		    <span class="layui-badge">{fun JZLANG('未付')}}</span>
+		    {{#  } }}
+		</script>
+		<script type="text/html" id="isshow">
+			{{#  if(d.isshow ==1){ }}
+			<span class="layui-badge">{fun JZLANG('待付款')}}</span>
+			{{#  } else if(d.isshow ==2){ }}
+			<span class="layui-badge layui-bg-green">{fun JZLANG('已付')}}</span>
+			{{#  } else if(d.isshow ==3){ }}
+			<span class="layui-badge layui-bg-orange">{fun JZLANG('超时')}}</span>
+			{{#  } else if(d.isshow ==4){ }}
+			<span class="layui-badge">{fun JZLANG('待审核待支付')}}</span>
+			{{#  } else if(d.isshow ==5){ }}
+			<span class="layui-badge layui-bg-black">{fun JZLANG('已发货')}}</span>
+			{{#  } else if(d.isshow ==6){ }}
+			<span class="layui-badge layui-bg-gray">{fun JZLANG('已废弃')}}</span>
+		    {{#  } else{ }}
+		    <span class="layui-badge layui-bg-blue">{fun JZLANG('被删除')}</span>
+		    {{#  } }}
+		</script>
+	 
+		<script>
+	 
+	   
+	    layui.use(['laydate','form','element','laypage','layer','table'], function(){
+                $ = layui.jquery;//jquery
+              var laydate = layui.laydate;//日期插件
+              var lement = layui.element;//面包导航
+              var layer = layui.layer;//弹出层
+			  var form = layui.form;
+			  var table = layui.table;
+			  //执行一个laydate实例
+			laydate.render({
+			  elem: '#start' //指定元素
+			});
+
+			//执行一个laydate实例
+			laydate.render({
+			  elem: '#end' //指定元素
+			});
+			  table.render({
+				elem: '#jizhi_table'
+				,height: 700
+				,url: window.location.href+'?ajax=1' //数据接口
+				,page: true //开启分页
+				,size:'lg'
+				,count:100
+				,toolbar:"#toolbar"
+				,data:{}
+				,page: { //支持传入 laypage 组件的所有参数（某些参数除外，如：jump/elem） - 详见文档
+				  layout: ['limit', 'count', 'prev', 'page', 'next', 'skip'] //自定义分页布局
+				  //,curr: 5 //设定初始在第 5 页
+				  ,groups: 5 //只显示 1 个连续页码
+				  ,first: true //显示首页
+				  ,last: true //显示尾页
+				  ,count:500
+				  ,limit:10
+				  ,first: '{fun JZLANG('首页')}' //不显示首页
+				  ,last: '{fun JZLANG('尾页')}' //不显示尾页
+				  
+				}
+				,done: function(res, curr, count){
+					//如果是异步请求数据方式，res即为你接口返回的信息。
+					//如果是直接赋值的方式，res即为：{data: [], count: 99} data为当前页数据、count为数据总长度
+					console.log(res);
+					$("#all_num").html(res.all);
+					$("#overpay_num").html(res.overpay_num);
+					$("#notpay_num").html(res.notpay_num);
+					$("#allmoney").html(res.allmoney);
+				  }
+				,cols: [[ //表头
+				  {type:'checkbox'}
+				  ,{field: 'id', title: 'ID', width:60}
+				  ,{field: 'isshow', title: '{fun JZLANG('状态')}', width: 100, templet: '#isshow'}
+				  ,{field: 'orderno', title: '{fun JZLANG('订单号')}'}
+				  ,{field: 'paytype', title: '{fun JZLANG('付款方式')}'}
+				  ,{field: 'username', title: {fun JZLANG('用户昵称')}}
+				  ,{field: 'tel', title: '{fun JZLANG('手机号')}',width:150}
+				  ,{field: 'price', title: '{fun JZLANG('金额')}',width:150}
+				  ,{field: 'jifen', title: '{fun JZLANG('积分')}',width:150}
+				  
+				  {foreach $fields_list as $v},{field: '{$v['field']}', title: '{$v['fieldname']}'}{/foreach}
+				  
+				  ,{field: 'ispay', title: '{fun JZLANG('是否付款')}', width: 100, templet: '#ispay'}
+				  ,{field: 'new_paytime', title: '{fun JZLANG('付款时间')}',width:160}
+				  ,{field: 'new_addtime', title: '{fun JZLANG('提交时间')}',width:160}
+				  ,{field: '', title: '{fun JZLANG('操作')}',width:160, toolbar: '#rightbar', fixed:'right'}
+				 
+				]]
+			  });
+			  
+			    table.on('tool(jizhi_table)', function(obj){
+					var data = obj.data; //获得当前行数据
+					var layEvent = obj.event; //获得 lay-event 对应的值（也可以是表头的 event 参数对应的值）
+					var tr = obj.tr; //获得当前行 tr 的DOM对象
+					 
+					switch(layEvent){
+					  case 'edit':
+						//console.log(data);
+						 x_admin_show('{fun JZLANG('查看')}',data.edit_url);
+					  break;
+					  case 'view':
+						    
+					  break;
+					  case 'delete':
+							layer.confirm('{fun JZLANG('确认要删除吗？')}',function(index){
+				
+								$.post("{fun U('Order/deleteorder')}",{id:data.id},function(r){
+										var r = JSON.parse(r);
+										if(r.code==0){
+										 //发异步删除数据
+											$(tr).remove();
+											layer.msg(r.msg,{icon: 1,time:1000},function(){
+												table.reload('jizhi_table', {
+												  url: window.location.href+'?ajax=1'
+												  ,where: {} //设定异步数据接口的额外参数
+												 
+												});
+											
+											});
+											
+											
+											
+										}else{
+											
+											layer.msg(r.msg,{icon: 5,time:1000});
+										}
+								})
+								
+							
+							   
+							});
+					  break;
+					  case 'copy':
+					  
+							
+						 
+					  break;
+					  
+					 
+					}
+				});
+			  
+			  table.on('checkbox(jizhi_table)', function(obj){
+				
+				   var checkStatus = table.checkStatus('jizhi_table'); //idTest 即为基础参数 id 对应的值
+				   var len = checkStatus.data.length;
+				   var arr=[];
+				   if(len>0){
+					for(var i=0;i<len;i++){
+						arr.push(checkStatus.data[i].id);
+					}
+				   }
+				   $("#select_data").val(arr);
+				   
+					
+				});
+				
+				
+				
+				form.on('submit(search)', function(data){
+					
+					table.reload('jizhi_table', {
+					  url: window.location.href+'?ajax=1'
+					  ,where: data.field //设定异步数据接口的额外参数
+					 
+					});
+				   
+					return false;
+				  });
+					
+			  
+				
+			 
+              
+            });
+			
+			
+			
+		 
+			
+			
+			
+			 function delAll () {
+				
+				var data = $("#select_data").val();
+				if(data==''){
+					alert('{fun JZLANG('请选择对象！')}');return false;
+				}
+				layer.confirm('{fun JZLANG('确认要删除吗？')}'+data,function(index){
+					
+					$.post("{fun U('Order/deleteAll')}",{data:data},function(r){
+					
+							var r = JSON.parse(r);
+							if(r.code==0){
+							  
+							  layer.msg('{fun JZLANG('批量删除成功')}', {icon: 1,time:1000},function(){
+								window.location.reload();
+							  });
+							  
+							}else{
+								
+								layer.msg(r.msg,{icon: 5,time:1000});
+							}
+					})
+					
+					
+					
+				});
+			  }
+		
+			  
+			  
+			
+			
+       </script>
+    </body>
+</html>

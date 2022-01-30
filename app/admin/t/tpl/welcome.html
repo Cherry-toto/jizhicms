@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+       {include="style"}
+    </head>
+    <body>
+    <div class="x-body layui-anim layui-anim-up" style="background-color: #f2f2f2">
+        <div class="layui-fluid">
+        <div class="layui-card">
+          <div class="layui-card-header">{fun JZLANG('欢迎管理员：')}
+            <span class="x-red">{$admin['name']}</span>！{fun JZLANG('当前时间')}:<span id="time">{fun date('Y-m-d H:i:s')}</span></div>
+          <div class="layui-card-body">
+         <div class="layui-card">
+                        <div class="layui-card-body">
+                            <div class="layui-carousel x-admin-carousel x-admin-backlog" lay-anim="" lay-indicator="inside" lay-arrow="none" style="width: 100%; height: 90px;">
+                                <div carousel-item="">
+                                    <ul class="layui-row layui-col-space10 layui-this">
+                                        <li class="layui-col-xs3">
+                                            <a href="javascript:;" class="x-admin-backlog-body">
+                                                <h3>{fun JZLANG('站内用户')}</h3>
+                                                <p>
+                                                    <cite>{$member_count}</cite>{fun JZLANG('人')}</p>
+                                            </a>
+                                        </li>
+                                        <li class="layui-col-xs3">
+                                            <a href="javascript:;" class="x-admin-backlog-body">
+                                                <h3>{fun JZLANG('站内文章')}</h3>
+                                                <p>
+                                                    <cite>{$article_num}</cite>{fun JZLANG('篇')}</p>
+                                            </a>
+                                        </li>
+                                        <li class="layui-col-xs3">
+                                            <a href="javascript:;" class="x-admin-backlog-body">
+                                                <h3>{fun JZLANG('站内产品')}</h3>
+                                                <p>
+                                                    <cite>{$product_num}</cite>{fun JZLANG('件')}</p>
+                                            </a>
+                                        </li>
+                                      
+                                        <li class="layui-col-xs3">
+                                            <a href="javascript:;" class="x-admin-backlog-body">
+                                                <h3>{fun JZLANG('站内留言')}</h3>
+                                                <p>
+                                                    <cite>{$message_num}</cite>{fun JZLANG('条')}</p>
+                                            </a>
+                                        </li>
+                                    
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+          </div>
+        </div>
+          <div class="layui-row layui-col-space15">
+            <div class="layui-col-md8">    
+              <div class="layui-card">
+                <div class="layui-card-header">
+                  {fun JZLANG('最近更新')}
+                  <a href="{fun U('Article/articlelist')}" class="layui-a-tips">{fun JZLANG('全部文章')}</a>
+                </div>
+                <div class="layui-card-body">
+                  <div class="layui-row layui-col-space10">
+					<table class="layui-table">
+					  <colgroup>
+						<col >
+						<col width="150">
+						<col width="200">
+						<col width="100">
+					  </colgroup>
+					  <thead>
+						<tr>
+						  <th>{fun JZLANG('标题')}</th>
+						  <th>{fun JZLANG('缩略图')}</th>
+						  <th>{fun JZLANG('更新时间')}</th>
+						  <th>{fun JZLANG('阅读量')}</th>
+						</tr> 
+					  </thead>
+					  <tbody>
+					    {loop table="article" orderby="addtime desc" limit="10" as="v"}
+						<tr>
+						  <td><a href="{$v['url']}" target="_blank">{fun newstr($v['title'],30)}</a></td>
+						  <td>{if($v['litpic'])}<a href="{$v['url']}" target="_blank"><img src="{$v['litpic']}" width="150px" height="50px"></a>{else}无{/if}</td>
+						  <td>{fun formatTime($v['addtime'],'Y-m-d')}</td>
+						  <td>{$v['hits']}</td>
+						</tr>
+					    {/loop}
+						
+					  </tbody>
+					</table>
+				  
+                  </div>
+                </div>
+              </div>
+              {php $comment = M('molds')->find(array('biaoshi'=>'comment'));/}
+              {if($comment['isopen'])}
+              <div class="layui-card">
+                <div class="layui-card-header">{fun JZLANG('最新评论')}</div>
+                <div class="layui-card-body">
+                  <dl class="layuiadmin-card-status">
+                  {loop table="comment" limit="10" as="v"}
+                    <dd>
+                    {php  $user = memberInfo($v['userid']);/}
+                      <div class="layui-status-img"><a href="javascript:;">{if($user['litpic']!='')}<img src="{$user['litpic']}">{/if}</a></div>
+                      <div>
+                        <p>{$user['username']} {fun JZLANG('在')} <a href="{$classtypedata[$v['tid']]['url']}">{$classtypedata[$v['tid']]['classname']}</a> {fun JZLANG('发布了评论')}</p>
+                        <span>{fun formatTime($v['addtime'],'Y-m-d H:i:s')}</span>
+                      </div>
+                    </dd>
+                  {/loop}
+                   
+                  </dl>  
+                </div>
+              </div>  
+              {/if}   
+            </div>
+            <div class="layui-col-md4">
+              <div class="layui-card">
+                <div class="layui-card-header">{fun JZLANG('版本信息')}</div>
+                <div class="layui-card-body layui-text">
+                  <table class="layui-table">
+                    <colgroup>
+                      <col width="100">
+                      <col>
+                    </colgroup>
+                    <tbody>
+                      <tr>
+                        <td>{fun JZLANG('当前版本')}</td>
+                        <td>
+                           v{$webconf['web_version']} <a href="https://github.com/Cherry-toto/jizhicms" target="_blank" style="padding-left: 15px;">{fun JZLANG('项目地址')}</a>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>{fun JZLANG('服务器')}</td>
+                        <td>
+                          {$_SERVER['SERVER_NAME']}
+                       </td>
+                      </tr>
+                      <tr>
+                        <td>{fun JZLANG('操作系统')}</td>
+                        <td>
+                          {fun php_uname('s')}
+                       </td>
+                      </tr>
+                      <tr>
+                        <td>{fun JZLANG('运行环境')}</td>
+                        <td>
+                          {fun php_uname()}
+                       </td>
+                      </tr>
+                      <tr>
+                        <td>{fun JZLANG('PHP版本')}</td>
+                        <td>
+                          {__PHP_VERSION__}
+                       </td>
+                      </tr>
+                      <tr>
+                        <td>{fun JZLANG('运行方式')}</td>
+                        <td>
+                          {fun php_sapi_name()}
+                       </td>
+                      </tr>
+                      <tr>
+                        <td>{fun JZLANG('上传限制')}</td>
+                        <td>
+                          {fun get_cfg_var ("upload_max_filesize")}
+                       </td>
+                      </tr>
+
+
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+             
+            <div class="layui-card">
+                <div class="layui-card-header">{fun JZLANG('用户留言')}</div>
+                <div class="layui-card-body">
+                  <ul class="layuiadmin-card-status layuiadmin-home2-usernote">
+                  {loop table="message"  limit="10" orderby="addtime desc" as="v"}
+                    <li>
+                      <h3>{$v['user']}</h3>
+                      <p>{$v['body']}</p>
+                      <span>{fun formatTime($v['addtime'],'Y-m-d H:i:s')}</span>
+                      <a href="{fun U('Message/editmessage',['id'=>$v['id']])}"  class="layui-btn layui-btn-xs layuiadmin-reply">{fun JZLANG('回复')}</a>
+                    </li>
+                  {/loop}
+                   
+                  </ul>
+                </div>
+              </div>
+
+              
+            </div>
+          </div>
+        </div>
+
+    </div>
+        <script>
+		function time(){
+			var vWeek,vWeek_s,vDay;
+			vWeek = ["{fun JZLANG('星期天')}","{fun JZLANG('星期一')}","{fun JZLANG('星期二')}","{fun JZLANG('星期三')}","{fun JZLANG('星期四')}","{fun JZLANG('星期五')}","{fun JZLANG('星期六')}"];
+			var date =  new Date();
+			year = date.getFullYear();
+			month = ((date.getMonth() + 1)>=10)?(date.getMonth() + 1):'0'+(date.getMonth() + 1);
+			//day = date.getDate();
+			day = (date.getDate()>=10)?date.getDate():'0'+date.getDate();
+			hours = (date.getHours()>=10)?date.getHours():'0'+date.getHours();
+			minutes = (date.getMinutes()>=10)?date.getMinutes():'0'+date.getMinutes();
+			seconds = (date.getSeconds()>=10)?date.getSeconds():'0'+date.getSeconds();
+			vWeek_s = date.getDay();
+			document.getElementById("time").innerHTML = year + "-" + month + "-" + day + " " + "\t" + hours + ":" + minutes +":" + seconds + "\t" + vWeek[vWeek_s] ;
+
+		};
+		setInterval("time()",1000);
+
+        </script>
+    </body>
+</html>

@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html>
+    <head>
+	<meta charset="UTF-8">
+        {include="style"}
+    </head>
+    <body>
+        <div class="x-nav">
+            <span class="layui-breadcrumb">
+              <a><cite>{fun JZLANG('首页')}</cite></a>
+              <a><cite>{fun JZLANG('推荐属性')}</cite></a>
+             
+              
+            </span>
+            <a class="layui-btn layui-btn-small" style="line-height:1.6em;margin-top:3px;float:right"  href="javascript:location.replace(location.href);" title="{fun JZLANG('刷新')}"><i class="iconfont" style="line-height:30px">&#xe6aa;</i></a>
+        </div>
+        <div class="x-body">
+        <div class="layui-card">
+			<div class="layui-card-body">
+			<xblock>
+			
+		    {if(checkAction('Jzattr/addAttr'))}
+			<button type="button" class="layui-btn layui-btn-sm"  onclick="addAttr()">{fun JZLANG('添加属性')}</button>
+		    {/if}
+			
+		
+		    <table id="fieldtable" lay-filter="fieldtable"></table>
+			<input id="select_data" type="hidden" value="" />
+
+			</div>
+		</div>
+          
+        </div>
+		
+		<script type="text/html" id="rightbar">
+		 
+		 {if(checkAction('Jzattr/editAttr'))}	
+			<a class="layui-btn layui-btn-xs layui-btn-primary" lay-event="edit">{fun JZLANG('修改')}</a>
+		 {/if}
+		 {if(checkAction('Jzattr/delAttr'))}	
+			<a class="layui-btn layui-btn-xs layui-btn-danger" lay-event="delete">{fun JZLANG('删除')}</a>
+		 {/if}
+		 
+		
+		</script>
+		 <script type="text/html" id="isshowbar">
+			<input type="checkbox" name="isshow" data-id="{{d.id}}"  lay-filter="sw"  {{#if(d.isshow==1){ }}checked value="0" {{# }else{ }} value="1"{{# } }} value="1" lay-skin="switch">
+		</script>
+		 
+       <script>
+	   $(document).ready(function(){
+			
+	   
+	   });
+	   
+	    layui.use(['laydate','element','table','form','laypage','layer'], function(){
+                $ = layui.jquery;//jquery
+             var  laydate = layui.laydate;//日期插件
+             var  lement = layui.element;//面包导航
+             var  layer = layui.layer;//弹出层
+			 var  form = layui.form;
+			 var  table = layui.table;
+			
+			
+			  table.render({
+				elem: '#fieldtable'
+				,height: 500
+				,url: '{fun U('Jzattr/index')}?ajax=1' //数据接口
+				,page: false //开启分页
+				,cols: [[ //表头
+				  {field: 'id', title: 'ID', width:150}
+				  ,{field: 'name', title: '{fun JZLANG('名称')}'}
+				  ,{field: 'isshow', title: '{fun JZLANG('显示')}',toolbar:"#isshowbar"}
+				  ,{field: '', title: '{fun JZLANG('操作')}',width:200, toolbar: '#rightbar', fixed:'right'}
+				]]
+			  });
+			  
+			  table.on('tool(fieldtable)', function(obj){
+					var data = obj.data; //获得当前行数据
+					var layEvent = obj.event; //获得 lay-event 对应的值（也可以是表头的 event 参数对应的值）
+					var tr = obj.tr; //获得当前行 tr 的DOM对象
+					 
+					switch(layEvent){
+					  case 'edit':
+						 layer.prompt({
+							  formType: 0,
+							  value: data.name,
+							  title: '{fun JZLANG('修改属性')}',
+							  area: ['800px', '350px'] //自定义文本域宽高
+							}, function(value, index, elem){
+							  $.post("{fun U('Jzattr/editAttr')}",{id:data.id,v:value},function(res){
+								if(res.code==0){
+									layer.msg('{fun JZLANG('修改成功！')}',{icon:6},function(){
+									  table.reload('fieldtable', {
+										  url: window.location.href+'?ajax=1'
+										  ,where: {} 
+										 
+										});
+									})
+								}else{
+									layer.msg(res.msg,{icon:5});
+								}
+							  },'json')
+							 
+							 
+							  layer.close(index);
+							});
+					  break;
+					 
+					  case 'delete':
+							layer.confirm('{fun JZLANG('确认要删除吗？')}',function(index){
+				
+								$.post("{fun U('Jzattr/delAttr')}",{id:data.id},function(r){
+									var r = JSON.parse(r);
+									if(r.code==0){
+										layer.msg(r.msg,{icon: 1,time:1000},function(){
+											table.reload('jizhi_table', {
+											  url: window.location.href+'?ajax=1'
+											  ,where: {} 
+											 
+											});
+										
+										});
+										
+									}else{
+										layer.msg(r.msg,{icon: 5,time:1000});
+									}
+								})
+								
+							
+							   
+							});
+					  break;
+					  
+					  
+					 
+					}
+				});
+			  
+			  form.on('switch(sw)', function(data){
+				
+				
+					var id = $(data.elem).attr('data-id');
+					$.post('{fun U('changeStatus')}',{id:id,value:data.value},function(res){
+					
+					
+					},'json')
+					return false;
+			  });
+			  
+			  
+		});
+			function addAttr(){
+				layer.prompt({
+				  formType: 0,
+				  value: '',
+				  title: '{fun JZLANG('新增属性')}',
+				  area: ['800px', '350px'] //自定义文本域宽高
+				}, function(value, index, elem){
+				  $.post("{fun U('Jzattr/addAttr')}",{v:value},function(res){
+					if(res.code==0){
+						layer.msg('{fun JZLANG('新增成功！')}',{icon:6},function(){
+						  location.reload();
+						})
+					}else{
+						layer.msg(res.msg,{icon:5});
+					}
+				  },'json')
+				 
+				 
+				  layer.close(index);
+				});
+			
+			}
+		
+		
+		
+			
+			
+       </script>
+    </body>
+</html>

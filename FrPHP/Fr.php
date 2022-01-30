@@ -11,7 +11,7 @@
 // +----------------------------------------------------------------------
 
 
-namespace FrPHP;
+namespace frphp;
 
 // 框架根目录
 defined('CORE_PATH') or define('CORE_PATH', __DIR__);
@@ -22,7 +22,7 @@ const FrPHP_VERSION     =   '2.1';
 /**
  * FrPHP框架核心
  */
-class FrPHP
+class frphp
 {
     // 配置内容
     protected $config = [];
@@ -250,15 +250,16 @@ class FrPHP
 		
 		
 		// 判断插件中是否存在控制器和操作--2019/2/15 by 留恋风
-		$controller = APP_HOME.'\\plugins\\'. $controllerName . 'Controller';
+        $app_home = str_replace('/','\\',APP_HOME);
+        $controller = $app_home.'\\plugins\\'. $controllerName . 'Controller';
 		if (!class_exists($controller) || !method_exists($controller, $actionName)) {
 
 			// 不存在插件，则进入系统默认控制器
             // 判断控制器和操作是否存在
-			$controller = APP_HOME.'\\'.HOME_CONTROLLER.'\\'. $controllerName . 'Controller';
+			$controller = $app_home.'\\'.HOME_CONTROLLER.'\\'. $controllerName . 'Controller';
 			if (!class_exists($controller)) {
 				$controllerName = 'Home';
-                $controller = APP_HOME.'\\'.HOME_CONTROLLER.'\\HomeController';
+                $controller = $app_home.'\\'.HOME_CONTROLLER.'\\HomeController';
            
             }
             //规定前台数据统一到jizhi里面处理
@@ -274,8 +275,8 @@ class FrPHP
             }
 
             if($controllerName=='Home' && $actionName=='jizhi'){
-            	if(method_exists(APP_HOME.'\\plugins\\HomeController', 'jizhi')){
-					$controller = APP_HOME.'\\plugins\\HomeController';
+            	if(method_exists($app_home.'\\plugins\\HomeController', 'jizhi')){
+					$controller = $app_home.'\\plugins\\HomeController';
 					$actionName = 'jizhi';
 				}
             }
@@ -317,7 +318,7 @@ class FrPHP
 		if($hookconfig){
 			//['module'=>APP_HOME,'controller'=>APP_CONTROLLER,'action'=>APP_ACTION]
 			foreach($hookconfig as $v){
-				if($v['module']==APP_HOME && $v['controller']==APP_CONTROLLER && (strpos(','.$v['action'].',',','.APP_ACTION.',')!==false || $v['all_action']==1)){
+				if($v['module']==$app_home && $v['controller']==APP_CONTROLLER && (strpos(','.$v['action'].',',','.APP_ACTION.',')!==false || $v['all_action']==1)){
 					$newhook_controller = '\\'.$v['module'].'\\plugins\\'.$v['hook_controller'].'Controller';
 					/* //防止数据库反斜杠出错，做出更改，hook_namespace参数将失效
 					if($v['hook_namespace']!=''){
@@ -452,17 +453,17 @@ class FrPHP
     protected function classMap()
     {
         return [
-            'FrPHP\lib\Controller' => CORE_PATH . '/lib/Controller.php',
-            'FrPHP\lib\Model' => CORE_PATH . '/lib/Model.php',
-            'FrPHP\lib\View' => CORE_PATH . '/lib/View.php',
-            'FrPHP\db\DBholder' => CORE_PATH . '/db/DBholder.php',
+            'frphp\lib\Controller' => CORE_PATH . '/lib/Controller.php',
+            'frphp\lib\Model' => CORE_PATH . '/lib/Model.php',
+            'frphp\lib\View' => CORE_PATH . '/lib/View.php',
+            'frphp\db\DBholder' => CORE_PATH . '/db/DBholder.php',
             
         ];
     }
 }
 
 // 加载配置文件
-$config = require(APP_PATH . 'Conf/config.php');
+$config = require(APP_PATH . 'conf/config.php');
 
 //实例化核心类
-(new FrPHP($config))->run();
+(new frphp($config))->run();

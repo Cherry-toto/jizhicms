@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+       {include="style"}
+	   <style>
+	   .cache-s{
+	   width:6rem !important;
+	   }
+	   </style>
+    </head>
+    <body>
+    <div class="x-body layui-anim layui-anim-up">
+		<div class="layui-card">
+		<div class="layui-card-body">
+      <blockquote class="layui-elem-quote">{if($webconf['iswap']==1)}{fun JZLANG('手机端已开启，sitemap将包含手机端URL，请注意【手机静态目录')}-[ {$webconf['mobile_html']} ]】{if($webconf['mobile_html']!='/')}，{fun JZLANG('如果不生成静态文件，请改为')}[ / ]{/if}{else}{fun JZLANG('手机端未开启，sitemap不会包含手机端URL')}{/if}<br/>
+	  {fun JZLANG('PC端网站地图：')}sitemap.xml<br/>
+	  {fun JZLANG('手机端网站地图：')}mobile_sitemap.xml<br/>
+	  
+	  </blockquote>
+        <fieldset class="layui-elem-field">
+            <legend>{fun JZLANG('网站地图')}</legend>
+            <div class="layui-field-box">
+                <div class="layui-col-md12">
+                    <form class="layui-form " action="">
+					
+					<table class="layui-table">
+					<tr>
+					<th>{fun JZLANG('模块名称')}</th>
+					<th>{fun JZLANG('更新频率')}</th>
+					<th>{fun JZLANG('站内权重')}</th>
+					<th>{fun JZLANG('输出范围')}</th>
+					
+					</tr>
+					<tr>
+					<td>{fun JZLANG('栏目模块')}<input name="model[]" value="classtype" type="hidden"></td>
+					<td><select name="freq[]"  >
+						<option value="always">经常(always)</option>
+						<option value="hourly">每时(hourly)</option>
+						<option value="daily">每天(daily)</option>
+						<option value="weekly">每周(weekly)</option>
+						<option value="monthly">每月(monthly)</option>
+						<option value="yearly">每年(yearly)</option>
+						
+						</select>
+						</td>
+					<td><input name="priority[]" type="number" class="layui-input" value="0.90"></td>
+					<td><select name="isshow[]"  >
+						<option value="1">{fun JZLANG('显示的栏目')}</option>
+						<option value="2">{fun JZLANG('所有的栏目')}</option>
+						</select>
+						</td>
+					</tr>
+					<tr>
+					<td>{fun JZLANG('文章模块')}<input name="model[]" value="article" type="hidden"></td>
+					<td><select name="freq[]"  >
+						<option value="always">经常(always)</option>
+						<option value="hourly">每时(hourly)</option>
+						<option value="daily">每天(daily)</option>
+						<option value="weekly">每周(weekly)</option>
+						<option value="monthly">每月(monthly)</option>
+						<option value="yearly">每年(yearly)</option>
+						
+						</select>
+						</td>
+					<td><input name="priority[]" type="number" class="layui-input" value="0.80"></td>
+					<td><select name="isshow[]"  >
+						<option value="1">{fun JZLANG('显示的文章')}</option>
+						<option value="2">{fun JZLANG('所有的文章')}</option>
+						</select>
+						</td>
+					</tr>
+					<tr>
+					<td>{fun JZLANG('商品模块')}<input name="model[]" value="product" type="hidden"></td>
+					<td><select name="freq[]"  >
+						<option value="always">经常(always)</option>
+						<option value="hourly">每时(hourly)</option>
+						<option value="daily">每天(daily)</option>
+						<option value="weekly">每周(weekly)</option>
+						<option value="monthly">每月(monthly)</option>
+						<option value="yearly">每年(yearly)</option>
+						
+						</select>
+						</td>
+					<td><input name="priority[]" type="number" class="layui-input" value="0.80"></td>
+					<td><select name="isshow[]"  >
+						<option value="1">{fun JZLANG('显示的商品')}</option>
+						<option value="2">{fun JZLANG('所有的商品')}</option>
+						</select>
+						</td>
+					</tr>
+					
+					{loop table="molds" sys="0" ismust="1" as="v"}
+					<td>{$v['name']}{fun JZLANG('模块')}<input name="model[]" value="{$v['biaoshi']}" type="hidden"></td>
+					<td><select name="freq[]"  >
+						<option value="always">经常(always)</option>
+						<option value="hourly">每时(hourly)</option>
+						<option value="daily">每天(daily)</option>
+						<option value="weekly">每周(weekly)</option>
+						<option value="monthly">每月(monthly)</option>
+						<option value="yearly">每年(yearly)</option>
+						
+						</select>
+						</td>
+					<td><input name="priority[]" type="number" class="layui-input" value="0.80"></td>
+					<td><select name="isshow[]"  >
+						<option value="1">{fun JZLANG('显示的')}{$v['name']}</option>
+						<option value="2">{fun JZLANG('所有的')}{$v['name']}</option>
+						</select>
+						</td>
+					</tr>
+					{/loop}
+					
+					
+					</table>
+					
+					
+					  
+					  <div class="layui-form-item">
+						<div class="layui-input-block">
+						  <button class="layui-btn" lay-submit lay-filter="formDemo">{fun JZLANG('立即生成')}</button>
+						 
+						</div>
+					  </div>
+					</form>
+                </div>
+            </div>
+        </fieldset>
+       </div>
+	   </div>
+       
+    </div>
+        <script>
+		layui.use(['laydate','form','layer','upload'], function(){
+                $ = layui.jquery;
+              var form = layui.form
+              ,layer = layui.layer;
+			  laydate = layui.laydate;
+			  var upload = layui.upload;
+			     //监听提交
+              form.on('submit(formDemo)', function(data){
+				//console.log(data.field);return false;
+				$.post("{fun U('Index/sitemap')}",data.field,function(r){
+					//console.log(r);return false;
+					var r = JSON.parse(r);
+					if(r.code==0){
+						
+						layer.msg(r.msg,{icon:6},function(){
+							window.location.reload();
+						})
+					
+						
+					}else{
+						layer.alert(r.msg, {icon: 5});
+					}
+				});
+				
+               
+                return false;
+              });
+		})
+
+        </script>
+    </body>
+</html>

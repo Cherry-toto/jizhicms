@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+       {include="style"}
+	   <style>
+	   
+	   </style>
+    </head>
+    <body>
+    <div class="x-body layui-anim layui-anim-up">
+    <div class="layui-card">
+		<div class="layui-card-body">
+        <table class="layui-hide" id="xdata" lay-filter="xdata"></table>
+		</div>
+	</div>		
+       
+       
+    </div>
+        <script>
+		layui.use(['table','form'], function(){
+                $ = layui.jquery;
+              var form = layui.form,table = layui.table;
+              
+			  
+			  //第一个实例
+			  table.render({
+				elem: '#xdata'
+				,height: 500 //高度最大化减去差值
+				,url: "?ajax=1" //数据接口
+				,toolbar: false
+				,size:'lg'
+				,count:100
+				,data:{}
+				,page: { //支持传入 laypage 组件的所有参数（某些参数除外，如：jump/elem） - 详见文档
+				  layout: ['limit', 'count', 'prev', 'page', 'next', 'skip'] //自定义分页布局
+				  //,curr: 5 //设定初始在第 5 页
+				  //,groups: 1 //只显示 1 个连续页码
+				  ,first: false //不显示首页
+				  ,last: false //不显示尾页
+				  ,count:500
+				  ,limit:10
+				  ,first: '{fun JZLANG('首页')}' //不显示首页
+				  ,last: '{fun JZLANG('尾页')}' //不显示尾页
+				  
+				}
+				,cols: [[ //表头
+				  {field: 'id', title: '{fun JZLANG('登录ID')}', fixed: 'left',  sort: true}
+				  ,{field: 'username', title: '{fun JZLANG('登录用户')}'}
+				  ,{field: 'ip', title: 'IP'}
+				  ,{field: 'm', title: '{fun JZLANG('模块')}'}
+				  ,{field: 'a', title: '{fun JZLANG('方法')}'}
+				  ,{field: 't', title: '{fun JZLANG('操作时间')}', sort: true}
+				 
+				 
+				]]
+			  });
+			  
+		})
+
+        </script>
+    </body>
+</html>

@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html>
+  
+  <head>
+    <meta charset="UTF-8">
+   {include="style"}
+  </head>
+  
+  <body>
+    <div class="x-nav">
+      <span class="layui-breadcrumb">
+        <a href="/">{fun JZLANG('首页')}</a>
+        <a >{fun JZLANG('会员管理')}</a>
+        <a><cite>{fun JZLANG('会员分组')}</cite></a>
+      </span>
+      <a class="layui-btn layui-btn-small" style="line-height:1.6em;margin-top:3px;float:right" href="javascript:location.replace(location.href);" title="{fun JZLANG('刷新')}">
+        <i class="iconfont" style="line-height:30px">&#xe6aa;</i></a>
+    </div>
+    <div class="x-body">
+      
+	  	<div class="layui-card">
+			<div class="layui-card-body">
+			 <xblock>
+       {if(checkAction('Member/groupadd'))}
+        <a class="layui-btn layui-btn-sm" onclick="x_admin_show('{fun JZLANG('添加分组')}','{fun U('Member/groupadd')}')">{fun JZLANG('添加分组')}</a>
+	   {/if}
+         {if($webconf['isopenhomepower']==0)}<a class="layui-btn layui-btn-sm">{fun JZLANG('温馨提示：前台权限已关闭，设置权限不会生效。')}</a>{else}<a class="layui-btn layui-btn-sm layui-btn-danger">{fun JZLANG('温馨提示：前台权限已开启，权限设置将直接影响前台访问，请谨慎操作！')}</a>{/if}
+      </xblock>
+      <table class="layui-table layui-form">
+        <thead>
+          <tr>
+           
+            <th>ID</th>
+			<th width="50">{fun JZLANG('排序')}</th>
+            <th>{fun JZLANG('分组名')}</th>
+            <th>{fun JZLANG('描述')}</th>
+            <th>{fun JZLANG('状态')}</th>
+            <th>{fun JZLANG('操作')}</th>
+        </thead>
+        <tbody class="x-cate">
+		
+		{foreach $lists as $v}
+          <tr cate-id="{$v['id']}" fid="{$v['pid']}" >
+            <td>{$v['id']}</td>
+			<td><input type="text" class="layui-input x-sort"  name="order" value="{$v['orders']}"></td>
+            <td>
+			  {fun str_repeat('&nbsp;&nbsp;&nbsp;',$v['level'])}
+			  {if($v['haschild'])}
+			  <i class="layui-icon x-show" status='false'>&#xe625;</i>
+			  {else}
+			  {if($v['level'])}|——{/if}
+			  {/if}
+			  {$v['name']}
+            </td>
+			 <td>{$v['description']}</td>
+			 <td class="td-status">
+			 {if(checkAction('Member/change_group_status'))}
+             <input type="checkbox" value="{$v['id']}" name="switch" lay-filter="status"   lay-text="{fun JZLANG('正常|封禁')}"  lay-skin="switch" {if($v['isagree']==1)}checked{/if}>
+			 {else}
+				{if($v['isagree']==1)}
+				<span class="layui-badge layui-bg-green">{fun JZLANG('正常')}</span>
+				{else}
+				<span class="layui-badge">{fun JZLANG('封禁')}</span>
+				{/if}
+			 {/if}
+			 </td>
+			
+           
+            <td class="td-manage">
+			 {if(checkAction('Member/groupedit'))}
+              <a class="layui-btn layui-btn layui-btn-xs"  onclick="x_admin_show('{fun JZLANG('编辑')}','{fun U('Member/groupedit',array('id'=>$v['id']))}')" >{fun JZLANG('编辑')}</a>
+			 {/if}
+			 {if(checkAction('Member/group_del'))}
+              <a class="layui-btn-danger layui-btn layui-btn-xs"  onclick="member_del(this,'{$v['id']}')" href="javascript:;" >{fun JZLANG('删除')}</a>
+			 {/if}
+            </td>
+          </tr>
+		 {/foreach}
+		
+		
+		 
+        </tbody>
+      </table>
+			
+			</div>
+		</div>
+	  
+     
+     
+
+    </div>
+
+	<script>
+      layui.use(['laydate','form'], function(){
+        var laydate = layui.laydate;
+        var form = layui.form;
+       
+		form.on('switch(status)', function (data) {
+			$.post("{fun U('change_group_status')}",{id:data.elem.value},function(r){ });
+		});
+      });
+
+    $(document).ready(function(){
+		$(".x-sort").change(function(){
+			//alert($(this).val());
+			var id = $(this).parent().parent().attr('cate-id');
+			var order = $(this).val();
+		
+			$.post("{fun U('Member/editOrders')}",{id:id,orders:order},function(r){
+				window.location.reload();
+			});
+		
+		})
+	});
+
+      /*用户-删除*/
+      function member_del(obj,id){
+          layer.confirm('{fun JZLANG('确认要删除吗？')}',function(index){
+              //发异步删除数据
+			  
+			  $.post("{fun U('group_del')}",{id:id},function(r){
+					var r = JSON.parse(r);
+					if(r.code==0){
+						$(obj).parents("tr").remove();
+						layer.msg('{fun JZLANG('已删除!')}',{icon:1,time:1000});
+					}else{
+						layer.msg(r.msg,{icon:5,time:1000});
+					}
+				 
+			  });
+			  
+             
+          });
+      }
+
+
+
+    </script>
+   
+  </body>
+
+</html>

@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html>
+  
+  <head>
+    <meta charset="UTF-8">
+	  {include="style"}
+	  
+  </head>
+  
+  <body>
+    <div class="x-body">
+        <form class="layui-form layui-form-pane">
+		
+		<div class="layui-tab">
+			  <ul class="layui-tab-title">
+				<li class="layui-this">{fun JZLANG('基本信息')}</li>
+				
+			  </ul>
+			  <div class="layui-tab-content">
+				<div class="layui-tab-item layui-show">
+				
+	
+			<div class="layui-form-item">
+              <label for="buytype" class="layui-form-label">
+                  <span class="x-red">*</span>{fun JZLANG('充值类型')}
+              </label>
+              <div class="layui-input-inline">
+                 <select name="buytype" lay-search="" lay-filter="buytype" id="buytype" >
+						<option value="money">{fun JZLANG('钱包')}（{fun JZLANG('当前兑换率：')}{$webconf['money_exchange']}）</option>
+						<option value="jifen">{fun JZLANG('积分')}（{fun JZLANG('当前兑换率：')}{$webconf['jifen_exchange']}）</option>
+				 </select>
+              </div>
+              <div class="layui-form-mid layui-word-aux">
+                  {fun JZLANG('兑换率指1元相当于多少钱包/积分')}
+              </div>
+			</div>
+			<div class="layui-form-item">
+              <label for="type" class="layui-form-label">
+                  <span class="x-red">*</span>{fun JZLANG('交易类型')}
+              </label>
+              <div class="layui-input-inline">
+                 <select name="type" lay-search="" lay-filter="type" id="type" >
+						<option value="1">{fun JZLANG('充值')}</option>
+						<option value="3">{fun JZLANG('赠送')}</option>
+				 </select>
+              </div>
+              <div class="layui-form-mid layui-word-aux">
+                  
+              </div>
+			</div>
+		    <div class="layui-form-item">
+              <label for="amount" class="layui-form-label">
+                  <span class="x-red">*</span>{fun JZLANG('充值数量')}
+              </label>
+              <div class="layui-input-inline">
+                  <input type="number" id="amount" name="amount" required="" lay-verify="required"
+                  autocomplete="off" class="layui-input">
+              </div>
+              <div class="layui-form-mid layui-word-aux">
+                  
+              </div>
+			</div>
+			<div class="layui-form-item">
+              <label for="userid" class="layui-form-label">
+                  <span class="x-red">*</span>{fun JZLANG('用户ID')}
+              </label>
+              <div class="layui-input-inline">
+                  <input type="number" id="userid" name="userid" required="" lay-verify="required"
+                  autocomplete="off" class="layui-input">
+              </div>
+              <div class="layui-form-mid layui-word-aux">
+                  
+              </div>
+			</div>
+		   <div class="layui-form-item layui-form-text">
+                        <label for="msg" class="layui-form-label">
+                            <span class="x-red"></span>{fun JZLANG('备注')}
+                        </label>
+                        <div class="layui-input-block">
+                            <textarea  name="msg" class="layui-textarea"></textarea>
+                        </div>
+                    </div>
+	
+				</div>
+				
+			  </div>
+		</div>
+				
+		
+		
+		
+          <input type="hidden" id="go" name="go" value="1">
+          <div class="layui-form-item"  style="text-align:center;">
+              
+              <button  class="layui-btn" lay-filter="add" lay-submit="">
+                  {fun JZLANG('添加')}
+              </button>
+          </div>
+      </form>
+    </div>
+    <script>
+
+        layui.use(['form','layer','upload'], function(){
+            $ = layui.jquery;
+          var form = layui.form
+          ,layer = layui.layer;
+         var upload = layui.upload;
+         
+		
+          //监听提交
+          form.on('submit(add)', function(data){
+            
+					$.post('{fun U('Order/chongzhi')}',data.field,function(r){
+					
+					
+						r = JSON.parse(r);
+
+						if(r.status==0){
+							layer.msg(r.info, {
+							  icon:5
+							});
+						}else{
+							layer.msg('{fun JZLANG('操作成功！')}', {
+							 time:1000,icon:6
+							},function(){
+								{if($webconf['admintpl']=='tpl')}
+								window.location.href="{fun U('Order/czlist')}";
+								{else}
+								parent.location.reload();
+								parent.layer.close(index);
+								{/if}
+							});
+							// 
+						}
+					});
+                return false;
+          });
+		  
+		  
+			
+          
+          
+        });
+    </script>
+    
+  </body>
+
+</html>

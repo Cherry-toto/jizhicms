@@ -11,9 +11,9 @@
 // +----------------------------------------------------------------------
 
 
-namespace FrPHP\lib;
+namespace frphp\lib;
 
-use FrPHP\Extend\Page;
+use frphp\extend\Page;
 
 /**
  * 视图基类
@@ -564,7 +564,7 @@ class View
 			
 			$txt .="
 			".$pagenum."
-			\$".$as."_page = new FrPHP\Extend\Page(\$".$as."_table);
+			\$".$as."_page = new frphp\Extend\Page(\$".$as."_table);
 			\$".$as."_page->typeurl = 'tpl';
 			\$".$as."_page->paged = '".$jzpage."';
 			\$".$as."_data = \$".$as."_page->where(\$".$as."_w)->fields(\$".$as."_fields)->orderby(\$".$as."_order)->limit(\$".$as."_limit)->page(\$pagenum)->go();

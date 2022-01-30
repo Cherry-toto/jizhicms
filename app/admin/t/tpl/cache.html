@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+       {include="style"}
+	   <style>
+	   .cache-s{
+	   width:6rem !important;
+	   }
+	   .layui-form-label{width:150px;text-align:left;}
+	   </style>
+    </head>
+    <body>
+    <div class="x-body layui-anim layui-anim-up">
+       <div class="layui-card">
+	   <div class="layui-card-body">
+        <fieldset class="layui-elem-field">
+            <div class="layui-field-box">
+                <div class="layui-col-md12">
+                    <form class="layui-form " action="">
+					  
+					  <div class="layui-form-item" >
+						<label class="layui-form-label">{fun JZLANG('数据缓存')}</label>
+						<div class="layui-form-mid layui-word-aux cache-s">
+							{$datacache} kb
+						</div>
+						
+						<div class="layui-input-inline  cache-s">
+						<input lay-skin="primary"   type="checkbox" name="cache_data[]" value="data"   checked>
+						</div>
+						<div class="layui-form-mid layui-word-aux">
+							  {fun JZLANG('文件夹cache/data，主要是网站内容缓存，栏目，详情页等')}
+						</div>
+						
+					  </div>
+					   <div class="layui-form-item" >
+						<label class="layui-form-label">Session</label>
+						<div class="layui-form-mid layui-word-aux  cache-s">
+							{$logincache} kb
+						</div>
+						
+						<div class="layui-input-inline  cache-s">
+							<input lay-skin="primary"  type="checkbox" name="cache_data[]" value="login"   >
+						</div>
+						<div class="layui-form-mid layui-word-aux">
+							  {fun JZLANG('文件夹cache/tmp，主要是服务器session文件缓存，当前session将不会被清空')}
+						</div>
+						
+					  </div>
+					   <div class="layui-form-item" >
+						<label class="layui-form-label">{fun JZLANG('日志缓存')}</label>
+						<div class="layui-form-mid layui-word-aux  cache-s">
+							 {$logcache} kb
+						</div>
+						<div class="layui-input-inline  cache-s">
+							<input lay-skin="primary"  type="checkbox" name="cache_data[]" value="log">
+						</div>
+						<div class="layui-form-mid layui-word-aux">
+							  {fun JZLANG('文件夹cache/log，包括错误日志、支付日志、登录日志等')}
+						</div>
+						
+					  </div>
+					  
+					  <div class="layui-form-item" >
+						<label class="layui-form-label">{fun JZLANG('模板缓存')}</label>
+						<div class="layui-form-mid layui-word-aux  cache-s">
+							 {$tplcache} kb
+						</div>
+						<div class="layui-input-inline  cache-s">
+							<input lay-skin="primary"  type="checkbox" name="cache_data[]" value="tpl"   checked>
+						</div>
+						<div class="layui-form-mid layui-word-aux">
+							  {fun JZLANG('文件夹cache，主要是程序执行时生成的模板编译文件')}
+						</div>
+					  </div>
+					  
+					  <div class="layui-form-item" >
+						<label class="layui-form-label">{fun JZLANG('缩略图缓存')}</label>
+						<div class="layui-form-mid layui-word-aux  cache-s">
+							 {$imagecache} kb
+						</div>
+						<div class="layui-input-inline  cache-s">
+							<input lay-skin="primary"  type="checkbox" name="cache_data[]" value="image"   >
+						</div>
+						<div class="layui-form-mid layui-word-aux">
+							  {fun JZLANG('文件夹image，主要是程序执行时生成的自定义缩略图')}
+						</div>
+					  </div>
+					  
+					
+					  <div class="layui-form-item">
+						<div class="layui-input-block">
+						  <button class="layui-btn" lay-submit lay-filter="formDemo">{fun JZLANG('立即清空')}</button>
+						 
+						</div>
+					  </div>
+					</form>
+                </div>
+            </div>
+        </fieldset>
+        </div>
+		</div>
+       
+    </div>
+        <script>
+		layui.use(['laydate','form','layer','upload'], function(){
+                $ = layui.jquery;
+              var form = layui.form
+              ,layer = layui.layer;
+			  laydate = layui.laydate;
+			  var upload = layui.upload;
+			  form.render();
+			     //监听提交
+              form.on('submit(formDemo)', function(data){
+				if(JSON.stringify(data.field)=="{}"){
+					layer.msg('{fun JZLANG('请选择清空目标！')}');
+				}
+				$.post("{fun U('Index/cleanCache')}",data.field,function(r){
+					//console.log(r);return false;
+					var r = JSON.parse(r);
+					if(r.code==0){
+						layer.confirm('{fun JZLANG('清理成功！')}', function(){
+						
+							window.location.reload();
+						});
+					
+						
+					}else{
+						layer.alert(r.msg, {icon: 5});
+					}
+				});
+				
+               
+                return false;
+              });
+		})
+
+        </script>
+    </body>
+</html>

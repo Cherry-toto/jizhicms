@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html>
+  
+  <head>
+    <meta charset="UTF-8">
+   {include="style"}
+
+  </head>
+  
+  <body>
+    <div class="x-nav">
+      <span class="layui-breadcrumb">
+        <a>{fun JZLANG('首页')}</a>
+        <a>{$molds['name']}{fun JZLANG('管理')}</a>
+        <a><cite>{$molds['name']}{fun JZLANG('列表')}</cite></a>
+      </span>
+      <a class="layui-btn layui-btn-small" style="line-height:1.6em;margin-top:3px;float:right" href="javascript:location.replace(location.href);" title="{fun JZLANG('刷新')}">
+        <i class="iconfont" style="line-height:30px">&#xe6aa;</i></a>
+    </div>
+    <div class="x-body">
+	
+	<div class="layui-card">
+		<div class="layui-card-body">
+		<form class="layui-form" action="">
+      <xblock>
+	  <div class="layui-form-item">
+	    {if(checkAction('Classtype/changeClass'))}
+		<div class="layui-input-inline">
+		  <select name="tid" lay-filter="tid" lay-search="" class="layui-inline autosubmit layui-btn-sm">
+		  <option value="">{fun JZLANG('请选择栏目')}</option>
+		  <option value="0">{fun JZLANG('顶级')}</option>
+		   {foreach $classtypes as $v}
+		   <option {if($tid==$v['id'])} selected="selected" {/if}value="{$v['id']}">{fun str_repeat('--', $v['level'])} {$v['classname']}</option>
+		   {/foreach}
+		  </select>
+		</div>
+		{/if}
+        {if(checkAction('Classtype/addclass'))}	
+		<div class="layui-input-inline"  style="width:auto;">
+		<a class="layui-btn layui-btn-sm"  onclick="x_admin_show('{fun JZLANG('新增')}','{fun U('Classtype/addclass')}')" >{fun JZLANG('新增')}</a>
+		</div>
+		{/if}
+		{if(checkAction('Classtype/addmany'))}	
+		<div class="layui-input-inline"  style="width:auto;">
+		<a class="layui-btn layui-btn-sm"  onclick="x_admin_show('{fun JZLANG('批量新增')}','{fun U('Classtype/addmany')}')" >{fun JZLANG('批量新增')}</a>
+		</div>
+		{/if}
+		
+		<div class="layui-input-inline" style="float: right;width:auto;">
+		  <input type="checkbox" value="1" name="switch" lay-filter="type"  lay-text="{fun JZLANG('展开|折叠')}"  lay-skin="switch">
+		</div>
+		</div>
+		
+        <span class="x-right" style="line-height:40px"></span>
+      </xblock>
+      <div class="row" style="overflow-x: auto;">
+        <table border="1" rules="all" style="width:100%; height:100px; white-space:nowrap" class="layui-table layui-form">
+        <thead>
+          <tr>
+			<th>
+			  <div class="layui-unselect header layui-form-checkbox" lay-skin="primary"><i class="layui-icon">&#xe605;</i></div>
+			</th>
+           <th width="70">ID</th>
+			<th width="50">{fun JZLANG('排序')}</th>
+            
+            <th >{$molds['name']}</th>
+            <th width="100">{fun JZLANG('模块名')}</th>
+            <th width="100">{fun JZLANG('导航显示')}</th>
+            <th >{fun JZLANG('快捷操作')}</th>
+            <th >{fun JZLANG('操作')}</th>
+        </thead>
+        <tbody class="x-cate">
+		{foreach $classtypes as $v}
+          <tr cate-id="{$v['id']}" fid="{$v['pid']}" {if($v['pid']!=0)}style="display:none;"{/if}>
+		    <td>
+			<div class="layui-unselect layui-form-checkbox" lay-skin="primary" data-id="{$v['id']}"><i class="layui-icon">&#xe605;</i></div>
+			</td>
+            <td>{$v['id']}</td>
+			<td>
+			{if(checkAction('Classtype/editClassOrders'))}	
+	<input type="text" class="layui-input x-sort"  name="order" value="{$v['orders']}">
+			{else}
+			{$v['orders']}
+			{/if}
+			</td>
+            
+            <td>
+			  {fun str_repeat('&nbsp;&nbsp;&nbsp;',$v['level'])}
+			  {if($v['haschild'])}
+			  <i class="layui-icon x-show" status="true">&#xe623;</i>
+			  {else}
+			  {if($v['level'])}|——{/if}
+			  {/if}
+			  {$v['classname']}
+            </td>
+			<td>{$moldslist[$v['molds']]['name']}</td>
+			{if($admin['classcontrol']==0 ||$admin['isadmin'] || strpos($tids,','.$v['id'].',')!==false)}
+			<td class="td-status" >
+			{if($v['isclose']==0)}
+			{if(checkAction('Classtype/change_status'))}	
+				<input type="checkbox" value="{$v['id']}" name="switch" lay-filter="status"   lay-text="{fun JZLANG('显示|隐藏')}"  lay-skin="switch" {if($v['isshow']==1)}checked{/if}>
+			{else}
+				{if($v['isshow']==1)}
+				<span class="layui-badge layui-bg-green">{fun JZLANG('显示')}</span>
+				{else}
+				<span class="layui-badge">{fun JZLANG('隐藏')}</span>
+				{/if}
+			{/if}
+			{else}
+			已关闭
+			{/if}
+             </td>
+			
+            <td class="td-manage">
+			{if(checkAction('Classtype/addclass'))}	
+			 <a  class="layui-btn layui-btn-warm layui-btn-xs"  onclick="x_admin_show('{fun JZLANG('添加下级')}','{fun U('Classtype/addclass',array('pid'=>$v['id'],'biaoshi'=>$v['molds']))}')" >{fun JZLANG('添加下级')}</a>
+			{/if}
+			  {if(checkAction('Fields/index'))}
+			  <a class="layui-btn layui-btn-normal layui-btn-xs"  onclick="x_admin_show('{fun JZLANG('字段管理')}','{fun U('Fields/index',array('molds'=>$v['molds']))}')" >{fun JZLANG('字段管理')}</a>
+               {/if}
+			   
+			    {if($v['molds']=='article')} 
+				  {if(checkAction('Article/addarticle'))}
+				  <a  class="layui-btn  layui-btn-xs"  onclick="x_admin_show('{fun JZLANG('新增文章')}','{fun U('Article/addarticle',['tid'=>$v['id']])}')" >{fun JZLANG('新增文章')}</a>
+				  {/if}
+			  {else if($v['molds']=='product')}
+				  {if(checkAction('Product/addproduct'))}
+				  <a  class="layui-btn  layui-btn-xs"  onclick="x_admin_show('{fun JZLANG('新增商品')}','{fun U('Product/addproduct',['tid'=>$v['id']])}')" >{fun JZLANG('新增商品')}</a>
+				  {/if}
+			  {else}
+				  {if($v['molds']!='message' && $v['molds']!='page')}
+				  {if(checkAction('Extmolds/addmolds/molds/'.$v['molds']))}
+				  <a  class="layui-btn  layui-btn-xs"  onclick="x_admin_show('{fun JZLANG('新增内容')}','{fun U('Extmolds/addmolds',array('molds'=>$v['molds'],'tid'=>$v['id']))}')" >{fun JZLANG('新增内容')}</a>
+				  {/if}
+				  {/if}
+			  {/if}
+			   
+			</td>
+            <td class="td-manage">
+			{if(checkAction('Classtype/editclass'))}
+              <a class="layui-btn layui-btn layui-btn-xs"  onclick="x_admin_show('{fun JZLANG('编辑')}','{fun U('Classtype/editclass',array('id'=>$v['id']))}')" >{fun JZLANG('编辑')}</a>
+			{/if}
+			
+			 <a href="{$classtypedata[$v['id']]['url']}" class="layui-btn layui-btn-normal layui-btn layui-btn-xs"  target="_blank">{fun JZLANG('预览')}</a>
+			{if(checkAction('Classtype/deleteclass'))}
+              <a class="layui-btn-danger layui-btn layui-btn-xs"  onclick="member_del(this,'{$v['id']}')" href="javascript:;" >{fun JZLANG('删除')}</a>
+			{/if}
+            </td>
+			{else}
+			<td class="td-status" >
+				{if($v['isshow']==1)}
+				<span class="layui-badge layui-bg-green">{fun JZLANG('显示')}</span>
+				{else}
+				<span class="layui-badge">{fun JZLANG('隐藏')}</span>
+				{/if}
+			</td>
+			<td class="td-manage">-</td>
+			<td class="td-manage">-</td>
+	
+
+			{/if}
+
+          </tr>
+		 {/foreach}
+         
+        </tbody>
+      </table>
+	
+	  </div>
+	</form>
+		</div>
+	</div>
+	
+
+    </div>
+    <style type="text/css">
+      
+    </style>
+    <script>
+      layui.use(['form'], function(){
+        form = layui.form;
+        form.on('switch(status)', function (data) {
+			$.post("{fun U('change_status')}",{id:data.elem.value},function(r){ });
+		});
+		form.on('switch(type)', function(data){
+			if(!data.elem.checked){
+				$(".x-cate tr").each(function(){
+					if($(this).attr('fid')!=0){
+						$(this).css('display','none');
+					}
+				});
+				$(".x-show").attr('status','true').html('&#xe623;');
+			}else{
+				
+				$(".x-cate tr").each(function(){
+					if($(this).attr('fid')!=0){
+						$(this).css('display','table-row');
+					}
+				});
+				$(".x-show").attr('status','false').html('&#xe625;');
+			}
+		});  
+		form.on('select(tid)',function(data){
+			if(data.value!=''){
+				var tids = tableCheck.getData().join(',');
+				if(tids==''){
+					layer.alert('{fun JZLANG('请选择对象')}！');return false;
+				}
+				$.post('{fun U('Classtype/changeClass')}',{pid:data.value,tids:tids},function(r){
+				console.log(r);
+					if(r.code==0){
+						layer.msg('{fun JZLANG('操作成功！')}', {
+						 time:1000,icon:6
+						},function(){
+							window.location.reload();
+						})
+					}else{
+						layer.alert(r.msg);
+					}
+				
+				
+				},'json');
+			
+				
+			}
+			return false;
+		})
+		
+      });
+		
+	$(document).ready(function(){
+		$(".x-sort").change(function(){
+			var id = $(this).parent().parent().attr('cate-id');
+			var order = $(this).val();
+		
+			$.post('{fun U('Classtype/editClassOrders')}',{id:id,orders:order},function(r){
+				window.location.reload();
+			});
+		
+		})
+	});
+      
+
+      /*用户-删除*/
+      function member_del(obj,id){
+          layer.confirm('{fun JZLANG('确认要删除吗？')}',function(index){
+              //发异步删除数据
+			  $.post('{fun U('Classtype/deleteclass')}',{id:id},function(r){
+					r = JSON.parse(r);
+
+					if(r.status==0){
+						layer.msg(r.info, {
+						  icon:5
+						});
+					}else{
+						layer.msg('{fun JZLANG('删除成功！')}', {
+						 time:1000,icon:6
+						},function(){
+							 $(obj).parents("tr").remove();
+								layer.msg('{fun JZLANG('已删除!')}',{icon:1,time:1000});
+						});
+						
+						}
+				
+			  });
+		
+			  
+			  
+              
+          });
+      }
+
+
+
+      function delAll (argument) {
+
+        var data = tableCheck.getData();
+  
+        layer.confirm('{fun JZLANG('确认要删除吗？')}'+data,function(index){
+            //捉到所有被选中的，发异步进行删除
+            layer.msg('{fun JZLANG('删除成功')}', {icon: 1});
+            $(".layui-form-checked").not('.header').parents('tr').remove();
+        });
+      }
+    </script>
+    
+  </body>
+
+</html>

@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html>
+  
+  <head>
+    <meta charset="UTF-8">
+   {include="style"}
+
+  </head>
+  
+  <body>
+    <div class="x-nav">
+      <span class="layui-breadcrumb">
+        <a >{fun JZLANG('首页')}</a>
+        <a >{fun JZLANG('扩展管理')}</a>
+        <a><cite>{fun JZLANG('友情链接分类')}</cite></a>
+      </span>
+      <a class="layui-btn layui-btn-small" style="line-height:1.6em;margin-top:3px;float:right" href="javascript:location.replace(location.href);" title="{fun JZLANG('刷新')}">
+        <i class="iconfont" style="line-height:30px">&#xe6aa;</i></a>
+    </div>
+    <div class="x-body">
+		<div class="layui-card">
+			<div class="layui-card-body">
+			
+			    <xblock>
+	  {if(checkAction('Links/linktypeadd'))}
+		<a class="layui-btn layui-btn-sm"  onclick="x_admin_show('{fun JZLANG('添加分类')}','{fun U('Links/linktypeadd')}')" >{fun JZLANG('添加分类')}</a>
+	  {/if}
+        <span class="x-right" style="line-height:40px"></span>
+      </xblock>
+      <table class="layui-table layui-form">
+        <thead>
+          <tr>
+           
+            <th width="70">ID</th>
+            <th width="300">{fun JZLANG('分类名')}</th>
+            <th width="150">{fun JZLANG('时间')}</th>
+            <th >{fun JZLANG('操作')}</th>
+        </thead>
+        <tbody class="x-cate">
+		{foreach $lists as $v}
+          <tr cate-id="{$v['id']}" fid="0" >
+			
+            <td>{$v['id']}</td>
+            <td>{$v['name']}</td>
+			<td>{fun date('Y-m-d H:i:s',$v['addtime'])}</td>
+			
+            <td class="td-manage">
+			{if(checkAction('Links/linktypeedit'))}
+              <a class="layui-btn layui-btn layui-btn-xs"  onclick="x_admin_show('{fun JZLANG('编辑')}','{fun U('Links/linktypeedit',array('id'=>$v['id']))}')" >{fun JZLANG('编辑')}</a>
+			{/if}
+			{if(checkAction('Links/linktypedelete'))}
+              <a class="layui-btn-danger layui-btn layui-btn-xs"  onclick="linkdel(this,'{$v['id']}')" href="javascript:;" >{fun JZLANG('删除')}</a>
+			{/if}  
+            </td>
+          </tr>
+		 {/foreach}
+         
+        </tbody>
+      </table>
+    </div>
+    
+			
+			</div>
+		</div>
+     
+  
+    <script>
+      layui.use(['form'], function(){
+        form = layui.form;
+       
+      });
+	
+
+      /*用户-删除*/
+      function linkdel(obj,id){
+          layer.confirm('{fun JZLANG('确认要删除吗？')}',function(index){
+              //发异步删除数据
+			  $.post('{fun U('Links/linktypedelete')}',{id:id},function(r){
+					r = JSON.parse(r);
+					if(r.code==1){
+						layer.msg(r.msg,{icon: 5,time:1000});
+					}else{
+						layer.msg(r.msg, {
+						 time:1000,icon:6
+						},function(){
+							 $(obj).parents("tr").remove();
+								layer.msg('{fun JZLANG('已删除!')}',{icon:1,time:1000});
+						});
+						
+					}
+				
+			  });
+		
+			  
+			  
+              
+          });
+      }
+
+		
+			
+    
+    </script>
+    
+  </body>
+
+</html>

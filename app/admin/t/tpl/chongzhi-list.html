@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html>
+    <head>
+	<meta charset="UTF-8">
+        {include="style"}
+    </head>
+    <body>
+        <div class="x-nav">
+            <span class="layui-breadcrumb">
+              <a><cite>{fun JZLANG('首页')}</cite></a>
+              <a><cite>{fun JZLANG('充值管理')}</cite></a>
+              <a><cite>{fun JZLANG('充值列表')}</cite></a>
+              
+            </span>
+            <a class="layui-btn layui-btn-small" style="line-height:1.6em;margin-top:3px;float:right"  href="javascript:location.replace(location.href);" title="{fun JZLANG('刷新')}"><i class="iconfont" style="line-height:30px">&#xe6aa;</i></a>
+        </div>
+        <div class="x-body">
+		
+		<div class="layui-card">
+			<div class="layui-card-body"> <div class="layui-collapse">
+		    <div class="layui-colla-item">
+			<h2 class="layui-colla-title">{fun JZLANG('搜索')}</h2>
+				<div class="layui-colla-content">
+				<div class="layui-row">
+					<form class="layui-form layui-col-md12 x-so" method="get" id="myform">
+					<div class="layui-input-inline">
+					  <select name="type" lay-filter="type" class="layui-inline autosubmit">
+					   <option value="">{fun JZLANG('选择交易类型')}</option>
+					   <option value="1" {if($type==1)}selected{/if}>{fun JZLANG('买入')}</option>
+					   <option value="2" {if($type==2)}selected{/if}>{fun JZLANG('兑换')}</option>
+					   <option value="3" {if($type==3)}selected{/if}>{fun JZLANG('奖励')}</option>
+					  </select>
+					</div>
+					<div class="layui-input-inline">
+					  <select name="buytype" lay-filter="buytype" class="layui-inline autosubmit">
+					   <option value="">{fun JZLANG('选择交易种类')}</option>
+					   <option value="money" {if($buytype=='money')}selected{/if}>{fun JZLANG('钱包')}</option>
+					   <option value="jifen" {if($buytype=='jifen')}selected{/if}>{fun JZLANG('积分')}</option>
+					  </select>
+					</div>
+					
+					  <input class="layui-input" value="{$starttime}" placeholder="{fun JZLANG('开始日')}" name="start" id="start">
+					  <input class="layui-input" value="{$endtime}" placeholder="{fun JZLANG('截止日')}" name="end" id="end">
+					  
+					  <input type="text" name="tel"  style="width:200px" placeholder="{fun JZLANG('请输入前台用户手机号')}" value="{$tel}" autocomplete="off" class="layui-input">
+					  
+					  <input type="text" name="username" style="width:200px"   placeholder="{fun JZLANG('请输入用户昵称')}"  value="{$username}"  autocomplete="off" class="layui-input"><br/>
+					 
+					  <input type="text" name="orderno" style="width:200px"   placeholder="{fun JZLANG('请输入订单号')}"  value="{$orderno}"  autocomplete="off" class="layui-input">
+					 
+					  <button class="layui-btn"  lay-submit="" lay-filter="search">{fun JZLANG('搜索')}</button>
+					</form>
+				</div>
+				</div>
+		    </div>
+         </div> 
+		  
+		<table class="layui-hide" lay-data="{id: 'jizhi_table'}" id="jizhi_table" lay-filter="jizhi_table"></table>
+		<input id="select_data" type="hidden" value="" />
+			</div>
+		</div>
+		
+        
+		<script type="text/html" id="rightbar">
+		{if(checkAction('Order/delbuylog'))}
+			<a class="layui-btn layui-btn-xs layui-btn-danger" lay-event="delete">{fun JZLANG('删除')}</a>
+		{/if}	
+			
+		</script>
+		<script type="text/html" id="toolbar">
+		 <div class="layui-btn-container" style="font-size:15px;">
+		 {if(checkAction('Order/delAllbuylog'))}
+			   <a class="layui-btn layui-btn-sm layui-btn-danger" onclick="delAll()">{fun JZLANG('批量删除')}</a>
+		 {/if}	  
+			  <a class="layui-btn layui-btn-sm layui-btn-info" onclick="x_admin_show('{fun JZLANG('会员充值')}','{fun U('Order/chongzhi')}')">{fun JZLANG('会员充值')}</a>
+			  <a class="layui-btn layui-btn-sm">{fun JZLANG('总订单')}<span id="all_num" class="layui-badge layui-bg-gray"></span></a>
+			  <a class="layui-btn layui-btn-sm">{fun JZLANG('已充值')}<span id="chongzhi_num" class="layui-badge layui-bg-blue"></span></a>
+			  <a class="layui-btn layui-btn-sm">{fun JZLANG('已兑换')}<span id="rechange_num" class="layui-badge "></span></a>
+			  <a class="layui-btn layui-btn-sm">{fun JZLANG('总赠送')}<span id="allmoney" class="layui-badge layui-bg-orange"></span></a>
+				  
+			  
+			
+		 </div>
+		</script>
+		
+	 
+		<script>
+	 
+	   
+	    layui.use(['laydate','form','element','laypage','layer','table'], function(){
+                $ = layui.jquery;//jquery
+              var laydate = layui.laydate;//日期插件
+              var lement = layui.element;//面包导航
+              var layer = layui.layer;//弹出层
+			  var form = layui.form;
+			  var table = layui.table;
+			  //执行一个laydate实例
+			laydate.render({
+			  elem: '#start' //指定元素
+			});
+
+			//执行一个laydate实例
+			laydate.render({
+			  elem: '#end' //指定元素
+			});
+			  table.render({
+				elem: '#jizhi_table'
+				,height: 700
+				,url: window.location.href+'?ajax=1' //数据接口
+				,page: true //开启分页
+				,size:'lg'
+				,count:100
+				,toolbar:"#toolbar"
+				,data:{}
+				,page: { //支持传入 laypage 组件的所有参数（某些参数除外，如：jump/elem） - 详见文档
+				  layout: ['limit', 'count', 'prev', 'page', 'next', 'skip'] //自定义分页布局
+				  //,curr: 5 //设定初始在第 5 页
+				  ,groups: 5 //只显示 1 个连续页码
+				  ,first: true //显示首页
+				  ,last: true //显示尾页
+				  ,count:500
+				  ,limit:10
+				  ,first: '{fun JZLANG('首页')}' //不显示首页
+				  ,last: '{fun JZLANG('尾页')}' //不显示尾页
+				  
+				}
+				,done: function(res, curr, count){
+					//如果是异步请求数据方式，res即为你接口返回的信息。
+					//如果是直接赋值的方式，res即为：{data: [], count: 99} data为当前页数据、count为数据总长度
+					console.log(res);
+					$("#all_num").html(res.all);
+					$("#chongzhi_num").html(res.chongzhi_num);
+					$("#rechange_num").html(res.rechange_num);
+					$("#allmoney").html(res.allmoney);
+				  }
+				,cols: [[ //表头
+				  {type:'checkbox'}
+				  ,{field: 'id', title: 'ID', width:60}
+				  ,{field: 'orderno', title: '{fun JZLANG('订单号')}'}
+				  ,{field: 'new_type', title: '{fun JZLANG('类型')}',width:150}
+				  ,{field: 'new_buytype', title: '{fun JZLANG('交易')}',width:150}
+				  ,{field: 'username', title: '{fun JZLANG('用户名')}',width:150}
+				  ,{field: 'amount', title: '{fun JZLANG('数量')}',width:150}
+				  ,{field: 'money', title: '{fun JZLANG('金额')}',width:150}
+				  ,{field: 'msg', title: '{fun JZLANG('备注')}'}
+				  ,{field: 'new_addtime', title: '{fun JZLANG('时间')}',width:160}
+				  ,{field: '', title: '{fun JZLANG('操作')}',width:160, toolbar: '#rightbar', fixed:'right'}
+				 
+				]]
+			  });
+			  
+			    table.on('tool(jizhi_table)', function(obj){
+					var data = obj.data; //获得当前行数据
+					var layEvent = obj.event; //获得 lay-event 对应的值（也可以是表头的 event 参数对应的值）
+					var tr = obj.tr; //获得当前行 tr 的DOM对象
+					 
+					switch(layEvent){
+					  case 'edit':
+						//console.log(data);
+						 x_admin_show('{fun JZLANG('查看')}',data.edit_url);
+					  break;
+					  case 'view':
+						    
+					  break;
+					  case 'delete':
+							layer.confirm('{fun JZLANG('确认要删除吗？')}',function(index){
+				
+								$.post("{fun U('Order/delbuylog')}",{id:data.id},function(r){
+										var r = JSON.parse(r);
+										if(r.code==0){
+										 //发异步删除数据
+											$(tr).remove();
+											layer.msg(r.msg,{icon: 1,time:1000},function(){
+												table.reload('jizhi_table', {
+												  url: window.location.href+'?ajax=1'
+												  ,where: {} //设定异步数据接口的额外参数
+												 
+												});
+											
+											});
+											
+											
+											
+										}else{
+											
+											layer.msg(r.msg,{icon: 5,time:1000});
+										}
+								})
+								
+							
+							   
+							});
+					  break;
+					  case 'copy':
+					  
+							
+						 
+					  break;
+					  
+					 
+					}
+				});
+			  
+			  table.on('checkbox(jizhi_table)', function(obj){
+				 
+				   var checkStatus = table.checkStatus('jizhi_table'); //idTest 即为基础参数 id 对应的值
+				   var len = checkStatus.data.length;
+				   var arr=[];
+				   if(len>0){
+					for(var i=0;i<len;i++){
+						arr.push(checkStatus.data[i].id);
+					}
+				   }
+				   $("#select_data").val(arr);
+				   
+					
+				});
+				
+				
+				
+				form.on('submit(search)', function(data){
+					
+					table.reload('jizhi_table', {
+					  url: window.location.href+'?ajax=1'
+					  ,where: data.field //设定异步数据接口的额外参数
+					 
+					});
+				   
+					return false;
+				  });
+					
+			  
+				
+			 
+              
+            });
+			
+			
+			
+		 
+			
+			
+			
+			 function delAll () {
+				
+				var data = $("#select_data").val();
+				if(data==''){
+					alert('{fun JZLANG('请选择对象！')}');return false;
+				}
+				layer.confirm('{fun JZLANG('确认要删除吗？')}'+data,function(index){
+					
+					$.post("{fun U('Order/delAllbuylog')}",{data:data},function(r){
+					
+							var r = JSON.parse(r);
+							if(r.code==0){
+							  
+							  layer.msg('{fun JZLANG('批量删除成功')}', {icon: 1,time:1000},function(){
+								window.location.reload();
+							  });
+							  
+							}else{
+								
+								layer.msg(r.msg,{icon: 5,time:1000});
+							}
+					})
+					
+					
+					
+				});
+			  }
+		
+			  
+			  
+			
+			
+       </script>
+    </body>
+</html>

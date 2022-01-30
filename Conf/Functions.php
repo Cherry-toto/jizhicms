@@ -1386,9 +1386,9 @@ function jz_show_fields($data=array(),$fields=null){
 //发送邮件处理
 function send_mail($send_mail,$password,$send_name,$to_mail,$title,$body,$email_ext=''){
 	
-	require_once(APP_PATH.'FrPHP/Extend/PHPMailer/PHPMailerAutoload.php');
-	require_once(APP_PATH.'FrPHP/Extend/PHPMailer/class.phpmailer.php');
-	require_once(APP_PATH."FrPHP/Extend/PHPMailer/class.smtp.php");
+	require_once(APP_PATH.'frphp/extend/PHPMailer/PHPMailerAutoload.php');
+	require_once(APP_PATH.'frphp/extend/PHPMailer/class.phpmailer.php');
+	require_once(APP_PATH."frphp/extend/PHPMailer/class.smtp.php");
 	
 	    $mail = new PHPMailer();
 

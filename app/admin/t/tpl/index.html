@@ -1,0 +1,162 @@
+<!doctype html>
+<html >
+<head>
+	<meta charset="UTF-8">
+	{include="style"}
+  <style type="text/css">
+  html{ overflow-y:hidden;}
+  i.jzicon {
+		font-size: 18px;
+		margin-right: 10px;
+	}
+
+
+  </style>
+</head>
+<body>
+    <!-- 顶部开始 -->
+    <div class="container">
+        <div class="logo"><a href="{fun U('Index/index')}">{fun JZLANG('后台管理')}</a></div>
+        <div class="left_open">
+            <i title="{fun JZLANG('展开左侧栏')}" class="iconfont">&#xe699;</i>
+        </div>
+		{if($top_num>0)}
+        <ul class="layui-nav left fast-add" lay-filter="">
+		 {if(is_array($top_layout))}
+		 {foreach $top_layout as $v}
+			<li class="layui-nav-item">
+				<a href="javascript:;"><i class="iconfont">{fun htmlspecialchars_decode($v['icon'])}</i><cite>{fun JZLANG($v['name'])}</cite></a>
+				<dl class="layui-nav-child"> 
+				
+				{foreach $v['nav'] as $vv}
+				{if(!is_array($vv) && $vv)}
+					{if(strpos($vv,'class')!==false)}
+					<dd class="top-nav"><a x_href="{$classnav[$vv]['act']}" class="top_nav">{$classnav[$vv]['classname']}</a></dd>	
+					{else}
+					<dd class="top-nav"><a x_href="{fun U($actions[$vv]['fc'])}" class="top_nav">{fun JZLANG($actions[$vv]['name'])}</a></dd>
+					{/if}
+				{else if(is_array($vv))}
+					
+					{if(strpos($vv['value'],'class')!==false)}
+						<dd class="top-nav">{if($vv['icon'])}<i class="iconfont">{fun htmlspecialchars_decode($vv['icon'])}</i>{/if}<a x_href="{$classnav[$vv['value']]['act']}" class="top_nav">{fun JZLANG($vv['value'])}</a></dd>
+					{else}
+						<dd class="top-nav">{if($vv['icon'])}<i class="iconfont">{fun htmlspecialchars_decode($vv['icon'])}</i>{/if}<a x_href="{fun U($actions[$vv['value']]['fc'])}" class="top_nav">{fun JZLANG($vv['value'])}</a></dd>
+					{/if}
+					
+					
+				
+				{/if}             
+				{/foreach}  
+				  
+				</dl>
+			</li>
+		 {/foreach} 
+		 {/if}
+		  
+        </ul>
+		{/if}
+        <ul class="layui-nav right" lay-filter="">
+			<li class="layui-nav-item">
+            <a class="top_nav_right"  x_href="{fun U('index/cleanCache')}"><i class="layui-icon layui-icon-refresh-3 jzicon"></i>{fun JZLANG('清理缓存')}</a>
+            
+          </li>
+          <li class="layui-nav-item">
+            <a href="javascript:;"><i class="layui-icon layui-icon-username jzicon"></i>{$admin['name']}</a>
+            <dl class="layui-nav-child"> <!-- 二级菜单 -->
+              <dd><a x_href="{fun U('Index/details',['id'=>frencode($admin['id'])])}" class="top_nav_right"      >{fun JZLANG('个人信息')}</a></dd>
+              
+              <dd><a href="{fun U('Login/loginout')}">{fun JZLANG('退出')}</a></dd>
+            </dl>
+          </li>
+
+          <li class="layui-nav-item to-index"><a target="_blank" href="/"><i class="layui-icon layui-icon-home jzicon"></i>{fun JZLANG('前台首页')}</a></li>
+        </ul>
+        
+    </div>
+    <!-- 顶部结束 -->
+    <!-- 中部开始 -->
+     <!-- 左侧菜单开始 -->
+    <div class="left-nav layui-side layui-bg-black">
+      <div id="side-nav" class="layui-side-scroll">
+        <ul id="nav" class="layui-nav-tree">
+			<li>
+                <a  _href="{fun U('Index/welcome')}">
+                    <i class="layui-icon layui-icon-home"></i>
+                    <cite>{fun JZLANG('后台首页')}</cite>
+                    
+                </a>
+               
+            </li>
+		
+				
+		{if(is_array($left_layout))}
+		{foreach $left_layout as $v}
+            <li>
+                <a href="javascript:;">
+                    <i class="iconfont">{fun htmlspecialchars_decode($v['icon'])}</i>
+                    <cite>{fun JZLANG($v['name'])}</cite>
+                    <i class="iconfont nav_right">&#xe6a7;</i>
+                </a>
+                <ul class="sub-menu">
+				{foreach $v['nav'] as $vv}
+				{if(!is_array($vv) && $vv)}
+                    <li>
+						{if(strpos($vv,'class')!==false)}
+						<a _href="{$classnav[$vv]['act']}" ><cite>{$classnav[$vv]['classname']}</cite></a>
+						{else}
+                        <a _href="{fun U($actions[$vv]['fc'])}"><cite>{fun JZLANG($actions[$vv]['name'])}</cite></a>
+						{/if}
+                    </li >
+				{else if(is_array($vv))}
+					
+					<li>
+						{if(strpos($vv['value'],'class')!==false)}
+						<a _href="{$classnav[$vv['value']]['act']}" >{if($vv['icon'])}<i class="iconfont">{fun htmlspecialchars_decode($vv['icon'])}</i>{/if}<cite>{fun JZLANG($vv['title'])}</cite></a>
+						{else}
+                        <a _href="{fun U($actions[$vv['value']]['fc'])}">{if($vv['icon'])}<i class="iconfont">{fun htmlspecialchars_decode($vv['icon'])}</i>{/if}<cite>{fun JZLANG($vv['title'])}</cite></a>
+						{/if}
+                    </li >
+					
+					
+				{/if}
+                {/foreach}    
+                    
+                </ul>
+            </li>
+			
+		{/foreach}	
+		{/if}		
+          
+           
+        </ul>
+      </div>
+    </div>
+    <!-- <div class="x-slide_left"></div> -->
+    <!-- 左侧菜单结束 -->
+    <!-- 右侧主体开始 -->
+    <div class="page-content">
+        <div class="layui-tab tab" lay-filter="xbs_tab" lay-allowclose="false">
+          <ul class="layui-tab-title">
+            <li class="home"><i class="layui-icon">&#xe68e;</i>{fun JZLANG('我的桌面')}</li>
+          </ul>
+          <div class="layui-tab-content">
+            <div class="layui-tab-item layui-show">
+                <iframe src="{fun U('Index/welcome')}" name="x-iframe" frameborder="0" scrolling="auto" class="x-iframe"></iframe>
+            </div>
+          </div>
+        </div>
+    </div>
+     <ul class="rightmenu">
+        <li data-type="closethis">{fun JZLANG('关闭当前')}</li>
+        <li data-type="closeother">{fun JZLANG('关闭其他')}</li>
+        <li data-type="closeall">{fun JZLANG('关闭所有')}</li>
+    </ul>
+    <div class="page-content-bg"></div>
+    <!-- 右侧主体结束 -->
+    <!-- 中部结束 -->
+    <!-- 底部开始 -->
+ {include="footer"}
+    <!-- 底部结束 -->
+   
+</body>
+</html>

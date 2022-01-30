@@ -20,9 +20,24 @@ class PluginsController extends CommonController
 	
 	public function index(){
 		//检查更新链接是否可以访问
-		$api = 'http://api.jizhicms.cn/plugins.php?version='.$this->webconf['web_version'];
+		$webapi = $this->webconf['plugins_config'];
+		if(!$webapi){
+			$webapi = 'http://api.jizhicms.cn/plugins.php';
+			if(!M('sysconfig')->find(['field'=>'plugins_config'])){
+				M('sysconfig')->add(['title'=>'插件配置','field'=>'plugins_config','type'=>2,'data'=>$webapi,'typeid'=>0]);
+				setCache('webconfig',null);
+			}
+		}
+		if($this->frparam('set')){
+			$webapi = $this->frparam('webapi',1);
+			M('sysconfig')->update(['field'=>'plugins_config'],['data'=>$webapi]);
+			setCache('webconfig',null);
+			JsonReturn(['code'=>0,'msg'=>'配置成功！']);
+		}
+		$this->webapi = $webapi;
+		$api = $webapi.'?version='.$this->webconf['web_version'];
 		$ch = curl_init();
-		$timeout = 3;
+		$timeout = 5;
 		curl_setopt($ch,CURLOPT_FOLLOWLOCATION,1);
 		curl_setopt($ch,CURLOPT_RETURNTRANSFER,1);
 		curl_setopt($ch, CURLOPT_HEADER, false);
@@ -47,59 +62,14 @@ class PluginsController extends CommonController
 			$isdown = $this->frparam('isdown');
 			switch($isdown){
 				case 1:
-					
-					//已安装
-					$page = new Page('plugins');
-					$sql = '1=1';
-					$data = $page->where($sql)->orderby('addtime desc')->limit($this->frparam('limit',0,10))->page($this->frparam('page',0,1))->go();
-					$pages = $page->pageList();
-					$dir = APP_PATH.APP_HOME.'/exts';
-					foreach($data as $k=>$v){
-						//已下载该插件
-						if(!file_exists($dir.'/'.$v['filepath'].'/config.php')){
-							continue;
-						}
-						$config = require_once($dir.'/'.$v['filepath'].'/config.php');
-						$data[$k]['isinstall'] = true;
-						if($isok && array_key_exists($v['filepath'],$allplugins) && version_compare($config['version'],$allplugins[$v['filepath']]['version'],'<')){
-							//有更新
-							$data[$k]['isupdate'] = true;
-							$data[$k]['official'] = $allplugins[$v['filepath']]['official'];
-						}else{
-							//无更新
-							$data[$k]['isupdate'] = false;
-							$data[$k]['official'] =  array_key_exists($v['filepath'],$allplugins) ? $allplugins[$v['filepath']]['official'] : 0;
-						}
-						$data[$k]['exists'] = true;
-					
-						
-					}
-					
-					
-					$this->pages = $pages;
-					$this->lists = $data;
-					$this->sum = $page->sum;
-					$this->listpage = $page->listpage;//分页数组-自定义分页可用
-					$this->prevpage = $page->listpage['prev'];//上一页
-					$this->nextpage = $page->listpage['next'];//下一页
-					$this->allpage = $page->listpage['allpage'];//总页数
-					$this->display('plugins-list');
-					exit;
-				break;
-				case 2:
-				//未安装
+				//本地-已下载
 					$dir = APP_PATH.APP_HOME.'/exts';
 					$fileArray=array();
 					if (false != ($handle = opendir ( $dir ))) {
 						while ( false !== ($file = readdir ( $handle )) ) {
 							//去掉"“.”、“..”以及带“.xxx”后缀的文件
 							if ($file != "." && $file != ".."  && strpos($file,'.')===false) {
-								//检查是否安装
-								if(!M('plugins')->find(['filepath'=>$file])){
-									$fileArray[]=$file;
-								}
-								
-								
+								$fileArray[]=$file;
 							}
 						}
 						//关闭句柄
@@ -130,7 +100,6 @@ class PluginsController extends CommonController
 						
 					}
 					
-					//var_dump($data);
 					
 					$this->pages = $arraypage->pageList();
 					$this->sum = $arraypage->sum;//总数据
@@ -144,65 +113,7 @@ class PluginsController extends CommonController
 					
 					
 				break;
-				case 3:
-				//未下载
-					$dir = APP_PATH.APP_HOME.'/exts';
-					$fileArray=array();
-					if (false != ($handle = opendir ( $dir ))) {
-						while ( false !== ($file = readdir ( $handle )) ) {
-							//去掉"“.”、“..”以及带“.xxx”后缀的文件
-							if ($file != "." && $file != ".."  && strpos($file,'.')===false) {
-								$fileArray[]=$file;
-								
-							}
-						}
-						//关闭句柄
-						closedir ( $handle );
-					}
-					
-					$lists = [];
-					
-					if($isok){
-						foreach($allplugins as $k=>$v){
-							if(!in_array($k,$fileArray)){
-								
-								$lists[$k] = $v;
-								$lists[$k]['exists'] = false;
-								$lists[$k]['description'] = $v['desc'];
-								$lists[$k]['isinstall'] = false;
-								$lists[$k]['isupdate'] = false;
-								$lists[$k]['official'] = 1;
-								
-							}
-							
 				
-						}
-						
-						$arraypage = new \ArrayPage($lists);
-						$data = $arraypage->query(['page'=>$this->frparam('page',0,1),'title'=>$this->title,'isdown'=>$this->frparam('isdown')])->setPage(['limit'=>$this->frparam('limit',0,10)])->go();
-						$this->pages = $arraypage->pageList();
-						$this->sum = $arraypage->sum;//总数据
-						$this->listpage = $arraypage->listpage;//分页数组-自定义分页可用
-						$this->prevpage = $arraypage->prevpage;//上一页
-						$this->nextpage = $arraypage->nextpage;//下一页
-						$this->allpage = $arraypage->allpage;//总页数
-						$this->lists = $data;
-						
-						
-					}else{
-						$this->pages = '';
-						$this->sum = 0;//总数据
-						$this->listpage = false;//分页数组-自定义分页可用
-						$this->prevpage = false;//上一页
-						$this->nextpage = false;//下一页
-						$this->allpage = 0;//总页数
-						$this->lists = [];
-						
-					}
-					$this->display('plugins-list');
-					exit;
-				
-				break;
 			}
 		
 		
@@ -880,7 +791,8 @@ class PluginsController extends CommonController
 				}
 			}
 			$config = require_once(APP_PATH.'A/exts/'.$filepath.'/config.php');
-			$r = file_get_contents('http://api.jizhicms.cn/plugins.php?name='.$filepath.'&v='.$config['version']);
+			$webapi = $this->webconf['plugins_config'];
+			$r = file_get_contents($webapi.'?name='.$filepath.'&v='.$config['version']);
 			$rr = json_decode($r,1);
 			if($rr['code']==0){
 				$this->plugin = $config;

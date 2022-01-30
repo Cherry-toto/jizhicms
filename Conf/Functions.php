@@ -17,7 +17,6 @@
  *****************/
 
 //网站配置
-
 function webConf($str=null){
 	//v1.3 取消文件存储
 	//$web_config = include(APP_PATH.'Conf/webconf.php');
@@ -46,88 +45,64 @@ function webConf($str=null){
 }
  
 function get_custom($str=null){
-	//v1.3 取消文件存储
-	//$custom = include(APP_PATH.'Conf/custom.php');
-	$customconfig = getCache('customconfig');
-	if(!$customconfig){
-		$ccf = M('sysconfig')->findAll('type!=0');
-		$customconfig = array();
-		foreach($ccf as $k=>$v){
-			$customconfig[$v['field']] = $v['data'];
-		}
-		setCache('customconfig',$customconfig);
-	}
-	
-	
-	if($str!=null){
-		if(!array_key_exists($str,$customconfig)){
-			return false;
-		}
-		return $customconfig[$str];
-	}else{
-		return $customconfig;
-	}
+	return webConf($str);
 }
 
 function get_template(){
+	$hometpl = getCache('hometpl');
+	if($hometpl){
+		return $hometpl;
+	}
 	$webconf = webConf();
 	$isgo = true;
-	
-	if($webconf['isopenwebsite']){
-	
-		//检测是否安装插件
-		$res = M('plugins')->find(['filepath'=>'website','isopen'=>1]);
-		if($res  && $res['config']){ 
-			$website = $_SERVER['HTTP_HOST'];
-			$config = json_decode($res['config'],1);
-			$pc = $webconf['pc_template'];
-			$wap = $webconf['wap_template'];
-			$wechat = $webconf['weixin_template'];
-			foreach($config as $v){
-				if($v['website']==$website){
-					$isgo = false;
-					$v['model'] = (int)$v['model'];
-					switch($v['model']){
-						case 0:
-						$pc=$wap=$wechat=$v['tpl'];
-						break;
-						case 1:
-						$pc=$v['tpl'];
-						break;
-						case 2:
-						$wap=$v['tpl'];
-						break;
-						case 3:
-						$wechat=$v['tpl'];
-						break;
-					}
+	//检测是否安装插件
+	$res = M('plugins')->find(['filepath'=>'website','isopen'=>1]);
+	if($res  && $res['config']){ 
+		$website = $_SERVER['HTTP_HOST'];
+		$config = json_decode($res['config'],1);
+		$pc = $webconf['pc_template'];
+		$wap = $webconf['wap_template'];
+		$wechat = $webconf['weixin_template'];
+		foreach($config as $v){
+			if($v['website']==$website){
+				$isgo = false;
+				$v['model'] = (int)$v['model'];
+				switch($v['model']){
+					case 0:
+					$pc=$wap=$wechat=$v['tpl'];
+					break;
+					case 1:
+					$pc=$v['tpl'];
+					break;
+					case 2:
+					$wap=$v['tpl'];
+					break;
+					case 3:
+					$wechat=$v['tpl'];
+					break;
 				}
 			}
-			//当前端口检测
-			if($webconf['iswap']==1 && isMobile()){
-				$template = $wap;
-				//wap
-				if(isWeixin()){
-					//wechat
-					$template = $wechat;
-				}
-				
-				
-			}else{
-				//pc
-				$template = $pc;
-			}
-		
-			
-			if($template==''){
-				//全局
-				$isgo = true;//直接跳转下面进行默认设置
-			}
-			
 		}
+		//当前端口检测
+		if($webconf['iswap']==1 && isMobile()){
+			$template = $wap;
+			//wap
+			if(isWeixin()){
+				//wechat
+				$template = $wechat;
+			}
+			
+			
+		}else{
+			//pc
+			$template = $pc;
+		}
+	
 		
-		
-		
+		if($template==''){
+			//全局
+			$isgo = true;//直接跳转下面进行默认设置
+		}
 		
 	}
 	if($isgo){
@@ -144,7 +119,7 @@ function get_template(){
 		
 	}
 	
-	
+	setCache('hometpl',$template);
 	
 	return $template;
 }
@@ -181,8 +156,6 @@ function curl_http($url,$data=null,$method='GET'){
 	return $data;
 }
  
-
- 
 function get_all_page($url,$start=5,$end=0,$match='{$}'){
 	 $urls = array();
 	 if($end==0){
@@ -200,7 +173,6 @@ function get_all_page($url,$start=5,$end=0,$match='{$}'){
 	 
  }
  
-
 function adminInfo($id,$str=null){
 	$user = M('level')->find('id='.$id);
   if($str!=null){
@@ -209,10 +181,7 @@ function adminInfo($id,$str=null){
   return $user;
 
 }
-
- 
 //检测是否开启权限
-
 function checkAction($action){
 	if(!isset($_SESSION['admin'])){
     	Error('登录超时,请重新登录！');
@@ -249,8 +218,6 @@ function checkAction($action){
    
 
 }
-
-
 /**
  * 递归实现无限极分类
  * @param $array 分类数据
@@ -258,7 +225,6 @@ function checkAction($action){
  * @param $level 分类级别
  * @return $list 分好类的数组 直接遍历即可 $level可以用来遍历缩进
  */
-
 function getTree($array, $pid =0, $level = 0){
 
 	//声明静态数组,避免递归调用时,多次声明导致数组覆盖
@@ -323,7 +289,6 @@ function set_class_haschild($classtype = null){
 	return $newarray;
 	
 }
-
 //获取格式化栏目类
 function get_classtype_tree(){
 	
@@ -354,7 +319,7 @@ function classTypeData(){
 			if($v['gourl']!=''){
 				$d[$v['id']]['url'] = $v['gourl'];
 			}else{
-				$file_txt = File_TXT_HIDE ? '' : File_TXT;
+				$file_txt = File_TXT_HIDE ? '' : '.html';
 				if($file_txt==''){
 					$file_txt = CLASS_HIDE_SLASH ? $file_txt : $file_txt.'/';
 				}
@@ -370,7 +335,6 @@ function classTypeData(){
 	
 	
 }
-
 //手机端栏目缓存
 function classTypeDataMobile(){
 	$res = getCache('mobileclasstype');
@@ -386,7 +350,7 @@ function classTypeDataMobile(){
 			if($v['gourl']!=''){
 				$d[$v['id']]['url'] = $v['gourl'];
 			}else{
-				$file_txt = File_TXT_HIDE ? '' : File_TXT;
+				$file_txt = File_TXT_HIDE ? '' : '.html';
 				if($file_txt==''){
 					$file_txt = CLASS_HIDE_SLASH ? $file_txt : $file_txt.'/';
 				}
@@ -402,9 +366,8 @@ function classTypeDataMobile(){
 	
 	
 }
-
- //检测栏目是否该栏目下级
- function checkClass($pid,$tid){
+//检测栏目是否该栏目下级
+function checkClass($pid,$tid){
 	
 	 $class = M('classtype')->find(array('id'=>$pid));
 	 
@@ -419,19 +382,18 @@ function classTypeDataMobile(){
 		 checkClass($class['pid'],$tid);
 	 }
  }
-
- //获取栏目的所有下级
- /*
- 	@param type				当前栏目数组
-	@param classtype  已被getTree格式化数组
-	@param code       获取内容类型
-		1输出所有数组
-		2输出直系子类id
-		3输出全系子类ids
-		4输出直系子类数组children
-		5输出全系子类数组childrens
- */
- function get_children($type,$classtype=null,$code=1){
+//获取栏目的所有下级
+/*
+@param type				当前栏目数组
+@param classtype  已被getTree格式化数组
+@param code       获取内容类型
+	1输出所有数组
+	2输出直系子类id
+	3输出全系子类ids
+	4输出直系子类数组children
+	5输出全系子类数组childrens
+*/
+function get_children($type,$classtype=null,$code=1){
 		if($type==null || $classtype==null){
 				Error_msg('参数错误！');
 		}
@@ -494,10 +456,8 @@ function classTypeDataMobile(){
 	
 
  }
-
- 
-  //获取单条表数据信息
- function get_info_table($table,$where=null,$str=null){
+//获取单条表数据信息
+function get_info_table($table,$where=null,$str=null){
 
 		$data = M($table)->find($where,null,$str);
 		if($str!=null){
@@ -506,201 +466,221 @@ function classTypeDataMobile(){
 		return $data;
 	 
  }
- //获取指定表中所有内容
- function get_all_info_table($table,$where=null,$order=null,$limit=null,$field=null){
-	 $data = M($table)->findAll($where,$order,$field,$limit);
-	 return $data;
+//获取指定表中所有内容
+function get_all_info_table($table,$where=null,$order=null,$limit=null,$field=null){
+ $data = M($table)->findAll($where,$order,$field,$limit);
+ return $data;
+}
+//后台方法-获取表单提交的扩展字段的内容
+/**
+@param data   表单提交的内容
+@param molds  模块标识
+@param isadmin是否后台
+**/
+function get_fields_data($data,$molds,$isadmin=1){
+ if($isadmin){
+	 $fields = M('fields')->findAll(['molds'=>$molds,'isadmin'=>1],'orders desc,id asc');
+ }else{
+	 //前台需要判断是否前台显示
+	 $fields = M('fields')->findAll(['molds'=>$molds,'isshow'=>1,'ishome'=>1],'orders desc,id asc');
  }
- 
- 
- //后台方法-获取表单提交的扩展字段的内容
- /**
-	@param data   表单提交的内容
-	@param molds  模块标识
-	@param isadmin是否后台
- **/
- function get_fields_data($data,$molds,$isadmin=1){
-	 if($isadmin){
-		 $fields = M('fields')->findAll(['molds'=>$molds,'isadmin'=>1],'orders desc,id asc');
-	 }else{
-		 //前台需要判断是否前台显示
-		 $fields = M('fields')->findAll(['molds'=>$molds,'isshow'=>1],'orders desc,id asc');
-	 }
-	 foreach($fields as $v){
-		 if(array_key_exists($v['field'],$data)){
-			 switch($v['fieldtype']){
-				 case 1:
-				 case 2:
-				 case 5:
-				 case 7:
-				 case 9:
-				 case 12:
-				 $data[$v['field']] = format_param($data[$v['field']],1);
-				 break;
-				 case 11:
-				 $data[$v['field']] = strtotime(format_param($data[$v['field']],1));
-				 break;
-				 case 3:
-				 $data[$v['field']] = format_param($data[$v['field']],4);
-				 break;
-				 case 4:
-				 case 13:
-				 $data[$v['field']] = format_param($data[$v['field']]);
-				 break;
-				 case 14:
-				 $data[$v['field']] = format_param($data[$v['field']],3);
-				 break;
-				 case 8:
-				 $r = implode(',',format_param($data[$v['field']],2));
-				 if($r){
-					 $r = ','.$r.',';
-				 } 
-				 $data[$v['field']] = $r;
-				 break;
-				 case 15:
-				 $r = implode('||',format_param($data[$v['field']],2));
-				 $data[$v['field']] = $r;
-				 break;
-				
-			 }
-		 }else if(array_key_exists($v['field'].'_urls',$data)){
-		     switch($v['fieldtype']){
-		         case 6:
-				 case 10:
-				 if(array_key_exists($v['field'].'_des',$data)){
-					 $pics = format_param($data[$v['field'].'_urls'],2);
-					 $pics_des = format_param($data[$v['field'].'_des'],2);
-					 foreach($pics as $k=>$vv){
-						 if($pics_des[$k]){
-							 $pics[$k] = $vv.'|'.$pics_des[$k];
-						 }
-					 }
-					$data[$v['field']] = implode('||',$pics);
-					
-				 }else{
-					$data[$v['field']] = implode('||',format_param($data[$v['field'].'_urls'],2)); 
-				 }
-				 
-				 break;
-		     }
-		 }else{
-		     
-			$data[$v['field']] = '';      
-		     
-		 }
-		 
-	 }
-	 return $data;
-	 
- }
- 
- 
- 
- //新增字段-后台列表搜索获取
- function molds_search($molds=null,$data=null){
-	 if($molds==null){
-		 Error('缺少模块标识！');
-	 }
-	 $lists = M('Fields')->findAll(array('molds'=>$molds,'issearch'=>1),'orders desc,id asc');
-	 $fields_search = '';
-	 $fields_search_check = array();
-	 foreach($lists as $v){
-		 $data[$v['field']] = array_key_exists($v['field'],$data) ? $data[$v['field']] : '';
+ $newdata = [];
+ foreach($fields as $v){
+	 if(array_key_exists($v['field'],$data)){
 		 switch($v['fieldtype']){
 			 case 1:
 			 case 2:
-			 case 3:
 			 case 5:
-			 case 6:
+			 case 7:
 			 case 9:
-			 case 10:
+			 case 12:
+			 case 18:
+			 case 19:
+			 $data[$v['field']] = format_param($data[$v['field']],1);
+			 break;
+			 case 11:
+			 $data[$v['field']] = strtotime(format_param($data[$v['field']],1));
+			 break;
+			 case 3:
+			 $data[$v['field']] = format_param($data[$v['field']],4);
+			 break;
+			 case 4:
+			 case 13:
+			 case 17:
+			 $data[$v['field']] = format_param($data[$v['field']]);
+			 break;
 			 case 14:
+			 $data[$v['field']] = format_param($data[$v['field']],3);
+			 break;
+			 case 8:
+			 case 16:
+			 $r = implode(',',format_param($data[$v['field']],2));
+			 if($r){
+				 $r = ','.$r.',';
+			 } 
+			 $data[$v['field']] = $r;
+			 break;
 			 case 15:
-			 $fields_search .= '<input type="text" name="'.$v['field'].'" value="'.format_param($data[$v['field']],1).'" placeholder="请输入'.$v['fieldname'].'" autocomplete="off" class="layui-input">';
+			 $r = implode('||',format_param($data[$v['field']],2));
+			 $data[$v['field']] = $r;
+			 break;
+			
+		 }
+		 $newdata[$v['field']] = $data[$v['field']];
+	 }else if(array_key_exists($v['field'].'_urls',$data)){
+		 switch($v['fieldtype']){
+			 case 6:
+			 case 10:
+			 if(array_key_exists($v['field'].'_des',$data)){
+				 $pics = format_param($data[$v['field'].'_urls'],2);
+				 $pics_des = format_param($data[$v['field'].'_des'],2);
+				 foreach($pics as $k=>$vv){
+					 if($pics_des[$k]){
+						 $pics[$k] = $vv.'|'.$pics_des[$k];
+					 }
+				 }
+				$data[$v['field']] = implode('||',$pics);
+				
+			 }else{
+				$data[$v['field']] = implode('||',format_param($data[$v['field'].'_urls'],2)); 
+			 }
+			 
+			 break;
+		 }
+		$newdata[$v['field']] = $data[$v['field']];
+	 }else{
+		$data[$v['field']] = '';      
+		 
+	 }
+	 
+ }
+ 
+ if($isadmin){
+	return $data; 
+ }else{
+	//前台只返回允许的字段
+	return $newdata;
+ }
+
+ 
+}
+
+//新增字段-后台列表搜索获取
+function molds_search($molds=null,$data=null){
+ if($molds==null){
+	 Error('缺少模块标识！');
+ }
+ $lists = M('Fields')->findAll(array('molds'=>$molds,'issearch'=>1),'orders desc,id asc');
+ $fields_search = '';
+ $fields_search_check = array();
+ foreach($lists as $v){
+	 $data[$v['field']] = array_key_exists($v['field'],$data) ? $data[$v['field']] : '';
+	 switch($v['fieldtype']){
+		 case 1:
+		 case 2:
+		 case 3:
+		 case 5:
+		 case 6:
+		 case 9:
+		 case 10:
+		 case 14:
+		 case 15:
+		 $fields_search .= '<input type="text" name="'.$v['field'].'" value="'.format_param($data[$v['field']],1).'" placeholder="请输入'.$v['fieldname'].'" autocomplete="off" class="layui-input">';
+		 if(array_key_exists($v['field'],$data)){
+			 if(format_param($data[$v['field']],1)!=''){
+				 $fields_search_check[] ="  ".$v['field']." like '%".format_param($data[$v['field']],1)."%'";
+			 }
+			
+		 }
+		 break;
+		 case 4:
+		 $fields_search .= '<input type="number" name="'.$v['field'].'" value="'.format_param($data[$v['field']]).'" placeholder="请输入'.$v['fieldname'].'" autocomplete="off" class="layui-input">';
+		 if(array_key_exists($v['field'],$data)){
+			 if(format_param($data[$v['field']],1)!=''){
+				 $fields_search_check[] ="  ".$v['field']." = '".format_param($data[$v['field']],1)."'";
+			 }
+			
+		 }
+		 break;
+		 case 7:
+		 case 12:
+		 $fields_search .= '<div class="layui-input-inline">
+		  <select name="'.$v['field'].'" lay-search="" class="layui-inline">
+		  <option value="">请选择'.$v['fieldname'].'</option>';
+		 foreach(explode(',',$v['body']) as $vv){
+		   $s = explode('=',$vv);
+		   $fields_search .= '<option ';
+		   if(array_key_exists($v['field'],$data)){
+			   if(format_param($data[$v['field']],1)==$s[1]){
+				  $fields_search .= 'selected="selected"'; 
+			   }
+		   }
+		   $fields_search .= 'value="'.$s[1].'">'.$s[0].'</option>';
+		 }
+		
+		 $fields_search .=  '</select>
+		 </div>';
+		 if(array_key_exists($v['field'],$data)){
+			 if(format_param($data[$v['field']],1)!=''){
+				 $fields_search_check[] ="  ".$v['field']." = '".format_param($data[$v['field']],1)."'";
+			 }
+			
+		 }
+		 break;
+		 case 8:
+		 $fields_search .= '<div class="layui-input-inline">
+		  <select name="'.$v['field'].'" lay-search="" class="layui-inline">
+		  <option value="">请选择'.$v['fieldname'].'</option>';
+		 foreach(explode(',',$v['body']) as $vv){
+		   $s = explode('=',$vv);
+		   $fields_search .= '<option ';
+		   if(array_key_exists($v['field'],$data)){
+			   if(format_param($data[$v['field']],1)==$s[1]){
+				  $fields_search .= 'selected="selected"'; 
+			   }
+		   }
+		   $fields_search .= 'value="'.$s[1].'">'.$s[0].'</option>';
+		 }
+		
+		 $fields_search .=  '</select>
+		 </div>';
+		 if(array_key_exists($v['field'],$data)){
+			 if(format_param($data[$v['field']],1)!=''){
+				$fields_search_check[] =" ".$v['field']." like '%,".format_param($data[$v['field']],1).",%'";
+			 }
+			
+		 }
+		 
+		 break;
+		 case 11:
+		 $laydate = ($data[$v['field']]=='' || $data[$v['field']]==0)?'':date('Y-m-d',strtotime($data[$v['field']]));
+		 $laytime = ($data[$v['field']]=='' || $data[$v['field']]==0)?0:strtotime($laydate);
+		 $fields_search .= '<input name="'.$v['field'].'" value="'.$laydate.'" placeholder="请选择'.$v['fieldname'].'" id="laydate_'.$v['field'].'" autocomplete="off" class="layui-input"><script>
+layui.use("laydate", function(){
+var laydate = layui.laydate;
+laydate.render({elem: "#laydate_'.$v['field'].'" });});</script>';
+		 if(array_key_exists($v['field'],$data)){
+			 if(format_param($data[$v['field']])!=0){
+				$fields_search_check[] ="  (".$v['field']." >= ".$laytime." and ".$v['field']." < ".($laytime+86400).") ";
+			 }
+			
+		 }
+		 break;
+		 case 13:
+		  $body = explode(',',$v['body']);
+		  $moldsdata = M('molds')->find(['id'=>$body[0]]);
+		  $num = M($moldsdata['biaoshi'])->getCount();
+		  
+		  if($num>500){
+			 $fields_search .= '<input type="text" name="'.$v['field'].'" value="'.format_param($data[$v['field']],1).'" placeholder="请输入关联ID" autocomplete="off" class="layui-input">';
 			 if(array_key_exists($v['field'],$data)){
 				 if(format_param($data[$v['field']],1)!=''){
 					 $fields_search_check[] ="  ".$v['field']." like '%".format_param($data[$v['field']],1)."%'";
 				 }
 				
 			 }
-			 break;
-			 case 4:
-			 $fields_search .= '<input type="number" name="'.$v['field'].'" value="'.format_param($data[$v['field']]).'" placeholder="请输入'.$v['fieldname'].'" autocomplete="off" class="layui-input">';
-			 if(array_key_exists($v['field'],$data)){
-				 if(format_param($data[$v['field']],1)!=''){
-					 $fields_search_check[] ="  ".$v['field']." = '".format_param($data[$v['field']],1)."'";
-				 }
-				
-			 }
-			 break;
-			 case 7:
-			 case 12:
-			 $fields_search .= '<div class="layui-input-inline">
-			  <select name="'.$v['field'].'" lay-search="" class="layui-inline">
-			  <option value="">请选择'.$v['fieldname'].'</option>';
-			 foreach(explode(',',$v['body']) as $vv){
-			   $s = explode('=',$vv);
-			   $fields_search .= '<option ';
-			   if(array_key_exists($v['field'],$data)){
-				   if(format_param($data[$v['field']],1)==$s[1]){
-					  $fields_search .= 'selected="selected"'; 
-				   }
-			   }
-			   $fields_search .= 'value="'.$s[1].'">'.$s[0].'</option>';
-			 }
-			
-			 $fields_search .=  '</select>
-			 </div>';
-			 if(array_key_exists($v['field'],$data)){
-				 if(format_param($data[$v['field']],1)!=''){
-					 $fields_search_check[] ="  ".$v['field']." = '".format_param($data[$v['field']],1)."'";
-				 }
-				
-			 }
-			 break;
-			 case 8:
-			 $fields_search .= '<div class="layui-input-inline">
-			  <select name="'.$v['field'].'" lay-search="" class="layui-inline">
-			  <option value="">请选择'.$v['fieldname'].'</option>';
-			 foreach(explode(',',$v['body']) as $vv){
-			   $s = explode('=',$vv);
-			   $fields_search .= '<option ';
-			   if(array_key_exists($v['field'],$data)){
-				   if(format_param($data[$v['field']],1)==$s[1]){
-					  $fields_search .= 'selected="selected"'; 
-				   }
-			   }
-			   $fields_search .= 'value="'.$s[1].'">'.$s[0].'</option>';
-			 }
-			
-			 $fields_search .=  '</select>
-			 </div>';
-			 if(array_key_exists($v['field'],$data)){
-				 if(format_param($data[$v['field']],1)!=''){
-					$fields_search_check[] =" ".$v['field']." like '%,".format_param($data[$v['field']],1).",%'";
-				 }
-				
-			 }
-			 
-			 break;
-			 case 11:
-			 $laydate = ($data[$v['field']]=='' || $data[$v['field']]==0)?'':date('Y-m-d',strtotime($data[$v['field']]));
-			 $laytime = ($data[$v['field']]=='' || $data[$v['field']]==0)?0:strtotime($laydate);
-			 $fields_search .= '<input name="'.$v['field'].'" value="'.$laydate.'" placeholder="请选择'.$v['fieldname'].'" id="laydate_'.$v['field'].'" autocomplete="off" class="layui-input"><script>
-layui.use("laydate", function(){
-  var laydate = layui.laydate;
-  laydate.render({elem: "#laydate_'.$v['field'].'" });});</script>';
-			 if(array_key_exists($v['field'],$data)){
-				 if(format_param($data[$v['field']])!=0){
-					$fields_search_check[] ="  (".$v['field']." >= ".$laytime." and ".$v['field']." < ".($laytime+86400).") ";
-				 }
-				
-			 }
-			 break;
-			 case 13:
-			  $body = explode(',',$v['body']);
-			  $moldsdata = M('molds')->find(['id'=>$body[0]]);
-			  $datalist = M($moldsdata['biaoshi'])->findAll();
+		  }else{
+			 $datalist = M($moldsdata['biaoshi'])->findAll(null,'id desc','id,'.$body[1]);
 			 $fields_search .= '<div class="layui-input-inline">
 			  <select name="'.$v['field'].'" lay-search="" class="layui-inline">
 			  <option value="">请选择关联'.$moldsdata['name'].'</option>';
@@ -716,135 +696,264 @@ layui.use("laydate", function(){
 			
 			 $fields_search .=  '</select>
 			 </div>';
+		  }
+		 
+		 if(array_key_exists($v['field'],$data)){
+			 if(format_param($data[$v['field']],1)!=''){
+				$fields_search_check[] =" ".$v['field']." =".format_param($data[$v['field']])." ";
+			 }
+			
+		 }
+		 
+		 break;
+		 case 16:
+		  $body = explode(',',$v['body']);
+		  $moldsdata = M('molds')->find(['id'=>$body[0]]);
+		  $num = M($moldsdata['biaoshi'])->getCount();
+		  
+		  if($num>500){
+			 $fields_search .= '<input type="text" name="'.$v['field'].'" value="'.format_param($data[$v['field']],1).'" placeholder="请输入'.$moldsdata['name'].'ID" autocomplete="off" class="layui-input">';
 			 if(array_key_exists($v['field'],$data)){
 				 if(format_param($data[$v['field']],1)!=''){
-					$fields_search_check[] =" ".$v['field']." =".format_param($data[$v['field']])." ";
+					 $fields_search_check[] ="  ".$v['field']." like '%,".format_param($data[$v['field']],1).",%'";
 				 }
 				
 			 }
-			 
-			 break;
+		  }else{
+			 $datalist = M($moldsdata['biaoshi'])->findAll(null,'id desc','id,'.$body[1]);
+			 $fields_search .= '<div class="layui-input-inline">
+			  <select name="'.$v['field'].'" lay-search="" class="layui-inline">
+			  <option value="">请选择'.$moldsdata['name'].'</option>';
+			  $d = format_param($data[$v['field']]);
+			 foreach($datalist as $vv){
+			   $fields_search .= '<option ';
+			   if(array_key_exists($v['field'],$data)){
+				   if($d==$vv['id']){
+					  $fields_search .= 'selected="selected"'; 
+				   }
+			   }
+			   $fields_search .= 'value="'.$vv['id'].'">'.$vv[$body[1]].'</option>';
+			 }
 			
-			 
-			 
+			 $fields_search .=  '</select>
+			 </div>';
+		  }
+		 
+		 if(array_key_exists($v['field'],$data)){
+			 if(format_param($data[$v['field']],1)!=''){
+				$fields_search_check[] =" ".$v['field']." like '%,".format_param($data[$v['field']]).",%' ";
+			 }
+			
 		 }
-		 
-		 
-	 }
-	 if(count($fields_search_check)>0){
-		 $fields_search_check = implode(' and ',$fields_search_check);
-	 }else{
-		 $fields_search_check = '';
-	 }
-	 return array('fields_search'=>$fields_search,'fields_search_check'=>$fields_search_check);
- }
- 
- /**
-	后台格式化类型显示
- 
- **/
- function format_fields($fields=null,$data=null){
-	 
-	 if($fields==null){
-		 $list = array(
-		
-			'string_10' => '截取10个字',
-			'string_15' => '截取15个字',
-			'date_1' => '日期(Y-m-d)',
-			'date_2' => '日期(Y-m-d H:i:s)',
-		 );
-		 return $list;
-	 }else{
-		 switch($fields['format']){
-			  case 'string_10':
-			  return newstr($data,10);
-			 break;
-			  case 'string_15':
-			  return newstr($data,15);
-			 break;
-			  case 'date_1':
-			  return date('Y-m-d',$data);
-			 break;
-			  case 'date_2':
-			  return date('Y-m-d H:i:s',$data);
-			 break;
-			 default:
-			 if($fields['fieldtype']==7 || $fields['fieldtype']==12){
-						$r = explode(',',$fields['body']);
-						foreach($r as $v){
-							$d = explode('=',$v);
-							if($d[1]==$data){
-								return $d[0];exit;
+		 break;
+		 case 17:
+		 $classtypedata = getclasstypedata(classTypeData());
+         $classtypetree = get_classtype_tree();
+		 $fields_search .= '<div class="layui-input-inline"><select name="tid" lay-filter="tid" lay-search="" class="layui-inline autosubmit">
+				  <option value="">请选择栏目</option>';
+		if($_SESSION['admin']['isadmin']!=1){
+			$tids = $_SESSION['admin']['tids'];
+			foreach ($classtypedata as $k => $v) {
+				if($v['pid']==0){
+					if(strpos($_SESSION['admin']['tids'],','.$v['id'].',')!==false){
+						$children = get_children($v,$classtypetree,5);
+						foreach($children as $vv){
+							if(strpos($_SESSION['admin']['tids'],','.$vv['id'].',')===false){
+								$tids .= ','.$vv['id'].',';
 							}
 						}
-			 }else if($fields['fieldtype']==8){
-					$r = explode(',',$fields['body']);
-					$rr = array();
-					foreach($r as $v){
-							$d = explode('=',$v);
-							if(strpos($data,','.$d[1].',')!==false){
-								$rr[]=$d[0];
-							}
 					}
-					return implode(',',$rr);
-			 }else if($fields['fieldtype']==5){
-				 $vdata = $data!='' ? '<a href="'.$data.'" target="_blank"><img src="'.$data.'" width="100px"  /></a>' : '';
-				 return $vdata;
-			 }else if($fields['fieldtype']==6){
-				 //图集
-				 if($data!=''){
-					 $vdata = explode('||',$data);
-					 $res = '';
-					 foreach($data as $s){
-						 if($s!=''){
-							 $res.='<a href="'.$s.'" target="_blank"><img src="'.$s.'" width="50px" /></a>';
-						 }
-					 }
-					 return $res;
-				 }else{
-					 return '';
-				 }
-			 }else if($fields['fieldtype']==9){	
-				 $vdata = $data!='' ? '<a href="'.$data.'" target="_blank">[查看]</a>' : '';
-				 return $vdata;
-			 }else if($fields['fieldtype']==10){
-				 if($data!=''){
-					 $vdata = explode('||',$data);
-					 $res = '';
-					 foreach($data as $s){
-						 if($s!=''){
-							 $res.='<a href="'.$s.'" target="_blank">[查看]</a>';
-						 }
-					 }
-					 return $res;
-				 }else{
-					 return '';
-				 }
-			 }else if($fields['fieldtype']==11){
-				 $vdata = $data==0?'':date('Y-m-d H:i:s',$data);
-				 return $vdata;
-			 }else if($fields['fieldtype']==13){
-				    $body = explode(',',$fields['body']);
-					$biaoshi = M('molds')->getField(['id'=>$body[0]],'biaoshi');
-					$res = M($biaoshi)->getField(['id'=>$data],$body[1]);
-					if(!$res){
-						return '[ 空 ]';
-					}
-					return $res;
-					
-					
+				}
+				
+			}
+			
+		}else{
+			$tids = '0';
+		}
+		$admin = $_SESSION['admin'];
+		$moldsdata = M('molds')->find(['biaoshi'=>$molds]);
+		$d = format_param($data[$v['field']]);
+			foreach ($classtypedata as $vs){
+			  if($v['molds']==$molds){
+				  if($admin['classcontrol']==0 || $admin['isadmin']==1 || strpos($tids,','.$vs['id'].',')!==false || $moldsdata['iscontrol']==0){
+					  if($d==$vs['id']){
+						  $fields_search.='<option selected="selected" value="'.$vs['id'].'">'.str_repeat('--', $vs['level']).$vs['classname'].'</option>'; 
+					  }else{
+						  $fields_search.='<option  value="'.$vs['id'].'">'.str_repeat('--', $vs['level']).$vs['classname'].'</option>'; 
+					  }
+					  
+				  }
+				
+			 } 
+			   
+			}
+				   
+		 $fields_search.='</select>
+				</div>';
+		 if(array_key_exists($v['field'],$data)){
+			 if($d){
+				$fields_search_check[] =' tid in('.implode(",",$classtypedata[$d]["children"]["ids"]).') ';
 			 }
-			 return $data;
-			 break;
+			
 		 }
+		 
+		 break;
+		 case 18:
+			
+		 break;
+		 case 19:
+			$fields_search .= '<input type="text" name="'.$v['field'].'" value="'.format_param($data[$v['field']],1).'" placeholder="请输入'.$v['fieldname'].'" autocomplete="off" class="layui-input">';
+			 if(array_key_exists($v['field'],$data)){
+				 if(format_param($data[$v['field']],1)!=''){
+					 $fields_search_check[] ="  ".$v['field']." like '%,".format_param($data[$v['field']],1)."%,'";
+				 }
+				
+			 }
+		 break;
+		
+		 
+		 
 	 }
 	 
+	 
  }
+ if(count($fields_search_check)>0){
+	 $fields_search_check = implode(' and ',$fields_search_check);
+ }else{
+	 $fields_search_check = '';
+ }
+ return array('fields_search'=>$fields_search,'fields_search_check'=>$fields_search_check);
+}
+/**
+后台格式化类型显示
 
-
+**/
+function format_fields($fields=null,$data=null){
+ $classtypedata = getclasstypedata(classTypeData(),0);
+ if($fields==null){
+	 $list = array(
+	
+		'string_10' => '截取10个字',
+		'string_15' => '截取15个字',
+		'date_1' => '日期(Y-m-d)',
+		'date_2' => '日期(Y-m-d H:i:s)',
+	 );
+	 return $list;
+ }else{
+	 switch($fields['format']){
+		  case 'string_10':
+		  return newstr($data,10);
+		 break;
+		  case 'string_15':
+		  return newstr($data,15);
+		 break;
+		  case 'date_1':
+		  return "\t".date('Y-m-d',$data)."\t";
+		 break;
+		  case 'date_2':
+		  return "\t".date('Y-m-d H:i:s',$data)."\t";
+		 break;
+		 default:
+		 if($fields['fieldtype']==7 || $fields['fieldtype']==12){
+					$r = explode(',',$fields['body']);
+					foreach($r as $v){
+						$d = explode('=',$v);
+						if($d[1]==$data){
+							return $d[0];exit;
+						}
+					}
+		 }else if($fields['fieldtype']==8){
+				$r = explode(',',$fields['body']);
+				$rr = array();
+				foreach($r as $v){
+						$d = explode('=',$v);
+						if(strpos($data,','.$d[1].',')!==false){
+							$rr[]=$d[0];
+						}
+				}
+				return implode(',',$rr);
+		 }else if($fields['fieldtype']==5){
+			 $vdata = $data!='' ? '<a href="'.$data.'" target="_blank"><img src="'.$data.'" width="100px"  /></a>' : '';
+			 return $vdata;
+		 }else if($fields['fieldtype']==6){
+			 //图集
+			 if($data!=''){
+				 $vdata = explode('||',$data);
+				 $res = '';
+				 foreach($data as $s){
+					 if($s!=''){
+						 $res.='<a href="'.$s.'" target="_blank"><img src="'.$s.'" width="50px" /></a>';
+					 }
+				 }
+				 return $res;
+			 }else{
+				 return '';
+			 }
+		 }else if($fields['fieldtype']==9){	
+			 $vdata = $data!='' ? '<a href="'.$data.'" target="_blank">[查看]</a>' : '';
+			 return $vdata;
+		 }else if($fields['fieldtype']==10){
+			 if($data!=''){
+				 $vdata = explode('||',$data);
+				 $res = '';
+				 foreach($data as $s){
+					 if($s!=''){
+						 $res.='<a href="'.$s.'" target="_blank">[查看]</a>';
+					 }
+				 }
+				 return $res;
+			 }else{
+				 return '';
+			 }
+		 }else if($fields['fieldtype']==11){
+			 $vdata = $data==0 ? '-': "\t".date('Y-m-d H:i:s',$data)."\t";
+			 return $vdata;
+		 }else if($fields['fieldtype']==13){
+				$body = explode(',',$fields['body']);
+				$biaoshi = M('molds')->getField(['id'=>$body[0]],'biaoshi');
+				$res = M($biaoshi)->getField(['id'=>$data],$body[1]);
+				if(!$res){
+					return '[ 空 ]';
+				}
+				return $res;
+				
+				
+		 }else if($fields['fieldtype']==16){
+			 //多选关联
+			 if($data){
+				 $res = trim($data,',');
+				 $body = explode(',',$fields['body']);
+				 $biaoshi = M('molds')->getField(['id'=>$body[0]],'biaoshi');
+				 $all = M($biaoshi)->findAll('id in('.$res.')',null,$body[1]);
+				 $ss = '';
+				 foreach($all as $s){
+					 $ss.='['.$s[$body[1]].']';
+				 }
+				 return $ss;
+			 }
+		 }else if($fields['fieldtype']==17){
+			 $ids = explode(',',$data);
+			 $name = [];
+			 foreach($ids as $v){
+				 $name[]=$classtypedata[$v]['classname'];
+			 }
+			 return implode(',',$name);
+		 }else if($fields['fieldtype']==18){
+			
+			return $data==0 ? '[未绑定栏目]': $classtypedata[$data]['classname'];
+			 
+		 }else if($fields['fieldtype']==19){
+			 if($data){
+				 return trim($data,',');
+			 }
+		 }
+		 return $data;
+		 break;
+	 }
+ }
  
+}
 
- 
 function frvercode($num=4,$str='frcode'){
 	//创建随机码
 	$_nmsg = '';
@@ -900,12 +1009,13 @@ function aCheckSubstrs($substrs,$text){
             }    
             return false;    
     } 
+
 function isMobile(){   
     $useragent=isset($_SERVER['HTTP_USER_AGENT']) ? $_SERVER['HTTP_USER_AGENT'] : '';    
     $useragent_commentsblock=preg_match('|\(.*?\)|',$useragent,$matches)>0?$matches[0]:'';      
  
     $mobile_os_list=array('Google Wireless Transcoder','Windows CE','WindowsCE','Symbian','Android','armv6l','armv5','Mobile','CentOS','mowser','AvantGo','Opera Mobi','J2ME/MIDP','Smartphone','Go.Web','Palm','iPAQ');  
-    $mobile_token_list=array('Profile/MIDP','Configuration/CLDC-','160×160','176×220','240×240','240×320','320×240','UP.Browser','UP.Link','SymbianOS','PalmOS','PocketPC','SonyEricsson','Nokia','BlackBerry','Vodafone','BenQ','Novarra-Vision','Iris','NetFront','HTC_','Xda_','SAMSUNG-SGH','Wapaka','DoCoMo','iPhone','iPod');    
+    $mobile_token_list=array('Profile/MIDP','Configuration/CLDC-','160×160','176×220','240×240','240×320','320×240','UP.Browser','UP.Link','SymbianOS','PalmOS','PocketPC','SonyEricsson','Nokia','BlackBerry','Vodafone','BenQ','Novarra-Vision','Iris','NetFront','HTC_','Xda_','SAMSUNG-SGH','Wapaka','DoCoMo','iPhone','iPod','iPad');    
                 
     $found_mobile=aCheckSubstrs($mobile_os_list,$useragent_commentsblock) ||    
               aCheckSubstrs($mobile_token_list,$useragent);    
@@ -923,9 +1033,6 @@ function isWeixin(){
     }    
     return false;  
 } 
-
-
-
 //内容url
 function gourl($id,$htmlurl=null,$molds='article'){
 		if(is_array($id)){
@@ -955,7 +1062,6 @@ function gourl($id,$htmlurl=null,$molds='article'){
 		$htmlurl = M('classtype')->getField(array('id'=>$tid),'htmlurl');
 		return get_domain().$htmlpath.'/'.$htmlurl.'/'.$id.'.html';
 }
-
 //输出任何模块的内容URL
 function all_url($id,$molds='article',$htmlurl=null){
 	if(is_array($id)){
@@ -976,15 +1082,14 @@ function all_url($id,$molds='article',$htmlurl=null){
 		$htmlpath = isMobile() && webConf('isopen')?webConf('mobile_html'):webConf('pc_html');
 		$htmlpath = ($htmlpath=='' || $htmlpath=='/') ? '' : '/'.$htmlpath; 
 		if($htmlurl!=null){
-			$file_txt = File_TXT_HIDE ? '' : File_TXT;
+			$file_txt = File_TXT_HIDE ? '' : '.html';
 			return get_domain().$htmlpath.'/'.$htmlurl.'/'.$id.$file_txt;
 		}
 		$tid = M($molds)->getField(array('id'=>$id),'tid');
 		$htmlurl = M('classtype')->getField(array('id'=>$tid),'htmlurl');
-		$file_txt = File_TXT_HIDE ? '' : File_TXT;
+		$file_txt = File_TXT_HIDE ? '' : '.html';
 		return get_domain().$htmlpath.'/'.$htmlurl.'/'.$id.$file_txt;
 }
-
 //递增
 function incrData($table=null,$id=0,$field='hits',$num=1){
 	
@@ -1007,7 +1112,6 @@ function incrData($table=null,$id=0,$field='hits',$num=1){
 	}
 	return M($table)->getField(array('id'=>$id),$field);
 }
-
 //自定义字段单项/多项选择获取
 function get_key_field_select($key=0,$molds=null,$field=null){
 	if($molds==null || $field==null){
@@ -1047,7 +1151,6 @@ function get_key_field_select($key=0,$molds=null,$field=null){
 		
 }
 //根据模型[$molds]、字段[$field]获取并输出内容选项
-
 function get_field_select($molds=null,$field=null){
 	if($molds==null || $field==null){
 		echo '参数molds或field缺少';exit;
@@ -1067,11 +1170,8 @@ function get_field_select($molds=null,$field=null){
 	}
 		
 }
-
 //获取文件大小
-function get_file_byte($file)
-
-{
+function get_file_byte($file){
 	$byte = filesize($file);
 
     $KB = 1024;
@@ -1105,8 +1205,6 @@ function get_file_byte($file)
     }
 
 }
-
-
 //获取文章评论
 function show_comment($tid=0,$id=0,$str=null){
 	if($tid==0||$id==0){
@@ -1147,14 +1245,12 @@ function get_comment_user($id){
 		return M('member')->getField(['id'=>$userid],'username');
 	}
 }
-
 //计算评论数量---或者直接comment_num显示
 function get_comment_num($tid,$id=0){
 	if($id==0){ return '缺少ID！';}
 	$count = M('comment')->getCount(['aid'=>$id,'tid'=>$tid,'isshow'=>1]);
 	return $count;
 }
-
 //处理数组拼接--Screen筛选功能有使用
 function change_parse_url($arr,$str){
 	if(count($arr)==0){
@@ -1167,7 +1263,6 @@ function change_parse_url($arr,$str){
 	$url = str_replace('=','-',http_build_query($arr,false,'-'));
 	return '-'.$url;
 }
-
 //获取扩展字段内容输出
 function get_fields_show($tid,$molds){
 	$sql = array();
@@ -1180,7 +1275,114 @@ function get_fields_show($tid,$molds){
 	$fields_list = M('Fields')->findAll($sql,'orders desc,id asc');
 	return $fields_list;
 }
-
+//输出指定字段的标题和内容
+function jz_show_fields($data=array(),$fields=null){
+	$sql = array();
+	if($data['tid']!=0){
+		$sql[] = " tids like '%,".$data['tid'].",%' "; 
+	}
+	if($fields){
+		$arr = explode(',',$fields);
+		$r = [];
+		foreach($arr as $v){
+			$r[] = " field='".$v."' ";
+		}
+		$sql[]= " (".implode(' or ',$r).") ";
+	}
+	$sql[] = " molds = '".$data['molds']."' and isshow=1 ";
+	$sql = implode(' and ',$sql);
+	$fields_list = M('Fields')->findAll($sql,'orders desc,id asc');
+	$new = [];
+	foreach($fields_list as $k=>$v){
+		$new[$k]['title'] = $v['fieldname'];
+		$new[$k]['field'] = $v['field'];
+		
+		switch($v['fieldtype']){
+			case 1:
+			case 2:
+			case 3:
+			case 4:
+			case 5:
+			case 9:
+			case 14:
+			$new[$k]['data'] = $data[$v['field']];
+			break;
+			case 6:
+			case 10:
+			case 15:
+			$new[$k]['data'] = explode('||',$data[$v['field']]);
+			break;
+			case 7:
+			case 12:
+			$value = explode(',',$v['body']);
+			foreach($value as $vv){
+				$d = explode('=',$vv);
+				if($d[1]==$data[$v['field']]){
+					$new[$k]['data'] = $d[0];
+				}
+				
+			}
+			
+			break;
+			case 8:
+			$r = [];
+			$value = explode(',',$v['body']);
+			foreach($value as $vv){
+				$d = explode('=',$vv);
+				if(stripos($data[$v['field']],','.$d[1].',')!==false){
+					$r[] = $d[0];
+				}
+				
+			}
+			$new[$k]['data'] = implode(',',$r);
+			
+			break;
+			case 11:
+			$new[$k]['data'] = date('Y-m-d H:i:s',$data[$v['field']]);
+			break;
+			case 13:
+			$body = explode(',',$v['body']);
+			$biaoshi = M('molds')->getField(['id'=>$body[0]],'biaoshi');
+			$new[$k]['data'] = M($biaoshi)->getField(['id'=>$data[$v['field']]],$body[1]);
+			break;
+			case 16:
+			$body = explode(',',$v['body']);
+			$biaoshi = M('molds')->getField(['id'=>$body[0]],'biaoshi');
+			$s = trim($data[$v['field']],',');
+			$datalist = M($biaoshi)->findAll('id in('.$s.')',null,$body[1]);
+			$r = [];
+			foreach($datalist as $vv){
+				$r[]=$vv[$body[1]];
+			}
+			$new[$k]['data'] = implode(',',$r);
+			break;
+			case 17:
+			$classtypedata = classTypeData();
+			$new[$k]['data'] = $classtypedata[$data[$v['field']]]['classname'];
+			break;
+			case 18:
+			$s = trim($data[$v['field']],',');
+			$arr = explode(',',$s);
+			$r = [];
+			$classtypedata = classTypeData();
+			foreach($arr as $vv){
+				$r[] = $classtypedata[$vv]['classname'];
+			}
+			$new[$k]['data'] = implode(',',$r); 
+			break;
+			case 19:
+			$new[$k]['data'] = trim($data[$v['field']],',');
+			break;
+			default:
+			$new[$k]['data'] = $data[$v['field']];
+			break;
+		}
+		$new[$k]['type'] = $v['fieldtype'];
+	}
+	
+	return $new;
+	
+}
 //发送邮件处理
 function send_mail($send_mail,$password,$send_name,$to_mail,$title,$body,$email_ext=''){
 	
@@ -1279,15 +1481,11 @@ function send_mail($send_mail,$password,$send_name,$to_mail,$title,$body,$email_
         }
 
 }
-
 //检测是否收藏
 function checkCollect($tid=0,$id=0){
 	if($tid && $id && isset($_SESSION['member'])){
-		if(strpos($_SESSION['member']['collection'],'||'.$tid.'-'.$id.'||')!==false){
-			return true;
-		}else{
-			return false;
-		}
+		$isok = M('shouchang')->getCount(['tid'=>$tid,'aid'=>$id,'userid'=>$_SESSION['member']['id']]);
+		return $isok;
 		
 		
 	}else{
@@ -1297,14 +1495,10 @@ function checkCollect($tid=0,$id=0){
 }
 //检测是否点赞
 function checkLikes($tid=0,$id=0){
-	if(isset($_SESSION['member'])){
+	if(isset($_SESSION['member']) && $_SESSION['member']['id']){
 		if($tid && $id){
-			if(strpos($_SESSION['member']['likes'],'||'.$tid.'-'.$id.'||')!==false){
-				return true;
-			}else{
-				return false;
-			}
-			
+			$isok = M('likes')->getCount(['tid'=>$tid,'aid'=>$id,'userid'=>$_SESSION['member']['id']]);
+			return $isok;
 			
 		}else{
 			return false;
@@ -1325,7 +1519,6 @@ function checkLikes($tid=0,$id=0){
 	
 	
 }
-
 //检查多少未读评论
 function has_no_read_comment(){
     if(!isset($_SESSION['member'])){
@@ -1364,15 +1557,12 @@ function has_no_read_msg(){
     $count = M('task')->getCount($sql);
     return $count;
 }
-
-
 //数据库html反转义
 function html_decode($data=null){
 	$data = str_replace('&#039;',"'",htmlspecialchars_decode($data));
 	return $data;
 	
 }
-
 //字符串替换
 function str_replace_limit($search, $replace, $subject, $limit=-1) { 
     if (is_array($search)) { 
@@ -1384,7 +1574,6 @@ function str_replace_limit($search, $replace, $subject, $limit=-1) {
     } 
     return preg_replace($search, $replace, $subject, $limit); 
 }
-
 //人性化时间显示
 function formatTime($sTime, $formt = 'Y-m-d') {
  
@@ -1420,32 +1609,24 @@ function formatTime($sTime, $formt = 'Y-m-d') {
         return date($formt, $sTime);
     }
 }
-
 //过滤HTML代码函数
 function htmldecode($data){
 	$data = strip_tags($data);
 	$data = str_replace('&nbsp;','',$data);
 	return $data;
 }
-
 //计算点赞数
 function jz_zan($tid,$id){
+
+	$count = M('likes')->getCount(['tid'=>$tid,'aid'=>$id]);
 	
-	$sql = " likes like '%||".$tid.'-'.$id."||%' and username!='jzcustomer' ";
-	$count = M('member')->getCount($sql);
-	$custom = M('member')->find(['username'=>'jzcustomer']);
-	if($custom){
-		$likes_num = substr_count($custom['likes'],'|'.$tid.'-'.$id.'|');
-		$count+=$likes_num;
-	}
 	return $count;
 	
 }
 //计算收藏数
 function jz_collect($tid,$id){
-	
-	$sql = " collection like '%||".$tid.'-'.$id."||%' ";
-	$count = M('member')->getCount($sql);
+
+	$count = M('shouchang')->getCount(['tid'=>$tid,'aid'=>$id]);
 	return $count;
 	
 }
@@ -1458,7 +1639,6 @@ function memberInfo($id,$str=null){
   return $user;
 
 }
-
 //图片水印
 function watermark($img,$water,$pos=9,$tm=100){
 
@@ -1534,7 +1714,7 @@ function getImageInfo($path) {
     return $data;
 } 
 //打开图片
- function openImg($path,$type){
+function openImg($path,$type){
 	 switch($type){
 		 case 'image/jpeg':
 		 case 'image/jpg':
@@ -1592,7 +1772,6 @@ function jz_follow($id=0){
 		return 0;
 	}
 }
-	
 //删除文件目录
 function deldir($dir) {
 	//先删除目录下的文件：
@@ -1615,8 +1794,6 @@ function deldir($dir) {
 		return false;
 	}
 }
-
-
 /**
  * 图片压缩裁剪
  * src_image 原图链接  根目录绝对链接，支持远程图片
@@ -1769,7 +1946,7 @@ function jzcachedata($field){
 		$res = M('cachedata')->find(['field'=>$field]);
 		
 		if($res['isall'] && $res['tid']){
-			$classtypedata = (isMobile() && $webconf['iswap']==1)?classTypeDataMobile():classTypeData();
+			$classtypedata = (isMobile() && webConf('iswap')==1)?classTypeDataMobile():classTypeData();
 			foreach($classtypedata as $k=>$v){
 				$classtypedata[$k]['children'] = get_children($v,$classtypedata);
 			}
@@ -1810,11 +1987,22 @@ function getclasstypedata($array,$m=1){
 	if(!$classtypedata){
 	    $classtypedata = $array;
 		foreach($classtypedata as $k=>$v){
-			$classtypedata[$k]['children'] = get_children($v,$classtypedata);
+			//$classtypedata[$k]['children'] = get_children($v,$classtypedata);
+			$classtypedata[$k]['children'] = get_all_children($v,$classtypedata);
 		}
 		setCache($s,$classtypedata);
 	}
 	return $classtypedata;
+}
+//递归获取全部格式化子类
+function get_all_children($type,$classtypedata){
+	$res = get_children($type,$classtypedata);
+	if($type['haschild']){
+		foreach($res['list'] as $k=>$v){
+			$res['list'][$k]['children'] = get_all_children($v,$classtypedata);
+		}
+	}
+	return $res;
 }
 
 function jztpldata(){
@@ -1961,5 +2149,5 @@ function jztpldatafield(){
 	}
     return $tpldata;
 }
-//引入扩展方法文件
+
 include(APP_PATH.'Conf/FunctionsExt.php');

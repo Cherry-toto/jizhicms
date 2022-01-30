@@ -18,7 +18,17 @@ use FrPHP\lib\Controller;
 class CommonController extends Controller
 {
 	function _init(){
-
+		//判断当前模板并引入扩展函数
+		$hometpl = get_template();
+		if(defined('TPL_PATH')){
+			$path = TPL_PATH;
+		}else{
+			$path = APP_HOME;
+		}
+		$func = HOME_VIEW ? $path.HOME_VIEW.'/'.$hometpl.'/func/functions.php' : $path.'/'.$hometpl.'/func/functions.php';
+		if(file_exists($func)){
+			include_once($func);
+		}
 		$webconf = webConf();
 		$template = TEMPLATE;
 		$this->webconf = $webconf;
@@ -354,7 +364,7 @@ class CommonController extends Controller
 		$tid = $this->frparam('tid');
 		$sql = array();
 		if($tid!=0){
-			$sql[] = " tids like '%,".$tid.",%' "; 
+			$sql[] = " (tids like '%,".$tid.",%' or tids is null) "; 
 		}
 		
 		if(!M('molds')->find(['biaoshi'=>$molds])){
@@ -369,196 +379,19 @@ class CommonController extends Controller
 		}else{
 			$data = array();
 		}
-		$sql[] = " molds = '".$molds."' and isshow=1 ";
+		$sql[] = " molds = '".$molds."' and ishome=1 ";
 		$sql = implode(' and ',$sql);
 		$fields_list = M('Fields')->findAll($sql,'orders desc,id asc');
 		$l = '';
 		$rd = time();
-		if($molds=='article'){
-		$l .= '<div class="form-control">
-            <label for="">文章标题：</label>
-            <input type="text" name="title" id="title" value="'.$data['title'].'" placeholder="请输入文章标题">
-            <label>[必填]</label>
-        </div>
-		<div class="form-control">
-            <label for="">关键词：</label>
-            <input type="text" name="keywords" id="keywords" value="'.$data['keywords'].'" placeholder="请输入关键词">
-            <label>用逗号（ , ）分隔</label>
-        </div>
-        <div class="form-control">
-            <label for="">文章主图：</label>
-              <span class="view_img_litpic">';
-            if($data['litpic']){
-            $l .= '<img src="'.$data['litpic'].'" height="100"  />';
-            }
-			$rand = rand(1000,9999);
-            $l .= '</span><br/>
-              <input name="litpic" type="hidden" id="file_url_litpic" value="'.$data['litpic'].'" /><br/>
-              <input type="file" class="upload_input_litpic" name="file_litpic" id="upload_input_litpic_'.$rand.'">
-        </div>
-		<script type="text/javascript">
-			$(document).ready(function(){
-			  $("#upload_input_litpic_'.$rand.'").change(function(){
-			    var form=document.getElementById("jizhiform");
-			    var data = new FormData(form);
-			    data.append("filename",$(this).attr("name"));
-			    $.ajax({
-			       url: "'.U('common/uploads').'",//处理图片的文件路径
-			       type: "POST",//传输方式
-			       data: data,
-			       dataType:"json",   //返回格式为json
-			       processData: false,  // 告诉jQuery不要去处理发送的数据
-			       contentType: false,   // 告诉jQuery不要去设置Content-Type请求头
-			       success: function(response){
-			        if(response.code==0){
-			          var result = "";
-			          result +=\'<img src="\' + response["url"] + \'" height="100"  />\';
-			          $(".view_img_litpic").html(result);
-			          $("#file_url_litpic").val(response["url"]);
-			        }else{
-			          alert(response.error);
-			        }
-			        
-			       }
-			    });
-			  });
-			});
-		</script>
-        <div class="form-control">
-            <label for="">文章简介：</label>
-            <textarea name="description" id="description" placeholder="请输入简介">'.$data['description'].'</textarea>
-            <label>150字以内</label>
-        </div>';
-		$model = 'article_zdy';
-		$l .=  include(APP_PATH.'static/common/uediter.php');
-		}else if($molds=='product'){
-			$l .= '<div class="form-control">
-            <label for="">商品名称：</label>
-            <input type="text" name="title" id="title" value="'.$data['title'].'" placeholder="请输入商品名称">
-            <label>[必填]</label>
-        </div>
-		<div class="form-control">
-            <label for="">商品价格：</label>
-            <input type="number" name="price" id="price" value="'.$data['price'].'" placeholder="请输入商品价格">
-            <label>[必填]</label>
-        </div>
-		<div class="form-control">
-            <label for="">商品库存：</label>
-            <input type="number" name="stock_num" id="stock_num" value="'.$data['stock_num'].'" placeholder="请输入商品库存">
-            <label>[必填]</label>
-        </div>
-		<div class="form-control">
-            <label for="">关键词：</label>
-            <input type="text" name="keywords" id="keywords" value="'.$data['keywords'].'" placeholder="请输入关键词">
-            <label>用逗号（ , ）分隔</label>
-        </div>
-        <div class="form-control">
-            <label for="">商品主图：</label>
-              <span class="view_img_litpic">';
-            if($data['litpic']){
-            $l .= '<img src="'.$data['litpic'].'" height="100"  />';
-            }
-			$rand = rand(1000,9999);
-            $l .= '</span><br/>
-              <input name="litpic" type="hidden" id="file_url_litpic" value="'.$data['litpic'].'" /><br/>
-              <input type="file" class="upload_input_litpic" name="file_litpic" id="upload_input_litpic_'.$rand.'">
-        </div>
-		<script type="text/javascript">
-			$(document).on("change","#upload_input_litpic_'.$rand.'",function(){
-			    var form=document.getElementById("jizhiform");
-			    var data =new FormData(form);
-			    data.append("filename",$(this).attr("name"));
-			    $.ajax({
-			       url: "'.U('common/uploads').'",//处理图片的文件路径
-			       type: "POST",//传输方式
-			       data: data,
-			       dataType:"json",   //返回格式为json
-			       processData: false,  // 告诉jQuery不要去处理发送的数据
-			       contentType: false,   // 告诉jQuery不要去设置Content-Type请求头
-			       success: function(response){
-			        if(response.code==0){
-			          var result = "";
-			          result +=\'<img src="\' + response["url"] + \'" height="100"  />\';
-			          $(".view_img_litpic").html(result);
-			          $("#file_url_litpic").val(response["url"]);
-			        }else{
-			          alert(response.error);
-			        }
-			        
-			       }
-			    });
-			});
-		</script>
-		<div class="form-control">
-            <label for="">商品图集：</label>
-              <span class="view_img_pictures">';
-            if($data['pictures']){
-            	foreach(explode('||',$data['pictures']) as $v){
-            		if($v!=''){
-						if($this->webconf['ispicsdes']==1){
-							$pic = explode('|',$v);
-							$l .= '<span><img src="'.$pic[0].'" height="100"  /><input name="pictures_urls[]" type="text" value="'.$pic[0].'"><input name="pictures_des[]" placeholder="文字描述"  type="text" value="'.$pic[1].'"><button type="button" onclick="deleteImage_auto(this)">删除</button></span>';
-						}else{
-							$l .= '<span><img src="'.$v.'" height="100"  /><input name="pictures_urls[]" type="text" value="'.$v.'"><button type="button" onclick="deleteImage_auto(this)">删除</button></span>';
-						}
-            			 
-            		}
-            	}
-           
-            }
-			$rand = rand(1000,9999);
-            $l .= '</span><br/>
-              <input name="pictures" type="hidden" id="pictures" value="'.$data['pictures'].'" />
-        </div>
-		<div class="form-control">
-		<label for=""></label>
-		<input type="file" class="upload_input_pictures" file-name="file_pictures" name="file_pictures[]" multiple="multiple" id="upload_input_pictures_'.$rand.'">
-        </div>
-		<script type="text/javascript">
-			 $(document).on("change","#upload_input_pictures_'.$rand.'",function(){
-			    var form=document.getElementById("jizhiform");
-			    var data =new FormData(form);
-			    data.append("filename",$(this).attr("file-name"));
-			    $.ajax({
-			       url: "'.U('common/multiuploads').'",//处理图片的文件路径
-			       type: "POST",//传输方式
-			       data: data,
-			       dataType:"json",   //返回格式为json
-			       processData: false,  // 告诉jQuery不要去处理发送的数据
-			       contentType: false,   // 告诉jQuery不要去设置Content-Type请求头
-			       success: function(response){
-			       	console.log(response);
-			        if(response.code==0){
-			          var result = "";
-			          for(var i=0;i<response["urls"].length;i++){';
-					  if($this->webconf['ispicsdes']==1){
-						  $l.=' result +=\'<span><img src="\' + response["urls"][i] + \'" height="100"  /><input name="pictures_urls[]" type="text" value="\' + response["urls"][i] + \'" ><input name="pictures_des[]" type="text" placeholder="文字描述"  value="" ><button type="button" onclick="deleteImage_auto(this)">删除</button></span>\';';
-					  }else{
-						  $l.=' result +=\'<span><img src="\' + response["urls"][i] + \'" height="100"  /><input name="pictures_urls[]" type="text" value="\' + response["urls"][i] + \'" ><button type="button" onclick="deleteImage_auto(this)">删除</button></span>\';';
-					  }
-			          
-					  
-			          $l.='   	
-			          }
-			          $(".view_img_pictures").append(result);
-			         
-			        }else{
-			          alert(response.error);
-			        }
-			        
-			       }
-			    });
-			  });
-		</script>
-        <div class="form-control">
-            <label for="">商品简介：</label>
-            <textarea name="description" id="description" placeholder="请输入简介">'.$data['description'].'</textarea>
-            <label>150字以内</label>
-        </div>';
-		$model = 'product_zdy';
-		$l .=  include(APP_PATH.'static/common/uediter.php');
-		}
-
+		// if($molds=='article'){
+		// $model = 'article_zdy';
+		// $l .=  include(APP_PATH.'static/common/uediter.php');
+		// }else if($molds=='product'){
+			
+		// $model = 'product_zdy';
+		// $l .=  include(APP_PATH.'static/common/uediter.php');
+		// }
 		foreach($fields_list as $k=>$v){
 			if(!array_key_exists($v['field'],$data)){
 				//使用默认值
@@ -574,7 +407,7 @@ class CommonController extends Controller
 				case 14:
 				$l .= '<div class="form-control">
 		            <label for="'.$v['field'].'">'.$v['fieldname'].'：</label>
-		            <input type="text" id="'.$v['field'].'" value="'.$data[$v['field']].'" name="'.$v['field'].'">
+		            <input type="text" id="'.$v['field'].'" autocomplete="off" value="'.$data[$v['field']].'" name="'.$v['field'].'">
 		            <label>'.$must.$v['tips'].'</label>
 		        </div>';
 				break;
@@ -592,7 +425,7 @@ class CommonController extends Controller
 				case 4:
 				$l .= '<div class="form-control">
 		            <label for="'.$v['field'].'">'.$v['fieldname'].'：</label>
-		            <input type="number" id="'.$v['field'].'" value="'.$data[$v['field']].'" name="'.$v['field'].'">
+		            <input type="number" id="'.$v['field'].'" autocomplete="off" value="'.$data[$v['field']].'" name="'.$v['field'].'">
 		            <label>'.$must.$v['tips'].'</label>
 		        </div>';
 				break;
@@ -600,7 +433,7 @@ class CommonController extends Controller
 				$laydate = ($data[$v['field']]=='' || $data[$v['field']]==0)?time():$data[$v['field']];
 				$l .= '<div class="form-control">
 		            <label for="'.$v['field'].'">'.$v['fieldname'].'：</label>
-		            <input type="date" id="'.$v['field'].'" value="'.date('Y-m-d',$laydate).'" name="'.$v['field'].'">
+		            <input type="date" id="'.$v['field'].'" autocomplete="off" value="'.date('Y-m-d',$laydate).'" name="'.$v['field'].'">
 		            <label>'.$must.$v['tips'].'</label>
 		        </div>';
 				break;

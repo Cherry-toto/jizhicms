@@ -19,8 +19,7 @@ use FrPHP\Extend\Page;
 class ExtmoldsController extends Controller
 {
 	function _init(){
-		$ip = getCache(session_id());
-		if(!isset($_SESSION['admin']) || $_SESSION['admin']['id']==0 || GetIP()!=$ip){
+		if(!isset($_SESSION['admin']) || $_SESSION['admin']['id']==0){
 			Redirect(U('Login/index'));
 			
 		}
@@ -108,22 +107,10 @@ class ExtmoldsController extends Controller
 				$tids = implode(',',$a2);
 				$sql.=' and tid in('.$tids.') ';
 			}
-			if($this->frparam('isshow')){
-				if($this->frparam('isshow')==1){
-					$isshow=1;
-				}else if($this->frparam('isshow')==2){
-					$isshow=0;
-				}else{
-					$isshow = 2;
-				}
-				$sql .= ' and isshow='.$isshow;
-			}
+			
 			$get_sql = ($res['fields_search_check']!='') ? (' and '.$res['fields_search_check']) : '';
 			$sql .= $get_sql;
-			if($this->frparam('tid')){
-				$sql .= ' and tid in('.implode(",",$classtypedata[$this->frparam('tid')]["children"]["ids"]).')';
-				
-			}
+			
 			
 			$page = new Page($molds);
 			$data = $page->where($sql)->orderby('orders desc,id desc')->limit($this->frparam('limit',0,10))->page($this->frparam('page',0,1))->go();
@@ -135,7 +122,6 @@ class ExtmoldsController extends Controller
 					$v['new_tid'] = '[未分类]';
 				}
 				
-				$v['new_isshow'] = $v['isshow']==1 ? '已审' : ($v['isshow']==2 ? '退回' : '未审');
 				if($molds=='tags'){
 					$v['view_url'] = get_domain().'/tags/index/id/'.$v['id'];
 				}else{
@@ -161,9 +147,13 @@ class ExtmoldsController extends Controller
 		}
 		
 		
+		if(file_exists(APP_PATH.APP_HOME.'/'.HOME_VIEW.'/'.Tpl_template.'/'.$molds.'-list')){
+			$this->display($molds.'-list');
+		}else{
+			$this->display('extmolds-list');
+		}
 		
 		
-		$this->display('extmolds-list');
 		
 	}
 	
@@ -173,13 +163,11 @@ class ExtmoldsController extends Controller
 		if($this->frparam('go',1)==1){
 			
 			$data = $this->frparam();
-			$data['tid'] = $this->frparam('tid',0,0);
-			if($data['tid']){
-				$pclass = get_info_table('classtype',array('id'=>$data['tid']));
-				$data['htmlurl'] = $pclass['htmlurl'];
-			}
-			
 			$data = get_fields_data($data,$molds);
+			if($data['tid']){
+				$data['htmlurl'] = $this->classtypedata[$data['tid']]['htmlurl'];
+				
+			}
 			
 			//处理自定义URL
 			if(isset($data['ownurl'])){
@@ -202,6 +190,9 @@ class ExtmoldsController extends Controller
 			}
 			$r = M($molds)->add($data);
 			if($r){
+				if(isset($data['ownurl'])){
+					M('customurl')->add(['molds'=>$molds,'tid'=>$data['tid'],'url'=>$data['ownurl'],'addtime'=>time(),'aid'=>$r]);
+				}
 				//tags处理
 				if($data['tags']){
 					$tags = explode(',',$data['tags']);
@@ -223,9 +214,7 @@ class ExtmoldsController extends Controller
 						}
 					}
 				}
-				if(isset($data['ownurl'])){
-					M('customurl')->add(['molds'=>$molds,'tid'=>$data['tid'],'url'=>$data['ownurl'],'addtime'=>time(),'aid'=>$r]);
-				}
+				
 				JsonReturn(array('code'=>0,'msg'=>'添加成功,继续添加~','url'=>U('Extmolds/addmolds',['tid'=>$data['tid'],'molds'=>$molds])));
 				
 			}else{
@@ -240,8 +229,11 @@ class ExtmoldsController extends Controller
 		$this->classtypes = $this->classtypetree;
 		$this->tid =  $this->frparam('tid',0,0);
 		$this->molds = M('Molds')->find(array('biaoshi'=>$molds));
-		
-		$this->display('extmolds-add');
+		if(file_exists(APP_PATH.APP_HOME.'/'.HOME_VIEW.'/'.Tpl_template.'/'.$molds.'-add')){
+			$this->display($molds.'-add');
+		}else{
+			$this->display('extmolds-add');
+		}
 	}
 	
 	public function editmolds(){
@@ -250,12 +242,11 @@ class ExtmoldsController extends Controller
 		if($this->frparam('go',1)==1){
 			
 			$data = $this->frparam();
-			$data['tid'] = $this->frparam('tid',0,0);
-			if($data['tid']){
-				$pclass = get_info_table('classtype',array('id'=>$data['tid']));
-				$data['htmlurl'] = $pclass['htmlurl'];
-			}
 			$data = get_fields_data($data,$molds);
+			if($data['tid']){
+				$data['htmlurl'] = $this->classtypetree[$data['tid']]['htmlurl'];
+			}
+			
 			if($this->frparam('id')){
 				
 				//处理自定义URL
@@ -264,10 +255,8 @@ class ExtmoldsController extends Controller
 					if($customurl){
 						if($customurl['aid']!=$this->frparam('id')){
 							JsonReturn(array('code'=>1,'msg'=>'已存在相同的自定义URL！'));
-						}else if($customurl['url']!=$data['ownurl']){
+						}else{
 							M('customurl')->update(['id'=>$customurl['id']],['url'=>$data['ownurl'],'tid'=>$data['tid'],'molds'=>$molds]);
-						}else if($customurl['url']==$data['ownurl'] && $customurl['tid']!=$data['tid']){
-							M('customurl')->update(['id'=>$customurl['id']],['tid'=>$data['tid']]);
 						}
 						
 					}else{
@@ -391,7 +380,11 @@ class ExtmoldsController extends Controller
 		$this->tid =  $this->data['tid'];
 		$this->classtypetree =  get_classtype_tree();
 		$this->classtypes = $this->classtypetree;
-		$this->display('extmolds-edit');
+		if(file_exists(APP_PATH.APP_HOME.'/'.HOME_VIEW.'/'.Tpl_template.'/'.$molds.'-edit')){
+			$this->display($molds.'-edit');
+		}else{
+			$this->display('extmolds-edit');
+		}
 	}
 	
 	public function  copymolds(){
@@ -419,8 +412,31 @@ class ExtmoldsController extends Controller
 		$data = $this->frparam('data',1);
 		$molds = $this->frparam('molds',1);
 		if($data!=''){
+			$all = M('product')->findAll('id in('.$data.')');
 			if(M($molds)->delete('id in('.$data.')')){
+				$customurls = M('customurl')->findAll(" aid in(".$data.") and molds='".$molds."' ");
 				M('customurl')->delete(" aid in(".$data.") and molds='".$molds."' ");
+				$newcustomurl = [];
+				if($customurls){
+					foreach($customurls as $v){
+						$newcustomurl[$v['aid']] = $v;
+					}
+				}
+				
+				foreach($all as $v){
+					$w['molds'] = $molds;
+					$w['data'] = json_encode($v,JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+					$w['addtime'] = time();
+					$x = M('recycle')->add($w);
+					if($x && $newcustomurl[$v['id']]){
+						$w['molds'] = 'customurl';
+						$w['data'] = json_encode($newcustomurl[$v['id']],JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+						$w['addtime'] = time();
+						$w['aid'] = $x;
+						M('recycle')->add($w);
+					}
+				}
+				
 				JsonReturn(array('code'=>0,'msg'=>'批量删除成功！'));
 				
 			}else{
@@ -433,8 +449,22 @@ class ExtmoldsController extends Controller
 		$id = $this->frparam('id');
 		$molds = $this->frparam('molds',1);
 		if($id){
-			if(M($molds)->delete('id='.$id)){
+			$data = M($molds)->find(['id'=>$id]);
+			if(M($molds)->delete(['id'=>$id])){
+				$customurl = M('customurl')->find(['molds'=>$molds,'aid'=>$id]);
 				M('customurl')->delete(['molds'=>$molds,'aid'=>$id]);
+				
+				$w['molds'] = $molds;
+				$w['data'] = json_encode($v,JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+				$w['addtime'] = time();
+				$r = M('recycle')->add($w);
+				if($customurl){
+					$w['molds'] = 'customurl';
+					$w['data'] = json_encode($customurl,JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+					$w['addtime'] = time();
+					$w['aid'] = $r;
+					M('recycle')->add($w);
+				}
 				JsonReturn(array('code'=>0,'msg'=>'删除成功！'));
 			}else{
 				

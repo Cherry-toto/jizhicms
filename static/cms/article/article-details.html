@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html class="no-js" lang="cn">
+  <head>
+    <meta charset="utf-8" />
+    <title>{$jz['seo_title']}-{$webconf['web_name']}</title>
+	<meta name="keywords" content="{$jz['keywords']}" />
+	<meta name="description" content="{$jz['description']}" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+     {include="style"}
+  </head>
+  <body>
+    {include="header"}
+    <!-- breadcrumb-area start -->
+    <div class="breadcrumb-area">
+      <div class="container">
+        <div class="row">
+          <div class="col-12">
+            <div class="breadcrumb_box text-center" >
+             
+              <ul class="breadcrumb-list">
+                <li class="breadcrumb-item"><a href="/">首页</a></li>
+				{foreach $positions_data as $v}
+				{if($type['id']==$v['id'])}
+				<li class="breadcrumb-item active"><a href="{$v['url']}">{$v['classname']}</a></li>
+				{else}
+                <li class="breadcrumb-item "><a href="{$v['url']}">{$v['classname']}</a></li>
+				{/if}
+				{/foreach}
+				
+              </ul>
+              
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- breadcrumb-area end -->
+
+    <div id="main-wrapper">
+      <div class="site-wrapper-reveal">
+        <!-- Blog Details Wrapper Start -->
+        <div class="blog-details-wrapper section-space--ptb_80">
+          <div class="container">
+            <div class="row row--17">
+              <div class="blog-details-col-8">
+                <!-- blog details Post Start -->
+                <div class="blog-details-post-wrap">
+                  <div class="blog-details-thum">
+                    <img src="{$jz['litpic']}" alt="{$jz['title']}" />
+                  </div>
+                  <div class="blog-details-post-content">
+                    <div class="blog-details-meta-box">
+                      <div class="post-meta-left-side mb-2">
+                        <div class="trending-blog-post-category">
+                          <a href="{$type['url']}">{$type['classname']}</a>
+                        </div>
+                        <div class="following-blog-post-author">
+                          {if(!$jz['member_id'])}
+                            By <a >{fun adminInfo($jz['userid'],'name')}</a>
+						  {else}
+						    By <a href="/user/active/uid/{$jz['member_id']}">{fun memberInfo($jz['member_id'],'username')}</a>
+						  {/if} 
+                        </div>
+                      </div>
+
+                      <div class="post-mid-side mb-2">
+                        <span class="post-meta-left-side">
+                          <span class="post-date">
+                            <i class="icofont-ui-calendar"></i>
+                            <a >{fun date('Y-m-d H:i:s',$jz['addtime'])}</a>
+                          </span>
+                        </span>
+                        <span id="read-num">热度 {$jz['hits']}</span>
+                      </div>
+
+                      <div class="post-meta-right-side mb-2">
+					    {if(checkCollect($type['id'],$jz['id']))}
+						<a title="已收藏" onclick="collect({$type['id']},{$jz['id']})"
+                          ><img src="{$tpl}static/picture/collect.png" alt=""
+                        /></a>
+						{else}
+						<a title="点击收藏" onclick="collect({$type['id']},{$jz['id']})"
+                          ><img src="{$tpl}static/picture/small-bookmark.png" alt=""
+                        /></a>
+						{/if}
+                        
+						{if(checkLikes($type['id'],$jz['id']))}
+						<a title="已点赞" onclick="likes({$type['id']},{$jz['id']})"
+                          ><img src="{$tpl}static/picture/zan.png" alt=""
+                        /></a>
+						{else}
+						<a title="点赞" onclick="likes({$type['id']},{$jz['id']})"
+                          ><img src="{$tpl}static/picture/heart.png" alt=""
+                        /></a>
+						
+						{/if}
+                        
+                      </div>
+                    </div>
+                    <h3 class="following-blog-post-title">
+                      {$jz['title']}
+                    </h3>
+
+                    <div class="post-details-text">
+                      {$jz['body']}
+                    </div>
+					
+					<div class="row">
+					{if($aprev)}
+					<a  class="prevpage btn" href="{$aprev['url']}">上一篇：{$aprev['title']}</a>
+					{/if}
+					{if($anext)}
+					<a class="nextpage btn" href="{$anext['url']}">下一篇：{$anext['title']}</a>
+					{/if}
+					</div>
+					
+                    <!-- Related Post Area Start -->
+                    <div class="related-post-area section-space--pt_60">
+                      <div class="row">
+                        <div class="col-lg-8 col-7">
+                          <div class="section-title mb-30">
+                            <h3 class="title">相关文章</h3>
+                          </div>
+                        </div>
+                        <div class="col-lg-4 col-5">
+                          <div class="related-post-slider-navigation text-end">
+                            <div
+                              class="related-post-button-prev navigation-button"
+                            >
+                              <i class="icofont-long-arrow-left"></i>
+                            </div>
+                            <div
+                              class="related-post-button-next navigation-button"
+                            >
+                              <i class="icofont-long-arrow-right"></i>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+					
+                      <!-- Swiper -->
+                      <div class="swiper-container related-post-slider-active">
+                        <div class="swiper-wrapper">
+						{loop table="article" notempty="litpic" isshow="1" tid="$jz['tid']" isall="1" orderby="rand()" limit="4" as="v"}
+                          <div class="swiper-slide">
+                            <!-- Single Following Post Start -->
+                            <div class="single-related-post">
+                              <div class="related-post-thum">
+                                <img src="{$v['litpic']}" alt="{$v['title']}" />
+                              </div>
+                              <div class="following-post-content">
+                                <div class="following-blog-post-top">
+                                  <div class="trending-blog-post-category">
+                                    <a href="{$classtypedata[$v['tid']]['url']}">{$classtypedata[$v['tid']]['classname']}</a>
+                                  </div>
+                                  <div class="following-blog-post-author">
+                                      {if(!$v['member_id'])}
+										作者 <a >{fun adminInfo($v['userid'],'name')}</a>
+									  {else}
+										作者 <a href="/user/active/uid/{$v['member_id']}">{fun memberInfo($v['member_id'],'username')}</a>
+									  {/if} 
+                                  </div>
+                                </div>
+                                <h5 class="following-blog-post-title">
+                                  <a href="{$v['url']}"
+                                    >{$v['title']}
+                                  </a>
+                                </h5>
+                                <div class="following-blog-post-meta">
+                                  <div class="post-meta-left-side">
+                                    <span class="post-date"
+                                      ><i class="icofont-ui-calendar"></i
+                                      ><a href="{$v['url']}">{fun date('Y-m-d',$v['addtime'])}</a></span
+                                    ><span>热度 {$v['hits']}</span>
+                                  </div>
+                                  <div class="post-meta-right-side">
+                                    {if(checkCollect($type['id'],$v['id']))}
+									<a title="已收藏" onclick="collect({$v['tid']},{$v['id']})"
+									  ><img src="{$tpl}static/picture/collect.png" alt=""
+									/></a>
+									{else}
+									<a title="点击收藏" onclick="collect({$v['tid']},{$v['id']})"
+									  ><img src="{$tpl}static/picture/small-bookmark.png" alt=""
+									/></a>
+									{/if}
+									
+									{if(checkLikes($type['id'],$v['id']))}
+									<a title="已点赞" onclick="likes({$v['tid']},{$jz['id']})"
+									  ><img src="{$tpl}static/picture/zan.png" alt=""
+									/></a>
+									{else}
+									<a title="点赞" onclick="likes({$v['tid']},{$v['id']})"
+									  ><img src="{$tpl}static/picture/heart.png" alt=""
+									/></a>
+									
+									{/if}
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                            <!-- Single Following Post End -->
+                          </div>
+						{/loop}
+                         
+                        </div>
+                      </div>
+                    </div>
+                  {include="comment"}
+                  </div>
+                </div>
+                <!-- blog details Post End -->
+              </div>
+              <div class="blog-details-col-4">
+				{if($jz['member_id'])}
+                <div class="following-author-area">
+					{php
+					$user = memberInfo($jz['member_id']);
+					/}
+                  <div class="author-image">
+                    <img src="{$user['litpic']}" alt="{$user['username']}" onerror="this.src='{$tpl}static/picture/author-01.png'" />
+                  </div>
+                  <div class="author-title">
+                    <h4><a href="/user/active/uid/{$user['id']}">{$user['username']}</a></h4>
+                    <p>{$user['email']}</p>
+                  </div>
+                  <div class="author-details">
+                    <p>
+                      {$user['signature']}
+                    </p>
+                    <div class="author-post-share">
+                      <ul class="social-share-area">
+                        {if($user['email'])}<li>
+                          <a href="mailto:{$user['email']}"><i class="icofont-email"></i></a>
+                        </li>
+						{/if}
+                        <li>
+                          <a href="/user/active/uid/{$user['id']}" target="_blank"><i class="icofont-home"></i></a>
+                        </li>
+                        
+                      </ul>
+                    </div>
+                    <div class="button-box">
+                      <a href="/user/active/uid/{$user['id']}" class="btn"
+                        >查看主页<i class="icofont-long-arrow-right"></i
+                      ></a>
+                    </div>
+                  </div>
+                </div>
+                {/if}
+				<!-- Hero Category Area End --><!-- Latest Post Area Start -->
+                <div class="latest-post-inner-wrap mt-5">
+                 
+                  {include="latestpost"}
+       
+                
+                </div>
+            
+                
+		
+                <!-- Stay In Touch Area Start -->
+                <div class="stay-in-touch-area mt-5">
+                  <div class="section-title">
+                    <h3>热门标签</h3>
+                  </div>
+                  <div class="stay-in-touch-box tags">
+                    {loop table="tags" isshow="1" orderby="num desc" limit="15" as="v"}
+					<a 
+					{if($v_n%8==1)}
+					class="badge bg-primary"
+					{else if($v_n%8==2)}
+					class="badge bg-secondary"
+					{else if($v_n%8==3)}
+					class="badge bg-success"
+					{else if($v_n%8==4)}
+					class="badge bg-danger"
+					{else if($v_n%8==5)}
+					class="badge bg-warning text-dark"
+					{else if($v_n%8==6)}
+					class="badge bg-info text-dark"
+					{else if($v_n%8==7)}
+					class="badge bg-light text-dark"
+					{else if($v_n%8==8)}
+					class="badge bg-dark"
+					{/if}
+					target="_blank" href="{$v['url']}">{$v['keywords']}</a>
+					{/loop}
+                  </div>
+                </div>
+              
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- Blog Details Wrapper End -->
+
+      </div>
+    </div>
+
+   {include="footer"}
+   {include="js"}
+   
+   <script>
+   $.get('/common/gohits?molds={$jz['molds']}&id={$jz['id']}',function(r){
+   $("#read-num").html('热度 '+r);
+   })
+   var page = 1;
+   getmessagelist({$jz['tid']},{$jz['id']},page);
+   
+   
+   </script>
+   
+  </body>
+</html>

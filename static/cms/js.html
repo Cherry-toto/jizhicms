@@ -1,0 +1,362 @@
+<script src="{$tpl}static/js/vendor.min.js"></script>
+<script src="{$tpl}static/js/plugins.min.js"></script>
+<script src="{$tpl}static/js/smoothproducts.min.js"></script>
+<script src="{$tpl}static/js/wow.min.js"></script>
+<!-- Main JS -->
+<script src="{$tpl}static/js/main.js"></script>
+<script src="{$common}layui/layui.js"></script>
+<script>
+function likes(tid,id){
+        $.ajax({
+                 url:"/user/likesAction",//请求的url地址
+                 dataType:"json",//返回格式为json
+                 async:true,//请求是否异步，默认为异步，这也是ajax重要特性
+                 data:{tid:tid,id:id,ajax:1},//参数值
+                 type:"POST",//请求方式
+                 beforeSend:function(){
+                    //请求前的处理
+                    },
+				 success:function(r){
+					if(r.code==0){
+						layer.msg(r.msg,{icon: 6,time: 2000},function(){
+							location.reload();
+						});
+					   
+					}else{
+						layer.alert(r.msg);
+					}
+
+				},
+				 complete:function(){
+				//请求完成的处理
+				},
+				 error:function(){
+				//请求出错处理
+					layer.alert('网络错误');
+				}
+
+
+
+            })
+    }
+
+function collect(tid,id){
+        $.ajax({
+                 url:"/user/collectAction",//请求的url地址
+                 dataType:"json",//返回格式为json
+                 async:true,//请求是否异步，默认为异步，这也是ajax重要特性
+                 data:{tid:tid,id:id,ajax:1},//参数值
+                 type:"POST",//请求方式
+                 beforeSend:function(){
+                    //请求前的处理
+                    },
+				 success:function(r){
+					if(r.code==0){
+						layer.msg(r.msg,{icon: 6,time: 2000},function(){
+							location.reload();
+						});
+					}else{
+						layer.alert(r.msg);
+					}
+
+				},
+				 complete:function(){
+				//请求完成的处理
+				},
+				 error:function(){
+				//请求出错处理
+					layer.alert('网络错误');
+				}
+
+
+
+            })
+    }
+
+function mlogin(){
+	var user = $("#m-user").val();
+	var pass = $("#m-pass").val();
+	
+	if(user==''){
+		layer.alert('登录账户不能为空！');return false;
+	}
+	if(pass==''){
+		layer.alert('登录密码不能为空！');return false;
+	}
+	{if(!$webconf['closehomevercode'])}
+	var yzm = $("#m-yzm").val();
+	if(yzm==''){
+		layer.alert('验证码不能为空！');return false;
+	}
+	{else}
+	var yzm = '';
+	{/if}
+	
+	$.post('/login/index',{tel:user,password:pass,vercode:yzm,ajax:1},function(res){
+		if(res.code==0){
+			layer.msg('登录成功！',{icon: 6,time: 2000},function(){
+				//登录成功后的操作
+				location.reload();
+			})
+		}else{
+			layer.msg(res.msg,{icon:5,time:2000});
+			var img = '/common/vercode?name=login_vercode&'+Math.random();
+			$("#login-yzm").attr('src',img);
+		}
+	},'json')
+	
+	return false;
+	
+}
+
+function mregister(){
+	var tel = $("#r-tel").val();
+	var pass = $("#r-pass").val();
+	var repass = $("#r-repass").val();
+	
+	if(tel==''){
+		layer.alert('手机号不能为空！');return false;
+	}
+	if(pass==''){
+		layer.alert('登录密码不能为空！');return false;
+	}
+	if(repass==''){
+		layer.alert('重复密码不能为空！');return false;
+	}
+	if(pass!=repass){
+		layer.alert('两次密码不同！');return false;
+	}
+	{if(!$webconf['closehomevercode'])}
+	var yzm = $("#r-yzm").val();
+	if(yzm==''){
+		layer.alert('验证码不能为空！');return false;
+	}
+	{else}
+	var yzm = '';
+	{/if}
+	
+	$.post('/login/register',{tel:tel,repassword:repass,password:pass,vercode:yzm,ajax:1,autologin:1},function(res){
+		if(res.code==0){
+			layer.msg(res.msg,{icon: 6,time: 2000},function(){
+				//登录成功后的操作
+				window.location.href=res.url;
+			})
+		}else{
+			layer.msg(res.msg,{icon:5,time:2000});
+			var img = '/common/vercode?name=reg_vercode&'+Math.random();
+			$("#register-yzm").attr('src',img);
+		}
+	},'json')
+	
+	return false;
+	
+}
+
+function sendmsg(){
+	var star = $("#star").val();
+	var tid = $("#tid").val();
+	var aid = $("#aid").val();
+	var zid = $("#zid").val();
+	var pid = $("#pid").val();
+	var content = $("#content").val();
+	if(content==''){
+		layer.alert('评论内容不能为空！');
+		return false;
+	}
+	$.post('/comment/index',{star:star,tid:tid,aid:aid,zid:zid,pid:pid,body:content,ajax:1,go:1},function(res){
+		if(res.code==0){
+			layer.msg(res.msg,{icon:6,time:2000},function(){
+				location.reload();
+			})
+		}else{
+			layer.msg(res.msg,{icon:5,time:2000})
+		}
+	},'json');
+	
+	return false;
+	
+	
+}
+
+function reply(pid,username){
+	$("#pid").val(pid);
+	$("#content").val('[@'+username+']');
+	$("#content").focus();
+}
+
+var page; 
+if(undefined == page){ 
+  page = 1;
+} 
+
+function getmessagelist(tid,aid,page){
+	$.ajax({
+		 url:"/comment/getlist",
+		 dataType:"json",
+		 data:{tid:tid,aid:aid,page:page,limit:10},
+		 async:true,
+		 type:"GET",
+		 success:function(r){
+			if(r.code==0){
+				var len = r.data.list.length;
+				var html = '';
+				if(len>0){
+					for(var i=0;i<len;i++){
+						var rdata = r.data.list[i];
+						html+='<li class="comment">'+
+							  '<div class="comment-2">'+
+								'<div class="comment-author-info">'+
+								  '<div class="comment-author vcard">'+
+									'<img alt="'+rdata.user.username+'" src="'+rdata.user.litpic+'" onerror="this.src=\'{$tpl}static/picture/comments-3.png\'" />'+
+								  '</div>'+
+								  '<div class="comment-content">'+
+									'<div class="meta">'+
+									  '<div class="comment-content-top">'+
+										'<div class="comment-actions">'+
+										  '<h6 class="fn">'+rdata.user.username+'</h6>'+
+										  '<span class="time">'+rdata.addtime+'</span>'+
+										'</div>'+
+									  '</div>'+
+									  '<a class="comment-reply-link" onclick="reply('+rdata.id+',\''+rdata.user.username+'\')"><i class="icofont-reply"></i> 回复</a>'+
+									'</div>'+
+								  '</div>'+
+								'</div>'+
+								'<div class="comment-text">'+
+								  '<p>'+rdata.body+
+								  '</p>'+
+								'</div>'+
+							  '</div>';
+						var llen = rdata.children.length;
+						if(llen>0){
+							html+='<ol class="children">';
+							for(var j=0;j<llen;j++){
+								var rrdata = rdata.children[j];
+								html+='<li class="comment">'+
+							  '<div class="comment-2">'+
+								'<div class="comment-author-info">'+
+								  '<div class="comment-author vcard">'+
+									'<img alt="'+rrdata.user.username+'" src="'+rrdata.user.litpic+'" onerror="this.src=\'{$tpl}static/picture/comments-3.png\'" />'+
+								  '</div>'+
+								  '<div class="comment-content">'+
+									'<div class="meta">'+
+									  '<div class="comment-content-top">'+
+										'<div class="comment-actions">'+
+										  '<h6 class="fn">'+rrdata.user.username+'</h6>'+
+										  '<span class="time">'+rrdata.addtime+'</span>'+
+										'</div>'+
+									  '</div>'+
+									  '<a class="comment-reply-link" onclick="reply('+rrdata.id+',\''+rrdata.user.username+'\')"><i class="icofont-reply"></i> 回复</a>'+
+									'</div>'+
+								  '</div>'+
+								'</div>'+
+								'<div class="comment-text">'+
+								  '<p>'+rrdata.body+
+								  '</p>'+
+								'</div>'+
+							  '</div>';
+							}
+							html+='</ol>';
+						}
+						html+='</li>';
+					}
+	
+					$("#jz_comment_list").html(html);
+				}else{
+					var page = r.data.allpage;
+					//layer.msg('没有了',{icon:6,time:1000});
+				}
+				
+				$("#jz_comment_num").html(r.data.count);
+				var allpage = parseInt(r.data.allpage);
+				if(allpage>1){
+					$(".comment-page-bar").show();
+				}else{
+					$(".comment-page-bar").hide();
+				}
+				
+			}
+		 }
+	})
+}
+
+function nextmessagelist(){
+	page++;
+	var tid = $("#tid").val();
+	var aid = $("#id").val();
+	getmessagelist(tid,aid,page)
+}
+
+function prevmessagelist(){
+	page = page--;
+	page = page<0 ? 1 : page;
+	var tid = $("#tid").val();
+	var aid = $("#id").val();
+	getmessagelist(tid,aid,page)
+}
+
+function addcart(tid,id,num){
+	$.ajax({
+		 url:"/user/addcart",//请求的url地址
+		 dataType:"json",//返回格式为json
+		 async:true,//请求是否异步，默认为异步，这也是ajax重要特性
+		 data:{tid:tid,id:id,num:num,ajax:1},//参数值
+		 type:"POST",//请求方式
+		 beforeSend:function(){
+			//请求前的处理
+			},
+			 success:function(r){
+				if(r.code==0){
+					window.location.href=r.url;
+				}else{
+					layer.alert(r.msg);
+				}
+
+			},
+			 complete:function(){
+			//请求完成的处理
+			},
+			 error:function(){
+			//请求出错处理
+				layer.alert('网络错误');
+			}
+
+
+
+	})
+}
+$(function(){
+	
+	var interval =  setInterval(function(){
+	$.ajax({
+		 url:"/common/updateactive",
+		 dataType:"json",
+		 async:true,
+		 type:"GET",
+		 success:function(r){
+		 }
+	})
+	},30000);
+	var interval2 =  setInterval(function(){
+	$.ajax({
+		 url:"/user/getmsg",
+		 async:true,
+		 type:"GET",
+		 success:function(r){
+			var n = parseInt(r);
+			if(n>0){
+			$("#notifiy-icon").addClass('new-notification')
+			}else{
+			$("#notifiy-icon").removeClass('new-notification')
+			}
+			$("#notifiy-num").html(n);
+			
+		 }
+	})
+	},30000);
+
+
+ })
+
+
+
+</script>

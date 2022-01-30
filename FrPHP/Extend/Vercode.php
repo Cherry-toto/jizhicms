@@ -31,12 +31,13 @@
 			return imagecreate($this->width,$this->height);
 		}
 		private function setbackgroundcolor($im){
-			$bgcolor = ImageColorAllocate($im, rand(200,255),rand(200,255),rand(200,255));//±³¾°ÑÕÉ«
+			$bgcolor = ImageColorAllocate($im, rand(200,255),rand(200,255),rand(200,255));
 			imagefill($im,0,0,$bgcolor);
 		}
 		private function setdistrubecode($im){
 			$count_h=$this->height;
 			$cou=floor($count_h/2);
+			$cou = 0;
 			for($i=0;$i<$cou;$i++){
 				$x=rand(0,$this->width);
 				$y=rand(0,$this->height);

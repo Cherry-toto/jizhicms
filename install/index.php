@@ -106,6 +106,24 @@ function get_admin_url(){
 }
 
 //获取域名
+function GetIP(){ 
+  static $ip = '';
+  $ip = $_SERVER['REMOTE_ADDR'];
+  if(isset($_SERVER['HTTP_CDN_SRC_IP']) && preg_match('/^([0-9]{1,3}\.){3}[0-9]{1,3}$/', $_SERVER['HTTP_CDN_SRC_IP'])) {
+    $ip = $_SERVER['HTTP_CDN_SRC_IP'];
+  } elseif (isset($_SERVER['HTTP_CLIENT_IP']) && preg_match('/^([0-9]{1,3}\.){3}[0-9]{1,3}$/', $_SERVER['HTTP_CLIENT_IP'])) {
+    $ip = $_SERVER['HTTP_CLIENT_IP'];
+  } elseif(isset($_SERVER['HTTP_X_FORWARDED_FOR']) AND preg_match_all('#\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}#s', $_SERVER['HTTP_X_FORWARDED_FOR'], $matches)) {
+    foreach ($matches[0] AS $xip) {
+      if (!preg_match('#^(10|172\.16|192\.168)\.#', $xip)) {
+        $ip = $xip;
+        break;
+      }
+    }
+  }
+  return $ip;
+}
+//获取域名
 function get_domain(){
 	if ( ! empty($_SERVER['HTTPS']) && strtolower($_SERVER['HTTPS']) !== 'off')
 	{
@@ -115,35 +133,37 @@ function get_domain(){
 	{
 		$protocol = "https://";
 	}
+	elseif ( ! empty($_SERVER['HTTP_FROM_HTTPS']) && strtolower($_SERVER['HTTP_FROM_HTTPS']) !== 'off')
+	{
+		$protocol = "https://";
+	}
 	elseif ( ! empty($_SERVER['HTTP_FRONT_END_HTTPS']) && strtolower($_SERVER['HTTP_FRONT_END_HTTPS']) !== 'off')
 	{
+		$protocol = "https://";
+	}else if(!empty($_SERVER['HTTP_X_CLIENT_SCHEME']) && $_SERVER['HTTP_X_CLIENT_SCHEME']=='https'){
 		$protocol = "https://";
 	}else{
 		$protocol = "http://";
 	}
-	
+	if(isset($_SERVER['SERVER_PORT'])) {
+		$port = ':' . $_SERVER['SERVER_PORT'];
+		if((':80' == $port && 'http://' == $protocol) || (':443' == $port && 'https://' == $protocol)) {
+			$port = '';
+		}
+	}else{
+		$port = '';
+	}
     if(isset($_SERVER['HTTP_X_FORWARDED_HOST'])) {
-        $host = $_SERVER['HTTP_X_FORWARDED_HOST'];
-    }elseif (isset($_SERVER['HTTP_HOST'])) {
-        $host = $_SERVER['HTTP_HOST'];
-    }else{
-        if(isset($_SERVER['SERVER_PORT'])) {
-            $port = ':' . $_SERVER['SERVER_PORT'];
-            if((':80' == $port && 'http://' == $protocol) || (':443' == $port && 'https://' == $protocol)) {
-                $port = '';
-            }
-        }else{
-            $port = '';
-        }
-        if(isset($_SERVER['SERVER_NAME'])) {
-            $host = $_SERVER['SERVER_NAME'].$port;
-        }else if(isset($_SERVER['SERVER_ADDR'])) {
-            $host = $_SERVER['SERVER_ADDR'].$port;
-        }
+        $host = $_SERVER['HTTP_X_FORWARDED_HOST'].$port;
+    }else if (isset($_SERVER['HTTP_HOST'])) {
+        $host = $_SERVER['HTTP_HOST'].$port;
+    }else if(isset($_SERVER['SERVER_NAME'])) {
+		$host = $_SERVER['SERVER_NAME'].$port;
+	}else if(isset($_SERVER['SERVER_ADDR'])) {
+		$host = $_SERVER['SERVER_ADDR'].$port;
     }
     return $protocol.$host;
 }
-
  /**
   * 解析SQL文件为SQL语句数组
   * @param string $path
@@ -173,8 +193,42 @@ function get_domain(){
 	return $sql;
   
   
- }
-
+}
+//检查是否有模板v1.9.x版本新增 
+function checktemplate(){
+	$dir = '../static';
+	$fileArray=array();
+	if (false != ($handle = opendir ( $dir ))) {
+		while ( false !== ($file = readdir ( $handle )) ) {
+			//去掉"“.”、“..”以及带“.xxx”后缀的文件
+			if ($file != "." && $file != ".."  && strpos($file,'.')===false && file_exists($dir.'/'.$file.'/info.php') && is_dir($dir.'/'.$file.'/backup')) {
+				$fileArray[]=$file;
+			}
+		}
+		//关闭句柄
+		closedir ( $handle );
+	}
+	$dblist = [];
+	foreach($fileArray as $v){
+		$dir = '../static/'.$v.'/backup';
+		if (false != ($handle = opendir ( $dir ))) {
+			$i=0;
+			while ( false !== ($file = readdir ( $handle )) ) {
+				//去掉"“.”、“..”以及带“.xxx”后缀的文件
+				if ($file != "." && $file != ".."&& (strpos($file,".php")!==false) && (strpos($file,'_v')===false)) {
+					$dblist[$i]=$file;
+					$i++;
+				}
+			}
+			//关闭句柄
+			closedir ( $handle );
+		}
+		
+	}
+	
+	
+	return $dblist;
+} 
 //检查安装进度
 $act = isset($_GET['act'])?$_GET['act']:'';
 switch($act){
@@ -200,6 +254,10 @@ switch($act){
 		}
 		
 		$dblists = $fileArray;
+		$dblists2 = checktemplate();
+		if(count($dblists2)){
+			$dblists = array_merge($dblists,$dblists2);
+		}
 		
 		$admin_url = get_admin_url();
 		$tpl = include('tpl/step2.jizhi');

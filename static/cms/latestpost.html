@@ -1,0 +1,94 @@
+
+                  <div class="latest-post-header aos-init aos-animate wow fadeInUp"
+                     >
+                    <div class="section-title">
+                      <h4>最新发布</h4>
+                    </div>
+                    <div class="latest-post-slider-navigation">
+                      <div
+                        class="latest-post-button-prev navigation-button"
+                        tabindex="0"
+                        role="button"
+                        aria-label="Previous slide"
+                        aria-controls="swiper-wrapper-6dc7b981adf55113"
+                      >
+                        <i class="icofont-long-arrow-left"></i>
+                      </div>
+                      <div
+                        class="latest-post-button-next navigation-button"
+                        tabindex="0"
+                        role="button"
+                        aria-label="Next slide"
+                        aria-controls="swiper-wrapper-6dc7b981adf55113"
+                      >
+                        <i class="icofont-long-arrow-right"></i>
+                      </div>
+                    </div>
+                  </div>
+                  <div
+                    class="swiper-container latest-post-slider-active aos-init swiper-container-initialized swiper-container-horizontal swiper-container-pointer-events aos-animate wow fadeInUp"
+                    
+                  >
+                    <div
+                      class="swiper-wrapper"
+                      id="swiper-wrapper-6dc7b981adf55113"
+                      aria-live="polite"
+                      style="
+                        transform: translate3d(-281px, 0px, 0px);
+                        transition-duration: 0ms;
+                      "
+                    >
+					{loop table="article" notempty="litpic" jzcache="1" notempty="litpic"  jzcachetime="60" orderby="addtime desc" isshow="1" limit="15" as="v"}
+					{php
+					//分3组
+					$n = $v_n%3;
+					$newlist[$n][]=$v;
+					/}
+					{/loop}
+					{foreach $newlist as $v}
+                      <div
+                        class="swiper-slide 
+						swiper-slide-active 
+						swiper-slide-duplicate-active {if($v_n==1)}swiper-slide-prev{else}swiper-slide-next{/if}"
+                        data-swiper-slide-index="0"
+                        role="group"
+                        aria-label="{$v_n} / 3"
+                        style="width: 281px">
+                        <div class="latest-post-box">
+                          {foreach $v as $s}
+                          <div class="single-latest-post">
+                            <div class="latest-post-thum">
+                              <a href="{$s['url']}">
+                                <img src="{$s['litpic']}" alt="{$s['title']}" />
+                              </a>
+                            </div>
+                            <div class="latest-post-content">
+                              <h6 class="title">
+                                <a href="{$s['url']}"
+                                  >{$s['title']}</a
+                                >
+                              </h6>
+                              <div class="latest-post-meta">
+                                <span class="post-date">
+                                  <i class="icofont-ui-calendar"></i>
+                                  <a href="{$s['url']}">{fun date('Y-m-d',$s['addtime'])}</a>
+                                </span>
+                                <span>{$s['hits']} read</span>
+                              </div>
+                            </div>
+                          </div>
+						  {/foreach}
+                         
+                        </div>
+                      
+					  </div>
+					{/foreach}
+                     
+                    <span
+                      class="swiper-notification"
+                      aria-live="assertive"
+                      aria-atomic="true"
+                    ></span>
+                  </div>
+                </div>
+            

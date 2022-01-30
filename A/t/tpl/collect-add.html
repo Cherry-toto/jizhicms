@@ -24,8 +24,8 @@
 			
 			<div class="layui-tab">
 			  <ul class="layui-tab-title">
-				<li class="layui-this">基本信息</li>
-				<li>扩展信息</li>
+				<li class="layui-this">基本</li>
+				<li>扩展</li>
 				
 			  </ul>
 			  <div class="layui-tab-content">
@@ -107,6 +107,8 @@
                             <textarea  name="description" class="layui-textarea"></textarea>
                         </div>
                 </div>
+				
+				<span id="content_fields"></span>
 			
 				<div class="layui-form-item">
                     <label for="orders" class="layui-form-label">
@@ -138,23 +140,19 @@
                         <span class="x-red"></span>添加时间
                     </label>
                     <div class="layui-input-inline">
-                      <input class="layui-input" value="{fun date('Y-m-d H:i:s')}" name="addtime" placeholder="文件日期" id="LAY_demorange_s">
+                      <input class="layui-input" value="{fun date('Y-m-d H:i:s')}" name="addtime" placeholder="选择时间" id="LAY_demorange_s">
                     </div>
                    
                 </div>
 				
-				{if($webconf['isrelative']==1)}
-				<span id="ext_fields"></span>
-				{/if}
+				
 				
 				
 		<!--end tab1-->		
 				</div>
 				<div class="layui-tab-item">
 				
-				{if($webconf['isrelative']==0)}
 				<span id="ext_fields"></span>
-				{/if}
 				
 				
 				</div>
@@ -220,7 +218,7 @@
 			  
 			    //监听提交
               form.on('submit(save)', function(data){
-				$.post("{__APP_URL__}/Collect/addcollect.html",data.field,function(r){
+				$.post("{fun U('addcollect')}",data.field,function(r){
 					var r = JSON.parse(r);
 					if(r.code==0){
 					
@@ -252,6 +250,7 @@
               });
 			  
 				get_fields(0);
+				get_fields_ext(0);
             
 			
 		

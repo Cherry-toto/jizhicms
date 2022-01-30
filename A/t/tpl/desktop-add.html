@@ -4,7 +4,15 @@
     <head>
        <meta charset="UTF-8">
         {include="style"}
-		
+		<style>
+		.nav li {
+    list-style: none;
+    margin: 5px;
+}
+	.nav li span {
+    margin: 0 10px;
+}
+		</style>
     </head>
     
     <body>
@@ -37,63 +45,12 @@
 				
 				 <div class="layui-form-item layui-form-text">
                     <label class="layui-form-label">
-                        左侧菜单栏&nbsp;&nbsp;&nbsp;&nbsp;<button type="button" class="layui-btn layui-btn layui-btn-xs" onclick="x_all_show('查看图标库','{fun U('unicode')}')">查看图标库</button>
+                        左侧菜单栏 <span class="x-red">没有二级菜单不会生效</span>
                     </label>
                     <table  class="layui-table layui-input-block">
-                        <tbody>
+                        <tbody id="leftNav">
 						
-                            <tr>
-                                <td>
-                                    顶级菜单
-                                </td>
-								<td>
-                                    菜单图标
-                                </td>
-                                <td>
-                                    二级菜单
-                                </td>
-								<td>
-                                    操作
-                                </td>
-                            </tr>
-						
-                            <tr data="1">
-                                <td>
-                                    <input type="text" name="left_nav[]" value="" title="填写顶级菜单" required="" lay-verify="required" autocomplete="off" class="layui-input" >
-									
-                                </td>
-								<td>
-                                    <input type="text" name="left_nav_icon[]" value="" title="填写菜单图标" autocomplete="off" class="layui-input" >
-									
-									
-                                </td>
-                                <td>
-                                    <div class="layui-input-inline">
-										<select name="left_nav_func_1[]"   >
-										<option value="0">选择功能</option>
-									   {foreach $lists as $vv}
-									   {if($vv['isdesktop']==1 || $vv['pid']==0)}
-									   <option  value="{$vv['id']}" {if($vv['pid']==0)}disabled{/if}  >{fun str_repeat('--', $vv['level'])}{$vv['name']}</option>
-									   {/if}
-									   {/foreach}
-									    <option   disabled >栏目列表</option>
-									   {foreach $classtypetree as $vv}
-									   <option  value="class_{$vv['id']}"  >--{fun str_repeat('--', $vv['level'])}{$vv['classname']}</option>
-									   {/foreach}
-									   </select>
-									   
-									</div>
-									
-									<button  type="button" onClick="addfunc(this,1)" class="layui-btn" >新增+</button>
-									
-                                </td>
-								<td>
-									<button  class="layui-btn layui-btn layui-btn-xs" type="button"  onClick="addfunc(this,2)" ><i class="layui-icon">&#xe642;</i>新增+</button>
-									
-								</td>
-								<input name="left_num_count[]" type="hidden" id="tr_left_1" value="1">
-                            </tr>
-						
+                           
                            
                         </tbody>
                     </table>
@@ -101,64 +58,11 @@
 				
 				 <div class="layui-form-item layui-form-text">
                     <label class="layui-form-label">
-                        顶部菜单栏&nbsp;&nbsp;&nbsp;&nbsp;<button type="button" class="layui-btn layui-btn layui-btn-xs" onclick="x_all_show('查看图标库','{fun U('unicode')}')">查看图标库</button>
+                        顶部菜单栏 <span class="x-red">没有二级菜单不会生效</span>
                     </label>
                     <table  class="layui-table layui-input-block">
-                        <tbody>
+                        <tbody id="topNav">
 						
-                            <tr>
-                                <td>
-                                    顶级菜单
-                                </td>
-								<td>
-                                    菜单图标
-                                </td>
-                                <td>
-                                    二级菜单
-                                </td>
-								<td>
-                                    操作
-                                </td>
-                            </tr>
-						
-                            <tr data="1">
-                                <td>
-                                    <input type="text" name="top_nav[]" value="" title="填写顶级菜单"  autocomplete="off" class="layui-input" >
-									
-                                </td>
-								<td>
-                                    <input type="text" name="top_nav_icon[]" value="" title="填写菜单图标" autocomplete="off" class="layui-input" >
-									
-									
-                                </td>
-                                <td>
-                                    <div class="layui-input-inline">
-										<select name="top_nav_func_1[]"   >
-										<option value="0">选择功能</option>
-									   {foreach $lists as $vv}
-									   {if($vv['isdesktop']==1 || $vv['pid']==0)}
-									   <option  value="{$vv['id']}" {if($vv['pid']==0)}disabled{/if}  >{fun str_repeat('--', $vv['level'])}{$vv['name']}</option>
-									   {/if}
-									   {/foreach}
-									   <option   disabled >栏目列表</option>
-									   {foreach $classtypetree as $vv}
-									   <option  value="class_{$vv['id']}"  >--{fun str_repeat('--', $vv['level'])}{$vv['classname']}</option>
-									   {/foreach}
-									   </select>
-									   
-									</div>
-									
-									<button  type="button" onClick="addfunc(this,4)" class="layui-btn" >新增+</button>
-									
-                                </td>
-								<td>
-									<button  class="layui-btn layui-btn layui-btn-xs" type="button"  onClick="addfunc(this,5)" ><i class="layui-icon">&#xe642;</i>新增+</button>
-									
-								</td>
-								<input name="top_num_count[]" type="hidden" id="tr_top_1" value="1">
-                            </tr>
-						
-                           
                         </tbody>
                     </table>
                 </div>
@@ -208,6 +112,8 @@
                         保存
                     </button>
                 </div>
+				<input type="hidden" id="savekey" value="1">
+				<input type="hidden" id="currentNav" value="1">
             </form>
         </div>
 		<br/>
@@ -222,7 +128,367 @@
       
         <script>
 		
-		
+			var topNav = [
+				{
+					key:1,
+					title:'一个菜单名称',
+					value:'',
+					icon:'',
+					children:[
+						
+					]
+				},
+				
+			
+			];
+			var leftNav = [
+				{
+					key:1,
+					title:'一个菜单名称',
+					value:'',
+					icon:'',
+					children:[
+						
+					]
+				},
+				
+			
+			];
+			
+			function getCurrentNav(n){
+				var n = parseInt(n);
+				if(n==1){
+					return leftNav;
+				}else{
+					return topNav;
+				}
+			}
+			
+			
+			function createNavHtml(n){
+				var obj = getCurrentNav(n);
+				var len = obj.length;
+				var html = '<tr><td>顶级菜单</td><td>菜单图标</td><td>二级菜单</td><td>操作</td></tr>';
+				var children = [];
+				for(var i=0;i<len;i++){
+					html+='<tr>';
+                    html+='<td>'+obj[i].title+'</td>';
+					html+='<td><i class="iconfont">'+obj[i].icon+'</i></td>';
+                    html+='<td>';
+					var llen = obj[i].children.length;
+					children =  obj[i].children;
+					html+='<ul class="nav">';
+					for(var ii=0;ii<llen;ii++){
+						html+='<li><span><i class="iconfont">'+children[ii].icon+'</i></span>';
+						html+='<span>'+children[ii].title+'</span>';
+						html+='<div class="layui-btn-group"><button type="button" class="layui-btn layui-btn-sm" onclick="selectIcon('+n+','+children[ii].key+')">图标</button><button  type="button" class="layui-btn layui-btn-sm" onclick="editNav('+n+','+children[ii].key+',1)">修改</button><button type="button" class="layui-btn layui-btn-sm layui-btn-danger" onclick="delNav('+n+','+children[ii].key+',1)">删除</button></div>';
+						html+='</li>';
+						
+					}
+					html+='<li><button type="button" class="layui-btn layui-btn-sm" onclick="addNav('+n+','+obj[i].key+',1)">新增</button></li>';
+					html+='</ul>';
+					html+='</td>';
+					html+='<td><button type="button" class="layui-btn layui-btn-sm" onclick="addNav('+n+','+obj[i].key+',0)">新增</button><button type="button" class="layui-btn layui-btn-sm" onclick="selectIcon('+n+','+obj[i].key+')">图标</button><button  type="button" class="layui-btn layui-btn-sm" onclick="editNav('+n+','+obj[i].key+',0)">修改</button><button type="button" class="layui-btn layui-btn-sm layui-btn-danger" onclick="delNav('+n+','+obj[i].key+',0)">删除</button></td>';
+					html+='</tr>';
+				
+				}
+				if(parseInt(n)==1){
+				$("#leftNav").html(html);
+				leftNav = obj;
+				}else{
+				$("#topNav").html(html);
+				topNav = obj;
+				}
+				
+				
+			
+			}
+			function changeNav(n,key,type,value){
+				var obj = getCurrentNav(n);
+				var len = obj.length;
+				for(var i=0;i<len;i++){
+					if(obj[i].key==key){
+						obj[i][type] = value;
+						break;
+					}
+					var llen = obj[i].children.length;
+					if(llen>0){
+						for(var ii=0;ii<llen;ii++){
+							if(obj[i].children[ii].key==key){
+								obj[i].children[ii][type] = value;
+								break;
+							}
+						}
+					}
+					
+				}
+				
+				createNavHtml(n);
+				
+			}
+			function getNav(n,key,type){
+				var obj = getCurrentNav(n);
+				var len = obj.length;
+				for(var i=0;i<len;i++){
+					if(obj[i].key==key){
+						return obj[i][type];
+						break;
+					}
+					var llen = obj[i].children.length;
+					if(llen>0){
+					for(var ii=0;ii<llen;ii++){
+						if(obj[i].children[ii].key==key){
+							return obj[i].children[ii][type];
+							break;
+						}
+					}
+					}
+					
+				}
+			}
+			function newKey(obj){
+				//理论上是一个随机的key
+				var k = Math.round(Math.random()*10000);
+				if(checkKey(k,obj)){
+					return newKey(obj);
+				}
+				return k;
+				
+			}
+			function checkKey(key,obj){
+				var len = obj.length;
+				for(var i=0;i<len;i++){
+					if(obj[i].key==key){
+						return true;
+					}
+					var llen = obj[i].children.length;
+					var children = obj[i].children;
+					if(llen>0){
+					for(var ii=0;ii<llen;ii++){
+						if(children[ii].key==key){
+							return true;
+						}
+					}
+					}
+					
+				}
+				return false;
+			}
+			function editNav(n,key,t){
+				var t = parseInt(t);
+				$("#savekey").val(key);
+				var old = getNav(n,key,'title');
+				layer.prompt({
+				  formType: 0,
+				  value: old,
+				  title: '修改菜单名称',
+				  area: ['800px', '350px'] //自定义文本域宽高
+				}, function(value, index, elem){
+				  //alert(value); //得到value
+				  changeNav(n,key,'title',value);
+				  layer.close(index);
+				});
+			}
+			function delNav(n,key,t){
+				var i=layer.confirm('确定要删除吗？', {
+				  btn: ['取消','确定'] //按钮
+				}, function(){
+				  layer.close(i);
+				}, function(){
+				    var t = parseInt(t);
+					var obj = getCurrentNav(n);
+					var len = obj.length;
+					var newNav = [];
+					console.log(t);
+					if(len==1 && t!=1){
+						layer.msg('最后一个索引不能删除！',{icon:5});
+						return false;
+					}
+					for(var i=0;i<len;i++){
+						if(obj[i].key==key){
+							obj[i] = [];
+							
+						}
+						if(obj[i].key){
+							newNav[i] = obj[i];
+							var llen = obj[i].children.length;
+							if(llen>0){
+								var children = [];
+								for(var ii=0;ii<llen;ii++){
+									if(obj[i].children[ii].key==key){
+										obj[i].children[ii] = [];
+									}
+									if(obj[i].children[ii].key){
+										children.push(obj[i].children[ii]);
+									}
+								}
+								
+								newNav[i].children = children;
+								
+							}
+							
+						}
+					}
+					var newNav=$.grep(newNav,function(n,i){  
+						return n;  
+					},false);  
+					if(parseInt(n)==1){
+						leftNav = newNav;
+					}else{
+						topNav = newNav;
+					}
+					createNavHtml(n);
+				});
+				
+				
+			}
+			//获取key对应的索引
+			function getNavS(key,obj){
+				var len = obj.length;
+				for(var i=0;i<len;i++){
+					if(obj[i].key==key){
+						return i;
+					}
+					var llen = obj[i].children.length;
+					if(llen>0){
+						for(var ii=0;ii<llen;ii++){
+							if(obj[i].children[ii].key==key){
+								return i;
+							}
+						}
+					}
+					
+				}
+			}
+			//根据数组索引，数组中间插入一个值
+			function getNewNav(arrayList,index,value){
+				arrayList.splice(index,0,value);
+				return arrayList;
+			}
+			function addNav(n,key,t){
+				var t = parseInt(t);
+				$("#savekey").val(key);
+				if(t==0){
+					//顶级菜单
+					
+					layer.prompt({
+					  formType: 0,
+					  value: '',
+					  title: '添加菜单名称',
+					  area: ['800px', '350px'] //自定义文本域宽高
+					}, function(title, index, elem){
+					  //alert(value); //得到value
+					  var obj = getCurrentNav(n);
+					  var nkey = newKey(obj);
+					  var len = obj.length;
+					  var newNav = [];
+					  var ikey = getNavS(key,obj)+1;//获取key对应的索引+1向下一位
+					  var nav = {
+							key:nkey,
+							title:title,
+							value:'',
+							icon:'',
+							children:[]
+						};
+						obj = getNewNav(obj,ikey,nav);
+						if(parseInt(n)==1){
+							leftNav = obj;
+						}else{
+							topNav = obj;
+						}
+					  createNavHtml(n);
+					  layer.close(index);
+					});
+					
+				}else{
+					//二级菜单
+					$("#currentNav").val(n);
+					var addnav = layer.open({
+					  type: 2,
+					  title: '菜单选择',
+					  shadeClose: true,
+					  shade: 0.8,
+					  area: ['80%', '90%'],
+					  content: '{fun U('viewPower')}' //iframe的url
+					}); 
+					
+				}
+				
+			}
+			
+			function setNavChildren(nav){
+				$.post("{fun U('getNav')}",{ids:nav},function(res){
+					if(res.code==0){
+						var n = $("#currentNav").val();
+						var obj = getCurrentNav(n);
+						var key = $("#savekey").val();
+						var len = obj.length;
+						var children = [];
+						var m = 0;
+						for(var i=0;i<len;i++){
+							if(key==obj[i].key){
+								children = obj[i].children;
+								m = i;
+								break;
+							}
+						}
+						var ll = res.data.length;
+						for(var i=0;i<ll;i++){
+							var nkey = newKey(obj);
+							children.push({
+								key:nkey,
+								title:res.data[i].title,
+								value:res.data[i].id,
+								icon:'',
+							});
+						}
+						obj[m].children = children;
+						if(parseInt(n)==1){
+							leftNav = obj;
+						}else{
+							topNav = obj;
+						}
+						createNavHtml(n);
+						
+						
+						
+					}else{
+						layer.alert(res.msg)
+					}
+				},'json')
+			}
+			
+			function selectIcon(n,key){
+				$("#savekey").val(key);
+				$("#currentNav").val(n);
+				var iconiframe = layer.open({
+				  type: 2,
+				  title: '图标选择',
+				  shadeClose: true,
+				  shade: 0.8,
+				  area: ['80%', '90%'],
+				  content: '{fun U('unicode')}' //iframe的url
+				}); 
+			}
+			
+			function getSelectIcon(icon){
+				console.log('获取'+icon);
+				var key = $("#savekey").val();
+				var n = $("#currentNav").val();
+				changeNav(n,key,'icon',icon);
+				
+			}
+			
+			function closeiframe(){
+				layer.closeAll();
+			}
+			
+			
+			$(function(){
+			
+				createNavHtml(1);
+				createNavHtml(2);
+			})
 			   
 		
             layui.use(['laydate','form','layer','upload'], function(){
@@ -231,11 +497,12 @@
               ,layer = layui.layer;
 			  laydate = layui.laydate;
 			
-			  
+			  var iconinput = 0;
 			    //监听提交
               form.on('submit(save)', function(data){
-                //console.log(data);
-                //发异步，把数据提交给php
+				data.field.topNav = topNav;
+				data.field.leftNav = leftNav;
+                
 				$.post("{fun U('desktop_add')}",data.field,function(r){
 					
 					var r = JSON.parse(r);
@@ -272,84 +539,9 @@
 				  form.render();
 				});
 			}
-
 			
-			function addfunc(n,m){
-				
-				if(m==1){
-					var nn = parseInt($(n).parent().parent().attr('data'));
-					var html='<div class="layui-input-inline"><select name="left_nav_func_'+nn+'[]"   ><option value="0">选择功能</option>'+
-				   {foreach $lists as $v}
-				   {if($v['isdesktop']==1 || $v['pid']==0)}
-				   '<option {if($v['pid']==0)}disabled{/if}  value="{$v['id']}">{fun str_repeat('--', $v['level'])}{$v['name']}</option>'+
-				   {/if}
-				   {/foreach}
-				   '<option   disabled >栏目列表</option>'+
-				   {foreach $classtypetree as $vv}
-				   '<option  value="class_{$vv['id']}"  >--{fun str_repeat('--', $vv['level'])}{$vv['classname']}</option>'+
-				   {/foreach}
-										   '</select></div>';
-					$(n).before(html);
-					
-					renderForm();
-				}else if(m==2){
-					var nn = parseInt($("#left_num").val());
-					var html=' <tr data='+(nn+1)+'><td><input type="text" name="left_nav[]" value="" title="填写顶级菜单" required="" lay-verify="required" autocomplete="off" class="layui-input" ></td><td><input type="text" name="left_nav_icon[]" value="" title="填写菜单图标" autocomplete="off" class="layui-input" ></td><td><div class="layui-input-inline"><select name="left_nav_func_'+(nn+1)+'[]"   ><option value="0">选择功能</option>'+
-				   {foreach $lists as $v}
-				   {if($v['isdesktop']==1 || $v['pid']==0)}
-				   '<option {if($v['pid']==0)}disabled{/if}  value="{$v['id']}">{fun str_repeat('--', $v['level'])}{$v['name']}</option>'+
-				   {/if}
-				   {/foreach}
-				   '<option   disabled >栏目列表</option>'+
-				   {foreach $classtypetree as $vv}
-				   '<option  value="class_{$vv['id']}"  >--{fun str_repeat('--', $vv['level'])}{$vv['classname']}</option>'+
-				   {/foreach}
-				   '</select></div><button  type="button" onClick="addfunc(this,1)" class="layui-btn" >新增+</button></td><td><button  type="button" class="layui-btn layui-btn layui-btn-xs"  onClick="addfunc(this,2)" ><i class="layui-icon">&#xe642;</i>新增+</button><button type="button" class="layui-btn-danger layui-btn layui-btn-xs" onClick="addfunc(this,3)"  href="javascript:;" ><i class="layui-icon">&#xe640;</i>删除</button></td><input name="left_num_count[]" type="hidden" id="tr_left_'+(nn+1)+'" value="'+(nn+1)+'"></tr>';
-					$(n).parent().parent().after(html);
-					$("#left_num").val(nn+1);
-					renderForm();
-				}else if(m==3){
-					//var nn = parseInt($("#left_num").val());
-					//$("#left_num").val(nn-1);
-					$(n).parent().parent().remove();
-				}else if(m==4){
-					var nn = parseInt($(n).parent().parent().attr('data'));
-					var html='<div class="layui-input-inline"><select name="top_nav_func_'+nn+'[]"   ><option value="0">选择功能</option>'+
-				   {foreach $lists as $v}
-				   {if($v['isdesktop']==1 || $v['pid']==0)}
-				   '<option {if($v['pid']==0)}disabled{/if}  value="{$v['id']}">{fun str_repeat('--', $v['level'])}{$v['name']}</option>'+
-				   {/if}
-				   {/foreach}
-				   '<option   disabled >栏目列表</option>'+
-				   {foreach $classtypetree as $vv}
-				   '<option  value="class_{$vv['id']}"  >--{fun str_repeat('--', $vv['level'])}{$vv['classname']}</option>'+
-				   {/foreach}
-					'</select></div>';
-					$(n).before(html);
-					
-					renderForm();
-				}else if(m==5){
-					var nn = parseInt($("#top_num").val());
-					var html=' <tr data="'+(nn+1)+'"><td><input type="text" name="top_nav[]" value="" title="填写顶级菜单" required="" lay-verify="required" autocomplete="off" class="layui-input" ></td><td><input type="text" name="top_nav_icon[]" value="" title="填写菜单图标" autocomplete="off" class="layui-input" ></td><td><div class="layui-input-inline"><select name="top_nav_func_'+(nn+1)+'[]"   ><option value="0">选择功能</option>'+
-				   {foreach $lists as $v}
-				   {if($v['isdesktop']==1 || $v['pid']==0)}
-				   '<option {if($v['pid']==0)}disabled{/if}  value="{$v['id']}">{fun str_repeat('--', $v['level'])}{$v['name']}</option>'+
-				   {/if}
-				   {/foreach}
-				   '<option   disabled >栏目列表</option>'+
-				   {foreach $classtypetree as $vv}
-				   '<option  value="class_{$vv['id']}"  >--{fun str_repeat('--', $vv['level'])}{$vv['classname']}</option>'+
-				   {/foreach}
-				   '</select></div><button  type="button" onClick="addfunc(this,4)" class="layui-btn" >新增+</button></td><td><button  type="button" class="layui-btn layui-btn layui-btn-xs"  onClick="addfunc(this,5)" ><i class="layui-icon">&#xe642;</i>新增+</button><button type="button" class="layui-btn-danger layui-btn layui-btn-xs" onClick="addfunc(this,6)"  href="javascript:;" ><i class="layui-icon">&#xe640;</i>删除</button></td><input name="top_num_count[]" type="hidden" id="tr_top_'+(nn+1)+'" value="'+(nn+1)+'"></tr>';
-					$(n).parent().parent().parent().after(html);
-					$("#top_num").val(nn+1);
-					renderForm();
-				}else if(m==6){
-					//var nn = parseInt($("#top_num").val());
-					//$("#top_num").val(nn-1);
-					$(n).parent().parent().remove();
-				}
-			}
+		
+			
 			
 			
         </script>

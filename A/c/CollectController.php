@@ -18,8 +18,8 @@ use FrPHP\Extend\Page;
 
 class CollectController extends CommonController
 {
-		//列表
-		function index(){
+	//列表
+	function index(){
 			$page = new Page('collect');
 			$sql = '1=1';
 			
@@ -58,7 +58,6 @@ class CollectController extends CommonController
 			
 		}
 		
-
 	function addcollect(){
 		$this->fields_biaoshi = 'collect';
 		if($this->frparam('go',1)==1){
@@ -95,7 +94,6 @@ class CollectController extends CommonController
 		$this->display('collect-add');
 	}
 	
-	//复制文章
 	function copycollect(){
 		$id = $this->frparam('id');
 		if($id){
@@ -115,11 +113,18 @@ class CollectController extends CommonController
 		}
 		
 	}
-	//批量删除文章
+
 	function deleteAll(){
 		$data = $this->frparam('data',1);
 		if($data!=''){
+			$all = M('collect')->findAll('id in('.$data.')');
 			if(M('collect')->delete('id in('.$data.')')){
+				foreach($all as $v){
+					$w['molds'] = 'collect';
+					$w['data'] = json_encode($v,JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+					$w['addtime'] = time();
+					M('recycle')->add($w);
+				}
 				JsonReturn(array('code'=>0,'msg'=>'批量删除成功！'));
 				
 			}else{
@@ -128,8 +133,7 @@ class CollectController extends CommonController
 		}
 	}
 	
-
-	public function editcollect(){
+	function editcollect(){
 		$this->fields_biaoshi = 'collect';
 		if($this->frparam('go',1)==1){
 			$data = $this->frparam();
@@ -169,10 +173,16 @@ class CollectController extends CommonController
 		$this->display('collect-edit');
 		
 	}
+	
 	function deletecollect(){
 		$id = $this->frparam('id');
 		if($id){
-			if(M('collect')->delete('id='.$id)){
+			$data = M('collect')->find(['id'=>$id]);
+			if(M('collect')->delete(['id'=>$id])){
+				$w['molds'] = 'collect';
+				$w['data'] = json_encode($data,JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+				$w['addtime'] = time();
+				M('recycle')->add($w);
 				JsonReturn(array('code'=>0,'msg'=>'删除成功！'));
 			}else{
 				JsonReturn(array('code'=>1,'msg'=>'删除失败！'));
@@ -227,7 +237,7 @@ class CollectController extends CommonController
 				JsonReturn(array('code'=>1,'msg'=>'该分类下存在内容，请先删除该分类下的内容！'));
 			}
 
-			if(M('collect_type')->delete('id='.$id)){
+			if(M('collect_type')->delete(['id'=>$id])){
 				JsonReturn(array('code'=>0,'msg'=>'删除成功！'));
 			}else{
 				JsonReturn(array('code'=>1,'msg'=>'删除失败！'));

@@ -1,0 +1,220 @@
+  <!--======  footer area =======-->
+    <footer class="footer-area footer-two">
+      <div class="footer-top-area">
+        <div class="container-fluid container-custom-xl">
+          <div class="row">
+            <div class="col-lg-4 col-md-8 col-sm-8 order-lg-1 order-1">
+              <div class="footer-widget">
+                <div class="footer-logo">
+                  <a href="/">
+                    <img src="{$webconf['web_logo']}" alt="{$webconf['web_name']}" />
+                  </a>
+                </div>
+                <p>
+                  {$webconf['web_desc']}
+                </p>
+                
+               
+              </div>
+            </div>
+            <div class="col-lg-8 order-lg-2 order-3">
+              <div class="footer-menu-widget">
+			    {foreach $classtypedata as $v}
+			    {if($v['pid']==0 && $v['isshow']==1 && $v['haschild'])}
+					
+					<div class="single-footer-menu">
+					  <div class="footer-widget-title">
+						<h4 class="title">{$v['classname']}</h4>
+					  </div>
+					  
+					  <ul class="footer-widget-menu-list">
+					    {foreach $v['children']['list'] as $vv}
+						<li><a href="{$vv['url']}">{$vv['classname']}</a></li>
+						{/foreach}
+						
+					  </ul>
+					  
+					</div>
+					
+				{/if}
+				{/foreach}
+               
+				</div>
+            </div>
+           
+		  </div>
+        </div>
+      </div>
+      <div class="footer-bottom-area">
+        <div class="container-fluid">
+          <div class="row">
+            <div class="col-lg-12">
+              <div class="copy-right-center">
+                <p>
+                  © {fun date('Y')} powered by {$webconf['web_name']} <a href="https://beian.miit.gov.cn/" target="_blank" >{$webconf['web_beian']}</a>
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </footer>
+    <a
+      href="#"
+      class="scroll-top"
+      id="scroll-top"
+      ><i class="arrow-top icofont-swoosh-up"></i
+      ><i class="arrow-bottom icofont-swoosh-up"></i></a
+    >
+    <div class="mobile-menu-overlay" id="mobile-menu-overlay">
+      <div class="mobile-menu-overlay__inner">
+        <div class="mobile-menu-overlay__header">
+          <div class="container-fluid">
+            <div class="row align-items-center">
+              <div class="col-md-6 col-8">
+                <!-- logo -->
+                <div class="logo">
+                  <a href="/"
+                    ><img
+                      src="{$webconf['web_logo']}"
+                      class="img-fluid"
+                      alt=""
+                  /></a>
+                </div>
+              </div>
+              <div class="col-md-6 col-4">
+                <!-- mobile menu content -->
+                <div class="mobile-menu-content text-end">
+                  <span
+                    class="mobile-navigation-close-icon"
+                    id="mobile-menu-close-trigger"
+                  ></span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="mobile-menu-overlay__body">
+          <nav class="offcanvas-navigation">
+		 
+            <ul>
+			 {foreach $classtypedata as $v}
+			 {if($v['pid']==0 && $v['isshow']==1)}
+				 {if($v['haschild'])}
+				<li class="has-children">
+				  <a href="{$v['url']}"><span>{$v['classname']}</span></a>
+				  <ul class="sub-menu">
+					{foreach $v['children']['list'] as $vv}
+					<li>
+					  <a href="{$vv['url']}"><span>{$vv['classname']}</span></a>
+					</li>
+					{/foreach}
+					
+				  </ul>
+				</li>
+				{else}
+				<li>
+				  <a href="{$v['url']}"><span>{$v['classname']}</span></a>
+				</li>
+				
+				{/if}
+              
+			  {/if}
+			  {/foreach}
+             
+            </ul>
+          </nav>
+        </div>
+      </div>
+    </div>
+<!-- Modal -->
+<div class="modal fade" id="loginModel" tabindex="-1" aria-labelledby="loginModelLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="loginModelLabel">登录</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+       
+	    <div class="mb-3">
+		  <label for="m-user" class="form-label">账户</label>
+		  <input type="text" class="form-control" id="m-user" placeholder="请输入邮箱/昵称/手机号">
+		</div>
+		<div class="mb-3">
+		  <label for="m-pass" class="form-label">密码</label>
+		  <input type="password" class="form-control" id="m-pass" placeholder="请输入登录密码">
+		</div>
+		{if(!$webconf['closehomevercode'])}
+		<div class="mb-3">
+		  <label for="m-yzm" class="form-label">验证码</label>
+		  <input type="text" class="form-control" id="m-yzm" placeholder="请输入验证码">
+		</div>
+		<div class="mb-3">
+			<img src="/common/vercode?name=login_vercode"  onclick="this.src=this.src+'&'+Math.random()">
+		</div>
+		{/if}
+		<div class="mb-3">
+		<p>没有账户？<a  class="register" style="color:#5974ff;" data-bs-dismiss="modal" data-bs-toggle="modal" data-bs-target="#registerModel">点击注册</a></p>
+		</div>
+		
+		
+		
+	   
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">关闭</button>
+        <button type="button" onclick="mlogin()" class="btn btn-primary">登录</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="registerModel" tabindex="-1" aria-labelledby="registerModelLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="registerModelLabel">注册</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div class="mb-3">
+		  <label for="r-tel" class="form-label">*手机</label>
+		  <input type="tel" class="form-control" id="r-tel" placeholder="请输入手机号">
+		</div>
+		<div class="mb-3">
+		  <label for="r-pass" class="form-label">*密码</label>
+		  <input type="password" class="form-control" id="r-pass" placeholder="请输入登录密码">
+		</div>
+		<div class="mb-3">
+		  <label for="r-pass" class="form-label">*重复密码</label>
+		  <input type="password" class="form-control" id="r-repass" placeholder="请输入登录密码">
+		</div>
+		{if(!$webconf['closehomevercode'])}
+		<div class="mb-3">
+		  <label for="r-yzm" class="form-label">*验证码</label>
+		  <input type="text" class="form-control" id="r-yzm" placeholder="请输入验证码">
+		</div>		
+		<div class="mb-3">
+			<img id="register-yzm" src="/common/vercode?name=reg_vercode" onclick="this.src=this.src+'&'+Math.random()">
+		</div>
+		{/if}
+		<div class="mb-3">
+		<p>已有账户？<a  class="login" style="color:#5974ff;" data-bs-dismiss="modal" data-bs-toggle="modal" data-bs-target="#loginModel">点击登录</a></p>
+		</div>
+		
+		
+		
+	   
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">关闭</button>
+        <button type="button" onclick="mregister()" class="btn btn-primary">注册</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+

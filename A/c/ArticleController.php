@@ -24,7 +24,7 @@ class ArticleController extends CommonController
 	function articlelist(){
 		$page = new Page('Article');
 		$classtypedata = $this->classtypedata;
-		$this->fields_list = M('Fields')->findAll(array('molds'=>'article','islist'=>1),'orders desc');
+		$this->fields_list = M('Fields')->findAll(array('molds'=>'article','islist'=>1),'listorders desc');
 		$this->isshow = $this->frparam('isshow');
 		$this->tid=  $this->frparam('tid');
 		$this->title = $this->frparam('title',1);
@@ -45,61 +45,11 @@ class ArticleController extends CommonController
 
 
 			}
-			
-			if($this->frparam('isshow')){
-				if($this->frparam('isshow')==1){
-					$isshow=1;
-				}else if($this->frparam('isshow')==2){
-					$isshow=0;
-				}else{
-					$isshow = 2;
-				}
-				$sql .= ' and isshow='.$isshow;
-			}
-			
-			if($this->frparam('tid')){
-				$sql .= ' and tid in('.implode(",",$classtypedata[$this->frparam('tid')]["children"]["ids"]).')';
-			}
-
 			$sql .= $get_sql;
-			
-			
-			if($this->frparam('title',1)!=''){
-				$sql.=" and title like '%".$this->frparam('title',1)."%' ";
-			}
-			if($this->frparam('shuxing')){
-				if($this->frparam('shuxing')==1){
-					$sql.=" and istop=1 ";
-				}
-				if($this->frparam('shuxing')==2){
-					$sql.=" and ishot=1 ";
-				}
-				if($this->frparam('shuxing')==3){
-					$sql.=" and istuijian=1 ";
-				}
-				
-			}
-			$data = $page->where($sql)->orderby('istop desc,orders desc,id desc')->limit($this->frparam('limit',0,10))->page($this->frparam('page',0,1))->go();
+			$data = $page->where($sql)->orderby('orders desc,id desc')->limit($this->frparam('limit',0,10))->page($this->frparam('page',0,1))->go();
 			$ajaxdata = [];
 			foreach($data as $k=>$v){
 				
-				if($v['ishot']==1){
-					$v['tuijian'] = '热';
-				}else if($v['istuijian']==1){
-					$v['tuijian'] = '荐';
-				}else if($v['istop']==1){
-					$v['tuijian'] = '顶';
-				}else{
-					$v['tuijian'] = '无';
-				}
-				if(isset($classtypedata[$v['tid']])){
-					$v['new_tid'] = $classtypedata[$v['tid']]['classname'];
-				}else{
-					$v['new_tid'] = '[未分类]';
-				}
-				$v['new_litpic'] = $v['litpic']=='' ? '' : get_domain().$v['litpic'];
-				$v['new_isshow'] = $v['isshow']==1 ? '已审' : '未审';
-				$v['new_addtime'] = "\t".date('Y-m-d H:i:s',$v['addtime'])."\t";
 				$v['view_url'] = gourl($v,$v['htmlurl']);
 				$v['edit_url'] = U('Article/editarticle',array('id'=>$v['id']));
 			
@@ -129,14 +79,36 @@ class ArticleController extends CommonController
 		if($this->frparam('go',1)==1){
 			
 			$data = $this->frparam();
-			$data['addtime'] = strtotime($data['addtime']);
-			$data['title'] = $this->frparam('title',1);
-			$data['keywords'] = $this->frparam('keywords',1);
-			$data['seo_title'] = $this->frparam('seo_title',1) ? $this->frparam('seo_title',1) : $this->frparam('title',1);
-			$data['body'] = $this->frparam('body',4);
+			$data = get_fields_data($data,'article');
+			if(!$this->frparam('seo_title',1) && $this->frparam('config_seotitle')==1){
+				$data['seo_title'] = $data['title'];
+			}
+			if(!$this->frparam('description',1) && $this->frparam('config_description')==1){
+				$data['description'] = newstr(strip_tags($data['body']),200);
+			}
+			if(!$this->frparam('litpic',1) && $this->frparam('config_litpic')==1){
+				$pattern='/<img.*?src="(.*?)".*?>/is';
+				if(!$this->frparam('body',1)){
+					$r = preg_match($pattern,$_POST['body'],$matchContent);
+					if($r){
+						$data['litpic'] = $matchContent[1];
+					}else{
+						$data['litpic'] = '';
+					}
+					
+				}else{
+					$data['litpic'] = '';
+				}
+			}
+			if(!$this->frparam('tags',1) && $this->frparam('config_tags')==1){
+				$data['tags'] = str_replace('，',',',$data['keywords']);
+				if($data['tags']){
+					$data['tags'] = ','.$data['tags'].',';
+				}
+			}
+			
 			$data['userid'] = $_SESSION['admin']['id'];
-			$data['description'] = !$this->frparam('description',1) ? strip_tags($data['body']) :$this->frparam('description',1);
-			$data['description'] = newstr($data['description'],500);
+			
 			if($this->frparam('litpic',1)==''){
 				$pattern='/<img.*?src="(.*?)".*?>/is';
 				if($this->frparam('body',1)!=''){
@@ -151,55 +123,33 @@ class ArticleController extends CommonController
 					$data['litpic'] = '';
 				}
 			}
-			$pclass = get_info_table('classtype',array('id'=>$data['tid']));
-			$data['molds'] = $pclass['molds'];
-			$data['htmlurl'] = $pclass['htmlurl'];
-			$data['istop'] = $this->frparam('istop',0,0);
-			$data['ishot'] = $this->frparam('ishot',0,0);
-			$data['istuijian'] = $this->frparam('istuijian',0,0);
-			$data = get_fields_data($data,'article');
-			$data['tags'] = $data['tags'] ? $data['tags'] : str_replace('，',',',$data['keywords']);
-			if($data['tags']!=''){
-				$data['tags'] = ','.$data['tags'].',';
-			}
+			
+			$data['htmlurl'] = $data['tid'] ? $this->classtypedata[$data['tid']]['htmlurl'] : null;
+			
 			//违禁词检测
-			if(isset($this->webconf['mingan']) && $this->webconf['mingan']!=''){
+			if($this->webconf['mingan'] && $this->frparam('config_filter',1)){
 				$mingan = explode(',',$this->webconf['mingan']);
+				$filter = explode(',',$this->frparam('config_filter',1));
+				$fields = $this->getTableFields('article');
 				foreach($mingan as $s){
 					if(strpos($s,'{xxx}')!==false){
 						$pattern = '/'.str_replace('{xxx}','(.*)',$s).'/';
-						if(preg_match($pattern, $data['title'])){
-							JsonReturn(array('code'=>1,'msg'=>'添加失败，标题存在敏感词 [ '.$s.' ]'));
+						foreach($filter as $vv){
+							if($vv && preg_match($pattern, $data[$vv])){
+								JsonReturn(array('code'=>1,'msg'=>'添加失败，【'.$fields[$vv].'】存在敏感词 [ '.$s.' ]'));
+							}
+							
 						}
-						if(preg_match($pattern, $data['keywords'])){
-							JsonReturn(array('code'=>1,'msg'=>'添加失败，关键词存在敏感词 [ '.$s.' ]'));
-						}
-						if(preg_match($pattern, $data['seo_title'])){
-							JsonReturn(array('code'=>1,'msg'=>'添加失败，SEO标题存在敏感词 [ '.$s.' ]'));
-						}
-						if(preg_match($pattern, $data['description'])){
-							JsonReturn(array('code'=>1,'msg'=>'添加失败，简介存在敏感词 [ '.$s.' ]'));
-						}
-						if(preg_match($pattern, $data['body'])){
-							JsonReturn(array('code'=>1,'msg'=>'添加失败，内容存在敏感词 [ '.$s.' ]'));
-						}
+						
 
 					}else{
-						if(strpos($data['title'],$s)!==false){
-							JsonReturn(array('code'=>1,'msg'=>'添加失败，标题存在敏感词 [ '.$s.' ]'));
+						foreach($filter as $vv){
+							if($vv && strpos($data[$vv],$s)!==false ){
+								JsonReturn(array('code'=>1,'msg'=>'添加失败，【'.$fields[$vv].'】存在敏感词 [ '.$s.' ]'));
+							}
+							
 						}
-						if(strpos($data['keywords'],$s)!==false){
-							JsonReturn(array('code'=>1,'msg'=>'添加失败，关键词存在敏感词 [ '.$s.' ]'));
-						}
-						if(strpos($data['seo_title'],$s)!==false){
-							JsonReturn(array('code'=>1,'msg'=>'添加失败，SEO标题存在敏感词 [ '.$s.' ]'));
-						}
-						if(strpos($data['description'],$s)!==false){
-							JsonReturn(array('code'=>1,'msg'=>'添加失败，简介存在敏感词 [ '.$s.' ]'));
-						}
-						if(strpos($data['body'],$s)!==false){
-							JsonReturn(array('code'=>1,'msg'=>'添加失败，内容存在敏感词 [ '.$s.' ]'));
-						}
+						
 					}
 				}
 			}
@@ -223,7 +173,7 @@ class ArticleController extends CommonController
 					M('customurl')->add(['molds'=>'article','url'=>$data['ownurl'],'tid'=>$data['tid'],'addtime'=>time(),'aid'=>$r]);
 				}
 				//tags处理
-				if($data['tags']!=''){
+				if($data['tags']){
 					$tags = explode(',',$data['tags']);
 					foreach($tags as $v){
 						if($v!=''){
@@ -243,6 +193,21 @@ class ArticleController extends CommonController
 						}
 					}
 				}
+				//处理配置信息
+				$config = $this->webconf['article_config'];
+				$configdata = json_decode($config,1);
+				if($configdata['seotitle']!=$this->frparam('config_seotitle') || $configdata['litpic']!=$this->frparam('config_litpic') || $configdata['tags']!=$this->frparam('config_tags') || $configdata['filter']!=$this->frparam('config_filter',1)){
+					$configdata = [
+						'seotitle'=>$this->frparam('config_seotitle'),
+						'litpic'=>$this->frparam('config_litpic'),
+						'description'=>$this->frparam('config_description'),
+						'tags'=>$this->frparam('config_tags'),
+						'filter'=>$this->frparam('config_filter',1),
+					];
+					M('sysconfig')->update(['field'=>'article_config'],['data'=>json_encode($configdata,JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES)]);
+					setCache('webconfig',null);
+				}
+				
 				
 				JsonReturn(array('code'=>0,'msg'=>'添加成功,继续添加~','url'=>U('addarticle',array('tid'=>$data['tid']))));
 				exit;
@@ -252,25 +217,62 @@ class ArticleController extends CommonController
 			
 		}
 		$this->molds = M('molds')->find(['biaoshi'=>'article']);
-		//$classtype = M('classtype')->findAll(null,'orders desc');
-		//$classtype = getTree($classtype);
 		$this->tid = $this->frparam('tid');
 		$this->classtypes = $this->classtypetree;
+		
+		$config = $this->webconf['article_config'];
+		if(!$config){
+			$configdata = [
+				'seotitle'=>1,
+				'litpic'=>1,
+				'description'=>1,
+				'tags'=>1,
+				'filter'=>'title,keywords,body',
+			];
+			M('sysconfig')->add(['title'=>'内容配置','field'=>'article_config','type'=>3,'data'=>json_encode($configdata,JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES),'typeid'=>0]);
+			setCache('webconfig',null);
+		}else{
+			$configdata = json_decode($config,1);
+		}
+		$this->configdata = $configdata;
+		
 		$this->display('article-add');
 	}
-	public function editarticle(){
+	
+	function editarticle(){
 		$this->fields_biaoshi = 'article';
 		if($this->frparam('go',1)==1){
 			
 			$data = $this->frparam();
-			$data['addtime'] = strtotime($data['addtime']);
-			$data['body'] = $this->frparam('body',4);
-			$data['title'] = $this->frparam('title',1);
-			$data['tid'] = $this->frparam('tid',0,0);
-			$data['keywords'] = $this->frparam('keywords',1);
-			$data['seo_title'] = $this->frparam('seo_title',1) ? $this->frparam('seo_title',1) : $this->frparam('title',1);
-			$data['description'] = !$this->frparam('description',1) ? strip_tags($data['body']) : $this->frparam('description',1);
-			$data['description'] = newstr($data['description'],500);
+			$data = get_fields_data($data,'article');
+			if(!$this->frparam('seo_title',1) && $this->frparam('config_seotitle')==1){
+				$data['seo_title'] = $data['title'];
+			}
+			if(!$this->frparam('description',1) && $this->frparam('config_description')==1){
+				$data['description'] = newstr(strip_tags($data['body']),200);
+			}
+			if(!$this->frparam('litpic',1) && $this->frparam('config_litpic')==1){
+				$pattern='/<img.*?src="(.*?)".*?>/is';
+				if(!$this->frparam('body',1)){
+					$r = preg_match($pattern,$_POST['body'],$matchContent);
+					if($r){
+						$data['litpic'] = $matchContent[1];
+					}else{
+						$data['litpic'] = '';
+					}
+					
+				}else{
+					$data['litpic'] = '';
+				}
+			}
+			if(!$this->frparam('tags',1) && $this->frparam('config_tags')==1){
+				$data['tags'] = str_replace('，',',',$data['keywords']);
+				if($data['tags']){
+					$data['tags'] = ','.$data['tags'].',';
+				}
+			}
+			
+			$data['userid'] = $_SESSION['admin']['id'];
 			
 			if($this->frparam('litpic',1)==''){
 				$pattern='/<img.*?src="(.*?)".*?>/is';
@@ -287,56 +289,31 @@ class ArticleController extends CommonController
 				}
 			}
 			
-			$pclass = get_info_table('classtype',array('id'=>$data['tid']));
-			$data['molds'] = $pclass['molds'];
-			$data['htmlurl'] = $pclass['htmlurl'];
-			$data['istop'] = $this->frparam('istop',0,0);
-			$data['ishot'] = $this->frparam('ishot',0,0);
-			$data['istuijian'] = $this->frparam('istuijian',0,0);
-			$data = get_fields_data($data,'article');
-			$data['tags'] = $data['tags'] ? $data['tags'] : str_replace('，',',',$data['keywords']);
-			if($data['tags']!=''){
-				$data['tags'] = ','.$data['tags'].',';
-			}
-
+			$data['htmlurl'] = $data['tid'] ? $this->classtypedata[$data['tid']]['htmlurl'] : null;
 			//违禁词检测
-			if(isset($this->webconf['mingan']) && $this->webconf['mingan']!=''){
+			if($this->webconf['mingan'] && $this->frparam('config_filter',1)){
 				$mingan = explode(',',$this->webconf['mingan']);
+				$filter = explode(',',$this->frparam('config_filter',1));
+				$fields = $this->getTableFields('article');
 				foreach($mingan as $s){
 					if(strpos($s,'{xxx}')!==false){
 						$pattern = '/'.str_replace('{xxx}','(.*)',$s).'/';
-						if(preg_match($pattern, $data['title'])){
-							JsonReturn(array('code'=>1,'msg'=>'添加失败，标题存在敏感词 [ '.$s.' ]'));
+						foreach($filter as $vv){
+							if($vv && preg_match($pattern, $data[$vv])){
+								JsonReturn(array('code'=>1,'msg'=>'修改失败，【'.$fields[$vv].'】存在敏感词 [ '.$s.' ]'));
+							}
+							
 						}
-						if(preg_match($pattern, $data['keywords'])){
-							JsonReturn(array('code'=>1,'msg'=>'添加失败，关键词存在敏感词 [ '.$s.' ]'));
-						}
-						if(preg_match($pattern, $data['seo_title'])){
-							JsonReturn(array('code'=>1,'msg'=>'添加失败，SEO标题存在敏感词 [ '.$s.' ]'));
-						}
-						if(preg_match($pattern, $data['description'])){
-							JsonReturn(array('code'=>1,'msg'=>'添加失败，简介存在敏感词 [ '.$s.' ]'));
-						}
-						if(preg_match($pattern, $data['body'])){
-							JsonReturn(array('code'=>1,'msg'=>'添加失败，内容存在敏感词 [ '.$s.' ]'));
-						}
+						
 
 					}else{
-						if(strpos($data['title'],$s)!==false){
-							JsonReturn(array('code'=>1,'msg'=>'添加失败，标题存在敏感词 [ '.$s.' ]'));
+						foreach($filter as $vv){
+							if($vv && strpos($data[$vv],$s)!==false ){
+								JsonReturn(array('code'=>1,'msg'=>'修改失败，【'.$fields[$vv].'】存在敏感词 [ '.$s.' ]'));
+							}
+							
 						}
-						if(strpos($data['keywords'],$s)!==false){
-							JsonReturn(array('code'=>1,'msg'=>'添加失败，关键词存在敏感词 [ '.$s.' ]'));
-						}
-						if(strpos($data['seo_title'],$s)!==false){
-							JsonReturn(array('code'=>1,'msg'=>'添加失败，SEO标题存在敏感词 [ '.$s.' ]'));
-						}
-						if(strpos($data['description'],$s)!==false){
-							JsonReturn(array('code'=>1,'msg'=>'添加失败，简介存在敏感词 [ '.$s.' ]'));
-						}
-						if(strpos($data['body'],$s)!==false){
-							JsonReturn(array('code'=>1,'msg'=>'添加失败，内容存在敏感词 [ '.$s.' ]'));
-						}
+						
 					}
 				}
 			}
@@ -350,10 +327,8 @@ class ArticleController extends CommonController
 					if($customurl){
 						if($customurl['aid']!=$this->frparam('id')){
 							JsonReturn(array('code'=>1,'msg'=>'已存在相同的自定义URL！'));
-						}else if($customurl['url']!=$data['ownurl']){
+						}else{
 							M('customurl')->update(['id'=>$customurl['id']],['url'=>$data['ownurl'],'tid'=>$data['tid'],'molds'=>'article']);
-						}else if($customurl['url']==$data['ownurl'] && $customurl['tid']!=$data['tid']){
-							M('customurl')->update(['id'=>$customurl['id']],['tid'=>$data['tid']]);
 						}
 						
 					}else{
@@ -450,6 +425,20 @@ class ArticleController extends CommonController
 					}
 
 					
+					$config = $this->webconf['article_config'];
+					$configdata = json_decode($config,1);
+					if($configdata['seotitle']!=$this->frparam('config_seotitle') || $configdata['litpic']!=$this->frparam('config_litpic') || $configdata['tags']!=$this->frparam('config_tags') || $configdata['filter']!=$this->frparam('config_filter',1)){
+						$configdata = [
+							'seotitle'=>$this->frparam('config_seotitle'),
+							'litpic'=>$this->frparam('config_litpic'),
+							'description'=>$this->frparam('config_description'),
+							'tags'=>$this->frparam('config_tags'),
+							'filter'=>$this->frparam('config_filter',1),
+						];
+						M('sysconfig')->update(['field'=>'article_config'],['data'=>json_encode($configdata,JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES)]);
+						setCache('webconfig',null);
+					}
+					
 					JsonReturn(array('code'=>0,'msg'=>'修改成功！','url'=>U('index')));
 				}else{
 					JsonReturn(array('code'=>1,'msg'=>'您未做任何修改，不能提交！'));
@@ -463,15 +452,47 @@ class ArticleController extends CommonController
 			$this->data = M('Article')->find(array('id'=>$this->frparam('id')));
 		}
 		$this->molds = M('molds')->find(['biaoshi'=>'article']);
-		$this->classtypes = $this->classtypetree;
+		$this->classtypes = $this->classtypedata;
+		$config = $this->webconf['article_config'];
+		if(!$config){
+			$configdata = [
+				'seotitle'=>1,
+				'litpic'=>1,
+				'description'=>1,
+				'tags'=>1,
+				'filter'=>'title,keywords,body',
+			];
+			M('sysconfig')->add(['title'=>'内容配置','field'=>'article_config','type'=>3,'data'=>json_encode($configdata,JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES),'typeid'=>0]);
+			setCache('webconfig',null);
+		}else{
+			$configdata = json_decode($config,1);
+		}
+		$this->configdata = $configdata;
+		
 		$this->display('article-edit');
 		
 	}
+	
 	function deletearticle(){
 		$id = $this->frparam('id');
 		if($id){
-			if(M('Article')->delete('id='.$id)){
+			$data = M('article')->find(['id'=>$id]);
+			if(M('Article')->delete(['id'=>$id])){
+				$customurl = M('customurl')->find(['molds'=>'article','aid'=>$id]);
 				M('customurl')->delete(['molds'=>'article','aid'=>$id]);
+				$w['molds'] = 'article';
+				$w['data'] = json_encode($data,JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+				$w['addtime'] = time();
+				$r = M('recycle')->add($w);
+				if($customurl){
+					$w['molds'] = 'customurl';
+					$w['data'] = json_encode($customurl,JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+					$w['addtime'] = time();
+					$w['aid'] = $r;
+					M('recycle')->add($w);
+				}
+				
+				
 				JsonReturn(array('code'=>0,'msg'=>'删除成功！'));
 			}else{
 				JsonReturn(array('code'=>1,'msg'=>'删除失败！'));
@@ -497,8 +518,30 @@ class ArticleController extends CommonController
 	function deleteAll(){
 		$data = $this->frparam('data',1);
 		if($data!=''){
+			$all = M('article')->findAll('id in('.$data.')');
 			if(M('article')->delete('id in('.$data.')')){
+				$customurls = M('customurl')->findAll(" aid in(".$data.") and molds='article' ");
 				M('customurl')->delete(" aid in(".$data.") and molds='article' ");
+				$newcustomurl = [];
+				if($customurls){
+					foreach($customurls as $v){
+						$newcustomurl[$v['aid']] = $v;
+					}
+				}
+				
+				foreach($all as $v){
+					$w['molds'] = 'article';
+					$w['data'] = json_encode($v,JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+					$w['addtime'] = time();
+					$x = M('recycle')->add($w);
+					if($x && $newcustomurl[$v['id']]){
+						$w['molds'] = 'customurl';
+						$w['data'] = json_encode($newcustomurl[$v['id']],JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+						$w['addtime'] = time();
+						$w['aid'] = $x;
+						M('recycle')->add($w);
+					}
+				}
 				JsonReturn(array('code'=>0,'msg'=>'批量删除成功！'));
 				
 			}else{
@@ -556,19 +599,22 @@ class ArticleController extends CommonController
 		$tj = $this->frparam('tj');
 		if($data!=''){
 			$list = M('article')->findAll('id in('.$data.')');
-			$r = true;
+			
 			foreach($list as $v){
-				if($tj==1){
-				   $w['istop'] = $v['istop']==1 ? 0 : 1;
+				if(strpos($v['jzattr'],','.$tj.',')!==false){
+					$attr = str_replace(','.$tj.',','',$v['jzattr']);
+					if(!$attr){
+						$w['jzattr'] = '';
+					}else{
+						$w['jzattr'] = ','.trim($attr,',').',';
+					}
+				}else{
+					if($v['jzattr']){
+						$w['jzattr'] = $v['jzattr'].$tj.',';
+					}else{
+						$w['jzattr'] = ','.$tj.',';
+					}
 				}
-				if($tj==2){
-				   $w['ishot'] = $v['ishot']==1 ? 0 : 1;
-				}
-				if($tj==3){
-				   $w['istuijian'] = $v['istuijian']==1 ? 0 : 1;
-				}
-				
-				
 				M('Article')->update(array('id'=>$v['id']),$w);
 			}
 			JsonReturn(array('code'=>0,'msg'=>'批量修改成功！'));
@@ -642,7 +688,26 @@ class ArticleController extends CommonController
 		}
 	}
 	
-	
+	private function getTableFields($table){
+		$sql="select distinct * from information_schema.columns where table_schema = '".DB_NAME."' and  table_name = '".DB_PREFIX.$table."'";
+        $list = M()->findSql($sql);
+        $isgo = true;
+        $fields = [];
+		
+        foreach($list as $v){
+			$len = 0;
+			$s = preg_match('/\((.*)\)/',$v['COLUMN_TYPE'],$math);
+			if($s){
+				$len = $math[1];
+			}
+			$fields[$v['COLUMN_NAME']] = $v['COLUMN_COMMENT'] ? $v['COLUMN_COMMENT'] : $v['COLUMN_NAME'];
+			
+            
+
+        }
+        return $fields;
+
+    }
 	
 	
 	

@@ -99,35 +99,38 @@ class FrPHP
     public function route()
     {
 		
-		
-		//检查是否开启redis_session ---2019/09/05 留恋风
-		if(open_redis_session){
-			$session = new \SessionRedis($this->config['redis']);
-			session_set_save_handler($session,true);
-			if (!isset($_COOKIE['PHPSESSID'])) {
-				session_set_cookie_params($this->config['redis']['EXPIRE']);
-				if(!session_id()){ session_start();}
-			} else {
-				if(!session_id()){ session_start();}
-				setcookie('PHPSESSID', $_COOKIE['PHPSESSID'], time() + $this->config['redis']['EXPIRE'],'/');
+		//读取系统配置
+		$webconfig = getCache('webconfig');
+		if( !isset($webconfig['closesession']) || (isset($webconfig['closesession']) && $webconfig['closesession']==0) || APP_HOME=='A'){
+			//检查是否开启redis_session ---2019/09/05 留恋风
+			if(open_redis_session){
+				$session = new \SessionRedis($this->config['redis']);
+				session_set_save_handler($session,true);
+				if (!isset($_COOKIE['PHPSESSID'])) {
+					session_set_cookie_params($this->config['redis']['EXPIRE']);
+					if(!session_id()){ session_start();}
+				} else {
+					if(!session_id()){ session_start();}
+					setcookie('PHPSESSID', $_COOKIE['PHPSESSID'], time() + $this->config['redis']['EXPIRE'],'/');
+				}
+			}else{
+				
+				//开启SESSION,并设置600s缓存时间
+				//start_session(SessionTime);
+				$session = new \FrSession(array('save_path'=>Session_Path,'life_time'=>SessionTime));
+				session_set_save_handler($session,true);
+				if (!isset($_COOKIE['PHPSESSID'])) {
+					session_set_cookie_params(SessionTime);
+					if(!session_id()){ session_start();}
+				} else {
+					if(!session_id()){ session_start();}
+					setcookie('PHPSESSID', $_COOKIE['PHPSESSID'], time() + SessionTime,'/');
+				}
+				
+				
 			}
-		}else{
-			
-			//开启SESSION,并设置600s缓存时间
-			//start_session(SessionTime);
-			
-			$session = new \FrSession(array('save_path'=>Session_Path,'life_time'=>SessionTime));
-			session_set_save_handler($session,true);
-			if (!isset($_COOKIE['PHPSESSID'])) {
-				session_set_cookie_params(SessionTime);
-				if(!session_id()){ session_start();}
-			} else {
-				if(!session_id()){ session_start();}
-				setcookie('PHPSESSID', $_COOKIE['PHPSESSID'], time() + SessionTime,'/');
-			}
-			
-			
 		}
+		
 		if(isset($_SERVER['argv']) && !isset($_SERVER['REQUEST_URI'])){
 			$url = urldecode($_SERVER['argv'][1]);
 		}else{
@@ -216,10 +219,8 @@ class FrPHP
             define('APP_URL','/index.php');
         }
 		//去除最后的.html后缀
-		if(File_TXT!=''){
-			if(strpos($url,File_TXT)!==False){
-				$url = str_ireplace(File_TXT,'',$url);
-			}	
+		if(strpos($url,'.html')!==False){
+			$url = str_ireplace('.html','',$url);
 		}
 		
         // 删除前后的“/”

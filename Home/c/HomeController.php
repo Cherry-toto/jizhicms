@@ -28,7 +28,7 @@ class HomeController extends CommonController
 		}
 		$url = current_url();
 		$this->ishome = true;
-		$cache_file = APP_PATH.'cache/data/'.md5($url);
+		$cache_file = APP_PATH.'cache/data/'.md5('index.php');
 		$this->cache_file = $cache_file;
 		$this->start_cache($cache_file);
 		$this->display($this->template.'/index');
@@ -42,26 +42,23 @@ class HomeController extends CommonController
 		$position = strpos($request_url,'?');
 		$url = ($position!==FALSE) ? substr($request_url,0,$position) : $request_url;
 		$url = substr($url,1,strlen($url)-1);
-		
-		if($this->webconf['isautositemap']){
-			$this->sitemap();
-		}
-	
-		if($url=='' || $url=='/' || $url=='index.php' || $url=='index'.File_TXT){
+
+		if($url=='' || $url=='/' || $url=='index.php' || $url=='index.html'){
 			$this->index();exit;
 		}
 		$this->ishome = false;
-		//检查缓存
-		$cache_file = APP_PATH.'cache/data/'.md5($request_url);
-		$this->cache_file = $cache_file;
-		if(!$this->frparam('ajax')){
-			$this->start_cache($cache_file);
-		}
+		
 		//  news/123.html  news-123.html  news-list-123.html
-		$url = str_ireplace(File_TXT,'',$url);
+		$url = str_ireplace('.html','',$url);
 		//strripos
 		if(File_TXT_HIDE && !CLASS_HIDE_SLASH){
 			$url = (strripos($url,'/')+1 == strlen($url)) ? substr($url,0,strripos($url,'/')) : $url; 
+		}
+		//检查缓存
+		$cache_file = APP_PATH.'cache/data/'.md5($url);
+		$this->cache_file = $cache_file;
+		if(!$this->frparam('ajax')){
+			$this->start_cache($cache_file);
 		}
 		
 		if(!$this->webconf['islevelurl']){
@@ -171,15 +168,15 @@ class HomeController extends CommonController
 			$res['url'] = $this->classtypedata[$res['id']]['url'];
 			$this->type =  $res;
 			//检查授权
-			if($res['gid']!=0){
+			if($res['gids']){
+				$gids = explode(',',$res['gids']);
 				if(!$this->islogin){
 					Redirect(U('Login/index'));
 				}else{
-					if($this->member['gid']<$res['gid']){
+					if(!in_array($this->member['gid'],$gids)){
 						Error('对不起，您没有访问权限！');
 					}
 				}
-				
 			}
 			
 			if(isset($id)){
@@ -195,8 +192,9 @@ class HomeController extends CommonController
 			$children = $this->classtypedata[$res['id']]['children']['ids'];
 			$child = [];
 			foreach($children as $v){
-				if($this->classtypedata[$v]['gid']!=0){
-					if($this->islogin && $this->member['gid']>=$this->classtypedata[$v]['gid']){
+				if($this->classtypedata[$v]['gids']){
+					$gids_n = explode(',',$this->classtypedata[$v]['gids']);
+					if($this->islogin && in_array($this->member['gid'],$gids_n)){
 						$child[]=$v;
 					}
 				}else{
@@ -205,7 +203,7 @@ class HomeController extends CommonController
 			}
 			$sql = ' isshow=1 ';
 			$molds = $res['molds'];
-			$sql .= ' and tid in ('.implode(',',$child).') ';
+			$sql .= " and tid in (".implode(',',$child).") or tids like '%,".$this->type['id'].",%' ";
 			$page = new Page($molds);
 			
 			//手动设置分页条数
@@ -213,29 +211,29 @@ class HomeController extends CommonController
 			if($this->frparam('limit')){
 				$limit = $this->frparam('limit');
 			}
-			$orders = 'istop desc,orders desc,addtime desc,id desc';
+			$orders = 'orders desc,addtime desc,id desc';
 			$ot = $this->frparam('orders') ? $this->frparam('orders') : $res['orderstype'];
 			switch($ot){
 				case 1:
-					$orders = 'istop desc,orders desc,addtime desc,id desc';
+					$orders = 'orders desc,addtime desc,id desc';
 				break;
 				case 2:
-					$orders = 'istop desc,orders desc,id asc';
+					$orders = 'orders desc,id asc';
 				break;
 				case 3:
-					$orders = 'istop desc,orders asc';
+					$orders = 'orders asc';
 				break;
 				case 4:
-					$orders = 'istop desc,addtime desc';
+					$orders = 'addtime desc';
 				break;
 				case 5:
-					$orders = 'istop desc,id asc';
+					$orders = 'id asc';
 				break;
 				case 6:
-					$orders = 'istop desc,hits desc';
+					$orders = 'hits desc';
 				break;
 				case 7:
-					$orders = 'istop desc,addtime asc';
+					$orders = 'addtime asc';
 				break;
 			}
 			$limit = $limit<=0 ? 15 : $limit;
@@ -251,7 +249,6 @@ class HomeController extends CommonController
 				}
 				
 			}
-			
 			$this->lists = $data;//列表数据
 			$this->sum = $page->sum;//总数据
 			$this->listpage = $page->listpage;//分页数组-自定义分页可用
@@ -358,7 +355,7 @@ class HomeController extends CommonController
 			//html
 			$url = ($position!==FALSE) ? substr($request_url,0,$position) : $request_url;
 			$url = substr($url,1,strlen($url)-1);
-			$html = str_ireplace(File_TXT,'',$url);
+			$html = str_ireplace('.html','',$url);
 			$indexdata = file_get_contents(APP_PATH.'index.php');
 			$rr = preg_match("/define\('TPL_PATH',[\'|\"](.*?)[\'|\"]\)/",$indexdata,$matches);
 			if($rr){
@@ -366,7 +363,15 @@ class HomeController extends CommonController
 			}else{
 				$tplpath = 'Home';
 			}
-			$filepath = APP_PATH.$tplpath.'/'.HOME_VIEW.'/'.$this->template.'/page/'.$html.'.html';
+			
+			if(defined('TPL_PATH')){
+				$path = TPL_PATH;
+			}else{
+				$path = APP_HOME;
+			}
+			$filepath = HOME_VIEW ? $path.HOME_VIEW.'/'.TEMPLATE.'/page/'.$html.File_TXT : $path.TEMPLATE.'/page/'.$html.File_TXT;
+			
+			$filepath = APP_PATH.$tplpath.'/'.HOME_VIEW.'/'.$this->template.'/page/'.$html.File_TXT;
 			if(file_exists($filepath)){
 				$this->display($this->template.'/page/'.$html);
 				exit;
@@ -420,23 +425,24 @@ class HomeController extends CommonController
 		$res['url'] = $this->classtypedata[$res['id']]['url'];
 		$this->type = $res;
 		//检查授权
-		if($res['gid']!=0){
+		if($res['gids']){
+			$gids = explode(',',$res['gids']);
 			if(!$this->islogin){
 				Redirect(U('Login/index'));
 			}else{
-				if($this->member['gid']<$res['gid']){
+				if(!in_array($this->member['gid'],$gids)){
 					Error('对不起，您没有访问权限！');
 				}
 			}
-			
 		}
 		if($isclass){
 			
 			$children = $this->classtypedata[$res['id']]['children']['ids'];
 			$child = [];
 			foreach($children as $v){
-				if($this->classtypedata[$v]['gid']!=0){
-					if($this->islogin && $this->member['gid']>=$this->classtypedata[$v]['gid']){
+				if($this->classtypedata[$v]['gids']){
+					$gids_n = explode(',',$this->classtypedata[$v]['gids']);
+					if($this->islogin && in_array($this->member['gid'],$gids_n)){
 						$child[]=$v;
 					}
 				}else{
@@ -455,13 +461,8 @@ class HomeController extends CommonController
 				$limit = $this->frparam('limit');
 			}
 			$this->currentpage = $this->frpage;
-			//只适合article和product
-			if($molds=='article' || $molds=='product'){
-				
-				$data = $page->where($sql)->orderby('istop desc,orders desc,id desc')->limit($limit)->page($this->frpage)->go();
-			}else{
-				$data = $page->where($sql)->orderby('orders desc,id desc')->limit($limit)->page($this->frpage)->go();
-			}
+			
+			$data = $page->where($sql)->orderby('orders desc,id desc')->limit($limit)->page($this->frpage)->go();
 			
 			
 			$pages = $page->pageList(5,'-');
@@ -586,8 +587,6 @@ class HomeController extends CommonController
 		
 	}
 	
-	
-	
 	//详情
 	function jizhi_details($id){
 		
@@ -607,26 +606,17 @@ class HomeController extends CommonController
 		if(!isset($details['url'])){
 			$details['url'] = gourl($details,$details['htmlurl']);
 		}
-		
-		
-		//body
 		if(array_key_exists('body',$details)){
 			$con = $details['body'];
-			$sql = " isshow=1 and (url!='' or newname!='') "; 
-			$tags = M('tags')->findAll($sql);
-			if($tags){
-				foreach($tags as $v){
-					// $name = 'CMS';
-					// $newname="极致CMS";
-					// $url = 'http://www.jizhicms.com';
-					// $num = 30;
+			$chains = M('chain')->findAll(['isshow'=>1]);
+			if($chains){
+				foreach($chains as $v){
 					$url = $v['url'];
 					$num = $v['num'];
-					$target = $v['target'];
-					$name = $v['keywords'];
-					$newname = $v['newname']!='' ? $v['newname'] : $name;
+					$name = $v['title'];
+					$newname = $v['newtitle']!='' ? $v['newtitle'] : $name;
 					if($url!=''){
-						$astr = "<a href='".$url."' target='".$target."' title='".$newname."'><strong>".$newname."</strong></a>";
+						$astr = "<a href='".$url."' target='_blank' title='".$newname."'><strong>".$newname."</strong></a>";
 					}else{
 						$astr = $newname;
 					}
@@ -745,7 +735,7 @@ class HomeController extends CommonController
 	//搜索--单一模块搜索
 	function search(){
 		$tables = explode('|',$this->webconf['search_table']);
-		$molds = $this->frparam('molds',1);//搜索的模块
+		$molds = strtolower($this->frparam('molds',1));//搜索的模块
 		$tid = $this->frparam('tid',1);
 		if(in_array($molds,$tables) && $molds!=''){
 			$word = $this->frparam('word',1);
@@ -838,8 +828,18 @@ class HomeController extends CommonController
 				
 				JsonReturn(['code'=>0,'data'=>$data,'lists'=>$page->listpage,'sum'=>$page->sum,'allpage'=>$page->allpage,'msg'=>'success']);
 			}
-		
-			$this->display($this->template.'/search');
+			if(defined('TPL_PATH')){
+				$path = TPL_PATH;
+			}else{
+				$path = APP_HOME;
+			}
+			$file = str_replace('//','/',APP_PATH . $path .'/'.HOME_VIEW.'/'.$this->template.'/'.strtolower($molds).'-search.html');
+			if(file_exists($file)){
+				$this->display($this->template.'/'.strtolower($molds).'-search');
+			}else{
+				$this->display($this->template.'/search');
+			}
+			
 			
 			
 		}else{
@@ -852,7 +852,7 @@ class HomeController extends CommonController
 	}
 	//多模块搜索
 	function searchAll(){
-		$tables = explode('|',$this->webconf['search_table']);
+		$tables = explode('|',$this->webconf['search_table_muti']);
 		$molds = $this->frparam('molds',2);//搜索的模块
 		$tid = $this->frparam('tid',1);
 		if($molds && is_array($molds)){
@@ -888,7 +888,7 @@ class HomeController extends CommonController
 				$tid = format_param($tid,0);
 			}
 			
-			$search_words = (isset($this->webconf['search_words'])&& $this->webconf['search_words']) ? explode('|',$this->webconf['search_words']) : ['title'];
+			$search_words = (isset($this->webconf['search_words_muti'])&& $this->webconf['search_words_muti']) ? explode('|',$this->webconf['search_words_muti']) : ['title'];
 			$sql = ' isshow=1 ';
 			$sq = [];
 			foreach($search_words as $v){
@@ -906,7 +906,7 @@ class HomeController extends CommonController
 			$sqln = [];
 			foreach($allow_table as $v){
 				$list_a = M($v)->findAll($sql);
-				$sqlx[] = ' select id,tid,litpic,title,tags,keywords,molds,htmlurl,description,addtime,userid,member_id from '.DB_PREFIX.$v." where ".$sql;
+				$sqlx[] = ' select '.$this->webconf['search_fields_muti'].' from '.DB_PREFIX.$v." where ".$sql;
 				$sqln[] = ' select id from '.DB_PREFIX.$v." where ".$sql;
 			}
 			
@@ -915,7 +915,7 @@ class HomeController extends CommonController
 			$page = new Page();
 			$page->typeurl = 'search';
 			$this->currentpage = $this->frpage;
-			$data = $page->where($sql)->setPage(['limit'=>$this->frparam('limit',0,15)])->page($this->frpage)->goCount($sqln)->goSql();
+			$data = $page->where($sql)->setPage(['limit'=>$this->frparam('limit',0,15)])->page($this->frpage)->goSql();
 			foreach($data as $k=>$v){
 				$data[$k]['url'] = gourl($v,$v['htmlurl']);
 				$data[$k]['classname'] = $this->classtypedata[$v['tid']]['classname'];
@@ -993,7 +993,7 @@ class HomeController extends CommonController
 				//获取缓存文件时间戳
 				$last_time = filemtime($cache_file);
 				//如果缓存文件生成超过指定的时间直接删除文件
-				if((($now_time - $last_time)/60)>webConf('cache_time')){
+				if((($now_time - $last_time)/60)>$this->webconf['cache_time']){
 					unlink($cache_file);
 				}else{
 					//有缓存文件直接调用
@@ -1059,137 +1059,6 @@ class HomeController extends CommonController
 		
 		
 		exit;
-	}
-	
-
-	//生成sitemap
-	function sitemap(){
-		//获取缓存文件时间戳
-		$last_time = filemtime(APP_PATH.'sitemap.xml');
-		$start = mktime(0, 0, 0, date('m'), date('d'), date('Y'));
-		$end = mktime(23, 59, 59, date('m'), date('d'), date('Y'));
-		if($last_time>=$start && $last_time<$end){
-			//当天
-		}else{
-			$www = ($this->webconf['domain']=='') ? get_domain() : $this->webconf['domain'];
-			$l = '<?xml version="1.0" encoding="UTF-8"?>
-			<urlset
-				  xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
-				  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-				  xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9
-						http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">';
-						//首页
-						$l.='<url>
-			  <loc>'.$www.'/</loc>
-			  <lastmod>'.date('Y-m-d').'T08:00:00+00:00</lastmod>
-			  <changefreq>yearly</changefreq>
-			  <priority>1.00</priority>
-			</url>';
-			$molds = M('molds')->findAll(['sys'=>0,'ismust'=>1]);
-			$model = ['classtype','article','product'];
-			if($molds){
-				foreach($molds as $vv){
-					$model[]=$vv['biaoshi'];
-				}
-			}
-			foreach($model as $k=>$v){
-				$list = M($v)->findAll(['isshow'=>1]);
-				if(count($list)>1000){
-					M('sysconfig')->update(['field'=>'isautositemap'],['data'=>0]);
-					setCache('webconfig',null);
-					$this->jizhi();
-					exit;
-				}
-				//栏目
-				if($v=='classtype' && $list){
-					foreach($list as $s){
-						if($this->classtypedata[$s['id']]['url']){
-							$l.='<url>
-							  <loc>'.$this->classtypedata[$s['id']]['url'].'</loc>
-							  <lastmod>'.date('Y-m-d').'T08:00:00+00:00</lastmod>
-							  <changefreq>always</changefreq>
-							  <priority>0.80</priority>
-							</url>';
-						}
-						
-						if($this->webconf['iswap']==1){
-							if($classtypedataMobile[$s['id']]['url']){
-								$l.='<url>
-								  <loc>'.$classtypedataMobile[$s['id']]['url'].'</loc>
-								  <lastmod>'.date('Y-m-d').'T08:00:00+00:00</lastmod>
-								  <changefreq>always</changefreq>
-								  <priority>0.80</priority>
-								</url>';
-							}
-							
-						}	
-					}
-				}else if($list){
-					foreach($list as $s){
-						$s['addtime'] = isset($s['addtime']) ? $s['addtime'] : time();
-					//文章-商品
-						$url = gourl($s,$s['htmlurl']);
-						if($url){
-							$l.='<url>
-							  <loc>'.$url.'</loc>
-							  <lastmod>'.date('Y-m-d',$s['addtime']).'T08:00:00+00:00</lastmod>
-							   <changefreq>always</changefreq>
-								  <priority>0.80</priority>
-							</url>';
-						}
-						
-						if($this->webconf['iswap']==1){
-							$murl = $this->murl($s,$s['htmlurl']);
-							if($murl){
-								$l.='<url>
-								  <loc>'.$murl.'</loc>
-								  <lastmod>'.date('Y-m-d',$s['addtime']).'T08:00:00+00:00</lastmod>
-								   <changefreq>always</changefreq>
-								  <priority>0.80</priority>
-								</url>';
-							}
-							
-						}	
-					
-					}
-				}
-				
-				
-			}
-			
-			$l.='</urlset>';
-			
-			$f = @fopen(APP_PATH.'sitemap.xml','w');
-			$n = @fwrite($f,$l);
-			@fclose($f);
-			
-			
-		}
-		
-	}
-	function murl($id,$htmlurl=null,$molds='article'){
-		if(is_array($id)){
-			$value = $id;
-			if($value['target']){
-				return $value['target'];
-			}else{
-				if($value['ownurl']){
-					return get_domain().'/'.$value['ownurl'];
-					
-				}
-			}
-			$id = $value['id'];
-		}
-		if(!$id){Error_msg('缺少ID！');}
-		$htmlpath = $this->webconf['iswap']==1 ? $this->webconf['mobile_html'] : $this->webconf['pc_html'];
-		$htmlpath = ($htmlpath=='' || $htmlpath=='/') ? '' : '/'.$htmlpath; 
-		if($htmlurl!=null){
-			return get_domain().$htmlpath.'/'.$htmlurl.'/'.$id.'.html';
-		}
-		
-		$tid = M($molds)->getField(array('id'=>$id),'tid');
-		$htmlurl = M('classtype')->getField(array('id'=>$tid),'htmlurl');
-		return get_domain().$htmlpath.'/'.$htmlurl.'/'.$id.'.html';
 	}
 	
 	//生成RSS

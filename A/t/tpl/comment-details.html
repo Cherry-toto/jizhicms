@@ -30,8 +30,8 @@
 			
 			<div class="layui-tab">
 			  <ul class="layui-tab-title">
-				<li class="layui-this">基本信息</li>
-				<li>扩展信息</li>
+				<li class="layui-this">基本</li>
+				<li>扩展</li>
 				
 			  </ul>
 			  <div class="layui-tab-content">
@@ -164,19 +164,15 @@
                         <span class="x-red"></span>更新时间
                     </label>
                     <div class="layui-input-inline">
-                      <input class="layui-input" value="{if($data)}{fun date('Y-m-d H:i:s',$data['addtime'])}{else}{fun date('Y-m-d H:i:s')}{/if}" name="addtime" placeholder="文件日期" id="LAY_demorange_s">
+                      <input class="layui-input" value="{if($data)}{fun date('Y-m-d H:i:s',$data['addtime'])}{else}{fun date('Y-m-d H:i:s')}{/if}" name="addtime" placeholder="选择时间" id="LAY_demorange_s">
                     </div>
                    
                 </div>
-				{if($webconf['isrelative']==1)}
-				<span id="ext_fields"></span>
-				{/if}
+				<span id="content_fields"></span>
 
 				</div>
 				<div class="layui-tab-item">
-				{if($webconf['isrelative']==0)}
 				<span id="ext_fields"></span>
-				{/if}
 				
 				</div>
 			  </div>
@@ -215,7 +211,7 @@
               //图片上传接口
               upload.render({
 			    elem: '#LAY_demo_upload',
-                url: '{__APP_URL__}/Common/uploads' //上传接口
+                url: "{fun U('Common/uploads')}" //上传接口
                 ,done: function(res){ //上传成功后的回调
                    // console.log(res);
 					
@@ -233,7 +229,7 @@
               form.on('submit(save)', function(data){
                 //console.log(data);
                 //发异步，把数据提交给php
-				$.post("{__APP_URL__}/Comment/editcomment.html",data.field,function(r){
+				$.post("{fun U('editcomment')}",data.field,function(r){
 					var r = JSON.parse(r);
 					if(r.code==0){
 						 layer.msg(r.msg, {icon: 6,time: 2000},function () {
@@ -253,9 +249,9 @@
                
                 return false;
               });
-            get_fields(0,{$data['id']});
-			
-			
+
+			get_fields({0,{$data['id']});
+            get_fields_ext(0,{$data['id']});
            
               
               

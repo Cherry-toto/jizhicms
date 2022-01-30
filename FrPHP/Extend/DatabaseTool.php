@@ -197,6 +197,14 @@ class DatabaseTool
    //echo '备份成功！<br/>'; 
    
   }
+  //优先备份表结构
+    $str = '<?php die();?>'.$str;
+    $isok = file_put_contents('backup/'.$backfile.'.php', $str);
+	if(!$isok){
+		exit('[ backup/'.$backfile.'.php ] 写入文件失败！');
+	}
+	$str = $public_str;
+	$filenum = 1;
   $i = 0;
   foreach($tables as $table){
 	echo '备份表数据：'.$table.' <br>';
@@ -291,7 +299,10 @@ class DatabaseTool
 	   }
 	   
    }
- 
+   setCache('classtype',null);
+   setCache('mobileclasstype',null);
+   setCache('classtypedatamobile',null);
+   setCache('classtypedatapc',null);
    echo '还原成功!花费时间', (microtime(true) - $this->begin) . 'ms';
     Redirect(U('Index/beifen'),'还原成功~',1);
    

@@ -24,30 +24,7 @@
 				<div class="layui-colla-content">
 				<div class="layui-row">
 					<form class="layui-form layui-col-md12 x-so" method="get" id="myform">
-					<div class="layui-input-inline">
-					  <select name="isshow" lay-filter="isshow" class="layui-inline autosubmit">
-					  <option value="">是否审核</option>
-					   
-					   <option {if($isshow==1)} selected="selected" {/if}value="1">审核</option>
-					   <option {if($isshow==2)} selected="selected" {/if}value="2">未审</option>
-					   <option {if($isshow==3)} selected="selected" {/if}value="3">退回</option>
-					   
 					
-					  </select>
-					</div>
-					{if($molds['isclasstype'])}
-					<div class="layui-input-inline">
-					  <select name="tid" lay-filter="tid" lay-search class="layui-inline autosubmit">
-					  <option value="">请选择栏目</option>
-					   {foreach $classtypes as $v}
-					   {if($v['molds']==$molds['biaoshi'])}
-					   <option {if($tid==$v['id'])} selected="selected" {/if}value="{$v['id']}">{fun str_repeat('--', $v['level'])}{$v['classname']}</option>
-					   {/if}
-					   {/foreach}
-					
-					  </select>
-					</div>
-					{/if}
 					  {$fields_search}
 					  <button class="layui-btn"  lay-submit="" lay-filter="search">搜索</button>
 					</form>
@@ -84,6 +61,13 @@
 		 {if(checkAction('Extmolds/copyAll/molds/'.$molds['biaoshi']))}
 			   <a class="layui-btn layui-btn-sm layui-btn-warm" onclick="copyAll()">批量复制</a>
 		 {/if}
+		 {if(checkAction('Extmolds/addmolds/molds/'.$molds['biaoshi']))}
+			{if($tid)}
+				<a class="layui-btn layui-btn-sm" onclick="x_admin_show('新增{$molds['name']}','{fun U('Extmolds/addmolds',array('molds'=>$molds['biaoshi'],'tid'=>$tid))}')"><i class="layui-icon">&#xe608;</i>新增</a>
+			{else}
+			   <a class="layui-btn layui-btn-sm" onclick="x_admin_show('新增{$molds['name']}','{fun U('Extmolds/addmolds',array('molds'=>$molds['biaoshi']))}')"><i class="layui-icon">&#xe608;</i>新增</a>
+			{/if}
+		 {/if}
 		 {if(checkAction('Extmolds/changeType/molds/'.$molds['biaoshi']))}
 			   {if($molds['isclasstype'])}
 			   <div class="layui-input-inline" style="margin-right: 10px;margin-bottom: 10px;">
@@ -108,13 +92,8 @@
 			   </select>
 		  </div>
 		 {/if}
-		 {if(checkAction('Extmolds/addmolds/molds/'.$molds['biaoshi']))}
-			{if($tid)}
-				<a class="layui-btn layui-btn-sm" onclick="x_admin_show('新增{$molds['name']}','{fun U('Extmolds/addmolds',array('molds'=>$molds['biaoshi'],'tid'=>$tid))}')"><i class="layui-icon">&#xe608;</i>新增</a>
-			{else}
-			   <a class="layui-btn layui-btn-sm" onclick="x_admin_show('新增{$molds['name']}','{fun U('Extmolds/addmolds',array('molds'=>$molds['biaoshi']))}')"><i class="layui-icon">&#xe608;</i>新增</a>
-			{/if}
-		 {/if}	  
+		 	 
+		 <a class="layui-btn layui-btn-warm layui-btn-sm" title="设置" onclick="x_admin_show('列表字段设置','{fun U('Fields/fieldsList',['molds'=>$molds['biaoshi']])}')"><i class="iconfont">&#xe6ae;</i></a>
 			
 		 </div>
 		</script>
@@ -161,14 +140,9 @@
 				,cols: [[ //表头
 				  {field: 'id', title: 'ID', width:60}
 				  ,{type:'checkbox'}
-				  ,{field: 'orders', title: '排序',width: 100, edit:'text'}
-				  {if($molds['isclasstype']==1)}
-				  ,{field: 'new_tid', title: '栏目'}
-				  {/if}
-				  {foreach $fields_list as $k=>$v}
-				  ,{field: '{$v['field']}',title: '{$v['fieldname']}'{if($v['fieldtype']==1 || $v['fieldtype']==2)},edit:'text'{/if}}
+				  {foreach $fields_list as $v}
+				  ,{field: '{$v['field']}',width:{if(!$v['width'])}100{else}{$v['width']}{/if}, title: '{$v['fieldname']}' {if($v['fieldtype']==1 || $v['fieldtype']==2 || $v['fieldtype']==4 || $v['fieldtype']==14)},edit:'text'{/if} }
 				  {/foreach}
-				  ,{field: 'new_isshow', title: '审核', width: 100,templet:'#isshow'}
 				  {if(checkAction('Extmolds/copymolds/molds/'.$molds['biaoshi']) || checkAction('Extmolds/deletemolds/molds/'.$molds['biaoshi']) || checkAction('Extmolds/editmolds/molds/'.$molds['biaoshi']))}
 				  ,{field: '', title: '操作', toolbar: '#rightbar',width:240, fixed:'right'}
 				  {/if}

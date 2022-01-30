@@ -5,13 +5,16 @@
     <meta http-equiv="Cache-Control" content="no-siteapp" />
 	<meta name="author" content="留恋风,2581047041@qq.com"> 
     <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
-    <link rel="stylesheet" href="{__Tpl_style__}/style/css/font.css">
-	<link rel="stylesheet" href="{__Tpl_style__}/style/css/xadmin.css?v=1">
-	<link rel="stylesheet" href="{__Tpl_style__}/style/css/style.css">
+    <link rel="stylesheet" href="{__Tpl_style__}/style/fonts/iconfont.css?v=1">
+	<link rel="stylesheet" href="{__Tpl_style__}/style/css/xadmin.css?v=3">
+	<link rel="stylesheet" href="{__Tpl_style__}/style/css/style.css?v=1">
     <script type="text/javascript" src="{__Tpl_style__}/style/js/jquery.min.js"></script>
-    <script src="{__Tpl_style__}/style/lib/layui/layui.js?v=123" charset="utf-8"></script>
+    <script src="/static/common/layui/layui.js?v=2.6.8" charset="utf-8"></script>
 	<script type="text/javascript" src="{__Tpl_style__}/style/js/xadmin.js"></script>
-	
+	<script type="text/javascript" src="/static/common/clipboard.js"></script>
+	<script type="text/javascript" charset="utf-8" src="{__Tpl_style__}/style/js/xm-select.js"></script>
+	<link rel="stylesheet" type="text/css" href="{__Tpl_style__}/style/tags/jquery.tagsinput.css" />
+	<script type="text/javascript" charset="utf-8" src="{__Tpl_style__}/style/tags/jquery.tagsinput.js"></script>
 	{php
 	
 	switch($webconf['admintpl']){
@@ -25,3 +28,10 @@
 	
 	
 	/}
+	<style>
+	.layui-form-item .layui-input-inline {
+		float: left;
+		width: 250px;
+		margin-right: 10px;
+	}
+	</style>

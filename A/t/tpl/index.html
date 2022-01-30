@@ -16,7 +16,7 @@
 <body>
     <!-- 顶部开始 -->
     <div class="container">
-        <div class="logo"><a href="{fun U('Index/index')}">{fun webConf('web_name')}</a></div>
+        <div class="logo"><a href="{fun U('Index/index')}">后台管理</a></div>
         <div class="left_open">
             <i title="展开左侧栏" class="iconfont">&#xe699;</i>
         </div>
@@ -29,13 +29,23 @@
 				<dl class="layui-nav-child"> 
 				
 				{foreach $v['nav'] as $vv}
-				{if($vv)}
+				{if(!is_array($vv) && $vv)}
 					{if(strpos($vv,'class')!==false)}
 					<dd class="top-nav"><a x_href="{$classnav[$vv]['act']}" class="top_nav">{$classnav[$vv]['classname']}</a></dd>	
 					{else}
 					<dd class="top-nav"><a x_href="{fun U($actions[$vv]['fc'])}" class="top_nav">{$actions[$vv]['name']}</a></dd>
 					{/if}
-				{/if}        
+				{else if(is_array($vv))}
+					
+					{if(strpos($vv['value'],'class')!==false)}
+						<dd class="top-nav">{if($vv['icon'])}<i class="iconfont">{fun htmlspecialchars_decode($vv['icon'])}</i>{/if}<a x_href="{$classnav[$vv['value']]['act']}" class="top_nav">{$vv['value']}</a></dd>
+					{else}
+						<dd class="top-nav">{if($vv['icon'])}<i class="iconfont">{fun htmlspecialchars_decode($vv['icon'])}</i>{/if}<a x_href="{fun U($actions[$vv['value']]['fc'])}" class="top_nav">{$vv['value']}</a></dd>
+					{/if}
+					
+					
+				
+				{/if}             
 				{/foreach}  
 				  
 				</dl>
@@ -89,7 +99,7 @@
                 </a>
                 <ul class="sub-menu">
 				{foreach $v['nav'] as $vv}
-				{if($vv)}
+				{if(!is_array($vv) && $vv)}
                     <li>
 						{if(strpos($vv,'class')!==false)}
 						<a _href="{$classnav[$vv]['act']}" ><cite>{$classnav[$vv]['classname']}</cite></a>
@@ -97,6 +107,17 @@
                         <a _href="{fun U($actions[$vv]['fc'])}"><cite>{$actions[$vv]['name']}</cite></a>
 						{/if}
                     </li >
+				{else if(is_array($vv))}
+					
+					<li>
+						{if(strpos($vv['value'],'class')!==false)}
+						<a _href="{$classnav[$vv['value']]['act']}" >{if($vv['icon'])}<i class="iconfont">{fun htmlspecialchars_decode($vv['icon'])}</i>{/if}<cite>{$vv['title']}</cite></a>
+						{else}
+                        <a _href="{fun U($actions[$vv['value']]['fc'])}">{if($vv['icon'])}<i class="iconfont">{fun htmlspecialchars_decode($vv['icon'])}</i>{/if}<cite>{$vv['title']}</cite></a>
+						{/if}
+                    </li >
+					
+					
 				{/if}
                 {/foreach}    
                     

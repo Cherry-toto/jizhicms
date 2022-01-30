@@ -258,4 +258,44 @@ class CommentController extends CommonController
 
 		
 	}
+
+	//获取评论列表
+	function getlist(){
+		//检查模块是否开启
+		if(!M('molds')->find(['isopen'=>1,'biaoshi'=>'comment'])){
+			JsonReturn(array('code'=>1,'msg'=>'评论模块未开启！'));
+		}
+		$aid = $this->frparam('aid',0,0);
+		$tid = $this->frparam('tid',0,0);
+		$limit = $this->frparam('limit',0,10);
+		$page = $this->frparam('page',0,1);
+		$comment = new Page('Comment');
+		$sql = "isshow=1 and pid=0 and aid=".$aid." and tid=".$tid;
+		$data = $comment->where($sql)->orderby('likes desc,id desc')->limit($limit)->page($page)->go();
+		foreach($data as $k=>$v){
+			$data[$k]['classname'] = $v['tid'] ?? $this->classtypedata[$v['tid']];
+			$data[$k]['article'] = !$v['aid'] ? [] : M($this->classtypedata[$v['tid']]['molds'])->find(['id'=>$v['aid'],'isshow'=>1]);
+			$data[$k]['user'] = !$v['userid'] ? [] : M('member')->find(['id'=>$v['userid']],null,'id,username,litpic');
+			$data[$k]['addtime'] = formatTime($v['addtime']);
+			$children = M('comment')->findAll(['pid'=>$v['id'],'isshow'=>1]);
+			if($children){
+				foreach($children as $kk=>$vv){
+					$children[$kk]['classname'] = $vv['tid'] ?? $this->classtypedata[$vv['tid']];
+					$children[$kk]['article'] = !$vv['aid'] ? [] : M($this->classtypedata[$vv['tid']]['molds'])->find(['id'=>$vv['aid'],'isshow'=>1]);
+					$children[$kk]['user'] = !$vv['userid'] ? [] : M('member')->find(['id'=>$vv['userid']],null,'id,username,litpic');
+					$children[$kk]['addtime'] = formatTime($v['addtime']);
+				}
+			}
+			
+			$data[$k]['children'] = $children;
+		}
+		$count = M('comment')->getCount(['isshow'=>1,'aid'=>$aid,'tid'=>$tid]);
+		JsonReturn(['code'=>0,'data'=>[
+			'list'=>$data,
+			'count'=>$count,
+			'allpage'=>$comment->allpage,
+		],'msg'=>'success']);
+		
+	}
+
 }

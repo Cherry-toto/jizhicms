@@ -328,7 +328,8 @@ class MypayController extends CommonController
 							$payAmount = $order['price'];          //付款金额，单位:元
 							$orderName = '支付订单-'.$order['orderno'];    //订单标题
 							$notifyUrl = U('Mypay/wechat_notify_pay');     //付款成功后的回调地址(不要有问号)
-							$returnUrl = U('Mypay/check_wechat_order').'?orderno='.$order['orderno'];     //付款成功后，页面跳转的地址
+							//$returnUrl = U('Mypay/check_wechat_order').'?orderno='.$order['orderno'];     //付款成功后，页面跳转的地址
+							$returnUrl = U('order/wxh5pay').'?orderno='.$order['orderno'];
 							$wapUrl = $_SERVER['HTTP_HOST'];   //WAP网站URL地址
 							$wapName = $this->webconf['web_name']; //WAP 网站名
 							$webip = GetIP();

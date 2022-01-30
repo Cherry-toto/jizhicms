@@ -23,7 +23,7 @@
 			
 			<div class="layui-tab">
 			  <ul class="layui-tab-title">
-				<li class="layui-this">基本信息</li>
+				<li class="layui-this">基本</li>
 				
 			  </ul>
 			  <div class="layui-tab-content">
@@ -47,15 +47,12 @@
                     </div>
 					
                 </div>
+				<span id="content_fields"></span>
+				<span id="ext_fields"></span>
 				
-				
-				 <span id="ext_fields"></span>
-				
-				
-				
-				 <div class="layui-form-item" pane>
+				<div class="layui-form-item" pane>
                     <label for="isshow" class="layui-form-label">
-                        <span class="x-red"></span>是否显示
+                        <span class="x-red">*</span>是否显示
                     </label>
                     <div class="layui-input-block">
                         <input type="radio" name="isshow" value="0" title="不显示">
@@ -65,8 +62,12 @@
 					
                  </div>
 			
+				
+				
 				</div>
 				
+				
+				 
 				
 			  </div>
 			</div>
@@ -137,6 +138,7 @@
               });
 			
             get_fields(0);
+            get_fields_ext(0);
 		
 		
 			

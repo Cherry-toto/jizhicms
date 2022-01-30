@@ -17,9 +17,7 @@ use FrPHP\lib\Controller;
 class CommonController extends Controller
 {
 	function _init(){
-    	//检查当前账户是否合乎操作
-	  $ip = getCache(session_id());
-      if(!isset($_SESSION['admin']) || $_SESSION['admin']['id']==0 || GetIP()!=$ip){
+      if(!isset($_SESSION['admin']) || $_SESSION['admin']['id']==0){
 		   $_SESSION['admin'] = null;
       	   Redirect(U('Login/index'));
         

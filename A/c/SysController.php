@@ -27,58 +27,68 @@ class SysController extends CommonController
 		$custom = M('sysconfig')->findAll('type!=0');
 		if($_POST){
 			$data = $this->frparam();
-			if($this->webconf['islevelurl']==0 && $this->frparam('islevelurl')==1){
-				if(M('classtype')->find()){
-					JsonReturn(['code'=>1,'msg'=>'已创建栏目无法设置层级URL！']);
+			//删除自定义栏目
+			if($this->frparam('deltype')){
+				$ctype = $this->frparam('ctype');
+				$aid = $this->frparam('aid');
+				if($ctype){
+					$isok = M('sysconfig')->find(['typeid'=>$ctype]);
+					if($isok){
+						JsonReturn(['code'=>1,'msg'=>'配置栏下有自定义配置，无法删除配置栏']);
+					}
+					M('ctype')->delete(['id'=>$ctype]);
+					JsonReturn(['code'=>0,'msg'=>'操作成功！']);
+					
 				}
+				JsonReturn(['code'=>1,'msg'=>'操作失败！']);
 			}
-			
-			foreach($web_config as $k=>$v){
-				if (array_key_exists($k,$data)) {
-					if($k=='web_js'){
-						$value = $_POST['web_js'];
+			$whereArr = [];
+			$valueArr = [];
+			$lists = M('sysconfig')->findAll();
+			foreach($lists as $k=>$v){
+				if (array_key_exists($v['field'],$data)) {
+					if($v['type']==8){
+						$value = $_POST[$v['field']];
 						$value=htmlspecialchars(trim($value), ENT_QUOTES);
 						if(version_compare(PHP_VERSION,'7.4','>=')){
 							$value = addslashes($value);
 						}else{
 							if(!get_magic_quotes_gpc())$value = addslashes($value);
 						} 
-						M('sysconfig')->update(['field'=>'web_js','type'=>0],['data'=>$value]);
+						$whereArr[]=['field'=>$v['field']];
+						$valueArr[]=['data'=>$value];
+						
+					}else if($v['type']==4){
+						$value = $this->frparam($v['field'],4);
+						$whereArr[]=['field'=>$v['field']];
+						$valueArr[]=['data'=>$value];
+						
 					}else{
-						M('sysconfig')->update(['field'=>$k,'type'=>0],['data'=>$this->frparam($k,1)]);
+						
+						$whereArr[]=['field'=>$v['field']];
+						$valueArr[]=['data'=>$this->frparam($v['field'],1)];
 					}
-					
 				}
+				
+				
+				
 
 			}
-		   
-		   
-		   //检测扩展参数
-		   $new_custom = array();
-		   $data = $this->frparam();
-		   $first_key = '';
-		   if($custom){
-			   
-			foreach($custom as $v){
-			   if(array_key_exists($v['field'],$data)){
-					if($v['type']==4){
-						M('sysconfig')->update("type!=0 and field='".$v['field']."'",['data'=>$this->frparam($v['field'],4)]);
-					}else{
-						M('sysconfig')->update("type!=0 and field='".$v['field']."'",['data'=>$this->frparam($v['field'],1)]);
-					}
-					
-			   }
-			  
+			if(count($whereArr) && count($valueArr)){
+				M('sysconfig')->updateMuti($whereArr,$valueArr);
 			}
-		
-		      
-		   }
-		  
+			
+		   
 		   //检测是否有新增
-		   if($this->frparam('custom_title',1)!='' && $this->frparam('custom_type')!=0){
+		   if($this->frparam('custom_title',1) && $this->frparam('custom_type')){
 			   $new['title'] = $this->frparam('custom_title',1);
 			   $new['data'] = '';
+			   $new['tip'] = $this->frparam('custom_tips',1);
 			   $new['type'] = $this->frparam('custom_type');
+			   $new['typeid'] = $this->frparam('custom_ctype',0,1);
+			   $new['orders'] = 0;
+			   $new['sys'] = 0;
+			   $new['config'] = str_replace('，',',',$this->frparam('custom_config',1));
 			   if($this->frparam('custom_fields',1)){
 				   $new['field'] = $this->frparam('custom_fields',1);
 				   $n = M('sysconfig')->add($new);
@@ -89,6 +99,22 @@ class SysController extends CommonController
 					   M('sysconfig')->update(['id'=>$n],['field'=>'jz_'.$n]);
 				   }
 			   } 
+		   }
+		   if($this->frparam('custom_new_title',1) && $this->frparam('custom_new_fields',1)){
+			   $ww['action'] = $this->frparam('custom_new_fields',1);
+			   if(M('ctype')->find($ww)){
+				   JsonReturn(['code'=>1,'msg'=>'已存在配置标识，请重新设置！']);
+			   }
+			   $ww['title'] = $this->frparam('custom_new_title',1);
+			   M('ctype')->add($ww);
+			   //新增系统配置权限
+			   $con['name'] = $ww['title'];
+			   $con['fc'] = 'Sys/'.$ww['action'];
+			   $con['pid'] = 39;
+			   $con['isdesktop'] = 0;
+			   $con['sys'] = 0;
+			   M('ruler')->add($con);
+			   
 		   }
 		   $config = include(APP_PATH.'Conf/config.php');
 		   if(checkAction('Sys/high-level')){
@@ -114,7 +140,6 @@ class SysController extends CommonController
 			   setCache('classtypedatapc',null);
 		   }
 		   setCache('webconfig',null);
-		   setCache('customconfig',null);
 		   
 		   JsonReturn(['code'=>0,'msg'=>'提交成功！']);
 		   
@@ -161,9 +186,14 @@ class SysController extends CommonController
    function custom_del(){
 	   $field = $this->frparam('field',1);
 	   if($field){
-		   M('sysconfig')->delete(" type!=0 and field='".$field."'");
-		   setCache('customconfig',null);
-		   JsonReturn(['code'=>0,'msg'=>'删除成功！']);
+		    $r = M('sysconfig')->delete(" sys!=1 and field='".$field."'");
+			if($r){
+				setCache('webconfig',null);
+				JsonReturn(['code'=>0,'msg'=>'删除成功！']);
+			}else{
+				JsonReturn(['code'=>1,'msg'=>'删除失败！系统字段不允许删除！']);
+			}
+		    
 	   }
 	    JsonReturn(['code'=>1,'msg'=>'删除失败！']);
 	   

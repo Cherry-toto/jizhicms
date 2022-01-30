@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html class="no-js" lang="zxx">
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <title>{$type['seo_classname']}-{$webconf['web_name']}</title>
+	<meta name="keywords" content="{$type['keywords']}" />
+	<meta name="description" content="{$type['description']}" />
+
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    {include="style"}
+  </head>
+  <body>
+    {include="header"}
+    <div id="main-wrapper">
+      <div class="site-wrapper-reveal">
+        <div class="faq-area">
+          <div class="container">
+            <div class="row">
+              <div class="col">
+                <div class="row g-0 align-items-center faq-box-wrap">
+                  <div class="col-lg-6">
+                    <div class="faq-section-title wow fadeInUp">
+                      <img src="{$tpl}static/picture/faq-text.png" alt="" />
+
+                      <h4 class="title wow fadeInUp">
+                        一些问题和回答,
+                        <span class="bold-text">请看这里.</span>
+                      </h4>
+                    </div>
+                  </div>
+                  <div class="col-lg-6">
+                    <div class="faq-content-wrap">
+                      <div class="accordion" id="accordionExample">
+					   
+						{loop table="article" tid="$type['id']" isshow="1" orderby="orders desc,id asc" as="v"}
+                        <div class="accordion-item wow fadeInUp" >
+                          <h2 class="accordion-header" id="headingOne{$v_n}">
+                            <button
+                              class="accordion-button faq-qustion {if($v_n!=1)}collapsed{/if}"
+                              type="button"
+                              data-bs-toggle="collapse"
+                              data-bs-target="#collapseOne{$v_n}"
+                              {if($v_n==1)}aria-expanded="true"{/if}
+                              aria-controls="collapseOne{$v_n}"
+                            >
+                              <span class="number-of-accordion">{$v_n}</span> {$v['title']}
+                            </button>
+                          </h2>
+                          <div
+                            id="collapseOne{$v_n}"
+                            class="accordion-collapse collapse {if($v_n==1)}show{/if}"
+                            aria-labelledby="headingOne{$v_n}"
+                            data-bs-parent="#accordionExample"
+                          >
+                            <div class="accordion-body faq-ans">
+                              {$v['body']}
+                            </div>
+                          </div>
+                        </div>
+                        
+						{/loop}
+						
+						
+					  </div>
+                    </div>
+                  </div>
+                
+				</div>
+				
+			
+				
+              </div>
+			  
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    {include="footer"}
+    {include="js"}
+  </body>
+</html>

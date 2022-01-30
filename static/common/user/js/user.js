@@ -17,3 +17,37 @@ $(document).ready(function(){
     $(".iconyanjing").show();
   });
 });
+
+$(function(){
+	
+	var interval =  setInterval(function(){
+	$.ajax({
+		 url:"/common/updateactive",
+		 dataType:"json",
+		 async:true,
+		 type:"GET",
+		 success:function(r){
+		 }
+	})
+	},30000);
+	var interval2 =  setInterval(function(){
+	$.ajax({
+		 url:"/user/getmsg",
+		 async:true,
+		 type:"GET",
+		 success:function(r){
+			var n = parseInt(r);
+			if(n>0){
+			$("#notifiy-icon").addClass('new-notification')
+			}else{
+			$("#notifiy-icon").removeClass('new-notification')
+			}
+			$("#notifiy-num").html(n);
+			
+		 }
+	})
+	},30000);
+
+
+ })
+

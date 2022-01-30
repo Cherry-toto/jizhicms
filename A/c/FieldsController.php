@@ -20,17 +20,88 @@ class FieldsController extends CommonController
 {
 	
 	function index(){
-		$sql = '1=1';
 		if($this->frparam('molds',1)==''){
 			Error('请选择模块！');
 		}
-		
-		$sql = ['molds'=>$this->frparam('molds',1)];
+		if($this->frparam('ajax')){
+
+			$data = M('fields')->findAll(array('molds'=>$this->frparam('molds',1)),'orders desc');
+			foreach($data as &$v){
+				$v['isadmin'] = $v['isadmin']==1 ? '显示' : '隐藏';
+				$v['isshow'] = $v['isshow']==1 ? '显示' : '隐藏';
+				$v['ishome'] = $v['ishome']==1 ? '显示' : '隐藏';
+				$v['islist'] = $v['islist']==1 ? '显示' : '隐藏';
+				$v['issearch'] = $v['issearch']==1 ? '显示' : '隐藏';
+				$v['ismust'] = $v['ismust']==1 ? '是' : '否';
+				$v['isext'] = $v['isext']==1 ? '是' : '否';
+
+				switch($v['fieldtype']){
+					case 1:
+					$v['fieldtypename'] = '单行文本';
+					break;
+					case 2:
+					$v['fieldtypename'] = '多行文本';
+					break;
+					case 3:
+					$v['fieldtypename'] = '文本编辑器';
+					break;
+					case 4:
+					$v['fieldtypename'] = '数字';
+					break;
+					case 5:
+					$v['fieldtypename'] = '单图片';
+					break;
+					case 6:
+					$v['fieldtypename'] = '多图片';
+					break;
+					case 7:
+					$v['fieldtypename'] = '单选下拉';
+					break;
+					case 8:
+					$v['fieldtypename'] = '多选';
+					break;
+					case 9:
+					$v['fieldtypename'] = '单附件';
+					break;
+					case 10:
+					$v['fieldtypename'] = '多附件';
+					break;
+					case 11:
+					$v['fieldtypename'] = '时间戳';
+					break;
+					case 12:
+					$v['fieldtypename'] = '单选按钮';
+					break;
+					case 13:
+					$v['fieldtypename'] = '单选关联';
+					break;
+					case 14:
+					$v['fieldtypename'] = '小数';
+					break;
+					case 15:
+					$v['fieldtypename'] = '多行录入';
+					break;
+					case 16:
+					$v['fieldtypename'] = '多选关联';
+					break;
+                    case 17:
+                    $v['fieldtypename'] = '栏目';
+                    break;
+                    case 18:
+                    $v['fieldtypename'] = '副栏目';
+                    break;
+					case 19:
+                    $v['fieldtypename'] = '系统TAG';
+                    break;
+				}
+				$v['edit_url'] = U('editFields',['id'=>$v['id']]);
+
+			}
+			JsonReturn(['code'=>0,'data'=>$data,'count'=>count($data)]);
+			
+			
+		}
 		$this->molds = M('Molds')->find(array('biaoshi'=>$this->frparam('molds',1)));
-		$this->pages = '';
-		$data = M('fields')->findAll(array('molds'=>$this->frparam('molds',1)),'orders desc');
-		$this->lists = $data;
-		$this->sum = count($data);
 		
 		$this->display('fields-list');
 		
@@ -41,8 +112,26 @@ class FieldsController extends CommonController
 		
 		if($this->frparam('go',1)==1){
 			
-			$data = $this->frparam();
-			$data['field'] = strtolower(format_param($data['field'],1));
+			$data['field'] = $this->frparam('field',1);
+			$data['molds'] = strtolower($this->frparam('molds',1));
+			$data['fieldname'] = $this->frparam('fieldname',1);
+			$data['tips'] = $this->frparam('tips',1);
+			$data['fieldtype'] = $this->frparam('fieldtype');
+			$data['tids'] = $this->frparam('tids',1);
+			$data['fieldlong'] = $this->frparam('fieldlong',1);
+			$data['body'] = $this->frparam('body',1);
+			$data['orders'] = $this->frparam('orders');
+			$data['ismust'] = $this->frparam('ismust');
+			$data['isshow'] = $this->frparam('isshow');
+			$data['ishome'] = $this->frparam('ishome');
+			$data['isadmin'] = $this->frparam('isadmin');
+			$data['issearch'] = $this->frparam('issearch');
+			$data['islist'] = $this->frparam('islist');
+			$data['format'] = $this->frparam('format',1);
+			$data['vdata'] = $this->frparam('vdata',1);
+			$data['isajax'] = $this->frparam('isajax');
+			$data['listorders'] = $this->frparam('listorders');
+			$data['isext'] = $this->frparam('isext');
 			if($data['fieldname']=='' || $data['field']==''){
 				JsonReturn(array('code'=>1,'msg'=>'字段名和字段标识不能为空！'));
 			}
@@ -50,6 +139,10 @@ class FieldsController extends CommonController
 			//检测是否存在该模块
 			if(M('Fields')->find(array('field'=>$data['field'],'molds'=>$data['molds']))){
 				JsonReturn(array('code'=>1,'msg'=>'字段标识已存在！'));
+			}
+			//取消保护字段，可以继续创建
+			if(in_array($data['field'],['sql','jzcache','jzcachetime','table','orderby','limit','ispage','notin','in','empty','notempty','fields','like','day','as'])){
+				JsonReturn(array('code'=>1,'msg'=>'系统保护字段，不允许创建！'));
 			}
 			// $sql = "select count(*) as n from information_schema.columns where table_name = '".DB_PREFIX.$data['molds']."' and TABLE_SCHEMA='".DB_PREFIX.$data['molds']."' and column_name = '".$data['field']."'";
 			// $check = M()->findSql($sql);
@@ -60,10 +153,11 @@ class FieldsController extends CommonController
 			$sql = 'SHOW COLUMNS FROM '.DB_PREFIX.$data['molds'];
 			$list = M()->findSql($sql);
 			$isgo = true;
+			//不管存不存在，都可以创建
 			foreach($list as $v){
 				if($v['Field']==$data['field']){
 					$isgo = false;
-					JsonReturn(array('code'=>1,'msg'=>'字段标识已存在！'));
+					//JsonReturn(array('code'=>1,'msg'=>'字段标识已存在！'));
 				}
 			}
 			
@@ -74,6 +168,8 @@ class FieldsController extends CommonController
 			switch($data['fieldtype']){
 				case 1:
 				case 2:
+				case 18:
+				case 19:
 				$sql .= "VARCHAR(".$data['fieldlong'].") CHARACTER SET utf8 default ";
 				if($data['vdata']){
 					$sql .=  "'".$data['vdata']."'";
@@ -90,6 +186,7 @@ class FieldsController extends CommonController
 				
 				break;
 				case 4:
+				case 17:
 				if($data['fieldlong']>11 || $data['fieldlong']<=0){
 					JsonReturn(array('code'=>1,'msg'=>'字段长度不对！'));
 				}
@@ -155,15 +252,28 @@ class FieldsController extends CommonController
 					$sql .= " '".$data['body_14']."' NOT NULL ";
 				}
 				break;
+				case 16:
+				$sql .= "VARCHAR(".$data['fieldlong'].") DEFAULT ";
+				if($data['vdata']){
+					$sql .=  "'".$data['vdata']."'";
+				}else{
+					$sql .= " NULL ";
+				}
+				$data['body'] = $this->frparam('molds_select_muti',1).','.$this->frparam('molds_list_field_muti',1);
+				break;
 				
 			}
-			$x = M()->runSql($sql);
+			//由于已经存在，所以不需要再执行一遍SQL
+			if($isgo){
+				$x = M()->runSql($sql);
+			}
+			
 			
 			$n = M('Fields')->add($data);
 			if(!$n){
-				//新增字段记录失败，删除新增字段
-				$delsql = "ALTER TABLE ".DB_PREFIX.$data['molds']." DROP COLUMN ".$data['field'];
-				M()->runSql($delsql);
+				//新增字段记录失败，删除新增字段--不需要删除
+				//$delsql = "ALTER TABLE ".DB_PREFIX.$data['molds']." DROP COLUMN ".$data['field'];
+				//M()->runSql($delsql);
 				JsonReturn(array('code'=>1,'msg'=>'字段创建成功，但是字段表记录失败，请反馈官方解决！'));
 			}
 			JsonReturn(array('code'=>0,'msg'=>'字段创建成功！'));
@@ -182,8 +292,26 @@ class FieldsController extends CommonController
 		if($this->frparam('go',1)==1){
 
 			if($this->frparam('id')){
-				$data = $this->frparam();
-				$data['field'] = strtolower(format_param($data['field'],1));
+				$data['field'] = $this->frparam('field',1);
+				$data['molds'] = strtolower($this->frparam('molds',1));
+				$data['fieldname'] = $this->frparam('fieldname',1);
+				$data['tips'] = $this->frparam('tips',1);
+				$data['fieldtype'] = $this->frparam('fieldtype');
+				$data['tids'] = $this->frparam('tids',1);
+				$data['fieldlong'] = $this->frparam('fieldlong',1);
+				$data['body'] = $this->frparam('body',1);
+				$data['orders'] = $this->frparam('orders');
+				$data['ismust'] = $this->frparam('ismust');
+				$data['isshow'] = $this->frparam('isshow');
+				$data['ishome'] = $this->frparam('ishome');
+				$data['isadmin'] = $this->frparam('isadmin');
+				$data['issearch'] = $this->frparam('issearch');
+				$data['islist'] = $this->frparam('islist');
+				$data['format'] = $this->frparam('format',1);
+				$data['vdata'] = $this->frparam('vdata',1);
+				$data['isajax'] = $this->frparam('isajax');
+				$data['listorders'] = $this->frparam('listorders');
+				$data['isext'] = $this->frparam('isext');
 				if($data['fieldname']=='' || $data['field']==''){
 					JsonReturn(array('code'=>1,'msg'=>'字段名和字段标识不能为空！'));
 				}
@@ -201,18 +329,21 @@ class FieldsController extends CommonController
 							case 1:
 							case 2:
 							case 5:
-							case 6:
 							case 7:
 							case 8:
 							case 9:
 							case 10:
 							case 12:
+							case 16:
+							case 18:
+							case 19:
 							$sql.=" varchar(".$data['fieldlong'].") ";
 							break;
 							break;
 							case 4:
 							case 11:
 							case 13:
+							case 17:
 							$sql.=" int(".$data['fieldlong'].") ";
 							break;
 							case 14:
@@ -229,12 +360,19 @@ class FieldsController extends CommonController
 					if($data['fieldtype']==13){
 						$data['body'] = $this->frparam('molds_select',1).','.$this->frparam('molds_list_field',1);
 					}
+					if($data['fieldtype']==16){
+						$data['body'] = $this->frparam('molds_select_muti',1).','.$this->frparam('molds_list_field_muti',1);
+					}
 					if(M('Fields')->update(array('id'=>$this->frparam('id')),$data)){
 						JsonReturn(array('code'=>0,'msg'=>'字段修改成功！'));
 					}else{
 						JsonReturn(array('code'=>1,'msg'=>'字段修改失败！'));
 					}
 					
+				}else{
+					if(in_array($data['field'],['id','sql','jzcache','jzcachetime','table','orderby','limit','ispage','notin','in','empty','notempty','fields','like','tids','day','as','istop','istuijian','ishot','isall'])){
+						JsonReturn(array('code'=>1,'msg'=>'系统保护字段，不允许创建！'));
+					}
 				}
 				
 				$sql = "ALTER TABLE ".DB_PREFIX.$old['molds']." change ".$old['field']." ".$data['field']." ";
@@ -242,7 +380,12 @@ class FieldsController extends CommonController
 				switch($data['fieldtype']){
 					case 1:
 					case 2:
-					
+                    case 5:
+                    case 9:
+                    case 16:
+                    case 18:
+                    case 19:
+
 					$sql .= "VARCHAR(".$data['fieldlong'].") CHARACTER SET utf8 default ";
 					if($data['vdata']){
 						$sql .=  "'".$data['vdata']."'";
@@ -259,6 +402,7 @@ class FieldsController extends CommonController
 					
 					break;
 					case 4:
+					case 17:
 					if($data['fieldlong']>11 || $data['fieldlong']<=0){
 						JsonReturn(array('code'=>1,'msg'=>'字段长度不对！'));
 					}
@@ -291,15 +435,7 @@ class FieldsController extends CommonController
 						$sql .= " '".$data['body_14']."' NOT NULL ";
 					}
 					break;
-					case 5:
-					case 9:
-					$sql .= "VARCHAR(".$data['fieldlong'].") CHARACTER SET utf8 default ";
-					if($data['vdata']){
-						$sql .=  "'".$data['vdata']."'";
-					}else{
-						$sql .= ' NULL ';
-					}
-					break;
+
 					
 					case 7:
 					case 8:
@@ -352,26 +488,32 @@ class FieldsController extends CommonController
 	
 	function get_fields(){
 		$tid = $this->frparam('tid',0,0);
+		$isext = $this->frparam('isext',0,0);
 		$sql = array();
 		$molds = strtolower($this->frparam('molds',1));
 		$moldsdata = M('molds')->find(['biaoshi'=>$molds]);
-		if($moldsdata['ismust']!=1 || in_array($molds,['tags','comment','orders','admin','collect_type','fields','buylog','link_type','links','layout','level_group','level','member_group','molds','pictures','plugins','power','ruler','sysconfig','task','collect','member','menu'])){
-			
-		}else{
-			$sql[] = " tids like '%,".$tid.",%' "; 
+		if($tid){
+			$sql[] = " (tids like '%,".$tid.",%' or tids is null) ";
 		}
-		
-		$id = $this->frparam('id');
+        $id = $this->frparam('id');
 		if($id){
 			$data = M($molds)->find(array('id'=>$id));
 		}else{
 			$data = array();
 		}
+		$sql[] = " isext=".$isext;
 		$sql[] = " molds = '".$molds."' and isadmin=1 ";
 		$sql = implode(' and ',$sql);
 		$fields_list = M('Fields')->findAll($sql,'orders desc,id asc');
 		$l = '';
+		$isagree = 0;
+		if($this->admin['isadmin']==1 || ($this->admin['isadmin']!=1 && $this->admin['ischeck']==0)){
+			$isagree = 1;
+		}
 		foreach($fields_list as $k=>$v){
+			if(($v['field']=='isshow' && $isagree==0) || $v['field']=='tid' || $v['field']=='id'){
+				continue;
+			}
 			if(!array_key_exists($v['field'],$data)){
 				//使用默认值
 				$data[$v['field']] = $v['vdata'];
@@ -385,18 +527,19 @@ class FieldsController extends CommonController
 				}
                 $l .= $v['fieldname'].'
                     </label>
-                    <div class="layui-input-inline"  style="width:500px;">
+                    <div class="layui-input-inline">
                         <input type="text" id="'.$v['field'].'" value="'.$data[$v['field']].'" name="'.$v['field'].'" ';
 				if($v['ismust']==1){
 					$l.=' required="" lay-verify="required" ';
 				}		
                 $l .=  'autocomplete="off" class="layui-input">
-                    </div>
-					<div class="layui-form-mid layui-word-aux">
-					  '.$v['tips'].'
-					</div>
-					
-                </div>';
+                    </div>';
+				if($v['tips']){
+					$l.='<div class="layui-form-mid layui-word-aux">
+					  <i data-info="'.$v['tips'].'" data-field="f'.$v['id'].'" class="layui-sys-icon layui-icon layui-icon-about f'.$v['id'].'"></i>
+					</div>';
+				}	
+                $l.='</div>';
 				break;
 				case 2:
 				$l .= '<div class="layui-form-item  layui-form-text">
@@ -412,16 +555,16 @@ class FieldsController extends CommonController
 					$l.=' required="" lay-verify="required" ';
 				}		
                 $l .=  '>'.$data[$v['field']].'</textarea>
-                    </div>
-					<div class="layui-form-mid layui-word-aux">
-					  '.$v['tips'].'
-					</div>
-					
-                </div>';
+                    </div>';
+				if($v['tips']){
+					$l.='<div class="layui-form-mid layui-word-aux">
+					  <i data-info="'.$v['tips'].'" data-field="f'.$v['id'].'" class="layui-sys-icon layui-icon layui-icon-about f'.$v['id'].'"></i>
+					</div>';
+				}	
+                $l.='</div>';
 				break;
 				case 3:
-				$l .= include(APP_PATH.'A/t/tpl/common/uediter.php');
-				
+				$l .= include(APP_PATH.APP_HOME.'/'.HOME_VIEW.'/'.Tpl_template.'/common/uediter.php');
 				break;
 				case 4:
 				$l .= '<div class="layui-form-item">
@@ -437,58 +580,16 @@ class FieldsController extends CommonController
 					$l.=' required="" lay-verify="required" ';
 				}		
                 $l .=  'autocomplete="off" class="layui-input">
-                    </div>
-					<div class="layui-form-mid layui-word-aux">
-					  '.$v['tips'].'
-					</div>
-					
-                </div>';
+                    </div>';
+				if($v['tips']){
+					$l.='<div class="layui-form-mid layui-word-aux">
+					  <i data-info="'.$v['tips'].'" data-field="f'.$v['id'].'" class="layui-sys-icon layui-icon layui-icon-about f'.$v['id'].'"></i>
+					</div>';
+				}	
+                $l.='</div>';
 				break;
-				case 14:
-				$l .= '<div class="layui-form-item">
-                    <label for="'.$v['field'].'" class="layui-form-label">';
-				if($v['ismust']==1){
-				$l .= '<span class="x-red">*</span>';	
-				}
-                $l .= $v['fieldname'].'
-                    </label>
-                    <div class="layui-input-block">
-                        <input type="text" id="'.$v['field'].'" value="'.$data[$v['field']].'" name="'.$v['field'].'" ';
-				if($v['ismust']==1){
-					$l.=' required="" lay-verify="required" ';
-				}		
-                $l .=  'autocomplete="off" class="layui-input">
-                    </div>
-					<div class="layui-form-mid layui-word-aux">
-					  '.$v['tips'].'
-					</div>
-					
-                </div>';
-				break;
-				case 11:
-				$laydate = ($data[$v['field']]=='' || $data[$v['field']]==0)?time():$data[$v['field']];
-				$l .= '<div class="layui-form-item">
-                    <label for="'.$v['field'].'" class="layui-form-label">';
-				if($v['ismust']==1){
-				$l .= '<span class="x-red">*</span>';	
-				}
-                $l .= $v['fieldname'].'
-                    </label>
-                    <div class="layui-input-block">
-                        <input id="laydate_'.$v['field'].'" value="'.date('Y-m-d H:i:s',$laydate).'" name="'.$v['field'].'" ';
-				if($v['ismust']==1){
-					$l.=' required="" lay-verify="required" ';
-				}		
-                $l .=  'autocomplete="off" class="layui-input">
-                    </div>
-					<div class="layui-form-mid layui-word-aux">
-					  '.$v['tips'].'
-					</div>
-                </div><script>
-layui.use("laydate", function(){
-  var laydate = layui.laydate;
-  laydate.render({elem: "#laydate_'.$v['field'].'",type:"datetime",trigger: "click" });});</script>';
-				break;
+				
+				
 				case 5:
 				$l .= '<div class="layui-form-item">
                     <label for="'.$v['field'].'" class="layui-form-label">';
@@ -512,12 +613,13 @@ layui.use("laydate", function(){
 					<div class="layui-input-inline">
 						<img id="'.$v['field'].'_img" class="img-responsive img-thumbnail" style="max-width: 200px;" src="'.$data[$v['field']].'" onerror="javascipt:this.src=\''.Tpl_style.'/style/images/nopic.jpg\'; this.title=\'图片未找到\';this.onerror=\'\'">
 						<button type="button" onclick="deleteImage_auto(this,\''.$v['field'].'\')" class="layui-btn layui-btn-sm layui-btn-radius layui-btn-danger " title="删除这张图片" >删除</button>
-					</div>
-					
-					<div class="layui-form-mid layui-word-aux">
-					  '.$v['tips'].'
-					</div>
-                </div>
+					</div>';
+				if($v['tips']){
+					$l.='<div class="layui-form-mid layui-word-aux">
+					  <i data-info="'.$v['tips'].'" data-field="f'.$v['id'].'" class="layui-sys-icon layui-icon layui-icon-about f'.$v['id'].'"></i>
+					</div>';
+				}	
+                $l.='</div>
 				<script>
 				
 				layui.use("upload", function(){
@@ -638,40 +740,14 @@ layui.use("laydate", function(){
 					$l.='>'.$s[0].'</option>';
 				}
 					$l.=  '</select>
-                    </div>
-					<div class="layui-form-mid layui-word-aux">
-					  '.$v['tips'].'
-					</div>
-                </div><script>
-							layui.use("form", function () {
-								var form_'.$v['field'].' = layui.form;
-								form_'.$v['field'].'.render();
-							});
-							 
-						</script>';
-				break;
-				case 12:
-				$l .= '<div class="layui-form-item" pane>
-                    <label for="'.$v['field'].'" class="layui-form-label">';
-				if($v['ismust']==1){
-				$l .= '<span class="x-red">*</span>';	
-				}
-                $l .= $v['fieldname'].'  
-                    </label>
-                    <div class="layui-input-inline">';
-				foreach(explode(',',$v['body']) as $vv){
-					$s=explode('=',$vv);
-					$l.='<input type="radio" name="'.$v['field'].'" value="'.$s[1].'" title="'.$s[0].'" ';
-					if($data[$v['field']]==$s[1]){
-						$l.='checked="checked"';
-					}
-					$l.=' >';
-				}
-					$l.='</div>
-					<div class="layui-form-mid layui-word-aux">
-					  '.$v['tips'].'
-					</div>
-					</div><script>
+                    </div>';
+				if($v['tips']){
+					$l.='<div class="layui-form-mid layui-word-aux">
+					  <i data-info="'.$v['tips'].'" data-field="f'.$v['id'].'" class="layui-sys-icon layui-icon layui-icon-about f'.$v['id'].'"></i>
+					</div>';
+				}	
+                $l.='</div>
+				<script>
 							layui.use("form", function () {
 								var form_'.$v['field'].' = layui.form;
 								form_'.$v['field'].'.render();
@@ -695,11 +771,13 @@ layui.use("laydate", function(){
 						$l.='checked="checked"';};
 					$l.='>';
 				}
-				$l 	.= '</div>
-					<div class="layui-form-mid layui-word-aux">
-					  '.$v['tips'].'
-					</div>
-					  </div>
+				$l 	.= '</div>';
+				if($v['tips']){
+					$l.='<div class="layui-form-mid layui-word-aux">
+					  <i data-info="'.$v['tips'].'" data-field="f'.$v['id'].'" class="layui-sys-icon layui-icon layui-icon-about f'.$v['id'].'"></i>
+					</div>';
+				}	
+                $l.='</div>
 					  <script>
 							layui.use("form", function () {
 								var form_'.$v['field'].' = layui.form;
@@ -732,11 +810,13 @@ layui.use("laydate", function(){
 
 					  
                       </div>
-                    </div>
-					<div class="layui-form-mid layui-word-aux">
-					  '.$v['tips'].'
-					</div>
-                </div>
+                    </div>';
+				if($v['tips']){
+					$l.='<div class="layui-form-mid layui-word-aux">
+					  <i data-info="'.$v['tips'].'" data-field="f'.$v['id'].'" class="layui-sys-icon layui-icon layui-icon-about f'.$v['id'].'"></i>
+					</div>';
+				}	
+                $l.='</div>
 				<script>
 				
 				layui.use("upload", function(){
@@ -835,6 +915,67 @@ layui.use("laydate", function(){
 					});
 				</script>';
 				break;
+				case 11:
+				$laydate = ($data[$v['field']]=='' || $data[$v['field']]==0)?time():$data[$v['field']];
+				$l .= '<div class="layui-form-item">
+                    <label for="'.$v['field'].'" class="layui-form-label">';
+				if($v['ismust']==1){
+				$l .= '<span class="x-red">*</span>';	
+				}
+                $l .= $v['fieldname'].'
+                    </label>
+                    <div class="layui-input-inline">
+                        <input id="laydate_'.$v['field'].'" value="'.date('Y-m-d H:i:s',$laydate).'" name="'.$v['field'].'" ';
+				if($v['ismust']==1){
+					$l.=' required="" lay-verify="required" ';
+				}		
+                $l .=  'autocomplete="off" class="layui-input">
+                    </div>';
+				if($v['tips']){
+					$l.='<div class="layui-form-mid layui-word-aux">
+					  <i data-info="'.$v['tips'].'" data-field="f'.$v['id'].'" class="layui-sys-icon layui-icon layui-icon-about f'.$v['id'].'"></i>
+					</div>';
+				}	
+				$randt = getRandChar(5);
+                $l.='</div>
+				<script>
+layui.use("laydate", function(){
+  var laydate'.$randt.' = layui.laydate;
+  laydate'.$randt.'.render({elem: "#laydate_'.$v['field'].'",type:"datetime",trigger: "click" });});</script>';
+				break;
+				case 12:
+				$l .= '<div class="layui-form-item" pane>
+                    <label for="'.$v['field'].'" class="layui-form-label">';
+				if($v['ismust']==1){
+				$l .= '<span class="x-red">*</span>';	
+				}
+                $l .= $v['fieldname'].'  
+                    </label>
+                    <div class="layui-input-inline">';
+				foreach(explode(',',$v['body']) as $vv){
+					$s=explode('=',$vv);
+					$l.='<input type="radio" name="'.$v['field'].'" value="'.$s[1].'" title="'.$s[0].'" ';
+					if($data[$v['field']]==$s[1]){
+						$l.='checked="checked"';
+					}
+					$l.=' >';
+				}
+					$l.='</div>';
+				if($v['tips']){
+					$l.='<div class="layui-form-mid layui-word-aux">
+					  <i data-info="'.$v['tips'].'" data-field="f'.$v['id'].'" class="layui-sys-icon layui-icon layui-icon-about f'.$v['id'].'"></i>
+					</div>';
+				}	
+                $l.='</div>
+					<script>
+							layui.use("form", function () {
+								var form_'.$v['field'].' = layui.form;
+								form_'.$v['field'].'.render();
+							});
+							 
+						</script>';
+				break;
+				
 				case 13:
 				//tid,field
 				$l .= '<div class="layui-form-item">
@@ -848,6 +989,9 @@ layui.use("laydate", function(){
 						<select name="'.$v['field'].'" lay-search="" id="'.$v['field'].'" >';
 						$body = explode(',',$v['body']);
 				$biaoshi = M('molds')->getField(['id'=>$body[0]],'biaoshi');
+				if(!$biaoshi){
+					echo $v['field'].'字段关联绑定失败，请重新绑定！';exit;
+				}
 				$datalist = M($biaoshi)->findAll();
 				$l.='<option value="0">请选择关联项</option>';
 				foreach($datalist as $vv){
@@ -858,17 +1002,42 @@ layui.use("laydate", function(){
 					$l.='>'.$vv[$body[1]].'</option>';
 				}
 					$l.=  '</select>
-                    </div>
-					<div class="layui-form-mid layui-word-aux">
-					  '.$v['tips'].'
-					</div>
-                </div><script>
+                    </div>';
+				if($v['tips']){
+					$l.='<div class="layui-form-mid layui-word-aux">
+					  <i data-info="'.$v['tips'].'" data-field="f'.$v['id'].'" class="layui-sys-icon layui-icon layui-icon-about f'.$v['id'].'"></i>
+					</div>';
+				}	
+                $l.='</div>
+				<script>
 							layui.use("form", function () {
 								var form_'.$v['field'].' = layui.form;
 								form_'.$v['field'].'.render();
 							});
 							 
 						</script>';
+				break;
+				case 14:
+				$l .= '<div class="layui-form-item">
+                    <label for="'.$v['field'].'" class="layui-form-label">';
+				if($v['ismust']==1){
+				$l .= '<span class="x-red">*</span>';	
+				}
+                $l .= $v['fieldname'].'
+                    </label>
+                    <div class="layui-input-block">
+                        <input type="text" id="'.$v['field'].'" value="'.$data[$v['field']].'" name="'.$v['field'].'" ';
+				if($v['ismust']==1){
+					$l.=' required="" lay-verify="required" ';
+				}		
+                $l .=  'autocomplete="off" class="layui-input">
+                    </div>';
+				if($v['tips']){
+					$l.='<div class="layui-form-mid layui-word-aux">
+					  <i data-info="'.$v['tips'].'" data-field="f'.$v['id'].'" class="layui-sys-icon layui-icon layui-icon-about f'.$v['id'].'"></i>
+					</div>';
+				}	
+                $l.='</div>';
 				break;
 				case 15:
 				$l .= '<fieldset class="layui-elem-field">
@@ -908,6 +1077,127 @@ layui.use("laydate", function(){
 				})
 				</script>';
 				break;
+				case 16:
+				$l .= '<div class="layui-form-item">
+                    <label for="'.$v['field'].'" class="layui-form-label">';
+				if($v['ismust']==1){
+				$l .= '<span class="x-red">*</span>';	
+				}
+                $l .= $v['fieldname'].'  
+                    </label>
+					<div class="layui-input-block">';
+					$body = explode(',',$v['body']);
+					$biaoshi = M('molds')->getField(['id'=>$body[0]],'biaoshi');
+					if(!$biaoshi){
+						echo $v['field'].'字段关联绑定失败，请重新绑定！';exit;
+					}
+					$datalist = M($biaoshi)->findAll();
+				foreach($datalist as $vv){
+					
+					$l.='<input type="checkbox" title="'.$vv[$body[1]].'" name="'.$v['field'].'[]" value="'.$vv['id'].'" ';
+					if(strpos($data[$v['field']],','.$vv['id'].',')!==false){
+						$l.='checked="checked"';};
+					$l.='>';
+				}
+				$l 	.= '</div>';
+				if($v['tips']){
+					$l.='<div class="layui-form-mid layui-word-aux">
+					  <i data-info="'.$v['tips'].'" data-field="f'.$v['id'].'" class="layui-sys-icon layui-icon layui-icon-about f'.$v['id'].'"></i>
+					</div>';
+				}	
+                $l.='</div>
+				<script>
+							layui.use("form", function () {
+								var form_'.$v['field'].' = layui.form;
+								form_'.$v['field'].'.render();
+							});
+							 
+						</script>';
+				break;
+				
+				case 18:
+					$l.='<div class="layui-form-item">
+                    <label for="tids" class="layui-form-label">
+                        副栏目
+                    </label>
+                    <div class="layui-input-inline">
+                       <div id="tids" ></div>
+                    </div>
+                  
+                </div>
+                <script>
+                var tids_obj = xmSelect.render({
+        		el: "#tids",
+        		language: "zn",
+        		data: [';
+					foreach($this->classtypetree as $vv){
+                        if($vv['molds']==$molds){
+                            if($this->admin['classcontrol']==0 || $this->admin['isadmin']==1 || strpos($this->tids,','.$vv['id'].',')!==false || $moldsdata['iscontrol']==0){
+                              $l.='{name: "'.str_repeat('--', $vv['level']).$vv['classname'].'", value: '.$vv['id'].'},';
+                            }
+
+                        }
+
+					}
+                $l.=']
+              })
+                tids_obj.setValue([';
+
+                foreach($this->classtypetree as $vv){
+                    if(strpos($data['tids'],','.$vv['id'].',')!==false){
+                        $l.='{name: "'.str_repeat('--', $vv['level']).$vv['classname'].'", value: '.$vv['id'].'},';
+                    }
+                }
+        	   $l.=' ])
+                    </script>';
+				break;
+				case 19:
+				$l.='<div class="layui-form-item layui-form-text">
+                    <label for="'.$v['field'].'" class="layui-form-label">
+                        TAG标签 [ 按Enter回车自动添加 ]
+                    </label>
+                    <div class="layui-input-block">
+						 <input id="'.$v['field'].'" type="text" class="'.$v['field'].'" name="'.$v['field'].'" value="'.trim($data[$v['field']],','). '"  autocomplete="off" class="layui-input"  />
+                    </div>
+                </div>
+                <script>
+                $(function() {
+			  $("#'.$v['field'].'").tagsInput({
+					width:"auto",
+					defaultText:"添加一个标签",
+                    });
+                })</script>';
+				break;
+				case 20:
+				$laydate = ($data[$v['field']]=='' || $data[$v['field']]==0)?time():$data[$v['field']];
+				$l .= '<div class="layui-form-item">
+                    <label for="'.$v['field'].'" class="layui-form-label">';
+				if($v['ismust']==1){
+				$l .= '<span class="x-red">*</span>';	
+				}
+                $l .= $v['fieldname'].'
+                    </label>
+                    <div class="layui-input-inline">
+                        <input id="laydate_'.$v['field'].'" value="'.date('Y-m-d H:i:s',$laydate).'" name="'.$v['field'].'" ';
+				if($v['ismust']==1){
+					$l.=' required="" lay-verify="required" ';
+				}		
+                $l .=  'autocomplete="off" class="layui-input">
+                    </div>';
+				if($v['tips']){
+					$l.='<div class="layui-form-mid layui-word-aux">
+					  <i data-info="'.$v['tips'].'" data-field="f'.$v['id'].'" class="layui-sys-icon layui-icon layui-icon-about f'.$v['id'].'"></i>
+					</div>';
+				}
+				$randt = getRandChar(5);
+                $l.='</div>
+				<script>
+layui.use("laydate", function(){
+  var laydate'.$randt.' = layui.laydate;
+  laydate'.$randt.'.render({elem: "#laydate_'.$v['field'].'",type:"datetime",trigger: "click",range:"~" });});</script>';
+				break;
+				
+				
 				
 				
 			}
@@ -922,7 +1212,7 @@ layui.use("laydate", function(){
 			
 			$fields = M('fields')->find(array('id'=>$id));
 			//不允许删除字段
-			$noallow = ['addtime','member_id','hits','target','ownurl','istop'];
+			$noallow = ['addtime','member_id','hits','target','ownurl','id','molds','htmlurl','jzattr','tids','tid','litpic','title','keywords','seo_title','body'];
 			if(in_array($fields['field'],$noallow)){
 				JsonReturn(array('code'=>1,'msg'=>'系统字段不允许删除！'));
 			}
@@ -971,9 +1261,121 @@ layui.use("laydate", function(){
 		
 		JsonReturn(['code'=>0,'msg'=>'操作成功！']);
 	}
+
+	function editFieldsValue(){
+		$field = $this->frparam('field',1);
+		$w[$field] = $this->frparam('value',1);
+		$r = M('fields')->update(array('id'=>$this->frparam('id')),$w);
+		if(!$r){
+			JsonReturn(array('code'=>1,'info'=>'修改失败！'));
+		}
+		JsonReturn(array('code'=>0,'info'=>'修改成功！'));
+	}
+
+	function fieldsList(){
+		
+		if($this->frparam('molds',1)==''){
+			Error('请选择模块！');
+		}
+		if($this->frparam('ajax')){
+
+			$data = M('fields')->findAll(array('molds'=>$this->frparam('molds',1)),'islist desc,listorders desc');
+			foreach($data as &$v){
+				$v['isadmin'] = $v['isadmin']==1 ? '显示' : '隐藏';
+				$v['isshow'] = $v['isshow']==1 ? '显示' : '隐藏';
+				$v['islist'] = $v['islist']==1 ? '显示' : '隐藏';
+				$v['issearch'] = $v['issearch']==1 ? '显示' : '隐藏';
+				$v['ismust'] = $v['ismust']==1 ? '是' : '否';
+				$v['isext'] = $v['isext']==1 ? '是' : '否';
+				switch($v['fieldtype']){
+					case 1:
+					$v['fieldtypename'] = '单行文本';
+					break;
+					case 2:
+					$v['fieldtypename'] = '多行文本';
+					break;
+					case 3:
+					$v['fieldtypename'] = '文本编辑器';
+					break;
+					case 4:
+					$v['fieldtypename'] = '数字';
+					break;
+					case 5:
+					$v['fieldtypename'] = '单图片';
+					break;
+					case 6:
+					$v['fieldtypename'] = '多图片';
+					break;
+					case 7:
+					$v['fieldtypename'] = '单选下拉';
+					break;
+					case 8:
+					$v['fieldtypename'] = '多选';
+					break;
+					case 9:
+					$v['fieldtypename'] = '单附件';
+					break;
+					case 10:
+					$v['fieldtypename'] = '多附件';
+					break;
+					case 11:
+					$v['fieldtypename'] = '时间戳';
+					break;
+					case 12:
+					$v['fieldtypename'] = '单选按钮';
+					break;
+					case 13:
+					$v['fieldtypename'] = '单选关联';
+					break;
+					case 14:
+					$v['fieldtypename'] = '小数';
+					break;
+					case 15:
+					$v['fieldtypename'] = '多行录入';
+					break;
+					case 16:
+					$v['fieldtypename'] = '多选关联';
+					break;
+                    case 17:
+                    $v['fieldtypename'] = '栏目';
+                    break;
+                    case 18:
+                    $v['fieldtypename'] = '副栏目';
+                    break;
+					case 19:
+                    $v['fieldtypename'] = '系统TAG';
+                    break;
+					
+				}
+				
+				$v['edit_url'] = U('editFields',['id'=>$v['id']]);
+				
+				$v['edit_url'] = U('editFields',['id'=>$v['id']]);
+			}
+			JsonReturn(['code'=>0,'data'=>$data,'count'=>count($data)]);
+			
+			
+		}
+		$this->molds = M('Molds')->find(array('biaoshi'=>$this->frparam('molds',1)));
+		
+		$this->display('fields-list-show');
+	}
 	
-	
-	
+	function changeFieldList(){
+		$field = $this->frparam('field',1);
+		$w[$field] = $this->frparam('value',1);
+		if(in_array($field,['issearch','islist','width','listorders'])){
+			$r = M('fields')->update(array('id'=>$this->frparam('id')),$w);
+			if(!$r){
+				JsonReturn(array('code'=>1,'info'=>'修改失败！'));
+			}
+		}else{
+			JsonReturn(array('code'=>1,'info'=>'非法操作！'));
+		}
+		
+		JsonReturn(array('code'=>0,'info'=>'修改成功！'));
+		
+	}
 	
 	
 }

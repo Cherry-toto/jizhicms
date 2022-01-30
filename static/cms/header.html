@@ -1,0 +1,73 @@
+<header class="header-two {if($ishome)}position--absolute{else}position--relative{/if}">
+      <div class="header-bottom-area">
+        <div class="container">
+          <div class="row align-items-center">
+            <div class="col-lg-2 col-md-3 col-5">
+              <div class="logo">
+                <a href="/"><img src="{$webconf['web_logo']}" alt="{$webconf['web_name']}" /></a>
+              </div>
+            </div>
+            <div class="col-lg-8 d-lg-block d-none">
+              <div class="main-menu-area text-center">
+                <nav class="navigation-menu navigation-menu-white">
+                  <ul>
+					<li>
+						  <a href="/"><span>首页</span></a>
+					</li>
+				    {foreach $classtypedata as $v}
+					{if($v['pid']==0 && $v['isshow']==1)}
+						{if($v['haschild'])}
+						<li class="has-children">
+						  <a href="{$v['url']}"><span>{$v['classname']}</span></a>
+						  <ul class="submenu">
+						    {foreach $v['children']['list'] as $vv}
+							<li>
+							  <a href="{$vv['url']}"><span>{$vv['classname']}</span></a>
+							</li>
+							{/foreach}
+							
+						  </ul>
+						</li>
+						{else}
+						<li>
+						  <a href="{$v['url']}"><span>{$v['classname']}</span></a>
+						</li>
+						
+						{/if}
+					{/if}
+				    {/foreach}
+                   
+                    
+                  </ul>
+                </nav>
+              </div>
+            </div>
+            <div class="col-lg-2 col-md-9 col-7">
+              <div class="header-two-right-side">
+                <a href="/user/notify" class="single-action-item">
+                  <span id="notifiy-icon" class=""></span>
+                  <img src="{$tpl}static/picture/notification-white.png" alt="" />
+                </a>
+				{if($islogin)}
+                <a href="/user/index" class="single-action-item">
+                  <img src="{$tpl}static/picture/user-white.png" alt="" />
+                </a>
+				{else}
+				<a data-bs-dismiss="modal" data-bs-toggle="modal" data-bs-target="#loginModel" class="single-action-item">
+                  <img src="{$tpl}static/picture/user-white.png" alt="" />
+                </a>
+				{/if}
+                <!-- mobile menu -->
+                <div
+                  class="mobile-navigation-icon icon-white d-block d-lg-none"
+                  id="mobile-menu-trigger"
+                >
+                  <i></i>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+    

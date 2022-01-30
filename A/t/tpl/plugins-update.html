@@ -69,8 +69,7 @@
 				    console.log(cur_size);
 				    var filesize = parseInt($("#filesize").val());
 				    n = Math.round(cur_size/filesize)*100;
-				    if(n>=100){
-			          n = 70;//只加载到70%
+				    if(cur_size==filesize){
 			          $("#down-text").html('文件下载完成！正在解压~');
 			          clearInterval(timer);
 			          othis.removeClass(DISABLED);
@@ -79,7 +78,7 @@
 				        	if(res.code==0){
 				        		if(res.isinstall){
 				        			$("#down-text").html('文件解压完成！正在进行安装~');
-					        		element.progress('demo-progress', '80%');
+					        		//element.progress('demo-progress', '80%');
 					        		$.post("{fun U('plugins/update')}",{filepath:$("#filepath").val(),download_url:$("#download_url").val(),'filesize':$("#filesize").val(),'action':'plugin-install'},function(res){
 							        	if(res.code==0){
 							        		$("#down-text").html('插件升级成功！');

@@ -34,7 +34,7 @@
                   <span class="x-red">*</span>所属栏目
               </label>
               <div class="layui-input-inline">
-                  <input type="text" id="tids" name="tids" value="{if($data['tid']!=0)}{fun get_info_table('classtype',$data['tid'],'classname')}{else}无{/if}"
+                  <input type="text" id="tids" name="tids" value="{if($data['tid'])}{$classtypedata[$data['tid']]['classname']}{else}无{/if}"
                   autocomplete="off" class="layui-input">
               </div>
           </div>

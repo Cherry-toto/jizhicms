@@ -20,7 +20,7 @@
             <a class="layui-btn layui-btn-small" style="line-height:1.6em;margin-top:3px;float:right"  href="javascript:location.replace(location.href);" title="刷新"><i class="iconfont" style="line-height:30px">&#xe6aa;</i></a>
         </div>
         <div class="x-body">
-            <form class="layui-form  layui-form-pane" >
+            <form class="layui-form  layui-form-pane" lay-filter="jizhiform">
 			<input type="hidden" name="go" value="1" />
 			<input type="hidden" name="id" value="{$data['id']}" />
 			
@@ -32,15 +32,7 @@
 			  </ul>
 			  <div class="layui-tab-content">
 				<div class="layui-tab-item layui-show">
-				 <div class="layui-form-item">
-                    <label for="title" class="layui-form-label">
-                        <span class="x-red">*</span>标题
-                    </label>
-                    <div class="layui-input-inline">
-                        <input type="text" id="title" value="{$data['title']}" style="width:500px;"  name="title" required="" lay-verify="required"
-                        autocomplete="off" class="layui-input">
-                    </div>
-                </div>
+				 
 				{if($molds['isclasstype']==1)}
 				<div class="layui-form-item">
                     <label for="tid" class="layui-form-label">
@@ -63,227 +55,75 @@
 					   
 					</select>
                     </div>
+					<div class="layui-input-inline">
+						<span class="x-red">填写内容时，请先选择栏目，否则切换栏目后，数据会丢失！</span>
+                    </div>
+					<div class="layui-input-inline">
+						<button type="button" id="resetdata" class="layui-btn layui-btn-sm">恢复数据</button>
+                    </div>
                 </div>
 				{else}
 				<input type="hidden" name="tid" value="{$data['tid']}" />
 				{/if}
-				 <div class="layui-form-item">
-                    <label for="seo_title" class="layui-form-label">
-                        <span class="x-red"></span>SEO标题
-                    </label>
-                    <div class="layui-input-inline">
-                        <input type="text" id="seo_title" value="{$data['seo_title']}" style="width:500px;"  name="seo_title" 
-                        autocomplete="off" class="layui-input">
-                    </div>
-                </div>
-				<div class="layui-form-item">
-                    <label for="hits" class="layui-form-label">
-                        <span class="x-red"></span>点击量
-                    </label>
-                    <div class="layui-input-inline">
-                        <input type="number" id="hits" value="{$data['hits']}" name="hits" 
-                        autocomplete="off" class="layui-input">
-                    </div>
-                </div>
-				<div class="layui-form-item">
-                    <label for="keywords" class="layui-form-label">
-                        <span class="x-red"></span>关键词
-                    </label>
-                    <div class="layui-input-inline">
-                        <input type="text" id="keywords" value="{$data['keywords']}" style="width:500px;"  name="keywords" 
-                        autocomplete="off" class="layui-input">
-                    </div>
-                </div>
-				<div class="layui-form-item">
-                    <label for="price" class="layui-form-label">
-                        <span class="x-red"></span>价格
-                    </label>
-                    <div class="layui-input-inline">
-                        <input type="text" id="price" value="{$data['price']}" name="price" 
-                        autocomplete="off" class="layui-input">
-                    </div>
-				</div>
-				<div class="layui-form-item">
-                    <label for="stock_num" class="layui-form-label">
-                        <span class="x-red"></span>库存
-                    </label>
-                    <div class="layui-input-inline">
-                        <input type="number" id="stock_num" value="{$data['stock_num']}" name="stock_num" 
-                        autocomplete="off" class="layui-input">
-                    </div>
-                </div>
-				<div class="layui-form-item">
-                    <label for="litpic" class="layui-form-label">
-						<span class="x-red"></span>首图  
-                    </label>
-                    
-					<div class="layui-input-inline">
-						<input name="litpic" placeholder="上传图片" type="text" class="layui-input" id="litpic"  value="{$data['litpic']}" />
-					</div>
-					<div class="layui-input-inline">
-						<button class="layui-btn layui-btn-primary" id="litpic_upload" type="button" >选择图片</button>
-					</div>
-					<div class="layui-input-inline">
-						<img id="litpic_img" class="img-responsive img-thumbnail" style="max-width: 200px;" src="{$data['litpic']}" onerror="javascipt:this.src='{__Tpl_style__}/style/images/nopic.jpg'; this.title='图片未找到';this.onerror=''">
-						<button type="button" onclick="deleteImage(this)" class="layui-btn layui-btn-sm layui-btn-radius layui-btn-danger " title="删除这张图片" >删除</button>
-					</div>
-                </div>
 				
-				<fieldset class="layui-elem-field">
-				  <legend>图集</legend>
-				  <div class="layui-field-box">
-					  <div class="layui-input-block">
-						  <div class="site-demo-upbar">
-							<button type="button" class="layui-btn" id="LAY_pictures_upload">
-							  <i class="layui-icon">&#xe67c;</i>上传图片
-							</button>
-							 可以一次选择多张图片同时上传
-						  </div>
-						   
-					  </div>
-					 
-					  <div class="layui-input-block">
-					  <span class="preview_pictures" >
-					  {if($data['pictures']!='')}
-						{foreach explode('||',$data['pictures']) as $vv}
-						{if($webconf['ispicsdes']==1)}
-						{php $pic = explode('|',$vv); /}
-						<div class="upload-icon-img layui-input-inline" ><div class="upload-pre-item"><img src="{$pic[0]}" class="img" width="200px" height="200px" ><input name="pictures_urls[]" type="text" class="layui-input"  value="{$pic[0]}" /><input name="pictures_des[]" type="text" class="layui-input" placeholder="文字描述"  value="{$pic[1]}" /><a class="layui-btn layui-btn-sm layui-btn-radius layui-btn-danger delete_file">删除</a><a class="layui-btn layui-btn-sm layui-btn-radius imgorder " onclick="goleft(this)">左移</a><a class="layui-btn layui-btn-sm layui-btn-radius imgorder " onclick="goright(this)">右移</a></div></div>
-						{else}
-						<div class="upload-icon-img layui-input-inline" ><div class="upload-pre-item"><img src="{$vv}" class="img" width="200px" height="200px" ><input name="pictures_urls[]" type="text" class="layui-input"  value="{$vv}" /><a class="layui-btn layui-btn-sm layui-btn-radius layui-btn-danger delete_file">删除</a><a class="layui-btn layui-btn-sm layui-btn-radius imgorder " onclick="goleft(this)">左移</a><a class="layui-btn layui-btn-sm layui-btn-radius imgorder " onclick="goright(this)">右移</a></div></div>
-						{/if}
-						{/foreach}
-					  {/if}	 
-					  </span>
-					  </div>
-				  </div>
-				</fieldset>
-				
-				
-				
-				 <div class="layui-form-item layui-form-text">
-                        <label for="description" class="layui-form-label">
-                            <span class="x-red"></span>简介
-                        </label>
-                        <div class="layui-input-block">
-                            <textarea  name="description" class="layui-textarea">{$data['description']}</textarea>
-                        </div>
-                </div>
-				 
-				<div class="layui-form-item layui-form-text">
-                    <label for="body" class="layui-form-label">
-                        <span class="x-red"></span>内容
-                    </label>
-                    <div class="layui-input-block" style="clear:both;" >
-					{include="content"}
-                    </div>
-                </div>
-				
-				{if($webconf['isrelative']==1)}
-				<span id="ext_fields"></span>
-				{/if}
-			
+				<span id="content_fields"></span>
 
 				</div>
 				<div class="layui-tab-item">
-				{if($webconf['isrelative']==0)}
 				<span id="ext_fields"></span>
-				{/if}
-					<div class="layui-form-item">
-                    <label for="orders" class="layui-form-label">
-                        <span class="x-red"></span>排序
-                    </label>
-                    <div class="layui-input-inline">
-                        <input type="number" id="orders" value="{$data['orders']}" name="orders" 
-                        autocomplete="off" class="layui-input">
-                    </div>
-					 <div class="layui-form-mid layui-word-aux">
-					  数字越大越靠前
-				  </div>
-					
-                </div>
-				
-				<div class="layui-form-item" pane>
-                    <label for="tjsx" class="layui-form-label">
-                        <span class="x-red"></span>推荐属性
-                    </label>
-                    <div class="layui-input-inline">
-                        <input type="checkbox" name="istop" value="1" title="置顶" {if($data['istop']==1)}checked{/if}>
-						<input type="checkbox" name="ishot" value="1" title="热点" {if($data['ishot']==1)}checked{/if}>
-						<input type="checkbox" name="istuijian" value="1" title="推荐" {if($data['istuijian']==1)}checked{/if}>
-                    </div>
-					 
-					
-                </div>
-				
-				<div class="layui-form-item layui-form-text">
-                    <label for="tags" class="layui-form-label">
-                        <span class="x-red"></span>TAG标签 [ 按Enter回车自动添加 ]
-                    </label>
-                    <div class="layui-input-block">
-                       
-						 <input id="tags" type="text" class="tags" name="tags" value="{fun trim($data['tags'],',')}"  autocomplete="off" class="layui-input"  />
-                    </div>
-                </div>
-				
-				{if($admin['isadmin']==1 || ($admin['isadmin']!=1 && $admin['ischeck']==0))}
-				<div class="layui-form-item" pane>
-                    <label for="isshow" class="layui-form-label">
-                        <span class="x-red"></span>是否审核
-                    </label>
-                    <div class="layui-input-block">
-                        <input type="radio" name="isshow" value="0" title="未审" {if($data['isshow']==0)}checked{/if}>
-						<input type="radio" name="isshow" value="1" title="已审" {if($data['isshow']==1)}checked{/if}>
-						<input type="radio" name="isshow" value="2" title="退回" {if($data['isshow']==2)}checked{/if}>
-                    </div>
-					 
-					
-                </div>
-				{/if}
-				
-				 <div class="layui-form-item" >
-                    <label for="addtime" class="layui-form-label">
-                        <span class="x-red"></span>更新时间
-                    </label>
-                    <div class="layui-input-inline">
-                      <input class="layui-input" value="{if($data)}{fun date('Y-m-d H:i:s',$data['addtime'])}{else}{fun date('Y-m-d H:i:s')}{/if}" name="addtime" placeholder="文件日期" id="product_addtime">
-                    </div>
-                   
-                </div>
-				
-				<div class="layui-form-item">
-                    <label for="target" class="layui-form-label">
-                        <span class="x-red"></span>外链URL
-                    </label>
-                    <div class="layui-input-inline">
-                        <input type="text" id="target" value="{$data['target']}" name="target" 
-                        autocomplete="off" class="layui-input">
-                    </div>
-					<div class="layui-form-mid layui-word-aux">
-					  默认为空，系统访问内容则直接跳转到此链接
-					</div>
-					
-                </div>
-				
-				<div class="layui-form-item">
-                    <label for="ownurl" class="layui-form-label">
-                        <span class="x-red"></span>自定义URL
-                    </label>
-                    <div class="layui-input-inline">
-                        <input type="text" id="ownurl" value="{$data['ownurl']}" name="ownurl" 
-                        autocomplete="off" class="layui-input">
-                    </div>
-					<div class="layui-form-mid layui-word-aux">
-					  默认为空，自定义URL
-					</div>
-					
-                </div>
-				
+				</div>
+				<div class="layui-tab-item">
+				<blockquote class="layui-elem-quote">此规则配置仅在不填留空的情况下才会触发</blockquote>
+					  <div class="layui-form-item">
+						<label class="layui-form-label">SEO标题</label>
+						<div class="layui-input-inline">
+						  <select name="config_seotitle" >
+							<option {if($configdata['seotitle']==1)}selected{/if} value="1">等于内容标题</option>
+							<option {if($configdata['seotitle']==2)}selected{/if} value="2">不填则留空</option>
+						  </select>
+						</div>
+					  </div>
+					  <div class="layui-form-item">
+						<label class="layui-form-label">缩略图规则</label>
+						<div class="layui-input-inline">
+						  <select name="config_litpic" >
+							<option {if($configdata['litpic']==1)}selected{/if} value="1">自动获取内容第一张图片</option>
+							<option {if($configdata['litpic']==2)}selected{/if} value="2">不自动获取</option>
+						  </select>
+						</div>
+					  </div>
+					  <div class="layui-form-item">
+						<label class="layui-form-label">简介规则</label>
+						<div class="layui-input-inline">
+						  <select name="config_description" >
+							<option {if($configdata['description']==1)}selected{/if} value="1">自动获取内容前200字符</option>
+							<option {if($configdata['description']==2)}selected{/if} value="2">不自动获取</option>
+						  </select>
+						</div>
+					  </div>
+					  <div class="layui-form-item">
+						<label class="layui-form-label">TAG规则</label>
+						<div class="layui-input-inline">
+						  <select name="config_tags" >
+							<option {if($configdata['tags']==1)}selected{/if} value="1">同步关键词</option>
+							<option {if($configdata['tags']==2)}selected{/if} value="2">不同步关键词</option>
+						  </select>
+						</div>
+					  </div>
+					  <div class="layui-form-item  layui-form-text">
+						<label class="layui-form-label">敏感词过滤字段 <span class="x-red">需要过滤敏感词在系统配置中进行设置</span></label>
+						<div class="layui-input-block">
+						  <textarea placeholder="请输入需要过滤的字段" name="config_filter" class="layui-textarea">{$configdata['filter']}</textarea>
+						</div>
+					  </div>
+					  
 				
 				</div>
+				
+				
 			  </div>
 			</div>
-               
+
                 <div class="layui-form-item" id="jizhitj"  style="text-align:center;">
                     
                      <button  class="layui-btn" lay-filter="save" lay-submit="">
@@ -304,81 +144,25 @@
       
         <script>
 		{include="fields"}
-			$(function() {
-			  $('#tags').tagsInput({
-					width:'auto',
-					defaultText:'添加一个标签',
-			  });
-			})
-			function deleteImage(elm){
-				$(elm).prev().attr("src", "{__Tpl_style__}/style/images/nopic.jpg");
-				$('#litpic').val("");
-			}
+			
+			
             layui.use(['laydate','form','layer','upload'], function(){
               $ = layui.jquery;
               var form = layui.form
               ,layer = layui.layer;
 			  laydate = layui.laydate;
 			  var upload = layui.upload;
-			  laydate.render({
-				elem: '#product_addtime', //指定元素
-				type:'datetime'
-			  });
-              //图片上传接口
-              upload.render({
-			    elem: '#litpic_upload',
-                url: "{fun U('Common/uploads')}" //上传接口
-                ,data:{tid:function(){ return $("#tid").val();},molds:'product'}
-                ,done: function(res){ //上传成功后的回调
-                 
-					if(res.code==0){
-						 $('#litpic_img').attr('src',res.url);
-						 $('#litpic').val(res.url);
-					}else{
-						 layer.alert(res.error, {icon: 5});
-					}
-                 
-                }
-              });
-			  
-			   
-			   //执行实例
-			  var uploadInst = upload.render({
-				elem: "#LAY_pictures_upload" //绑定元素
-				,url: "{fun U('Common/uploads')}" //上传接口
-				,accept:"images"
-				,multiple: true
-				,acceptMime:"image/*"
-				,before: function(obj){ 		
-					layer.load(); //上传loading
-				  }
-				,data:{tid:function(){ return $("#tid").val();},molds:'product'}
-				,done: function(res){
-					layer.closeAll("loading"); //关闭loading
-					if(res.code==0){
-						var fileurl = $("#pictures").val();
-						{if($webconf['ispicsdes']==1)}
-						$(".preview_pictures").append('<div class="upload-icon-img layui-input-inline" ><div class="upload-pre-item"><img src="' + res.url + '" class="img" width="200px" height="200px" ><input name="pictures_urls[]" type="text" class="layui-input"  value="' + res.url + '" /><input name="pictures_des[]" type="text" class="layui-input"  placeholder="文字描述" value="" /><a class="layui-btn layui-btn-sm layui-btn-radius layui-btn-danger delete_file">删除</a><a class="layui-btn layui-btn-sm layui-btn-radius imgorder " onclick="goleft(this)">左移</a><a class="layui-btn layui-btn-sm layui-btn-radius imgorder " onclick="goright(this)">右移</a></div></div>');
-						{else}
-						$(".preview_pictures").append('<div class="upload-icon-img layui-input-inline" ><div class="upload-pre-item"><img src="' + res.url + '" class="img" width="200px" height="200px" ><input name="pictures_urls[]" type="text" class="layui-input"  value="' + res.url + '" /><a class="layui-btn layui-btn-sm layui-btn-radius layui-btn-danger delete_file">删除</a><a class="layui-btn layui-btn-sm layui-btn-radius imgorder " onclick="goleft(this)">左移</a><a class="layui-btn layui-btn-sm layui-btn-radius imgorder " onclick="goright(this)">右移</a></div></div>');
-						{/if}
-						
-					}else{
-						 layer.alert(res.error, {icon: 5});
-					}
-				}
-				,error: function(){
-				  //请求异常回调
-				  layer.alert("上传异常！");
-				}
-			  });
-			  
-			  
-			  
-			  
+			 
+              
 			    //监听提交
               form.on('submit(save)', function(data){
-                
+                if($("#tids").length>0){
+					var tids_str = tids_obj.getValue('valueStr');
+					if(tids_str!=''){
+					data.field.tids = ','+tids_str+',';
+					}
+					
+				}
 				$.post("{fun U('editproduct')}",data.field,function(r){
 					var r = JSON.parse(r);
 					if(r.code==0){
@@ -406,12 +190,23 @@
                 return false;
               });
             get_fields({$data['tid']},{$data['id']});
+            get_fields_ext({$data['tid']},{$data['id']});
 			form.on('select(tid)', function(data){
-			 
-			  get_fields(data.value,{$data['id']});
+			  var alldata = form.val("jizhiform");
+			  localStorage.setItem('cachedata', JSON.stringify(alldata));
+			  get_fields(data.value,{$data['id']}); 
+			  get_fields_ext(data.value,{$data['id']});
 			  
 			  
 			});
+			$("#resetdata").click(function(){
+				var alldata = localStorage.getItem('cachedata');
+				if(alldata!=''){
+					form.val("jizhiform",JSON.parse(alldata));
+				}
+			})
+			
+			
 			
            
               

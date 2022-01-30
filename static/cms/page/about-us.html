@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html class="no-js" lang="cn">
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <title>{$type['seo_classname']}-{$webconf['web_name']}</title>
+	<meta name="keywords" content="{$type['keywords']}" />
+	<meta name="description" content="{$type['description']}" />
+
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    {include="style"}
+  </head>
+  <body>
+    {include="header"}
+    <!-- breadcrumb-area start -->
+    <div class="breadcrumb-area">
+      <div class="container">
+        <div class="row">
+          <div class="col-12">
+            <div class="breadcrumb_box text-center" >
+             
+              <ul class="breadcrumb-list">
+                <li class="breadcrumb-item"><a href="/">首页</a></li>
+				{foreach $positions_data as $v}
+				{if($type['id']==$v['id'])}
+				<li class="breadcrumb-item active"><a href="{$v['url']}">{$v['classname']}</a></li>
+				{else}
+                <li class="breadcrumb-item "><a href="{$v['url']}">{$v['classname']}</a></li>
+				{/if}
+				{/foreach}
+				
+              </ul>
+              
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- breadcrumb-area end -->
+
+    <div id="main-wrapper">
+      <div class="site-wrapper-reveal">
+
+		<div class="bunzo-history-area wow fadeInUp">
+			<div class="container">
+				<div class="row jz-body">
+				  <div class="col-lg-12">
+					{$type['body']}
+				  </div>
+				</div>
+			</div>
+			
+		
+		</div>
+        
+      
+       
+        <div class="bg-gray">
+          
+		  
+		   <div class="testimonial-area bg-gray section-space--ptb_100">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <div class="section-title text-center mb-10" >
+                                <h6 class="sub-title-four mb-20">用户评价</h6>
+                                <h2 class="title">人们对我们的评价</h2>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="testimonial-slider-area">
+                        <div class="swiper-container testimonial-slider-active">
+                            <div class="swiper-wrapper">
+							{loop table="pingjia" orderby="orders desc" isshow="1" as="v"}
+                                <div class="swiper-slide">
+                                    <div class="single-testimonial-item wow fadeInUp" >
+                                        <div class="testimonial-post-author">
+                                            <div class="testimonial-author-image">
+                                                <img src="{$v['litpic']}" alt="{$v['title']}">
+                                            </div>
+                                            <div class="testimonial-author-info">
+                                                <h4>{$v['title']}</h4>
+                                                <p>{$v['zhiye']}</p>
+                                            </div>
+                                        </div>
+                                        <div class="testimonial-post-content">
+                                            <h5 class="testimonial-post-title">{$v['description']}</h5>
+                                            <p>{$v['body']}
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+							{/loop}
+                                
+                            </div>
+                        </div>
+                        <div class="testimonial-slider-navigation">
+                            <div class="testimonial-button-next navigation-button"><i class="icofont-long-arrow-left"></i></div>
+                            <div class="testimonial-button-prev navigation-button"><i class="icofont-long-arrow-right"></i></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+       
+		  
+        
+        </div>
+      </div>
+    </div>
+
+    {include="footer"}
+    {include="js"}
+  </body>
+</html>

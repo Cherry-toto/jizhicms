@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html class="no-js" lang="zxx">
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <title>{$type['seo_classname']}-{$webconf['web_name']}</title>
+	<meta name="keywords" content="{$type['keywords']}" />
+	<meta name="description" content="{$type['description']}" />
+
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    {include="style"}
+  </head>
+  <body>
+    {include="header"}
+
+    <!-- breadcrumb-area start -->
+    <div class="breadcrumb-area">
+      <div class="container">
+        <div class="row">
+          <div class="col-12">
+            <div class="breadcrumb_box text-center" >
+             
+              <ul class="breadcrumb-list">
+                <li class="breadcrumb-item"><a href="/">首页</a></li>
+				{foreach $positions_data as $v}
+				{if($type['id']==$v['id'])}
+				<li class="breadcrumb-item active"><a href="{$v['url']}">{$v['classname']}</a></li>
+				{else}
+                <li class="breadcrumb-item "><a href="{$v['url']}">{$v['classname']}</a></li>
+				{/if}
+				{/foreach}
+				
+              </ul>
+              
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- breadcrumb-area end -->
+
+    <div id="main-wrapper">
+      <div class="site-wrapper-reveal">
+        <div
+          class="contact-us-page-area section-space--pt_70 section-space--pb_100"
+        >
+          <div class="container">
+            <div class="row">
+            
+			  <div class="col-12">
+                <div class="single-office-info-wrap wow fadeInUp" >
+                  
+				  {if($type['litpic'])}<a class="office-img">
+                    <img src="{$type['litpic']}" alt="{$type['classname']}" />
+                  </a>
+				  {/if}
+                  <div class="single-office-info">
+                    <div class="single-contact-info">
+                      <span class="icon">
+                        <img src="{$tpl}static/picture/calling.svg" alt="" />
+                      </span>
+                      <span class="contact-text"><a href="#">{$webconf['web_tel']}</a></span>
+                    </div>
+                    <div class="single-contact-info">
+                      <span class="icon">
+                        <img src="{$tpl}static/picture/emaill-contact.png" alt="" />
+                      </span>
+                      <span class="contact-text"
+                        ><a href="#">{$webconf['web_email']}</a></span
+                      >
+                    </div>
+                    <div class="single-contact-info">
+                      <span class="icon">
+                        <img src="{$tpl}static/picture/map-contact.png" alt="" />
+                      </span>
+                      <span class="contact-text"
+                        >{$webconf['web_address']}</span
+                      >
+                    </div>
+                    <div class="share-wrap mt-30">
+                      <h4 class="title">下面方式联系我们:</h4>
+                      <ul class="social-share-area mt-15 mb-15 contact">
+                        <li>
+                          <a ><i class="icofont-qq"></i>1群：774764507 [已满]</a>
+                        </li>
+                        <li>
+                          <a ><i class="icofont-qq"></i>2群：869094463 [已满]</a>
+                        </li>
+						<li>
+                          <a href="https://jq.qq.com/?_wv=1027&k=qOLqjBqR" title="点击加入群聊" target="_blank"><i class="icofont-qq"></i>3群：651403450</a>
+                        </li>
+                       
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+              </div>
+             
+			</div>
+
+            <div class="contact-from section-space--pt_80">
+              <div class="row align-items-center">
+                <div class="col-lg-8 col-md-8 col-12">
+                  <div class="section-title wow fadeInUp" wow fadeInUp>
+                    <h3 class="title mb-30">给我们留言</h3>
+                  </div>
+                  <form
+                    id="#contact-form"
+                    class="contact-us-form"
+                    action="/message/index"
+                    method="post"
+                  >
+				   <input type="hidden" name="title" value="{$type['classname']}">
+                    <div class="single-input-box">
+                      <input type="text" name="user" placeholder="您的称呼" />
+                    </div>
+                    <div class="single-input-box">
+                      <input
+                        type="email"
+                        name="email"
+                        placeholder="您的邮箱"
+                      />
+                    </div>
+                    <div class="single-input-box">
+                      <input type="text" name="tel" placeholder="您的手机" />
+                    </div>
+                    <div class="single-input-box">
+                      <textarea
+                        name="body"
+                        placeholder="留言内容"
+                      ></textarea>
+                    </div>
+					<div class="single-input-box">
+                      <input type="text" name="vercode" placeholder="验证码" />
+                    </div>
+					<div class="single-input-box">
+                      <img src="/common/vercode/name/message_vercode?{fun getRandChar(8)}" onclick="this.src=this.src+'?'+Math.random()">
+                    </div>
+                    <div class="single-input-box">
+                      <button type="submit" class="btn-primary btn-large">
+                        发 送 <i class="icofont-long-arrow-right"></i>
+                      </button>
+                    </div>
+                    <p class="form-messege"></p>
+                  </form>
+                </div>
+                
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    {include="footer"}
+    {include="js"}
+  </body>
+</html>

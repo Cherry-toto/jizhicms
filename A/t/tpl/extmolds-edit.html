@@ -4,8 +4,6 @@
     <head>
        <meta charset="UTF-8">
         {include="style"}
-		<link rel="stylesheet" type="text/css" href="{__Tpl_style__}/style/tags/jquery.tagsinput.css" />
-		<script type="text/javascript" charset="utf-8" src="{__Tpl_style__}/style/tags/jquery.tagsinput.js"></script>
 		{include="edit"}
 		
     </head>
@@ -20,14 +18,14 @@
             <a class="layui-btn layui-btn-small" style="line-height:1.6em;margin-top:3px;float:right"  href="javascript:location.replace(location.href);" title="刷新"><i class="iconfont" style="line-height:30px">&#xe6aa;</i></a>
         </div>
         <div class="x-body">
-            <form class="layui-form layui-form-pane" >
+            <form class="layui-form layui-form-pane" lay-filter="jizhiform">
 			<input type="hidden" name="go" value="1" />
 			<input type="hidden" name="id" value="{$data['id']}" />
 			
 			<div class="layui-tab">
 			  <ul class="layui-tab-title">
-				<li class="layui-this">基本信息</li>
-				
+				<li class="layui-this">基本</li>
+				<li>扩展</li>
 			  </ul>
 			  <div class="layui-tab-content">
 				<div class="layui-tab-item layui-show">
@@ -53,45 +51,28 @@
 					  
 					   </select>
                     </div>
+					<div class="layui-input-inline">
+						<span class="x-red">填写内容时，请先选择栏目，否则切换栏目后，数据会丢失！</span>
+                    </div>
+					<div class="layui-input-inline">
+						<button type="button" id="resetdata" class="layui-btn layui-btn-sm">恢复数据</button>
+                    </div>
                 </div>
 				{else}
 				<input type="hidden" name="tid" value="{$data['tid']}" />
 				{/if}
+				<span id="content_fields"></span>
+				
+			
+				</div>
+				<div class="layui-tab-item">
 				<span id="ext_fields"></span>
 				
-				
-				<div class="layui-form-item layui-form-text">
-                    <label for="tags" class="layui-form-label">
-                        <span class="x-red"></span>TAG标签 [ 按Enter回车自动添加 ]
-                    </label>
-                    <div class="layui-input-block">
-                       
-						 <input id="tags" type="text" class="tags" name="tags" value="{fun trim($data['tags'],',')}"  autocomplete="off" class="layui-input"  />
-                    </div>
-                </div>
-				{if($admin['isadmin']==1 || ($admin['isadmin']!=1 && $admin['ischeck']==0))}
-				<div class="layui-form-item" pane>
-                    <label for="isshow" class="layui-form-label">
-                        <span class="x-red"></span>是否审核
-                    </label>
-                    <div class="layui-input-block">
-                        <input type="radio" name="isshow" value="0" title="未审" {if($data['isshow']==0)}checked{/if}>
-						<input type="radio" name="isshow" value="1" title="已审" {if($data['isshow']==1)}checked{/if}>
-						<input type="radio" name="isshow" value="2" title="退回" {if($data['isshow']==2)}checked{/if}>
-                    </div>
-					 
-					
-                </div>
-				{/if}
-			
 				</div>
 				
 				
 			  </div>
 			</div>
-						
-               
-                
                 <div class="layui-form-item" id="jizhitj"  style="text-align:center;">
                     
                      <button  class="layui-btn" lay-filter="save" lay-submit="">
@@ -112,12 +93,7 @@
       
         <script>
 		{include="fields"}
-			$(function() {
-			  $('#tags').tagsInput({
-					width:'auto',
-					defaultText:'添加一个标签',
-			  });	
-			})
+			
             layui.use(['laydate','form','layer','upload'], function(){
                 $ = layui.jquery;
               var form = layui.form
@@ -128,7 +104,13 @@
 			 
 			     //监听提交
               form.on('submit(save)', function(data){
-                
+                if($("#tids").length>0){
+					var tids_str = tids_obj.getValue('valueStr');
+					if(tids_str!=''){
+					data.field.tids = ','+tids_str+',';
+					}
+					
+				}
 				$.post("{fun U('Extmolds/editmolds',array('molds'=>$molds['biaoshi']))}",data.field,function(r){
 					var r = JSON.parse(r);
 					if(r.code==0){
@@ -156,14 +138,24 @@
                
                 return false;
               });
-            get_fields({$tid},{$data['id']});
+           
+			  
+			get_fields({$data['tid']},{$data['id']});
+            get_fields_ext({$data['tid']},{$data['id']});
 			form.on('select(tid)', function(data){
-			 
-			  get_fields(data.value,{$data['id']});
+			  var alldata = form.val("jizhiform");
+			  localStorage.setItem('cachedata', JSON.stringify(alldata));
+			  get_fields(data.value,{$data['id']}); 
+			  get_fields_ext(data.value,{$data['id']});
 			  
 			  
 			});
-			  
+			$("#resetdata").click(function(){
+				var alldata = localStorage.getItem('cachedata');
+				if(alldata!=''){
+					form.val("jizhiform",JSON.parse(alldata));
+				}
+			})
 			
 		
 			

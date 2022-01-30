@@ -1300,3 +1300,6 @@ a.btn-delete {
     border-left: 0;
   }
 }
+.order-title {
+    width: 190px;
+}

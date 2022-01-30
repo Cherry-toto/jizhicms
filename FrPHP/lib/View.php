@@ -38,47 +38,32 @@ class View
     }
  
     // 渲染显示
-    public function render($name)
+    public function render($name=null)
     {
         if(defined('TPL_PATH')){
 			$path = TPL_PATH;
 		}else{
 			$path = APP_HOME;
 		}
-		if($name!=null){
-			//$name = strtolower($name);
-			
+		if($name){
 			if(strpos($name,'@')!==false){
 				$controllerLayout =  str_replace('@','',$name);
 			}else{
-				$controllerLayout =  $path . '/'.HOME_VIEW.'/'.Tpl_template.'/' . $name . '.html';
+				$controllerLayout =  HOME_VIEW ? $path.'/'.HOME_VIEW.'/'.Tpl_template.'/' . $name : $path.'/'.Tpl_template.'/' . $name;
+				$controllerLayout = stripos($controllerLayout,File_TXT)!==false ? $controllerLayout : $controllerLayout.File_TXT;
 			}
 			
 		}else{
-			$controllerLayout =  $path .'/'.HOME_VIEW.'/'.Tpl_template.'/' . strtolower($this->_controller) . '/' . $this->_action . '.html';
+			$controllerLayout =  HOME_VIEW ? $path .'/'.HOME_VIEW.'/'.Tpl_template.'/' . strtolower($this->_controller) . '/' . $this->_action : $path .'/'.Tpl_template.'/' . strtolower($this->_controller) . '/' . $this->_action;
 
 		}
 		//去除可能没有的Tpl_template
         $controllerLayout = str_ireplace(['//','\\'],'/',$controllerLayout);
         //判断视图文件是否存在
         if (file_exists($controllerLayout)) {
-			
 			$this->template($controllerLayout);
-			
-			
-			// include($cache_file);
-			// if(!file_exists($cache_file) && !is_readable($cache_file)){
-				// exit('缓存目录cache必须可读可写！请检查目录权限！');
-			// }
-			
-			
-			//检查根目录是否存在缓存目录cache
-			//检测其是否可读可写
-			
-			
-			
         } else {
-           Error_msg('无法找到视图文件，页面模板：'.$name.'.html');
+           Error_msg('无法找到视图文件，页面模板：'.$name.File_TXT);
         }
 		
 		
@@ -93,7 +78,13 @@ class View
 		//$cache_file = str_ireplace('.html','.php',APP_PATH.'/cache/'.$layout);
 		$cache_file = Cache_Path.'/'.md5($controllerLayout).'.php';
 		$this->_cachefile = $cache_file;//传入系统中
-		
+		$now_time = time();
+		$last_time = filemtime($cache_file);
+		$cache_time = webConf('cache_time') ? webConf('cache_time') : 0;
+		$isclear = 0;
+		if((($now_time - $last_time)/60)>$cache_time){
+			$isclear = 1;
+		}
 		if(APP_DEBUG===true){
 			$fp_tp=@fopen($controllerLayout,"r");
 			$fp_txt=@fread($fp_tp,filesize($controllerLayout));
@@ -103,7 +94,7 @@ class View
 			$fpt_tpl=@fopen($cache_file,"w");
 			@fwrite($fpt_tpl,$fp_txt);
 			@fclose($fpt_tpl);
-		}else if(is_readable($cache_file)!==true){
+		}else if(is_readable($cache_file)!==true || $isclear){
 			$fp_tp=@fopen($controllerLayout,"r");
 			$fp_txt=@fread($fp_tp,filesize($controllerLayout));
 			@fclose($fp_tp);
@@ -205,7 +196,7 @@ class View
 		if(strpos($filename,'.')!==false){
 			$prefix = '';
 		}else{
-			$prefix = '.html';
+			$prefix = File_TXT;
 		}
 		 if(defined('TPL_PATH')){
 			$path = TPL_PATH;
@@ -276,7 +267,7 @@ class View
 			$fields = " field in ('".$a['fields']."') ";
 		}
 
-		$sql=' fieldtype in(7,8,12) and  isshow=1 and molds='.$molds.'  and '.$tids.' and '.$fields;
+		$sql=' fieldtype in(7,8,12) and  isshow=1 and field!=\'isshow\' and molds='.$molds.'  and '.$tids.' and '.$fields;
 		$txt="<?php
 		\$table ='fields';
 		\$w=\"".$sql."\";
@@ -487,9 +478,27 @@ class View
 					}
 				}
 				
-				// if($isall && isset($a['tid'])){
-					// $w.='or tid in(\'.implode(",",$classtypedata['.$a["tid"].']["children"]["ids"]).\') ';
-				// }
+			}else if($k=='istop'){
+				$v = (int)$v;
+				$w.=" and jzattr like \'%,".$v.",%\' ";
+			}else if($k=='ishot'){
+				$v = (int)$v;
+				$w.=" and jzattr like \'%,".$v.",%\' ";
+			}else if($k=='istuijian'){
+				$v = (int)$v;
+				$w.=" and jzattr like \'%,".$v.",%\' ";
+			}else if($k=='jzattr'){
+				if(strpos($v,',')!==false){
+					$s = explode(',',$v);
+					$s_sql = [];
+					foreach($s as $ss){
+						$s_sql[]=" jzattr like \'%,".$ss.",%\'  ";
+					}
+					$w.=" and ( ".implode('or',$s_sql)." ) ";
+				}else{
+					$w.=" and jzattr like \'%,".$v.",%\'";
+				}
+				
 			}else{
 				if(strpos($v,'$')!==FALSE){
 					$w.="and ".$k."=\''.".trim($v,"'").".'\' ";
@@ -589,6 +598,8 @@ class View
 					$'.$as.'[\'url\'] = $classtypedata[$'.$as.'[\'id\']][\'url\'];
 				}else if($'.$as.'_table==\'message\'){
 					$'.$as.'[\'url\'] = U(\'message/details\',[\'id\'=>$'.$as.'[\'id\']]);
+				}else if($'.$as.'_table==\'tags\'){
+					$'.$as.'[\'url\'] = U(\'tags/index\',[\'id\'=>$'.$as.'[\'id\']]);
 				}else{
 					$'.$as.'[\'url\'] = gourl($'.$as.',$'.$as.'[\'htmlurl\']);
 				}

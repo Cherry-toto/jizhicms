@@ -1,5 +1,5 @@
 @charset "utf-8";
-@import url(../lib/layui/css/layui.css);
+@import url(/static/common/layui/css/layui.css);
 *{
     margin: 0px;
     padding: 0px;
@@ -269,9 +269,7 @@ xblock{
 .container .layui-nav-item a i.iconfont{
     padding-right:10px;
 }
-.container .layui-nav-more{
-    top: 20px;
-}
+
 .container .layui-nav-child{
     top: 60px;
 }
@@ -660,7 +658,6 @@ table th, table td {
     margin-bottom: 10px;
 }
 
-.container .layui-nav-more  { top:30px;}
 .layui-nav-bar {height: 3px;}
 .page-content .layui-tab-content,.x-body {background: #f7fcff!important ;}
 .page-content .tab {background: #f7fcff!important ;}

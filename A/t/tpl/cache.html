@@ -53,7 +53,7 @@
 							 {$logcache} kb
 						</div>
 						<div class="layui-input-inline  cache-s">
-							<input lay-skin="primary"  type="checkbox" name="cache_data[]" value="log"   >
+							<input lay-skin="primary"  type="checkbox" name="cache_data[]" value="log">
 						</div>
 						<div class="layui-form-mid layui-word-aux">
 							  文件夹cache/log，包括错误日志、支付日志、登录日志等
@@ -109,11 +109,12 @@
               ,layer = layui.layer;
 			  laydate = layui.laydate;
 			  var upload = layui.upload;
+			  form.render();
 			     //监听提交
               form.on('submit(formDemo)', function(data){
 				if(JSON.stringify(data.field)=="{}"){
 					layer.msg('请选择清空目标！');
-				}	
+				}
 				$.post("{fun U('Index/cleanCache')}",data.field,function(r){
 					//console.log(r);return false;
 					var r = JSON.parse(r);

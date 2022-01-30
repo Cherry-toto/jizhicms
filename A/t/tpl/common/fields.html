@@ -4,11 +4,29 @@ $(function(){
 		
 		$(this).parent().remove();
 	})
+	
+	
+	$(document).on("click",".layui-sys-icon",function(){
+		var fclass = $(this).attr('data-field');
+		layer.tips($(this).attr('data-info'), '.'+fclass);
+	})
+	$(document).on("mouseover",".layui-sys-icon",function(){
+		var fclass = $(this).attr('data-field');
+		layer.tips($(this).attr('data-info'), '.'+fclass);
+	})
+	
+
 })
 
 function get_fields(tid,id){
 	var id = arguments[1]?arguments[1]:0;
 	$.post("{fun U('Fields/get_fields')}",{molds:'{$fields_biaoshi}',tid:tid,id:id},function(r){
+		$("#content_fields").html(r);
+	});
+}
+function get_fields_ext(tid,id){
+	var id = arguments[1]?arguments[1]:0;
+	$.post("{fun U('Fields/get_fields')}",{molds:'{$fields_biaoshi}',tid:tid,id:id,isext:1},function(r){
 		$("#ext_fields").html(r);
 	});
 }

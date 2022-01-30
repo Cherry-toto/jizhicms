@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html class="no-js" lang="vn">
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <title>404找不到页面</title>
+    <meta
+      name="description"
+      content="Bunzo is one of the most popular blog template"
+    />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="robots"
+      content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1"
+    />
+    {include="style"}
+  </head>
+  <body>
+    {include="header"}
+
+    <div id="main-wrapper">
+      <div class="site-wrapper-reveal">
+        <div class="error-404-area">
+          <div class="container">
+            <div class="row">
+              <div class="col-lg-12">
+                <div class="error-404-content text-center">
+                  <div class="banner wow fadeInUp" >
+                    <img src="{$tpl}static/picture/error-404.png" alt="" />
+                  </div>
+                  <div class="error-text wow fadeInUp" >
+                    <h5>This Page is Not Found.</h5>
+                    <h2>很抱歉，找不到此页。</h2>
+
+                    <div class="button-box mt-30 wow fadeInUp">
+                      <a href="/" class="btn-large btn-primary"
+                        ><i class="icofont-long-arrow-left mr-2"></i> 返回首页
+                      </a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="error-area-shap">
+            <img src="{$tpl}static/picture/error-shap.png" alt="" />
+          </div>
+        </div>
+      </div>
+    </div>
+
+    {include="footer"}
+    {include="js"}
+  </body>
+</html>

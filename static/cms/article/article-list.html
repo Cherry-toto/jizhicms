@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html class="no-js" lang="zxx">
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <title>{$type['seo_classname']}-{$webconf['web_name']}</title>
+	<meta name="keywords" content="{$type['keywords']}" />
+	<meta name="description" content="{$type['description']}" />
+
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+     {include="style"}
+  </head>
+  <body>
+    {include="header"}
+
+    <div id="main-wrapper">
+      <div class="site-wrapper-reveal">
+        <!-- Blog Details Wrapper Start -->
+        <div class="blog-details-wrapper section-space--ptb_80">
+          <div class="container">
+            <div class="row row--17">
+              <div class="blog-details-col-8">
+                <div class="row">
+				{if($lists)}
+				{foreach $lists as $v}
+                  <!-- Author Blog Post Wrap Start -->
+                  <div class="author-blog-post-wrap masonary-item cat--3 wow fadeInUp">
+                    <a href="{$v['url']}" class="author-blog-thum">
+                      <img src="{$v['litpic']}" alt="{$v['title']}" />
+                    </a>
+                    <div class="author-blog-post-content">
+                      <div class="blog-details-meta-box">
+                        <div class="post-meta-left-side mb-2">
+                          <div class="blog-post-category">
+                            <a href="{$v['url']}" class="btn-medium business mr-1"
+                              >{$classtypedata[$v['tid']]['classname']}</a
+                            >
+                          </div>
+                          <div class="blog-post-author">
+						  {if(!$v['member_id'])}
+                            By <a >{fun adminInfo($v['userid'],'name')}</a>
+						  {else}
+						    By <a href="/user/active/uid/{$v['member_id']}">{fun memberInfo($v['member_id'],'username')}</a>
+						  {/if} 
+                          </div>
+                        </div>
+                        <div class="post-right-side mb-2">
+                          <span class="post-meta-left-side">
+                            <span class="post-date">
+                              <i class="icofont-ui-calendar"></i>
+                              <a href="{$v['url']}">{fun date('Y-m-d H:i:s',$v['addtime'])}</a>
+                            </span>
+                          </span>
+                          <span>热度 {$v['hits']}</span>
+                        </div>
+                      </div>
+                      <h3 class="title mb-2">
+                        <a href="{$v['url']}"
+                          >{$v['title']}</a
+                        >
+                      </h3>
+                      <p class="mb-2">
+                        {$v['description']}
+                      </p>
+
+                      <div class="author-post-bottom-area">
+                        <div class="author-post-action-box">
+                          <div class="author-action">
+                            <img src="{$tpl}static/picture/heart-2.png" alt="" />
+                            <span class="count">{$v['zan']}</span>
+                          </div>
+                          <div class="author-action">
+                            <img src="{$tpl}static/picture/message.png" alt="" />
+                            <span class="count">{$v['comment_num']}</span>
+                          </div>
+                        </div>
+                        <div class="author-post-action-box">
+                          <div class="author-action">
+                           
+							<span class="count">阅 {$v['hits']}</span>
+                          </div>
+                          
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <!-- Author Blog Post Wrap End -->
+				{/foreach}
+				{else}
+				 <div class="col-lg-12">
+					<div class="error-404-content text-center">
+					  <div class="banner wow fadeInUp animated" style="visibility: visible; animation-name: fadeInUp;">
+						<img src="/static/cms/static/picture/error-404.png" alt="">
+					  </div>
+					  <div class="error-text wow fadeInUp animated" style="visibility: visible; animation-name: fadeInUp;">
+						<h5>This Page is Not Found.</h5>
+						<h2>很抱歉，可以找到你要的信息。</h2>
+
+						
+					  </div>
+					</div>
+				  </div>
+				{/if}
+                
+				<nav>
+					<ul class="pagination">
+						<li class="page-item {if(!$listpage['prev'])}disabled{/if}"><a class="page-link" href="{$listpage['prev']}" aria-label="Previous"><span aria-hidden="true">«</span></a></li>
+						{foreach $listpage['list'] as $ss}
+						<li class="page-item {if($ss['num']==$listpage['current_num'])}active background{/if}"><a href="{$ss['url']}" class="page-link">{$ss['num']}</a></li>
+						{/foreach}
+						<li class="page-item {if(!$listpage['next'])}disabled{/if}"><a class="page-link" href="{$listpage['next']}" aria-label="Next"><span aria-hidden="true">»</span></a></li>
+					
+					</ul>
+				</nav>
+                </div>
+				
+              </div>
+              <div class="blog-details-col-4">
+               	 <div class="latest-post-inner-wrap">
+				   {include="searchform"}
+				 
+                  {include="latestpost"}
+                </div>
+                
+              </div>
+            
+			</div>
+          </div>
+        </div>
+       
+      </div>
+    </div>
+    {include="footer"}
+    {include="js"}
+  </body>
+</html>

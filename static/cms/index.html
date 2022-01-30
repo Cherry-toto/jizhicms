@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html class="no-js" lang="cn">
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <title>{$webconf['web_name']}</title>
+	<meta name="keywords" content="{$webconf['web_keyword']}" />
+	<meta name="description" content="{$webconf['web_desc']}" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    {include="style"}
+  </head>
+  <body class="theme-color-two">
+   
+    {include="header"}
+
+    <div id="main-wrapper">
+      <div class="site-wrapper-reveal">
+		<div class="hero-area-two-wrapper">
+                <!-- Hero Area Start -->
+                <div class="hero-area-two hero-area-overly">
+                    <div class="container">
+                        <div class="col-lg-12">
+                            <div class="hero-area--two-innter text-center">
+                       
+								<h1 class="hero-title">极致建站系统</h1>
+								<h2><span class="hero-title-small">建站、教程、资源</span></h2>
+								<div class="hero-two-tag">
+									<a  class="btn-outline-2 btn-large">免费</a>
+									<a  class="btn-outline-2 btn-large">开源</a>
+									<a  class="btn-outline-2 btn-large">无商业授权</a>
+									<a  class="btn-outline-2 btn-large">功能强大</a>
+									<a  class="btn-outline-2 btn-large">简单易用</a>
+									<a  class="btn-outline-2 btn-large">无限制</a>
+									<a  class="btn-outline-2 btn-large">安全可靠</a>
+								</div>
+                            </div>
+                        </div>
+                    </div>
+                </div><!-- Hero Area End -->
+
+                <div class="hero-two-banner-text">
+                    
+                </div>
+        </div>
+<!-- Most Popular Area Start -->
+        <div class="most-populer-area section-space--ptb_120">
+          <div class="container">
+            <div class="row">
+              <div class="col-8">
+                <div class="section-title">
+                  <h2>热门模板</h2>
+                </div>
+              </div>
+              <div class="col-4">
+                <div class="most-popular-slider-navigation">
+                  <div class="popular-swiper-button-prev navigation-button">
+                    <i class="icofont-long-arrow-left"></i>
+                  </div>
+                  <div class="popular-swiper-button-next navigation-button">
+                    <i class="icofont-long-arrow-right"></i>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <!-- Swiper -->
+            <div class="swiper-container most-popular-slider-active">
+              <div class="swiper-wrapper">
+			   {loop table="product" notempty="litpic" orderby="orders desc" isshow="1" jzattr="1,2,3" limit="6"  as="v"}
+                <div class="swiper-slide">
+                  
+                  <div class="single-most-populer-item wow fadeInUp" >
+                    <a href="{$v['url']}" class="most-populer-thum">
+                      <img src="{$v['litpic']}" alt="{$v['title']}" />
+                    </a>
+                    <div class="most-populer-content">
+                      <div class="most-populer-post-author">
+						  {if(!$v['member_id'])}
+                            作者 <a href="{$v['url']}">{fun adminInfo($v['userid'],'name')}</a>
+						  {else}
+						    作者 <a href="/user/active/uid/{$v['member_id']}">{fun memberInfo($v['member_id'],'username')}</a>
+						  {/if}
+                      </div>
+                      <h3 class="title">
+                        <a href="{$v['url']}"
+                          >{$v['title']}</a
+                        >
+                      </h3>
+					  <p class="dec mt-2">
+                      <span class="product-price">￥ {$v['price']}</span>
+                      </p>
+                      <div class="most-populer-post-meta">
+                        <span class="post-date">
+                          <a>{fun date('Y-m-d',$v['addtime'])}</a>
+                        </span>
+                        <span>热度 {$v['hits']}</span>
+                      </div>
+                    </div>
+                  </div>
+       
+                </div>
+			    {/loop}
+
+               
+			  </div>
+            </div>
+          </div>
+        </div>
+        <!-- Most Popular Area End -->
+
+	    
+        <!-- Recent Article Area Start -->
+        <div class="recent-article-area section-space--pb_120">
+          <div class="container">
+            <div class="row">
+              <div class="col-lg-12">
+                <div class="section-title text-center section-border-bottom">
+                  <h2>最近更新</h2>
+                </div>
+              </div>
+            </div>
+            <div class="row row--30">
+			{loop table="article" notempty="litpic"  orderby="addtime desc" isshow="1"  limit="6"  as="v"}
+              <div class="col-lg-4 col-md-6">
+                
+                <div class="single-most-populer-item wow fadeInUp" >
+                  <a href="{$v['url']}" class="most-populer-thum">
+                    <img src="{$v['litpic']}" alt="{$v['title']}" />
+                  </a>
+                  <div class="most-populer-content">
+                    <div class="most-populer-post-author">
+                       作者 <a href="{$v['url']}">{fun adminInfo($v['userid'],'name')}</a>
+                    </div>
+                    <h3 class="title">
+                      <a href="{$v['url']}"
+                        >{$v['title']}</a
+                      >
+                    </h3>
+                    <p class="dec mt-2">
+                      {fun newstr($v['description'],80)}
+                    </p>
+                    <div class="most-populer-post-meta">
+                      <span class="post-date">
+                        <a>{fun date('Y-m-d',$v['addtime'])}</a>
+                      </span>
+                      <span>阅 {$v['hits']}</span>
+                    </div>
+                  </div>
+                </div>
+               
+              </div>
+			{/loop}
+             
+             
+			</div>
+          </div>
+        </div>
+        <!-- Recent Article Area End -->
+				  <!-- Related Newsletter Area Start -->
+        <div class="related-newsletter-area">
+          <div class="container">
+            <div class="row">
+              <div class="col-lg-12">
+                <div class="related-newsletter-box">
+                  <div class="related-newsletter-inner-box">
+                    <h2 class="title">
+                      国内企业用户 <b style="color:#F00">200+</b> 家
+                     
+                    </h2>
+					<h2 class="title"> 下载使用超 <b style="color:#F00">100000+</b> 人</h2>
+                    <div class="button-box mt-30">
+                      <a
+                        href="https://www.jizhicms.cn/jizhicms.zip"
+                        class="btn-primary btn-bg-2 bg-color btn-large"
+                        >立即下载使用</a
+                      >
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- Related Newsletter Area End -->
+        
+       <div class="testimonial-area bg-gray section-space--ptb_120">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <div class="section-title text-center mb-10" >
+                                <h6 class="sub-title-four mb-20">用户评价</h6>
+                                <h2 class="title">人们对我们的评价</h2>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="testimonial-slider-area">
+                        <div class="swiper-container testimonial-slider-active">
+                            <div class="swiper-wrapper">
+							{loop table="pingjia" orderby="orders desc" isshow="1" as="v"}
+                                <div class="swiper-slide">
+                                    <div class="single-testimonial-item wow fadeInUp" >
+                                        <div class="testimonial-post-author">
+                                            <div class="testimonial-author-image">
+                                                <img src="{$v['litpic']}" alt="{$v['title']}">
+                                            </div>
+                                            <div class="testimonial-author-info">
+                                                <h4>{$v['title']}</h4>
+                                                <p>{$v['zhiye']}</p>
+                                            </div>
+                                        </div>
+                                        <div class="testimonial-post-content">
+                                            <h5 class="testimonial-post-title">{$v['description']}</h5>
+                                            <p>{$v['body']}
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+							{/loop}
+                                
+                            </div>
+                        </div>
+                        <div class="testimonial-slider-navigation">
+                            <div class="testimonial-button-next navigation-button"><i class="icofont-long-arrow-left"></i></div>
+                            <div class="testimonial-button-prev navigation-button"><i class="icofont-long-arrow-right"></i></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+	   
+	   
+      </div>
+    </div>
+
+    {include="footer"}
+    {include="js"}
+  </body>
+</html>

@@ -80,6 +80,7 @@ class ClasstypeController extends CommonController
 			$w['details_html'] = $this->frparam('details_html',1);
 			$w['gourl'] = $this->frparam('gourl',1);
 			$w['lists_num'] = $this->frparam('lists_num');
+			$w['gids'] = implode(',',$this->frparam('gids',2));
 			
 			if($w['pid']){
 				$parent = M('classtype')->find(array('id'=>$w['pid']));
@@ -169,7 +170,7 @@ class ClasstypeController extends CommonController
 			$w['gourl'] = $this->frparam('gourl',1);
 			$w['lists_html'] = str_ireplace('.html','',$w['lists_html']);
 			$w['details_html'] = str_ireplace('.html','',$w['details_html']);
-			
+			$w['gids'] = implode(',',$this->frparam('gids',2));
 			
 			$data = $this->frparam();
 			$data = get_fields_data($data,'classtype');
@@ -272,9 +273,13 @@ class ClasstypeController extends CommonController
 			if(M('classtype')->find(['pid'=>$id])){
 				JsonReturn(array('status'=>0,'info'=>'该栏目有子栏目，请先删除子栏目！'));
 			}
-			
+			$data = M('classtype')->find(array('id'=>$id));
 			$a = M('classtype')->delete(array('id'=>$id));
 			if($a){
+				$w['molds'] = 'classtype';
+				$w['data'] = json_encode($data,JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+				$w['addtime'] = time();
+				M('recycle')->add($w);
 				setCache('classtypetree',null);
 				setCache('classtype',null);
 				setCache('mobileclasstype',null);
@@ -381,7 +386,7 @@ class ClasstypeController extends CommonController
 		$molds = $this->frparam('molds',1,'article');
 		//获取前台template
 		$indexdata = file_get_contents(APP_PATH.'index.php');
-		$r = preg_match("/define\('HOME_VIEW','([^']+)'\)/",$indexdata,$matches);
+		$r = preg_match("/define\('HOME_VIEW',[\'|\"](.*?)[\'|\"]\)/",$indexdata,$matches);
 		if($r){
 			$template = $matches[1];
 		}else{
@@ -393,7 +398,11 @@ class ClasstypeController extends CommonController
 		}else{
 			$tplpath = 'Home';
 		}
-		$dir = APP_PATH.$tplpath.'/'.$template.'/'.$this->webconf['pc_template'].'/'.strtolower($molds);
+		if($template){
+			$dir = APP_PATH.$tplpath.'/'.$template.'/'.$this->webconf['pc_template'].'/'.strtolower($molds);
+		}else{
+			$dir = APP_PATH.$tplpath.'/'.$this->webconf['pc_template'].'/'.strtolower($molds);
+		} 
 		$fileArray=array();
 		if(is_dir($dir)){
 
@@ -403,7 +412,6 @@ class ClasstypeController extends CommonController
 					//去掉"“.”、“..”以及带“.xxx”后缀的文件
 					if ($file != "." && $file != ".."&& strpos($file,".html")!==false) {
 						$fileArray[$i]=['html'=>$file,'value'=>str_replace('.html','',$file)];
-						
 						$i++;
 					}
 				}
@@ -417,10 +425,6 @@ class ClasstypeController extends CommonController
 			$fileArray[] = ['html'=>$m['details_html'],'value'=>str_replace('.html','',$m['details_html'])];
 			
 		}
-		
-		
-		
-		
 		JsonReturn(['code'=>0,'data'=>$fileArray,'path'=>$dir,'lists_html'=>str_replace('.html','',$m['list_html']),'details_html'=>str_replace('.html','',$m['details_html'])]);
 
 	}

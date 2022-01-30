@@ -31,7 +31,7 @@ class ProductController extends CommonController
 		$res = molds_search('product',$data);
 		$this->classtypes = $this->classtypetree;
 		$this->fields_search = $res['fields_search'];
-		$this->fields_list = M('Fields')->findAll(array('molds'=>'product','islist'=>1),'orders desc');
+		$this->fields_list = M('Fields')->findAll(array('molds'=>'product','islist'=>1),'listorders desc');
 		if($this->frparam('ajax')){
 			
 			$page = new Page('product');
@@ -44,58 +44,23 @@ class ProductController extends CommonController
 
 
 			}
-			if($this->frparam('isshow')){
-				if($this->frparam('isshow')==1){
-					$isshow=1;
-				}else if($this->frparam('isshow')==2){
-					$isshow=0;
-				}else{
-					$isshow = 2;
-				}
-				$sql .= ' and isshow='.$isshow;
-			}
-			if($this->frparam('tid')){
-				$sql .= ' and tid in('.implode(",",$classtypedata[$this->frparam('tid')]["children"]["ids"]).')';
-			}
+			
+			
 			$get_sql = ($res['fields_search_check']!='') ? (' and '.$res['fields_search_check']) : '';
 			$sql .= $get_sql;
 			
-			if($this->frparam('title',1)){
-				$sql.=" and title like '%".$this->frparam('title',1)."%' ";
-			}
-			if($this->frparam('shuxing')){
-				if($this->frparam('shuxing')==1){
-					$sql.=" and istop=1 ";
-				}
-				if($this->frparam('shuxing')==2){
-					$sql.=" and ishot=1 ";
-				}
-				if($this->frparam('shuxing')==3){
-					$sql.=" and istuijian=1 ";
-				}
-				
-			}
-			$data = $page->where($sql)->orderby('istop desc,orders desc,id desc')->limit($this->frparam('limit',0,10))->page($this->frparam('page',0,1))->go();
+			
+			$data = $page->where($sql)->orderby('orders desc,id desc')->limit($this->frparam('limit',0,10))->page($this->frparam('page',0,1))->go();
 			
 			$ajaxdata = [];
 			foreach($data as $k=>$v){
-				if($v['ishot']==1){
-					$v['tuijian'] = '热';
-				}else if($v['istuijian']==1){
-					$v['tuijian'] = '荐';
-				}else if($v['istop']==1){
-					$v['tuijian'] = '顶';
-				}else{
-					$v['tuijian'] = '无';
-				}
+				
 				if(isset($classtypedata[$v['tid']])){
 					$v['new_tid'] = $classtypedata[$v['tid']]['classname'];
 				}else{
 					$v['new_tid'] = '[未分类]';
 				}
 				
-				$v['new_litpic'] = $v['litpic']=='' ? '' : get_domain().$v['litpic'];
-				$v['new_addtime'] = "\t".date('Y-m-d H:i:s',$v['addtime'])."\t";
 				$v['view_url'] = gourl($v,$v['htmlurl']);
 				$v['edit_url'] = U('Product/editproduct',array('id'=>$v['id']));
 				
@@ -125,15 +90,35 @@ class ProductController extends CommonController
 		if($this->frparam('go',1)==1){
 			
 			$data = $this->frparam();
-			$data['addtime'] = strtotime($data['addtime']);
-			$data['body'] = $this->frparam('body',4);
-			$data['price'] = $this->frparam('price',3);
+			$data = get_fields_data($data,'product');
+			if(!$this->frparam('seo_title',1) && $this->frparam('config_seotitle')==1){
+				$data['seo_title'] = $data['title'];
+			}
+			if(!$this->frparam('description',1) && $this->frparam('config_description')==1){
+				$data['description'] = newstr(strip_tags($data['body']),200);
+			}
+			if(!$this->frparam('litpic',1) && $this->frparam('config_litpic')==1){
+				$pattern='/<img.*?src="(.*?)".*?>/is';
+				if(!$this->frparam('body',1)){
+					$r = preg_match($pattern,$_POST['body'],$matchContent);
+					if($r){
+						$data['litpic'] = $matchContent[1];
+					}else{
+						$data['litpic'] = '';
+					}
+					
+				}else{
+					$data['litpic'] = '';
+				}
+			}
+			if(!$this->frparam('tags',1) && $this->frparam('config_tags')==1){
+				$data['tags'] = str_replace('，',',',$data['keywords']);
+				if($data['tags']){
+					$data['tags'] = ','.$data['tags'].',';
+				}
+			}
+			
 			$data['userid'] = $_SESSION['admin']['id'];
-			$data['title'] = $this->frparam('title',1);
-			$data['keywords'] = $this->frparam('keywords',1);
-			$data['seo_title'] = $this->frparam('seo_title',1) ? $this->frparam('seo_title',1) : $this->frparam('title',1);
-			$data['description'] = !$this->frparam('description',1) ? strip_tags($data['body']) :$this->frparam('description',1);
-			$data['description'] = newstr($data['description'],500);
 			
 			if($this->frparam('litpic',1)==''){
 				$pattern='/<img.*?src="(.*?)".*?>/is';
@@ -150,40 +135,36 @@ class ProductController extends CommonController
 				}
 			}
 			
-			if($this->webconf['ispicsdes']==1){
-				if(array_key_exists('pictures_urls',$data) && $data['pictures_urls']!=''){
-					
-					$pics =  $this->frparam('pictures_urls',2);
-					$pics_des = $this->frparam('pictures_des',2);
-					foreach($pics as $k=>$v){
-						if($pics_des[$k]){
-							$pics[$k] = $v.'|'.$pics_des[$k];
+			$data['htmlurl'] = $data['tid'] ? $this->classtypedata[$data['tid']]['htmlurl'] : null;
+			
+			//违禁词检测
+			if($this->webconf['mingan'] && $this->frparam('config_filter',1)){
+				$mingan = explode(',',$this->webconf['mingan']);
+				$filter = explode(',',$this->frparam('config_filter',1));
+				$fields = $this->getTableFields('product');
+				foreach($mingan as $s){
+					if(strpos($s,'{xxx}')!==false){
+						$pattern = '/'.str_replace('{xxx}','(.*)',$s).'/';
+						foreach($filter as $vv){
+							if($vv && preg_match($pattern, $data[$vv])){
+								JsonReturn(array('code'=>1,'msg'=>'添加失败，【'.$fields[$vv].'】存在敏感词 [ '.$s.' ]'));
+							}
+							
 						}
+						
+
+					}else{
+						foreach($filter as $vv){
+							if($vv && strpos($data[$vv],$s)!==false ){
+								JsonReturn(array('code'=>1,'msg'=>'添加失败，【'.$fields[$vv].'】存在敏感词 [ '.$s.' ]'));
+							}
+							
+						}
+						
 					}
-					$data['pictures'] = implode('||',$pics);
-					 
-				}else{
-					$data['pictures'] = '';
-				}
-			}else{
-				if(array_key_exists('pictures_urls',$data) && $data['pictures_urls']!=''){
-					 $data['pictures'] = implode('||',format_param($data['pictures_urls'],2));
-				}else{
-					$data['pictures'] = '';
 				}
 			}
 			
-			$pclass = get_info_table('classtype',array('id'=>$data['tid']));
-			$data['molds'] = $pclass['molds'];
-			$data['htmlurl'] = $pclass['htmlurl'];
-			$data['istop'] = $this->frparam('istop',0,0);
-			$data['ishot'] = $this->frparam('ishot',0,0);
-			$data['istuijian'] = $this->frparam('istuijian',0,0);
-			$data = get_fields_data($data,'product');
-			$data['tags'] = $data['tags'] ? $data['tags'] : str_replace('，',',',$data['keywords']);
-			if($data['tags']!=''){
-				$data['tags'] = ','.$data['tags'].',';
-			}
 			//处理自定义URL
 			if($data['ownurl']){
 				if(M('customurl')->find(['molds'=>'product','url'=>$data['ownurl']])){
@@ -222,6 +203,19 @@ class ProductController extends CommonController
 						}
 					}
 				}
+				$config = $this->webconf['product_config'];
+				$configdata = json_decode($config,1);
+				if($configdata['seotitle']!=$this->frparam('config_seotitle') || $configdata['litpic']!=$this->frparam('config_litpic') || $configdata['tags']!=$this->frparam('config_tags') || $configdata['filter']!=$this->frparam('config_filter',1)){
+					$configdata = [
+						'seotitle'=>$this->frparam('config_seotitle'),
+						'litpic'=>$this->frparam('config_litpic'),
+						'description'=>$this->frparam('config_description'),
+						'tags'=>$this->frparam('config_tags'),
+						'filter'=>$this->frparam('config_filter',1),
+					];
+					M('sysconfig')->update(['field'=>'product_config'],['data'=>json_encode($configdata,JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES)]);
+					setCache('webconfig',null);
+				}
 				JsonReturn(array('code'=>0,'msg'=>'添加成功,继续添加~','url'=>U('addproduct',array('tid'=>$data['tid']))));
 				exit;
 			}
@@ -230,26 +224,59 @@ class ProductController extends CommonController
 			
 		}
 		$this->molds = M('molds')->find(['biaoshi'=>'product']);
-		//$classtype = M('classtype')->findAll(null,'orders desc');
-		//$classtype = getTree($classtype);
+		$config = $this->webconf['product_config'];
+		if(!$config){
+			$configdata = [
+				'seotitle'=>1,
+				'litpic'=>1,
+				'description'=>1,
+				'tags'=>1,
+				'filter'=>'title,keywords,body',
+			];
+			M('sysconfig')->add(['title'=>'商品配置','field'=>'product_config','type'=>3,'data'=>json_encode($configdata,JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES),'typeid'=>0]);
+			setCache('webconfig',null);
+		}else{
+			$configdata = json_decode($config,1);
+		}
+		$this->configdata = $configdata;
 		$this->tid = $this->frparam('tid');
 		$this->classtypes = $this->classtypetree;
 		$this->display('product-add');
 	}
-	public function editproduct(){
+	function editproduct(){
 		$this->fields_biaoshi = 'product';
 		if($this->frparam('go',1)==1){
 			
 			$data = $this->frparam();
-			$data['addtime'] = strtotime($data['addtime']);
-			$data['body'] = $this->frparam('body',4);
-			$data['price'] = $this->frparam('price',3);
-			$data['title'] = $this->frparam('title',1);
-			$data['tid'] = $this->frparam('tid',0,0);
-			$data['keywords'] = $this->frparam('keywords',1);
-			$data['seo_title'] = $this->frparam('seo_title',1) ? $this->frparam('seo_title',1) : $this->frparam('title',1);
-			$data['description'] = !$this->frparam('description',1) ? strip_tags($data['body']) :$this->frparam('description',1);
-			$data['description'] = newstr($data['description'],500);
+			$data = get_fields_data($data,'product');
+			if(!$this->frparam('seo_title',1) && $this->frparam('config_seotitle')==1){
+				$data['seo_title'] = $data['title'];
+			}
+			if(!$this->frparam('description',1) && $this->frparam('config_description')==1){
+				$data['description'] = newstr(strip_tags($data['body']),200);
+			}
+			if(!$this->frparam('litpic',1) && $this->frparam('config_litpic')==1){
+				$pattern='/<img.*?src="(.*?)".*?>/is';
+				if(!$this->frparam('body',1)){
+					$r = preg_match($pattern,$_POST['body'],$matchContent);
+					if($r){
+						$data['litpic'] = $matchContent[1];
+					}else{
+						$data['litpic'] = '';
+					}
+					
+				}else{
+					$data['litpic'] = '';
+				}
+			}
+			if(!$this->frparam('tags',1) && $this->frparam('config_tags')==1){
+				$data['tags'] = str_replace('，',',',$data['keywords']);
+				if($data['tags']){
+					$data['tags'] = ','.$data['tags'].',';
+				}
+			}
+			
+			$data['userid'] = $_SESSION['admin']['id'];
 			
 			if($this->frparam('litpic',1)==''){
 				$pattern='/<img.*?src="(.*?)".*?>/is';
@@ -265,40 +292,37 @@ class ProductController extends CommonController
 					$data['litpic'] = '';
 				}
 			}
-			if($this->webconf['ispicsdes']==1){
-				if(array_key_exists('pictures_urls',$data) && $data['pictures_urls']!=''){
-					
-					$pics =  $this->frparam('pictures_urls',2);
-					$pics_des = $this->frparam('pictures_des',2);
-					foreach($pics as $k=>$v){
-						if($pics_des[$k]){
-							$pics[$k] = $v.'|'.$pics_des[$k];
+			
+			$data['htmlurl'] = $data['tid'] ? $this->classtypedata[$data['tid']]['htmlurl'] : null;
+			
+			//违禁词检测
+			if($this->webconf['mingan'] && $this->frparam('config_filter',1)){
+				$mingan = explode(',',$this->webconf['mingan']);
+				$filter = explode(',',$this->frparam('config_filter',1));
+				$fields = $this->getTableFields('product');
+				foreach($mingan as $s){
+					if(strpos($s,'{xxx}')!==false){
+						$pattern = '/'.str_replace('{xxx}','(.*)',$s).'/';
+						foreach($filter as $vv){
+							if($vv && preg_match($pattern, $data[$vv])){
+								JsonReturn(array('code'=>1,'msg'=>'添加失败，【'.$fields[$vv].'】存在敏感词 [ '.$s.' ]'));
+							}
+							
 						}
+						
+
+					}else{
+						foreach($filter as $vv){
+							if($vv && strpos($data[$vv],$s)!==false ){
+								JsonReturn(array('code'=>1,'msg'=>'添加失败，【'.$fields[$vv].'】存在敏感词 [ '.$s.' ]'));
+							}
+							
+						}
+						
 					}
-					$data['pictures'] = implode('||',$pics);
-					 
-				}else{
-					$data['pictures'] = '';
-				}
-			}else{
-				if(array_key_exists('pictures_urls',$data) && $data['pictures_urls']!=''){
-					 $data['pictures'] = implode('||',format_param($data['pictures_urls'],2));
-				}else{
-					$data['pictures'] = '';
 				}
 			}
 			
-			$pclass = get_info_table('classtype',array('id'=>$data['tid']));
-			$data['molds'] = $pclass['molds'];
-			$data['htmlurl'] = $pclass['htmlurl'];
-			$data['istop'] = $this->frparam('istop',0,0);
-			$data['ishot'] = $this->frparam('ishot',0,0);
-			$data['istuijian'] = $this->frparam('istuijian',0,0);
-			$data = get_fields_data($data,'product');
-			$data['tags'] = $data['tags'] ? $data['tags'] : str_replace('，',',',$data['keywords']);
-			if($data['tags']!=''){
-				$data['tags'] = ','.$data['tags'].',';
-			}
 			if($this->frparam('id')){
 				
 				$old_tags = M('product')->getField(['id'=>$this->frparam('id')],'tags');
@@ -406,6 +430,19 @@ class ProductController extends CommonController
 						}
 					}
 					
+					$config = $this->webconf['product_config'];
+					$configdata = json_decode($config,1);
+					if($configdata['seotitle']!=$this->frparam('config_seotitle') || $configdata['litpic']!=$this->frparam('config_litpic') || $configdata['tags']!=$this->frparam('config_tags') || $configdata['filter']!=$this->frparam('config_filter',1)){
+						$configdata = [
+							'seotitle'=>$this->frparam('config_seotitle'),
+							'litpic'=>$this->frparam('config_litpic'),
+							'description'=>$this->frparam('config_description'),
+							'tags'=>$this->frparam('config_tags'),
+							'filter'=>$this->frparam('config_filter',1),
+						];
+						M('sysconfig')->update(['field'=>'product_config'],['data'=>json_encode($configdata,JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES)]);
+						setCache('webconfig',null);
+					}
 					JsonReturn(array('code'=>0,'msg'=>'修改成功！','url'=>U('index')));
 					exit;
 				}else{
@@ -418,11 +455,22 @@ class ProductController extends CommonController
 			
 			
 		}
-		if($this->frparam('id')){
-			$this->data = M('product')->find(array('id'=>$this->frparam('id')));
+		$this->data = M('product')->find(array('id'=>$this->frparam('id')));
+		$config = $this->webconf['product_config'];
+		if(!$config){
+			$configdata = [
+				'seotitle'=>1,
+				'litpic'=>1,
+				'description'=>1,
+				'tags'=>1,
+				'filter'=>'title,keywords,body',
+			];
+			M('sysconfig')->add(['title'=>'内容配置','field'=>'product_config','type'=>3,'data'=>json_encode($configdata,JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES),'typeid'=>0]);
+			setCache('webconfig',null);
+		}else{
+			$configdata = json_decode($config,1);
 		}
-		//$classtype = M('classtype')->findAll(null,'orders desc');
-		//$classtype = getTree($classtype);
+		$this->configdata = $configdata;
 		$this->molds = M('molds')->find(['biaoshi'=>'product']);
 		$this->classtypes = $this->classtypetree;
 		$this->display('product-edit');
@@ -431,8 +479,23 @@ class ProductController extends CommonController
 	function deleteproduct(){
 		$id = $this->frparam('id');
 		if($id){
-			if(M('product')->delete('id='.$id)){
+			$data = M('product')->find(['id'=>$id]);
+			if(M('product')->delete(['id'=>$id])){
+				$customurl = M('customurl')->find(['molds'=>'product','aid'=>$id]);
 				M('customurl')->delete(['molds'=>'product','aid'=>$id]);
+				
+				$w['molds'] = 'product';
+				$w['data'] = json_encode($v,JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+				$w['addtime'] = time();
+				$r = M('recycle')->add($w);
+				if($customurl){
+					$w['molds'] = 'customurl';
+					$w['data'] = json_encode($customurl,JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+					$w['addtime'] = time();
+					$w['aid'] = $r;
+					M('recycle')->add($w);
+				}
+				
 				JsonReturn(array('code'=>0,'msg'=>'删除成功！'));
 			}else{
 				//Error('删除失败！');
@@ -465,8 +528,31 @@ class ProductController extends CommonController
 	function deleteAll(){
 		$data = $this->frparam('data',1);
 		if($data!=''){
+			$all = M('product')->findAll('id in('.$data.')');
 			if(M('product')->delete('id in('.$data.')')){
+				$customurls = M('customurl')->findAll(" aid in(".$data.") and molds='product' ");
 				M('customurl')->delete(" aid in(".$data.") and molds='product' ");
+				$newcustomurl = [];
+				if($customurls){
+					foreach($customurls as $v){
+						$newcustomurl[$v['aid']] = $v;
+					}
+				}
+				
+				foreach($all as $v){
+					$w['molds'] = 'product';
+					$w['data'] = json_encode($v,JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+					$w['addtime'] = time();
+					$x = M('recycle')->add($w);
+					if($x && $newcustomurl[$v['id']]){
+						$w['molds'] = 'customurl';
+						$w['data'] = json_encode($newcustomurl[$v['id']],JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+						$w['addtime'] = time();
+						$w['aid'] = $x;
+						M('recycle')->add($w);
+					}
+				}
+				
 				JsonReturn(array('code'=>0,'msg'=>'批量删除成功！'));
 				
 			}else{
@@ -532,17 +618,20 @@ class ProductController extends CommonController
 			$list = M('Product')->findAll('id in('.$data.')');
 			$r = true;
 			foreach($list as $v){
-				if($tj==1){
-				   $w['istop'] = $v['istop']==1 ? 0 : 1;
+				if(strpos($v['jzattr'],','.$tj.',')!==false){
+					$attr = str_replace(','.$tj.',','',$v['jzattr']);
+					if(!$attr){
+						$w['jzattr'] = null;
+					}else{
+						$w['jzattr'] = ','.trim($attr,',').',';
+					}
+				}else{
+					if($v['jzattr']){
+						$w['jzattr'] = $v['jzattr'].$tj.',';
+					}else{
+						$w['jzattr'] = ','.$tj.',';
+					}
 				}
-				if($tj==2){
-				   $w['ishot'] = $v['ishot']==1 ? 0 : 1;
-				}
-				if($tj==3){
-				   $w['istuijian'] = $v['istuijian']==1 ? 0 : 1;
-				}
-				
-				
 				M('Product')->update(array('id'=>$v['id']),$w);
 			}
 			JsonReturn(array('code'=>0,'msg'=>'批量修改成功！'));
@@ -617,7 +706,26 @@ class ProductController extends CommonController
 
 
 	
-	
+	private function getTableFields($table){
+		$sql="select distinct * from information_schema.columns where table_schema = '".DB_NAME."' and  table_name = '".DB_PREFIX.$table."'";
+        $list = M()->findSql($sql);
+        $isgo = true;
+        $fields = [];
+		
+        foreach($list as $v){
+			$len = 0;
+			$s = preg_match('/\((.*)\)/',$v['COLUMN_TYPE'],$math);
+			if($s){
+				$len = $math[1];
+			}
+			$fields[$v['COLUMN_NAME']] = $v['COLUMN_COMMENT'] ? $v['COLUMN_COMMENT'] : $v['COLUMN_NAME'];
+			
+            
+
+        }
+        return $fields;
+
+    }
 	
 	
 	

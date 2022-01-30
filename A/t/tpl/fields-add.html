@@ -73,123 +73,136 @@
 					  <table class="layui-table">
 						<tbody>
 						  <tr>
-							<td>选择</div></td>
-							<td>类型</div></td>
-							<td>长度</div></td>
-							<td>内容</div></td>
+							<td>选择</td>
+							<td>长度</td>
+							<td>内容</td>
 							<td>说明</td>
 						
 						  </tr>
 						  <tr>
-							<td><input type="radio" name="fieldtype" checked value="1" /></div></td>
-							<td>字符串<br/>varchar</div></td>
-							<td><input type="text" class="layui-input" name="fieldlong_1" value="255"></div></td>
-							<td>无</div></td>
-							<td>简短的一句话录入内容，价格小数也是这个属性</td>
+							<td><input type="radio" name="fieldtype" checked value="1" /></td>
+							<td><input type="text" class="layui-input" name="fieldlong_1" value="255"></td>
+							<td>无</td>
+							<td>单行文本</td>
 						  </tr>
 						  <tr>
-							<td><input type="radio" name="fieldtype" value="2" /></div></td>
-							<td>字符串<br/>varchar</div></td>
-							<td><input type="text" class="layui-input" name="fieldlong_2" value="500"></div></td>
-							<td>无</div></td>
-							<td>内容简短，需要文本框录入</td>
+							<td><input type="radio" name="fieldtype" value="2" /></td>
+							<td><input type="text" class="layui-input" name="fieldlong_2" value="500"></td>
+							<td>无</td>
+							<td>多行文本</td>
 						  </tr>
 						  <tr>
-							<td><input type="radio" name="fieldtype" value="3" /></div></td>
-							<td>字符串<br/>txt</div></td>
-							<td>不限</div></td>
-							<td>无</div></td>
-							<td>内容很多，需要编辑器录入</td>
+							<td><input type="radio" name="fieldtype" value="3" /></td>
+							<td>不限</td>
+							<td>无</td>
+							<td>带编辑器文本</td>
 						   </tr>
 						   <tr>
-							<td><input type="radio" name="fieldtype" value="4" /></div></td>
-							<td>数字<br/>int</div></td>
-							<td><input type="text" class="layui-input" name="fieldlong_4" value="11"></div></td>
-							<td>无</div></td>
+							<td><input type="radio" name="fieldtype" value="4" /></td>
+							<td><input type="text" class="layui-input" name="fieldlong_4" value="11"></td>
+							<td>无</td>
 							<td>只能填写数字，长度不能超过11位</td>
 						   </tr>
 						   <tr>
-							<td><input type="radio" name="fieldtype" value="14" /></div></td>
-							<td>小数<br/>decimal</div></td>
-							<td><input type="text" class="layui-input" name="fieldlong_14" value="10,2"></div></td>
-							<td><input type="text" class="layui-input" name="body_14" value="0.00"></div></div></td>
+							<td><input type="radio" name="fieldtype" value="14" /></td>
+							<td><input type="text" class="layui-input" name="fieldlong_14" value="10,2"></td>
+							<td><input type="text" class="layui-input" name="body_14" value="0.00"></td>
 							<td>金钱，小数等，保留2位</td>
 						   </tr>
 						   <tr>
-							<td><input type="radio" name="fieldtype" value="11" /></div></td>
-							<td>时间<br/>int</div></td>
-							<td><input type="text" class="layui-input" name="fieldlong_11" value="11"></div></td>
-							<td>无</div></td>
-							<td>选择时间插件</td>
+							<td><input type="radio" name="fieldtype" value="11" /></td>
+							<td><input type="hidden" class="layui-input" name="fieldlong_11" value="11">11</td>
+							<td>无</td>
+							<td>时间日期</td>
 						   </tr>
 						   <tr>
-							<td><input type="radio" name="fieldtype" value="5" /></div></td>
-							<td>单图片<br/>varchar</div></td>
-							<td><input type="text" class="layui-input" name="fieldlong_5" value="255"></div></td>
-							<td>无</div></td>
-							<td>一张图片</td>
+							<td><input type="radio" name="fieldtype" value="5" /></td>
+							<td><input type="text" class="layui-input" name="fieldlong_5" value="255"></td>
+							<td>无</td>
+							<td>单图片</td>
 						   </tr>
 						   <tr>
-							<td><input type="radio" name="fieldtype" value="6" /></div></td>
-							<td>多图片<br/>text</div></td>
-							<td>不限</div></td>
-							<td>无</div></td>
-							<td>多个图片</td>
+							<td><input type="radio" name="fieldtype" value="6" /></td>
+							<td>不限</td>
+							<td>无</td>
+							<td>多图，图集</td>
 						   </tr>
 						   <tr>
-							<td><input type="radio" name="fieldtype" value="7" /></div></td>
-							<td>单选<br/>varchar</div></td>
-							<td><input type="text" class="layui-input" name="fieldlong_7" value="500"></div></td>
-							<td><textarea placeholder="选项1=值1,选项2=值2"  name="body_7" class="layui-textarea"></textarea></div></td>
-							<td>单项选择，select类型，如：选项1=值1,选项2=值2</td>
+							<td><input type="radio" name="fieldtype" value="7" /></td>
+							<td><input type="text" class="layui-input" name="fieldlong_7" value="500"></td>
+							<td><textarea placeholder="红=1,黄=2"  name="body_7" class="layui-textarea"></textarea></td>
+							<td>单项选择，下拉选择，如：红=1,黄=2,蓝=3</td>
 						   </tr>
 						    <tr>
-							<td><input type="radio" name="fieldtype" value="12" /></div></td>
-							<td>单选<br/>varchar</div></td>
-							<td><input type="text" class="layui-input" name="fieldlong_12" value="500"></div></td>
-							<td><textarea placeholder="选项1=值1,选项2=值2"  name="body_12" class="layui-textarea"></textarea></div></td>
-							<td>单项选择，radio类型，如：选项1=值1,选项2=值2</td>
+							<td><input type="radio" name="fieldtype" value="12" /></td>
+							<td><input type="text" class="layui-input" name="fieldlong_12" value="500"></td>
+							<td><textarea placeholder="红=1,黄=2"  name="body_12" class="layui-textarea"></textarea></td>
+							<td>单项选择，按钮选择，如：红=1,黄=2,蓝=3</td>
 						   </tr>
 						   <tr>
-							<td><input type="radio" name="fieldtype" value="8" /></div></td>
-							<td>多选<br/>varchar</div></td>
-							<td><input type="text" class="layui-input" name="fieldlong_8" value="500"></div></td>
-							<td><textarea placeholder="选项1=值1,选项2=值2"  name="body_8" class="layui-textarea"></textarea></div></td>
-							<td>多项选择，如：选项1=值1,选项2=值2</td>
+							<td><input type="radio" name="fieldtype" value="8" /></td>
+							<td><input type="text" class="layui-input" name="fieldlong_8" value="500"></td>
+							<td><textarea placeholder="红=1,黄=2"  name="body_8" class="layui-textarea"></textarea></td>
+							<td>多项选择，如：红=1,黄=2,蓝=3</td>
 						   </tr>
 						   <tr>
-							<td><input type="radio" name="fieldtype" value="9" /></div></td>
-							<td>单附件<br/>varchar</div></td>
-							<td><input type="text" class="layui-input" name="fieldlong_9" value="255"></div></td>
-							<td>无</div></td>
-							<td>一个附件，图片除外</td>
+							<td><input type="radio" name="fieldtype" value="9" /></td>
+							<td><input type="text" class="layui-input" name="fieldlong_9" value="255"></td>
+							<td>无</td>
+							<td>一个附件，压缩包，Excel，Word文档</td>
 						   </tr>
 						   <tr>
-							<td><input type="radio" name="fieldtype" value="10" /></div></td>
-							<td>多附件<br/>text</div></td>
-							<td>不限</div></td>
-							<td>无</div></td>
-							<td>多个附件，图片除外</td>
+							<td><input type="radio" name="fieldtype" value="10" /></td>
+							<td>不限</td>
+							<td>无</td>
+							<td>多个附件，压缩包，Excel，Word文档</td>
 						   </tr>
 						    <tr>
-							<td><input type="radio" name="fieldtype" value="13" /></div></td>
-							<td>关联模块<br/>int</div></td>
-							<td><input type="text" class="layui-input" name="fieldlong_13" value="2"></div></td>
+							<td><input type="radio" name="fieldtype" value="13" /></td>
+							<td><input type="text" class="layui-input" name="fieldlong_13" value="11"></td>
 							<td><select name="molds_select" id="molds_select">
 							<option  value="">请选择关联模块</option>
 							{loop table="molds"  as="v"}
 							<option  value="{$v['id']}">{$v['name']}</option>
 							{/loop}
-							</select><input type="text"  placeholder="列表显示字段" class="layui-input" name="molds_list_field" id="molds_list_field" value=""></div></td>
-							<td>可以直接调用关联模块内容列表，列表显示对应字段内容</td>
+							</select><input type="text"  placeholder="列表显示字段" class="layui-input" name="molds_list_field" id="molds_list_field" value=""></td>
+							<td>单选关联，可以直接调用关联模块内容列表，列表显示对应字段内容</td>
 						   </tr>
 						   <tr>
-							<td><input type="radio" name="fieldtype" value="15" /></div></td>
-							<td>多行录入<br/>txt</div></td>
-							<td>不限</div></td>
-							<td>无</div></td>
-							<td>可以在页面动态新增内容输入框</td>
+							<td><input type="radio" name="fieldtype" value="15" /></td>
+							<td>不限</td>
+							<td>无</td>
+							<td>多行录入，可以在页面动态新增内容输入框</td>
 						   </tr>
+						    <tr>
+							<td><input type="radio" name="fieldtype" value="16" /></td>
+							<td><input type="text" class="layui-input" name="fieldlong_16" value="255"></td>
+							<td><select name="molds_select" id="molds_select_muti">
+							<option  value="">请选择关联模块</option>
+							{loop table="molds"  as="v"}
+							<option  value="{$v['id']}">{$v['name']}</option>
+							{/loop}
+							</select><input type="text"  placeholder="列表显示字段" class="layui-input" name="molds_list_field_muti" id="molds_list_field_muti" value=""></td>
+							<td>多选关联，可以直接调用关联模块内容列表，列表显示对应字段内容</td>
+						   </tr>
+							  <tr>
+								  <td><input type="radio" name="fieldtype"  value="17" /></td>
+								  <td><input type="hidden"  class="layui-input" name="fieldlong_17" value="11">11</td>
+								  <td>[ tid ]</td>
+								  <td>系统栏目，不可修改</td>
+							  </tr>
+							  <tr>
+								  <td><input type="radio" name="fieldtype"  value="18" /></td>
+								  <td><input type="hidden"  class="layui-input" name="fieldlong_18" value="255">255</td>
+								  <td>[ tids ]</td>
+								  <td>系统副栏目，不可修改</td>
+							  </tr>
+							  <tr>
+								  <td><input type="radio" name="fieldtype"  value="19" /></td>
+								  <td><input type="hidden"  class="layui-input" name="fieldlong_19" value="255">255</td>
+								  <td>[ tags ]</td>
+								  <td>系统TAG，不可修改</td>
+							  </tr>
 						   
 						</tbody>
 					  </table>
@@ -197,7 +210,7 @@
                 </div>
 				<div class="layui-form-item">
                     <label for="vdata" class="layui-form-label">
-                        <span class="x-red">*</span>默认值
+                        <span class="x-red"></span>默认值
                     </label>
                     <div class="layui-input-inline" style="width:200px;">
                         <input type="text" id="vdata" value=""   name="vdata" 
@@ -209,7 +222,7 @@
                 </div>
 				<div class="layui-form-item">
                     <label for="tips" class="layui-form-label">
-                        <span class="x-red">*</span>字段提示
+                        <span class="x-red"></span>字段提示
                     </label>
                     <div class="layui-input-inline" style="width:500px;">
                         <input type="text" id="tips" value=""   name="tips" 
@@ -221,7 +234,7 @@
                 </div>
 				<div class="layui-form-item">
                     <label for="orders" class="layui-form-label">
-                        <span class="x-red"></span>排序
+                        <span class="x-red"></span>表单排序
                     </label>
                     <div class="layui-input-inline">
                         <input type="number" id="orders" value="2" name="orders" 
@@ -260,6 +273,17 @@
                     <div class="layui-input-inline">
                         <input type="radio" name="isshow" value="0" title="不显示">
 						<input type="radio" name="isshow" value="1" title="显示" checked>
+                    </div>
+					 
+					
+                </div>
+				<div class="layui-form-item" pane>
+                    <label for="ishome" class="layui-form-label">
+                        <span class="x-red"></span>前台表单
+                    </label>
+                    <div class="layui-input-inline">
+                        <input type="radio" name="ishome" value="0" title="不显示">
+						<input type="radio" name="ishome" value="1" title="显示" checked>
                     </div>
 					 
 					

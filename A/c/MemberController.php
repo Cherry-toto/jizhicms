@@ -191,7 +191,12 @@ class MemberController extends CommonController
 		
 		$id = $this->frparam('id');
 		if($id){
+			$data = M('member')->find(array('id'=>$id));
 			if(M('member')->delete(array('id'=>$id))){
+				$w['molds'] = 'member';
+				$w['data'] = json_encode($data,JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+				$w['addtime'] = time();
+				M('recycle')->add($w);
 				JsonReturn(array('code'=>0,'msg'=>'删除成功！'));
 			}else{
 				JsonReturn(array('code'=>1,'msg'=>'删除失败！'));
@@ -206,7 +211,14 @@ class MemberController extends CommonController
 	function deleteAll(){
 		$data = $this->frparam('data',1);
 		if($data!=''){
+			$all = M('Member')->findAll('id in('.$data.')');
 			if(M('Member')->delete('id in('.$data.')')){
+				foreach($all as $v){
+					$w['molds'] = 'member';
+					$w['data'] = json_encode($v,JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+					$w['addtime'] = time();
+					M('recycle')->add($w);
+				}
 				JsonReturn(array('code'=>0,'msg'=>'批量删除成功！'));
 				
 			}else{
@@ -355,7 +367,12 @@ class MemberController extends CommonController
 			if(M('member')->getCount(array('gid'=>$id))>0){
 				JsonReturn(array('code'=>1,'msg'=>'该分组下存在用户，请先移除用户再删除！'));
 			}
+			$data = M('member_group')->find(array('id'=>$id));
 			if(M('member_group')->delete(array('id'=>$id))){
+				$w['molds'] = 'member_group';
+				$w['data'] = json_encode($data,JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+				$w['addtime'] = time();
+				M('recycle')->add($w);
 				JsonReturn(array('code'=>0,'msg'=>'删除成功！'));
 			}else{
 				JsonReturn(array('code'=>1,'msg'=>'删除失败，请重试！'));
@@ -436,9 +453,7 @@ class MemberController extends CommonController
 	public function deleterulers(){
 		$id = $this->frparam('id');
 		if($id){
-			//判断是否为系统功能，系统功能不能删除
 			$ruler = M('power')->find(array('id'=>$id));
-			
 			$n = M('power')->find(array('pid'=>$id));
 			if($n){
 				JsonReturn(array('code'=>1,'msg'=>'删除失败，该分类有下级功能，请先删除下级功能！'));

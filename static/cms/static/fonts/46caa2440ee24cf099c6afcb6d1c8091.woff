@@ -1,0 +1,6 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN""http://www.w3.org/TR/html4/strict.dtd">
+<HTML><HEAD><TITLE>Bad Request</TITLE>
+<META HTTP-EQUIV="Content-Type" Content="text/html; charset=us-ascii"></HEAD>
+<BODY><h2>Bad Request - Request Too Long</h2>
+<hr><p>HTTP Error 400. The size of the request headers is too long.</p>
+</BODY></HTML>

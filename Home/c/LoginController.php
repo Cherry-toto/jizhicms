@@ -240,7 +240,7 @@ class LoginController extends CommonController
 		$w['pid'] = $_SESSION['invite'];
 		$r = M('member')->add($w);
 		if($r){
-			
+			$userid = $r;
 			//检查是否开启邀请奖励
 			if($this->webconf['invite_award_open']==1 && $w['pid'] && $this->webconf['invite_award']){
 				$ww['userid'] = $w['pid'];
@@ -256,14 +256,34 @@ class LoginController extends CommonController
 					$ww['money'] = $ww['amount']/($this->webconf['money_exchange']);
 				}
 				M('member')->goInc(['id'=>$w['pid']],$ww['buytype'],$ww['amount']);
-				$r = M('buylog')->add($ww);
+				M('buylog')->add($ww);
+			}
+			//自动登录
+			if($this->frparam('autologin')){
+				$member = M('member')->find(['id'=>$userid]);
+				$member_group = M('member_group')->find(['id'=>$member['gid']]);
+				if($member_group['isagree']!=1){
+					$xdata = array('code'=>1,'msg'=>'注册成功，等待审核！','url'=>U('login/index'));
+				}else{
+					unset($member['pass']);
+					unset($member_group['id']);
+					$_SESSION['member'] = array_merge($member,$member_group);
+					$xdata = array('code'=>0,'msg'=>'注册成功！','url'=>U('user/index'));
+				}
+				if($this->frparam('ajax')){
+					JsonReturn($xdata);
+				}
+				Success($xdata['msg'],$xdata['url']);
+				
+				
+			}else{
+				$xdata = array('code'=>0,'msg'=>'注册成功！','url'=>U('login/index'));
+				if($this->frparam('ajax')){
+					JsonReturn($xdata);
+				}
+				Success('注册成功！',U('login/index'));
 			}
 			
-			$xdata = array('code'=>0,'msg'=>'注册成功！','url'=>U('login/index'));
-			if($this->frparam('ajax')){
-				JsonReturn($xdata);
-			}
-			Success('注册成功！',U('login/index'));
 		}else{
 			$xdata = array('code'=>1,'msg'=>'注册失败，请重试~');
 			if($this->frparam('ajax')){

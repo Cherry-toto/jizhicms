@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html class="no-js" lang="cn">
+  <head>
+    <meta charset="utf-8" />
+    <title>{$jz['seo_title']}-{$webconf['web_name']}</title>
+	<meta name="keywords" content="{$jz['keywords']}" />
+	<meta name="description" content="{$jz['description']}" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+     {include="style"}
+  </head>
+  <body>
+    {include="header"}
+   
+
+    <div id="main-wrapper">
+      <div class="site-wrapper-reveal">
+        <!-- Blog Details Wrapper Start -->
+        <div class="blog-details-wrapper section-space--ptb_60">
+          <div class="container">
+            <div class="row row--17">
+              <div class="blog-details-col-12">
+                <!-- blog details Post Start -->
+                <div class="blog-details-post-wrap">
+                  <div class="blog-details-thum clean-block clean-product">
+                    
+					<div class="row">
+                            <div class="col-md-6">
+                                <div class="gallery">
+                                    <div class="sp-wrap">
+									{if($jz['pictures'])}
+									{php $pictures = explode('||',$jz['pictures'])/}
+									{foreach $pictures as $v}
+									{php $pic = explode('|',$v);/}
+								
+									<a href="{$pic[0]}"><img class="img-fluid d-block mx-auto" alt="{$pic[1]}" title="{$pic[1]}" src="{$pic[0]}"></a>
+									
+									{/foreach}
+									{else}
+									<a href="{$jz['litpic']}"><img class="img-fluid d-block mx-auto" alt="{$jz['title']}" title="{$jz['title']}" src="{$jz['litpic']}"></a>
+									
+									{/if}
+									</div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="info">
+                                    <h3>{$jz['title']}</h3>
+									
+									<p>
+									{foreach explode(',',$jz['tags']) as $v}
+									{if($v)}<span class="badge bg-primary">{$v}</span>{/if}
+									{/foreach}
+									</p>
+                                    <div class="price">
+                                        ￥{$jz['price']} <span class="nsbar">
+										{if(checkCollect($type['id'],$jz['id']))}
+										<a title="已收藏" onclick="collect({$type['id']},{$jz['id']})"
+										  ><img src="{$tpl}static/picture/collect.png" alt=""
+										/></a>
+										{else}
+										<a title="点击收藏" onclick="collect({$type['id']},{$jz['id']})"
+										  ><img src="{$tpl}static/picture/small-bookmark.png" alt=""
+										/></a>
+										{/if}
+										
+										{if(checkLikes($type['id'],$jz['id']))}
+										<a title="已点赞" onclick="likes({$type['id']},{$jz['id']})"
+										  ><img src="{$tpl}static/picture/zan.png" alt=""
+										/></a>
+										{else}
+										<a title="点赞" onclick="likes({$type['id']},{$jz['id']})"
+										  ><img src="{$tpl}static/picture/heart.png" alt=""
+										/></a>
+										
+										{/if}
+										</span>
+                                    </div>
+									<div class="feature">
+									
+										<table class="table table-bordered">
+											<tbody>
+											<tr><th>参数</th><th>值</th></tr>
+											{foreach jz_show_fields($jz,'color,lx,hy') as $v}
+											<tr><td>{$v['title']}</td><td>{$v['data']}</td></tr>
+											{/foreach}
+											</tr>
+											 
+											</tbody>
+										</table>
+									
+									</div>
+									<div class="buy-bar">
+									<p>库存：{$jz['stock_num']} 件 </p>
+									<button onclick="addcart({$type['id']},{$jz['id']},1)" class="buy btn" type="button"><i class="icon-basket"></i>加入购物车</button>
+									</div>
+                                    <div class="summary">
+									{$jz['description']}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    
+					
+                  </div>
+                  <div class="blog-details-post-content">
+                    <div class="blog-details-meta-box">
+                      <div class="post-meta-left-side mb-2">
+                        <div class="trending-blog-post-category">
+                          <a href="{$type['url']}">{$type['classname']}</a>
+                        </div>
+                        <div class="following-blog-post-author">
+                          {if(!$jz['member_id'])}
+                            发布者 <a >{fun adminInfo($jz['userid'],'name')}</a>
+						  {else}
+						    发布者 <a href="/user/active/uid/{$jz['member_id']}">{fun memberInfo($jz['member_id'],'username')}</a>
+						  {/if} 
+                        </div>
+                      </div>
+
+                      <div class="post-mid-side mb-2">
+                        <span class="post-meta-left-side">
+                          <span class="post-date">
+                            <i class="icofont-ui-calendar"></i>
+                            <a >{fun date('Y-m-d H:i:s',$jz['addtime'])}</a>
+                          </span>
+                        </span>
+                        <span id="read-num">热度 {$jz['hits']}</span>
+                      </div>
+
+                    </div>
+                    
+
+                    <div class="post-details-text">
+                      {$jz['body']}
+                    </div>
+					
+					<div class="row">
+					{if($aprev)}
+					<a  class="prevpage btn" href="{$aprev['url']}">上一篇：{$aprev['title']}</a>
+					{/if}
+					{if($anext)}
+					<a class="nextpage btn" href="{$anext['url']}">下一篇：{$anext['title']}</a>
+					{/if}
+					</div>
+					
+                    <!-- Related Post Area Start -->
+                    <div class="related-post-area section-space--pt_60">
+                      <div class="row">
+                        <div class="col-lg-8 col-7">
+                          <div class="section-title mb-30">
+                            <h3 class="title">相关商品</h3>
+                          </div>
+                        </div>
+                        
+                      </div>
+					
+					<div class="recent-article-area">
+					  <div class="container">
+						<div class="row row--30">
+						{loop table="product" notempty="litpic" tid="$jz['tid']" isshow="1" isall="1" orderby="rand()" limit="3" as="v"}
+						  <div class="col-lg-4 col-md-6">
+							
+							<div class="single-most-populer-item wow fadeInUp" >
+							  <a href="{$v['url']}" class="most-populer-thum">
+								<img src="{$v['litpic']}" alt="{$v['title']}" />
+							  </a>
+							  <div class="most-populer-content">
+								<div class="most-populer-post-author">
+								   作者 <a href="{$v['url']}">{fun adminInfo($v['userid'],'name')}</a>
+								</div>
+								<h3 class="title">
+								  <a href="{$v['url']}"
+									>{$v['title']}</a
+								  >
+								</h3>
+								<p class="dec mt-2">
+								  <span class="product-price">￥ {$v['price']}</span>
+								</p>
+								<div class="most-populer-post-meta">
+								  <span class="post-date">
+									<a>{fun date('Y-m-d',$v['addtime'])}</a>
+								  </span>
+								  <span>热度 {$v['hits']}</span>
+								</div>
+							  </div>
+							</div>
+						   
+						  </div>
+						{/loop}
+						 
+						 
+						</div>
+					  </div>
+					</div>
+       
+					
+					
+                    
+					</div>
+                  {include="comment"}
+                  </div>
+                </div>
+                <!-- blog details Post End -->
+              </div>
+             
+			</div>
+          </div>
+        </div>
+        <!-- Blog Details Wrapper End -->
+
+      </div>
+    </div>
+
+   {include="footer"}
+   {include="js"}
+   
+   <script>
+   $.get('/common/gohits?molds={$jz['molds']}&id={$jz['id']}',function(r){
+   $("#read-num").html('热度 '+r);
+   })
+   var page = 1;
+   getmessagelist({$jz['tid']},{$jz['id']},page);
+   
+   
+    if ($('.clean-gallery').length > 0) {
+	   baguetteBox.run('.clean-gallery', { animation: 'slideIn'});
+	}
+
+	if ($('.clean-product').length > 0) {
+		$(window).on("load",function() {
+			$('.sp-wrap').smoothproducts();
+		});
+	}
+
+   
+   
+   </script>
+   
+  </body>
+</html>

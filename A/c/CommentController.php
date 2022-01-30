@@ -58,7 +58,14 @@ class CommentController extends CommonController
 	function deleteAll(){
 		$data = $this->frparam('data',1);
 		if($data!=''){
+			$all = M('comment')->findAll('id in('.$data.')');
 			if(M('comment')->delete('id in('.$data.')')){
+				foreach($all as $v){
+					$w['molds'] = 'comment';
+					$w['data'] = json_encode($v,JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+					$w['addtime'] = time();
+					M('recycle')->add($w);
+				}
 				JsonReturn(array('code'=>0,'msg'=>'批量删除成功！'));
 				
 			}else{
@@ -231,8 +238,12 @@ class CommentController extends CommonController
 	function deletecomment(){
 		$id = $this->frparam('id');
 		if($id){
-			if(M('Comment')->delete('id='.$id)){
-				//Success('删除成功！',U('index'));
+			$data = M('Comment')->find(['id'=>$id]);
+			if(M('Comment')->delete(['id'=>$id])){
+				$w['molds'] = 'comment';
+				$w['data'] = json_encode($data,JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+				$w['addtime'] = time();
+				M('recycle')->add($w);
 				JsonReturn(array('code'=>0,'msg'=>'删除成功！'));
 			}else{
 				//Error('删除失败！');

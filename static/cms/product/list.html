@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html class="no-js" lang="cn">
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <title>{$type['seo_classname']}-{$webconf['web_name']}</title>
+	<meta name="keywords" content="{$type['keywords']}" />
+	<meta name="description" content="{$type['description']}" />
+
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    {include="style"}
+  </head>
+  <body>
+    {include="header"}
+    <div id="main-wrapper">
+      <div class="site-wrapper-reveal">
+        <!-- Blog Details Wrapper Start -->
+        <div class="blog-details-wrapper section-space--ptb_80">
+          <div class="container">
+			
+            <div class="row row--17">
+			
+            <div class="row">
+			<ul class="filter-bar">
+			{screen molds="product"   orderby="orders desc"  as="s"}
+				<li>
+				<div class="filter-s">
+				<label>{$s['fieldname']}</label>
+				<a href="{$s['url']}" {if(!isset($filters[$s['field']]))}class="is-checked" {/if}><span class="filter-text">全部</span></a>
+				{foreach $s['list'] as $ss}
+				<a href="{$ss['url']}"
+				{if(isset($filters[$s['field']]) && strpos(','.$filters[$s['field']].',',','.$ss['key'].',')!==false)} class="is-checked" {/if}	 
+				><span class="filter-text">{$ss['value']}</span></a>
+				{/foreach}
+				</div>
+				</li>
+			{/screen}
+			</ul>
+			</div>
+			
+			
+			{if($lists)}
+			{foreach $lists as $v}
+              <div class="col-lg-4 col-md-6 col-sm-6">
+                <!-- Single Following Post Start -->
+                <div class="single-following-post wow fadeInUp" >
+                  <a href="{$v['url']}" class="following-post-thum">
+                    <img src="{$v['litpic']}" alt="{$v['title']}" />
+                  </a>
+                  <div class="following-post-content">
+                    <div class="following-blog-post-top">
+                      <div class="trending-blog-post-category">
+                        <a href="{$classtypedata[$v['tid']]['url']}" class="business">{$classtypedata[$v['tid']]['classname']}</a>
+                      </div>
+                      <div class="product-price">
+                          ￥ {$v['price']} 元
+                      </div>
+                    </div>
+                    <h5 class="following-blog-post-title">
+                      <a href="{$v['url']}"
+                        >{$v['title']}
+                      </a>
+                    </h5>
+                    <div class="following-blog-post-meta">
+                      <div class="post-meta-left-side">
+                        <span class="post-date">
+                          <i class="icofont-ui-calendar"></i>
+                          <a href="{$v['url']}">{fun date('Y-m-d',$v['addtime'])}</a>
+                        </span>
+                        <span>热度 {$v['hits']}</span>
+                      </div>
+                      <div class="post-meta-right-side">
+                        {if(checkCollect($v['tid'],$v['id']))}
+						<a title="已收藏" onclick="collect({$v['tid']},{$v['id']})"
+                          ><img src="{$tpl}static/picture/collect.png" alt=""
+                        /></a>
+						{else}
+						<a title="点击收藏" onclick="collect({$v['tid']},{$v['id']})"
+                          ><img src="{$tpl}static/picture/small-bookmark.png" alt=""
+                        /></a>
+						{/if}
+                        
+						{if(checkLikes($v['tid'],$v['id']))}
+						<a title="已点赞" onclick="likes({$v['tid']},{$v['id']})"
+                          ><img src="{$tpl}static/picture/zan.png" alt=""
+                        /></a>
+						{else}
+						<a title="点赞" onclick="likes({$v['tid']},{$v['id']})"
+                          ><img src="{$tpl}static/picture/heart.png" alt=""
+                        /></a>
+						
+						{/if}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <!-- Single Following Post End -->
+              </div>
+			{/foreach}
+			{else}
+			 <div class="col-lg-12">
+				<div class="error-404-content text-center">
+				  <div class="banner wow fadeInUp animated" style="visibility: visible; animation-name: fadeInUp;">
+					<img src="/static/cms/static/picture/error-404.png" alt="">
+				  </div>
+				  <div class="error-text wow fadeInUp animated" style="visibility: visible; animation-name: fadeInUp;">
+					<h5>This Page is Not Found.</h5>
+					<h2>很抱歉，可以找到你要的信息。</h2>
+
+					
+				  </div>
+				</div>
+			  </div>
+			{/if}
+                
+			
+			</div>
+          </div>
+        </div>
+       
+	    
+		<div class="trending-topic-area bg-gray section-space--ptb_80">
+		<form class="search" action="/searchAll" id="myform" method="get">
+			<div class="container">
+			<!-- Newsletter Subscribe Area Start -->
+			<div class="newsletter-subscribe-inner section-space--mt_80 aos-init aos-animate" data-aos="fade-up">
+			<div class="row align-items-center">
+			
+			<div class="col-lg-3">
+				<div class="section-title mb-4"><h3>全站搜索</h3></div>
+			</div>
+			
+			<input type="hidden" name="molds[]" value="article">
+			<input type="hidden" name="molds[]" value="product">
+				<div class="col-lg-9">
+					<div class="newsletter-input-box">
+						<input class="newsletter-input" name="word" autocomplete="off" type="text" placeholder="输入关键词">
+						<div class="button-box">
+							<a  class="btn-primary btn-large searchall" >搜索</a>
+						</div>
+					</div>
+				</div>
+			
+			</div>
+			
+			<div class="newsletter-inner-image">
+				<img class="newsletter-image-01" src="{$tpl}static/picture/1-newsletter.png" alt="">
+				<img class="newsletter-image-02" src="{$tpl}static/picture/2-newsletter.png" alt="">
+			</div>
+			</div><!-- Newsletter Subscribe Area End -->
+			</div>
+			</form>
+		</div>
+	   
+	   
+      </div>
+    </div>
+   
+    {include="footer"}
+    {include="js"}
+	<script>
+	$(function(){
+		$(".searchall").click(function (){
+			$("#myform").submit();
+		})
+	})
+
+	</script>
+  </body>
+</html>

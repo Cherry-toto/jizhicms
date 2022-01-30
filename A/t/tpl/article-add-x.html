@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html>
+    
+    <head>
+       <meta charset="UTF-8">
+        {include="style"}
+
+		{include="edit"}
+    </head>
+    
+    <body>
+	 <div class="x-nav">
+            <span class="layui-breadcrumb">
+              <a><cite>首页</cite></a>
+              <a><cite>{$molds['name']}管理</cite></a>
+             
+			 <a><cite>新增{$molds['name']}</cite></a>
+            </span>
+            <a class="layui-btn layui-btn-small" style="line-height:1.6em;margin-top:3px;float:right"  href="javascript:location.replace(location.href);" title="刷新"><i class="iconfont" style="line-height:30px">&#xe6aa;</i></a>
+        </div>
+        <div class="x-body">
+            <form class="layui-form layui-form-pane" >
+			<input type="hidden" name="go" value="1" />
+			
+			<div class="layui-tab">
+			  <ul class="layui-tab-title">
+				<li class="layui-this">基本信息</li>
+				<li>扩展信息</li>
+				
+			  </ul>
+			  <div class="layui-tab-content">
+				<div class="layui-tab-item layui-show">
+				 <div class="layui-form-item">
+                    <label for="title" class="layui-form-label">
+                        <span class="x-red">*</span>标题
+                    </label>
+                    <div class="layui-input-inline">
+                        <input type="text" id="title" value="" style="width:500px;" name="title" required="" lay-verify="required"
+                        autocomplete="off" class="layui-input">
+                    </div>
+					<div class="layui-form-mid layui-word-aux">
+					  <i data-info="111222" data-field="f1" class="layui-sys-icon layui-icon layui-icon-about f1"></i>
+				    </div>
+					
+					
+					
+                </div>
+				{if($molds['isclasstype']==1)}
+				<div class="layui-form-item">
+                    <label for="tid" class="layui-form-label">
+                        <span class="x-red">*</span>栏目
+                    </label>
+                    <div class="layui-input-inline">
+						<select name="tid" lay-search="" {if($molds['ismust']==1)} lay-verify="required" {/if} lay-filter="tid" id="tid" >
+						{if($molds['ismust']==1)}
+						<option value="">选择栏目</option>
+						{else}
+						<option value="0">不限栏目</option>
+						{/if}
+					   {foreach $classtypes as $v}
+					   {if($v['molds']=='article')}
+					   {if($admin['classcontrol']==0 || $admin['isadmin']==1 || strpos($tids,','.$v['id'].',')!==false || $molds['iscontrol']==0)}
+					   <option {if($tid==$v['id'])}selected{/if} value="{$v['id']}">{fun str_repeat('--', $v['level'])}{$v['classname']}</option>
+					   {/if}
+					   {/if}
+					   {/foreach}
+					  
+					   </select>
+                    </div>
+                </div>
+				{else}
+				<input type="hidden" name="tid" value="0" />
+				{/if}
+				 <div class="layui-form-item">
+                    <label for="seo_title" class="layui-form-label">
+                        SEO标题
+                    </label>
+                    <div class="layui-input-inline">
+                        <input type="text" id="seo_title" value="" style="width:500px;"  name="seo_title" 
+                        autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+				<div class="layui-form-item">
+                    <label for="hits" class="layui-form-label">
+                        <span class="x-red"></span>点击量
+                    </label>
+                    <div class="layui-input-inline">
+                        <input type="number" id="hits" value="0" name="hits" 
+                        autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+				
+             
+				<div class="layui-form-item">
+                    <label for="keywords" class="layui-form-label">
+                        <span class="x-red"></span>关键词
+                    </label>
+                    <div class="layui-input-inline">
+                        <input type="text" id="keywords" value="" style="width:500px;"  name="keywords" 
+                        autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+				
+				
+				<div class="layui-form-item">
+					<label for="litpic" class="layui-form-label">
+						图片  
+					</label>
+					
+					<div class="layui-input-inline">
+						<input name="litpic" placeholder="上传图片" type="text" class="layui-input" id="litpic"  value="" />
+					</div>
+					<div class="layui-input-inline">
+						<button class="layui-btn layui-btn-primary" id="litpic_upload" type="button" >选择图片</button>
+					</div>
+					<div class="layui-input-inline">
+						<img id="litpic_img" class="img-responsive img-thumbnail" style="max-width: 200px;" src="" onerror="javascipt:this.src='{__Tpl_style__}/style/images/nopic.jpg'; this.title='图片未找到';this.onerror=''">
+						<button type="button" onclick="deleteImage(this)" class="layui-btn layui-btn-sm layui-btn-radius layui-btn-danger " title="删除这张图片" >删除</button>
+					</div>
+				</div>
+		
+				<div class="layui-form-item layui-form-text">
+                        <label for="description" class="layui-form-label">
+                            <span class="x-red"></span>简介
+                        </label>
+                        <div class="layui-input-block">
+                            <textarea  name="description" class="layui-textarea"></textarea>
+                        </div>
+                    </div>
+				 <div class="layui-form-item layui-form-text">
+                    <label for="body" class="layui-form-label">
+                        内容
+                    </label>
+                    <div class="layui-input-block" style="clear:both;" >
+					{include="content"}
+                    </div>
+                </div>
+				{if($webconf['isrelative']==1)}
+				<span id="ext_fields"></span>
+				{/if}
+				
+				
+		<!--end tab1-->		
+				</div>
+				<div class="layui-tab-item">
+				{if($webconf['isrelative']==0)}
+				<span id="ext_fields"></span>
+				{/if}
+				
+				
+				<div class="layui-form-item">
+                    <label for="orders" class="layui-form-label">
+                        <span class="x-red"></span>排序
+                    </label>
+                    <div class="layui-input-inline">
+                        <input type="number" id="orders" value="0" name="orders" 
+                        autocomplete="off" class="layui-input">
+                    </div>
+					 <div class="layui-form-mid layui-word-aux">
+					  数字越大越靠前
+				  </div>
+					
+                </div>
+				<div class="layui-form-item" pane>
+                    <label for="tjsx" class="layui-form-label">
+                        <span class="x-red"></span>推荐属性
+                    </label>
+                    <div class="layui-input-block">
+                        <input type="checkbox" name="istop" value="1" title="置顶">
+						<input type="checkbox" name="ishot" value="1" title="热点" >
+						<input type="checkbox" name="istuijian" value="1" title="推荐" >
+                    </div>
+					 
+					
+                </div>
+				<div class="layui-form-item layui-form-text">
+                    <label for="tags" class="layui-form-label">
+                        <span class="x-red"></span>TAG标签 [ 按Enter回车自动添加 ]
+                    </label>
+                    <div class="layui-input-block">
+                       
+						 <input id="tags" type="text" name="tags" class="tags" value=""  autocomplete="off" class="layui-input"  />
+                    </div>
+                </div>
+				{if($admin['isadmin']==1 || ($admin['isadmin']!=1 && $admin['ischeck']==0))}
+				 <div class="layui-form-item" pane>
+                    <label for="isshow" class="layui-form-label">
+                        <span class="x-red"></span>是否审核
+                    </label>
+                    <div class="layui-input-block">
+                        <input type="radio" name="isshow" value="0" title="未审">
+						<input type="radio" name="isshow" value="1" title="已审" checked>
+                    </div>
+					 
+					
+                 </div>
+				{/if}
+				
+				 <div class="layui-form-item">
+                    <label for="addtime" class="layui-form-label">
+                        更新时间
+                    </label>
+                    <div class="layui-input-inline">
+                      <input class="layui-input" value="{fun date('Y-m-d H:i:s')}" name="addtime" placeholder="选择时间" id="article_addtime">
+                    </div>
+                   
+                </div>
+				
+				<div class="layui-form-item">
+                    <label for="target" class="layui-form-label">
+                        <span class="x-red"></span>外链URL
+                    </label>
+                    <div class="layui-input-inline">
+                        <input type="text" id="target" value="" name="target" 
+                        autocomplete="off" class="layui-input">
+                    </div>
+					<div class="layui-form-mid layui-word-aux">
+					  默认为空，系统访问内容则直接跳转到此链接
+					</div>
+					
+                </div>
+				
+				<div class="layui-form-item">
+                    <label for="ownurl" class="layui-form-label">
+                        <span class="x-red"></span>自定义URL
+                    </label>
+                    <div class="layui-input-inline">
+                        <input type="text" id="ownurl" value="" name="ownurl" 
+                        autocomplete="off" class="layui-input">
+                    </div>
+					<div class="layui-form-mid layui-word-aux">
+					  默认为空，自定义URL
+					</div>
+					
+                </div>
+				
+				
+				</div>
+				
+			  </div>
+			</div>
+						
+               
+                
+                <div class="layui-form-item" id="jizhitj" style="text-align:center;">
+                    
+                     <button  class="layui-btn" lay-filter="save" lay-submit="">
+                        保存
+                    </button>
+                </div>
+            </form>
+        </div>
+		<br/>
+		<br/>
+		<br/>
+		<br/>
+		<br/>
+		<br/>
+		<br/>
+		<br/>
+		<br/>
+      
+        <script>
+		{include="fields"}
+			$(function() {
+			  $('#tags').tagsInput({
+					width:'auto',
+					defaultText:'添加一个标签',
+			  });
+
+			  get_fields({$tid});
+
+			})
+			function deleteImage(elm){
+				$(elm).prev().attr("src", "{__Tpl_style__}/style/images/nopic.jpg");
+				$('#litpic').val("");
+			}
+            layui.use(['laydate','form','layer','upload'], function(){
+                $ = layui.jquery;
+              var form = layui.form
+              ,layer = layui.layer;
+			  laydate = layui.laydate;
+			  var upload = layui.upload;
+			  
+			  laydate.render({
+				elem: '#article_addtime', //指定元素
+				type:'datetime'
+			  });
+             upload.render({
+				elem: '#litpic_upload',
+				url: "{fun U('Common/uploads')}" //上传接口
+				,data:{tid:function(){ return $("#tid").val();},molds:'article'}
+				,done: function(res){ //上传成功后的回调
+				 
+					if(res.code==0){
+						 $('#litpic_img').attr('src',res.url);
+						 $('#litpic').val(res.url);
+					}else{
+						 layer.alert(res.error, {icon: 5});
+					}
+				 
+				}
+			  });
+			  
+			    //监听提交
+              form.on('submit(save)', function(data){
+
+				$.post("{fun U('addarticle')}",data.field,function(r){
+					//console.log(r);return false;
+					var r = JSON.parse(r);
+					if(r.code==0){
+						layer.confirm(r.msg, {
+						  btn: ['返回','确定'] //按钮
+						}, function(){
+						   
+						   {if($webconf['admintpl']=='tpl')}
+						   window.location.href="{fun U('Article/articlelist')}";
+						  {else}
+						   parent.location.reload();
+						   parent.layer.close(index);
+						   
+						  {/if}
+						   
+						}, function(){
+						   window.location.href=r.url;
+						});
+					
+						
+					}else{
+						layer.alert(r.msg, {icon: 5});
+					}
+				});
+				
+               
+                return false;
+              });
+			  //get_fields();
+            form.on('select(tid)', function(data){
+			  /*
+			  console.log(data.elem); //得到select原始DOM对象
+			  console.log(data.value); //得到被选中的值
+			  console.log(data.othis); //得到美化后的DOM对象
+			  */
+			  get_fields(data.value);
+			  
+			  
+			});
+			
+			$(".layui-sys-icon").mouseover(function(){
+					var fclass = $(this).attr('data-field');
+					layer.tips($(this).attr('data-info'), '.'+fclass);
+				})
+			$(".layui-sys-icon").click(function(){
+				var fclass = $(this).attr('data-field');
+				layer.tips($(this).attr('data-info'), '.'+fclass);
+			})
+
+			
+           
+              
+              
+            });
+        </script>
+      
+    </body>
+
+</html>

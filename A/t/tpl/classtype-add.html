@@ -9,12 +9,12 @@
   
   <body>
     <div class="x-body">
-        <form class="layui-form layui-form-pane">
+        <form class="layui-form layui-form-pane"  lay-filter="jizhiform">
 		
 		<div class="layui-tab">
 			  <ul class="layui-tab-title">
-				<li class="layui-this">基本信息</li>
-				<li>扩展信息</li>
+				<li class="layui-this">基本</li>
+				<li>扩展</li>
 				
 			  </ul>
 			  <div class="layui-tab-content">
@@ -49,6 +49,12 @@
 			   {/foreach}
 			
 			   </select>
+			</div>
+			<div class="layui-input-inline">
+				<span class="x-red">填写内容时，请先选择栏目，否则切换栏目后，数据会丢失！</span>
+			</div>
+			<div class="layui-input-inline">
+				<button type="button" id="resetdata" class="layui-btn layui-btn-sm">恢复数据</button>
 			</div>
         </div>
           <div class="layui-form-item">
@@ -105,7 +111,7 @@
 					<button type="button" onclick="deleteImage(this)" class="layui-btn layui-btn-sm layui-btn-radius layui-btn-danger " title="删除这张图片" >删除</button>
 				</div>
 			</div>
-	
+				<span id="content_fields"></span>
 				<div class="layui-form-item layui-form-text">
                         <label for="description" class="layui-form-label">
                             <span class="x-red"></span>简介
@@ -123,17 +129,12 @@
                     </div>
                 </div>
 				 
-				{if($webconf['isrelative']==1)}
-				<span id="ext_fields"></span>
-				{/if}
-		 
+				
 			
 				</div>
 				<div class="layui-tab-item">
 				
-				{if($webconf['isrelative']==0)}
 				<span id="ext_fields"></span>
-				{/if}
 				
 				 <div class="layui-form-item">
 					  <label for="orders" class="layui-form-label">
@@ -153,12 +154,12 @@
 					  </label>
 					  <div class="layui-input-inline">
 						  <select name="orderstype" id="orderstype">
-						  <option value="1">1 排序倒序，2 时间倒序，3 ID倒序</option>
-						  <option value="2">1 排序倒序，2 ID正序</option>
+						  <option value="1">组合：排序倒序，时间倒序，ID倒序</option>
+						  <option value="2">组合：排序倒序，ID正序</option>
 						  <option value="3">排序正序</option>
 						  <option value="4">时间倒序</option>
 						  <option value="5">ID正序</option>
-						  <option value="6">热度倒序</option>
+						  <option value="6">点击量倒序</option>
 						  <option value="7">时间正序</option>
 						  </select>
 					  </div>
@@ -276,16 +277,12 @@
 					<span class="x-red"></span>访问限制
 				</label>
 				<div class="layui-input-inline">
-					<select name="gid" id="gid" >
-				    <option value="0">不限</option>
-				   
+					
 				   {loop table="member_group" as="v"}
-				  
-				   <option   value="{$v['id']}">{$v['name']}</option>
-				   
+				   <input type="checkbox" value="{$v['id']}" name="gids[]" title="{$v['name']}">
 				   {/loop}
 				
-				   </select>
+				  
 				</div>
 			</div>
 				
@@ -320,7 +317,12 @@
     </div>
     <script>
 	{include="fields"}
-		
+		$(function() {
+			 
+			  get_fields({$pid});
+			  get_fields_ext({$pid});
+
+			})
 		function deleteImage(elm){
 			$(elm).prev().attr("src", "{__Tpl_style__}/style/images/nopic.jpg");
 			$('#litpic').val("");
@@ -370,7 +372,7 @@
 							   window.location.href="{fun U('Classtype/index')}";
 							  {else}
 							   parent.location.reload();
-							   parent.layer.close(index);
+							   
 							  {/if}
 							   
 							   
@@ -384,14 +386,22 @@
                 return false;
           });
 		 
-		   get_fields({$pid});
-		   form.on('select(pid)', function(data){
-			  
+		  
+		    form.on('select(pid)', function(data){
+			  var alldata = form.val("jizhiform");
+			  localStorage.setItem('cachedata', JSON.stringify(alldata));
 			  get_fields(data.value);
+			  get_fields_ext(data.value);
 			  
 			  
 			});
-		   form.on('select(molds)', function(data){
+			$("#resetdata").click(function(){
+				var alldata = localStorage.getItem('cachedata');
+				if(alldata!=''){
+					form.val("jizhiform",JSON.parse(alldata));
+				}
+			})
+		    form.on('select(molds)', function(data){
 			  
 			 get_molds_html($("#molds").val());
 			 form.render('select');
@@ -464,6 +474,10 @@
 						}
 						$("#lists_html").html(t);
 						$("#details_html").html(tt);
+						layui.use(['form'], function(){
+							var form = layui.form;
+							form.render('select');
+						 })
 					},
 					 complete:function(){
 					//请求完成的处理

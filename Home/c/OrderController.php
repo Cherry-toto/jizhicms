@@ -32,7 +32,7 @@ class OrderController extends CommonController
 	
 	
 	function create(){
-		if($this->frparam('go') && $_POST){
+		if($this->frparam('go')){
 			if(isset($_SESSION['cart']) && $_SESSION['cart']!=''){
 				$carts = explode('||',$_SESSION['cart']);
 				$group = M('member_group')->find(['id'=>$this->member['gid']]);
@@ -119,7 +119,11 @@ class OrderController extends CommonController
 				}else{
 					Error('创建订单失败！');
 				}
+			}else{
+				Redirect(U('user/cart'));
 			}
+		}else{
+			Redirect(U('user/cart'));
 		}
 		
 	}
@@ -215,85 +219,7 @@ class OrderController extends CommonController
 					
 				}
 			}
-			
-			if($this->webconf['paytype']==1){
-				//检查极致平台配置
-				if(!$this->webconf['jizhi_mchid'] || !$this->webconf['jizhi_appid'] || !$this->webconf['jizhi_key'] || !$this->webconf['jizhi_pay_url']){
-					
-					if($this->frparam('ajax')){
-						JsonReturn(['code'=>1,'msg'=>'平台支付配置未完成！','url'=>$return_url]);
-					}
-					
-					Error('平台支付配置未完成！',$return_url);
-					
-					
-				}
-				
-				
-				//极致支付平台
-				if($order['ispay']==1){
-					if($this->frparam('ajax')){
-						JsonReturn(['code'=>1,'msg'=>'订单已支付！','url'=>$return_url]);
-					}
-					
-					Error('订单已支付！',$return_url);
-				}
-				
-				
-				//检测端口环境
-				if(isMobile()){
-					
-					if(isWeixin()){
-						if($paytype==2){
-							Error('支付宝支付请在手机浏览器提交订单~',$return_url);
-						}
-						//微信支付
-						$order['paytype'] = 'wxpay';
-						M('orders')->update(['id'=>$order['id']],['paytype'=>'微信支付']);
-					}else{
-						$order['paytype'] = 'h5alipay';
-						M('orders')->update(['id'=>$order['id']],['paytype'=>'支付宝H5支付']);
-					}
-				}else{
-					if($paytype==2){
-						$order['paytype'] = 'scanwxpay';
-						M('orders')->update(['id'=>$order['id']],['paytype'=>'微信扫码支付']);
-					}else{
-						$order['paytype'] = 'alipay';
-						M('orders')->update(['id'=>$order['id']],['paytype'=>'支付宝支付']);
-					}
-					
-					
-				}
-				//交易提醒
-				$task['aid'] = $order['id'];
-				$task['tid'] = 0;
-				$task['userid'] = $this->member['id'];
-				$task['puserid'] = $this->member['id'];
-				$task['molds'] = 'orders';
-				$task['type'] = 'rechange';
-				$task['addtime'] = time();
-				$task['body'] = '您的订单-'.$order['orderno'].'已经提交，请尽快支付！';
-				$task['url'] = U('user/orderdetails',['orderno'=>$order['orderno']]);
-				M('task')->add($task);
 
-				$order['mchid'] = $this->webconf['jizhi_mchid'];
-				$order['appid'] = $this->webconf['jizhi_appid'];
-				$order['secretkey'] = $this->webconf['jizhi_key'];
-				//$order['paytype'] = 'h5alipay';//alipay h5alipay  wxpay  h5wxpay
-				$order['money'] = $order['price'];
-				$order['title'] = '支付订单-'.$order['orderno'];
-				$order['orderno'] = $order['orderno'];//本地订单
-				//setLog($order,'push_order');
-				$url = $this->webconf['jizhi_pay_url'].'/Pay/onlinePay';
-				$this->order = $order;
-				$this->url = $url;
-				$this->display($this->template.'/paytpl/pay_form');
-				exit;
-			}
-			
-			
-			
 			if($this->webconf['paytype']==0 && $order['ptype']==1){
 				
 				//更新订单状态，提示收到提交订单
@@ -467,7 +393,8 @@ class OrderController extends CommonController
 						$payAmount = $order['price'];          //付款金额，单位:元
 						$orderName = '支付订单-'.$order['orderno'];    //订单标题
 						$notifyUrl = U('Mypay/wechat_notify_pay');     //付款成功后的回调地址(不要有问号)
-						$returnUrl = U('Mypay/check_wechat_order').'?orderno='.$order['orderno'];     //付款成功后，页面跳转的地址
+						//$returnUrl = U('Mypay/check_wechat_order').'?orderno='.$order['orderno'];     //付款成功后，页面跳转的地址
+						$returnUrl = U('order/wxh5pay').'?orderno='.$order['orderno'];
 						$wapUrl = $_SERVER['HTTP_HOST'];   //WAP网站URL地址
 						$wapName = $this->webconf['web_name']; //WAP 网站名
 						$webip = GetIP();
@@ -751,5 +678,13 @@ class OrderController extends CommonController
 
 	}
 
-	
+	//微信h5支付验证
+	function wxh5pay(){
+		$this->orderno = $this->frparam('orderno',1);
+		if(!$this->orderno){
+			Error('链接错误！');
+		}
+		$this->display($this->template.'/paytpl/wechat_h5_pay');
+		exit;
+	}
 }

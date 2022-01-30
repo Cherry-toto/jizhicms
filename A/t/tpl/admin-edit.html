@@ -20,103 +20,124 @@
 	<div class="layui-card">
 	    <div class="layui-card-body">
         <form class="layui-form layui-form-pane">
-          <div class="layui-form-item">
-              <label for="name" class="layui-form-label">
-                  <span class="x-red">*</span>登录名
-              </label>
-              <div class="layui-input-inline">
-                  <input type="text" id="name" name="name" required="" lay-verify="required"
-                  autocomplete="off" value="{$member['name']}" class="layui-input">
-              </div>
-              <div class="layui-form-mid layui-word-aux">
-                  <span class="x-red">*</span>将会成为您唯一的登入名
-              </div>
-          </div>
-          <div class="layui-form-item">
-              <label for="tel" class="layui-form-label">
-                  <span class="x-red"></span>手机
-              </label>
-              <div class="layui-input-inline">
-                  <input type="text" value="{$member['tel']}" id="tel" name="tel" required="" lay-verify="tel"
-                  autocomplete="off" class="layui-input">
-              </div>
-              
-          </div>
-          <div class="layui-form-item">
-              <label for="email" class="layui-form-label">
-                  <span class="x-red"></span>邮箱
-              </label>
-              <div class="layui-input-inline">
-                  <input type="text" value="{$member['email']}" id="email" name="email"
-                  autocomplete="off" class="layui-input">
-              </div>
-              <div class="layui-form-mid layui-word-aux">
-                  <span class="x-red"></span>
-              </div>
-          </div>
+		
+		
+		<div class="layui-tab">
+			  <ul class="layui-tab-title">
+				<li class="layui-this">基本</li>
+				<li>扩展</li>
+				
+			  </ul>
+			<div class="layui-tab-content">
+				<div class="layui-tab-item layui-show">
+				
+				 <div class="layui-form-item">
+					  <label for="name" class="layui-form-label">
+						  <span class="x-red">*</span>登录名
+					  </label>
+					  <div class="layui-input-inline">
+						  <input type="text" id="name" name="name" required="" lay-verify="required"
+						  autocomplete="off" value="{$member['name']}" class="layui-input">
+					  </div>
+					  <div class="layui-form-mid layui-word-aux">
+						  <span class="x-red">*</span>将会成为您唯一的登入名
+					  </div>
+				  </div>
+				  <div class="layui-form-item">
+					  <label for="tel" class="layui-form-label">
+						  <span class="x-red"></span>手机
+					  </label>
+					  <div class="layui-input-inline">
+						  <input type="text" value="{$member['tel']}" id="tel" name="tel" required="" lay-verify="tel"
+						  autocomplete="off" class="layui-input">
+					  </div>
+					  
+				  </div>
+				  <div class="layui-form-item">
+					  <label for="email" class="layui-form-label">
+						  <span class="x-red"></span>邮箱
+					  </label>
+					  <div class="layui-input-inline">
+						  <input type="text" value="{$member['email']}" id="email" name="email"
+						  autocomplete="off" class="layui-input">
+					  </div>
+					  <div class="layui-form-mid layui-word-aux">
+						  <span class="x-red"></span>
+					  </div>
+				  </div>
 
-		 
-		 
-          <div class="layui-form-item">
-              <label class="layui-form-label"><span class="x-red">*</span>角色</label>
-              <div class="layui-input-inline">
-			  
-                <select class="layui-input" name="gid" lay-filter="gid" lay-verify="required">
-				
-				{foreach $groups as $v}
-				 {if($isadmin)}
-				 <option value="{$v['id']}" {if($v['id']==$member['gid'])} selected {/if}>{$v['name']}</option>
-				 {else}
-				 {if($v['id']!=1)}
-				 <option value="{$v['id']}" {if($v['id']==$member['gid'])} selected {/if}>{$v['name']}</option>
-				 {/if}
-				 {/if}
-				
-				{/foreach}
-				
-				</select>
-              </div>
-          </div>
-		 
-		  
-		  <span id="ext_fields"></span>
+				 
+				 
+				  <div class="layui-form-item">
+					  <label class="layui-form-label"><span class="x-red">*</span>角色</label>
+					  <div class="layui-input-inline">
+					  
+						<select class="layui-input" name="gid" lay-filter="gid" lay-verify="required">
+						
+						{foreach $groups as $v}
+						 {if($isadmin)}
+						 <option value="{$v['id']}" {if($v['id']==$member['gid'])} selected {/if}>{$v['name']}</option>
+						 {else}
+						 {if($v['id']!=1)}
+						 <option value="{$v['id']}" {if($v['id']==$member['gid'])} selected {/if}>{$v['name']}</option>
+						 {/if}
+						 {/if}
+						
+						{/foreach}
+						
+						</select>
+					  </div>
+				  </div>
+				 
+				  <span id="content_fields"></span>	
+				  
 
-          <div class="layui-form-item">
-              <label for="L_pass" class="layui-form-label">
-                  <span class="x-red"></span>密码
-              </label>
-              <div class="layui-input-inline">
-                  <input type="password" id="L_pass" name="pass" required="" lay-verify="pass"
-                  autocomplete="off" class="layui-input">
-              </div>
-              <div class="layui-form-mid layui-word-aux">
-                  6到16个字符,不改请留空
-              </div>
-          </div>
-		  
-          <div class="layui-form-item">
-              <label for="L_repass" class="layui-form-label">
-                  <span class="x-red"></span>确认密码
-              </label>
-              <div class="layui-input-inline">
-                  <input type="password" id="L_repass" name="repass" required="" lay-verify="repass"
-                  autocomplete="off" class="layui-input">
-              </div>
-			  <div class="layui-form-mid layui-word-aux">
-                  6到16个字符,不改请留空
-              </div>
-          </div>
-		   <div class="layui-form-item">
-			<label class="layui-form-label">状态</label>
-			<div class="layui-input-inline">
-			  <select name="status" lay-verify="required">
+				  <div class="layui-form-item">
+					  <label for="L_pass" class="layui-form-label">
+						  <span class="x-red"></span>密码
+					  </label>
+					  <div class="layui-input-inline">
+						  <input type="password" id="L_pass" name="pass" required="" lay-verify="pass"
+						  autocomplete="off" class="layui-input">
+					  </div>
+					  <div class="layui-form-mid layui-word-aux">
+						  6到16个字符,不改请留空
+					  </div>
+				  </div>
+				  
+				  <div class="layui-form-item">
+					  <label for="L_repass" class="layui-form-label">
+						  <span class="x-red"></span>确认密码
+					  </label>
+					  <div class="layui-input-inline">
+						  <input type="password" id="L_repass" name="repass" required="" lay-verify="repass"
+						  autocomplete="off" class="layui-input">
+					  </div>
+					  <div class="layui-form-mid layui-word-aux">
+						  6到16个字符,不改请留空
+					  </div>
+				  </div>
+				   <div class="layui-form-item">
+					<label class="layui-form-label">状态</label>
+					<div class="layui-input-inline">
+					  <select name="status" lay-verify="required">
+						
+						<option {if($member['status']==1)}selected="selected"{/if}value="1">正常</option>
+						<option {if($member['status']==0)}selected="selected"{/if} value="0">禁用</option>
+						
+					  </select>
+					</div>
+				  </div>
 				
-				<option {if($member['status']==1)}selected="selected"{/if}value="1">正常</option>
-				<option {if($member['status']==0)}selected="selected"{/if} value="0">禁用</option>
+				</div>
+				<div class="layui-tab-item">
+					<span id="ext_fields"></span>
 				
-			  </select>
+				</div>
 			</div>
-		  </div>
+		</div>
+		
+         
 		  <input type="hidden" name="token" value="{$token}">
 		  <input type="hidden" id="go" name="go" value="1">
           <input type="hidden" id="id" name="id" value="{$member['id']}">
@@ -168,15 +189,17 @@
            
             return false;
           });
-          get_fields({$member['gid']},{$member['id']});
+      
+			get_fields({$member['gid']},{$member['id']});
+            get_fields_ext({$data['gid']},{$member['id']});
 			form.on('select(gid)', function(data){
-			  /*
-			  console.log(data.elem); //得到select原始DOM对象
-			  console.log(data.value); //得到被选中的值
-			  console.log(data.othis); //得到美化后的DOM对象
-			  */
-			  get_fields(data.value,{$member['id']});
+			 
+			  get_fields(data.value,{$member['id']}); 
+			  get_fields_ext(data.value,{$member['id']});
+			  
+			  
 			});
+			
           
         });
     </script>

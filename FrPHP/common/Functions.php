@@ -26,7 +26,7 @@
 
 function M($name=null) {
 	if(empty($name)){
-		$path = 'FrPHP\lib\\Model';
+		$path = 'FrPHP\\lib\\Model';
 		return $path::getInstance();
 	}
     $name = ucfirst($name);
@@ -36,7 +36,7 @@ function M($name=null) {
 		$table = $name;
 		$name = APP_HOME.'\\'.HOME_MODEL.'\\'.$name.'Model';
 		if(!class_exists($name)){
-			$path = 'FrPHP\lib\\Model';
+			$path = 'FrPHP\\lib\\Model';
 			return $path::getInstance($table);
 		}else{
 			return $name::getInstance($table);
@@ -177,7 +177,7 @@ function U($action=null,$field=null){
 			$url.='/'.$field;
 		}
 	}
-	return $url.File_TXT;
+	return $url.'.html';
 	
 }
 
@@ -245,7 +245,7 @@ function Error($info, $url=null){
 **/
 
 function JsonReturn($data){
-	echo json_encode($data,JSON_UNESCAPED_UNICODE);
+	echo json_encode($data,JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
 	exit;
 }
 
@@ -286,7 +286,6 @@ function GetIP(){
   return $ip;
 }
 //获取域名
-//获取域名
 function get_domain(){
 	if ( ! empty($_SERVER['HTTPS']) && strtolower($_SERVER['HTTPS']) !== 'off')
 	{
@@ -303,28 +302,27 @@ function get_domain(){
 	elseif ( ! empty($_SERVER['HTTP_FRONT_END_HTTPS']) && strtolower($_SERVER['HTTP_FRONT_END_HTTPS']) !== 'off')
 	{
 		$protocol = "https://";
+	}else if(!empty($_SERVER['HTTP_X_CLIENT_SCHEME']) && $_SERVER['HTTP_X_CLIENT_SCHEME']=='https'){
+		$protocol = "https://";
 	}else{
 		$protocol = "http://";
 	}
-	
+	if(isset($_SERVER['SERVER_PORT'])) {
+		$port = ':' . $_SERVER['SERVER_PORT'];
+		if((':80' == $port && 'http://' == $protocol) || (':443' == $port && 'https://' == $protocol)) {
+			$port = '';
+		}
+	}else{
+		$port = '';
+	}
     if(isset($_SERVER['HTTP_X_FORWARDED_HOST'])) {
-        $host = $_SERVER['HTTP_X_FORWARDED_HOST'];
-    }elseif (isset($_SERVER['SERVER_NAME'])) {
-        $host = $_SERVER['SERVER_NAME'];
-    }else{
-        if(isset($_SERVER['SERVER_PORT'])) {
-            $port = ':' . $_SERVER['SERVER_PORT'];
-            if((':80' == $port && 'http://' == $protocol) || (':443' == $port && 'https://' == $protocol)) {
-                $port = '';
-            }
-        }else{
-            $port = '';
-        }
-        if(isset($_SERVER['SERVER_NAME'])) {
-            $host = $_SERVER['SERVER_NAME'].$port;
-        }else if(isset($_SERVER['SERVER_ADDR'])) {
-            $host = $_SERVER['SERVER_ADDR'].$port;
-        }
+        $host = $_SERVER['HTTP_X_FORWARDED_HOST'].$port;
+    }else if (isset($_SERVER['HTTP_HOST'])) {
+        $host = $_SERVER['HTTP_HOST'].$port;
+    }else if(isset($_SERVER['SERVER_NAME'])) {
+		$host = $_SERVER['SERVER_NAME'].$port;
+	}else if(isset($_SERVER['SERVER_ADDR'])) {
+		$host = $_SERVER['SERVER_ADDR'].$port;
     }
     return $protocol.$host;
 }

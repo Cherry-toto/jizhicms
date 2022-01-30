@@ -91,7 +91,7 @@ class Model {
 		return $this->goInc($conditions,$field,-$vp);
 	}
 	    // 修改数据
-    public function update($conditions,$row)
+    public function update($conditions=null,$row=null)
     {
         $where = "";
 		$row = $this->__prepera_format($row);
@@ -125,6 +125,68 @@ class Model {
 		
 		
     }
+	
+	public function updateMuti($conditions=null,$rows=null){
+		
+		if(count($conditions)!=count($rows)){
+			throw new Exception('数组不匹配');
+			return false;
+		}
+		$whereArr = [];
+		foreach($conditions as $condition){
+			
+			if(is_array($condition)){
+				$condition = $this->__prepera_format($condition);
+				$join = array();
+				foreach( $condition as $key => $condit ){
+					$condit = '\''.$condit.'\'';
+					$join[] = "{$key} = {$condit}";
+				}
+				if(count($join)){
+					$where = "WHERE ".join(" AND ",$join);
+				}
+			}else{
+				if(null != $condition)$where = "WHERE ".$condition;
+			}
+			
+			$whereArr[] = $where;
+		}
+		
+		$valuesArr = [];
+		foreach($rows as $row){
+			$row = $this->__prepera_format($row);
+			if(!empty($row)){
+				
+				foreach($row as $key => $value){
+					if($value!==null){
+						$value = '\''.$value.'\'';
+						$vals[] = "{$key} = {$value}";
+					}else{
+						$vals[] = "{$key} = null";
+					}
+					
+				}
+				$values = join(", ",$vals);
+				
+				$valuesArr[]=$values;
+			}
+			
+			
+		}
+		if(count($whereArr)!=count($valuesArr)){
+			throw new Exception('数组不匹配');
+			return false;
+		}
+		
+		$sqlArr=[];
+		$table = self::$table;
+		foreach($whereArr as $k=>$where){
+			$sqlArr[] = "UPDATE {$table} SET {$valuesArr[$k]} {$where};";
+			
+		}
+		$sql=implode('',$sqlArr);
+		return $this->runSql($sql);
+	}
 
 
     // 查询所有
@@ -176,8 +238,8 @@ class Model {
     }
 	
 	//获取单一字段内容
-	public function getField($where=null,$fields=null){
-		if( $record = $this->findAll($where, null, $fields, 1) ){
+	public function getField($where=null,$fields=null,$orders=null){
+		if( $record = $this->findAll($where, $orders, $fields, 1) ){
 			$res = array_pop($record);
 			return $res[$fields];
 		}else{

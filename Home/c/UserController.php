@@ -511,123 +511,103 @@ class UserController extends CommonController
 			Success($msg,$_SESSION['return_url']);
 		}
 		
-		$likes = explode('||',$this->member['likes']);
-		$new = [];
-		$add = $tid.'-'.$id;
-		$isadd = true;
-		if($likes && $this->member['likes']!=''){
-			foreach($likes as $k=>$v){
-				if($v!=''){
-					
-					if($v==$add){
-						$isadd = false;
-					}else{
-						$new[]=$v;
-					}
-					
-				}
-				
+		//查询是否已点赞
+		$res = M('likes')->find(['tid'=>$tid,'aid'=>$id,'userid'=>$this->member['id']]);
+		if(!$this->classtypedata[$tid]['molds']){
+			if($this->frparam('ajax')){
+				JsonReturn(['code'=>0,'msg'=>'栏目未绑定模型，无法喜欢！','url'=>$_SESSION['return_url']]);
 			}
-			if($isadd){
-				$new[]=$add;
-				$msg = '点赞成功！';
-			}else{
-				$msg = '已取消点赞！';
-			}
-			$xnew = '||'.implode('||',$new).'||';
-		}else{
-			$xnew = '||'.$add.'||';
-			$msg = '点赞成功！';
+			Error('栏目未绑定模型，无法喜欢！');
 		}
-		M('member')->update(['id'=>$this->member['id']],['likes'=>$xnew]);
-		//检查是否收藏的站内用户发布的信息
 		$molds = $this->classtypedata[$tid]['molds'];
-		$data = M($molds)->find(['id'=>$id]);
-		if(isset($data['member_id']) && $data['member_id']!=0 && $data['member_id']!=$this->member['id']){
-			if($isadd){
-				$task['aid'] = $id;
-				$task['tid'] = $tid;
-				$task['userid'] = $data['member_id'];
-				$task['puserid'] = $this->member['id'];
-				$task['molds'] = $molds;
-				$task['type'] = 'likes';
-				$task['addtime'] = time();
-				$task['body'] = $data['title'];
-				$task['url'] = gourl($data['id'],$data['htmlurl']);
-				M('task')->add($task);
-			}else{
-				$task['aid'] = $id;
-				$task['tid'] = $tid;
-				$task['userid'] = $data['member_id'];
-				$task['puserid'] = $this->member['id'];
-				$task['molds'] = $molds;
-				$task['type'] = 'likes';
-				M('task')->delete($task);
-			}
-			
-		}
-		if($this->webconf['likes_award_open']==1 && $tid!=0){
-			
+		$isaward = 0;
+		if($this->webconf['likes_award_open']==1 && $this->webconf['likes_award']>0){
 			$award = round($this->webconf['likes_award'],2);
 			$max_award = round($this->webconf['likes_max_award'],2);
-			$molds = $this->classtypedata[$tid]['molds'];
-			$member_id = M($molds)->getField(['id'=>$id],'member_id');
-			if($member_id!=0 && $award>0){
-				$rr = M('buylog')->find(['userid'=>$member_id,'type'=>3,'molds'=>$molds,'aid'=>$id,'msg'=>'点赞奖励']);
-				if(!$rr){
-					$start = mktime(0, 0, 0, date('m'), date('d'), date('Y'));
-					$end = mktime(23, 59, 59, date('m'), date('d'), date('Y'));
-
-					$sql = " addtime>=".$start." and addtime<".$end." and userid=".$member_id." and type=3 and msg='点赞奖励' ";
-					$all = M('buylog')->findAll($sql,null,'amount');
-					$all_jifen = 0;
-					if($all){
-						foreach($all as $v){
-							$all_jifen+=$v['amount'];
-						}
-					}
-					if($isadd){
-						//奖励
-						if($max_award==0 || ($all_jifen<$max_award && $max_award!=0)){
-							$w['userid'] = $member_id;
-							$w['buytype'] = 'jifen';
-							$w['type'] = 3;
-							$w['molds'] = $molds;
-							$w['aid'] = $id;
-							$w['msg'] = '点赞奖励';
-							$w['addtime'] = time();
-							$w['orderno'] = 'No'.date('YmdHis');
-							$w['amount'] = $award;
-							$w['money'] = $w['amount']/($this->webconf['money_exchange']);
-							$r = M('buylog')->add($w);
-							M('member')->goInc(['id'=>$member_id],'jifen',$award);	
-						}
-						
-					}else{
-						//扣除
-						$w['userid'] = $member_id;
-						$w['buytype'] = 'jifen';
-						$w['type'] = 3;
-						$w['molds'] = $molds;
-						$w['aid'] = $id;
-						$w['msg'] = '取消点赞';
-						$w['addtime'] = time();
-						$w['orderno'] = 'No'.date('YmdHis');
-						$w['amount'] = -$award;
-						$w['money'] = $w['amount']/($this->webconf['money_exchange']);
-						$r = M('buylog')->add($w);
-						M('member')->goDec(['id'=>$member_id],'jifen',$award);
-						
-					}
-					
-				}
-				
-			}
-			
+			$isaward = 1;
 			
 		}
+		$ww['tid'] = $tid;
+		$ww['aid'] = $id;
+		$ww['userid'] = $this->member['id'];
+		$data = M($molds)->find(['tid'=>$tid,'id'=>$id]);
+		$member_id = $data['member_id'];
+		if($res){
+			//存在-取消点赞
+			M('likes')->delete($ww);
+			$task['aid'] = $id;
+			$task['tid'] = $tid;
+			$task['userid'] = $member_id;
+			$task['puserid'] = $this->member['id'];
+			$task['molds'] = $molds;
+			$task['type'] = 'likes';
+			M('task')->delete($task);
+			if($isaward){
+				//扣除
+				$w['userid'] = $member_id;
+				$w['buytype'] = 'jifen';
+				$w['type'] = 3;
+				$w['molds'] = $molds;
+				$w['aid'] = $id;
+				$w['msg'] = '取消点赞';
+				$w['addtime'] = time();
+				$w['orderno'] = 'No'.date('YmdHis');
+				$w['amount'] = -$award;
+				$w['money'] = $w['amount']/($this->webconf['money_exchange']);
+				$r = M('buylog')->add($w);
+				M('member')->goDec(['id'=>$member_id],'jifen',$award);
+			}
+			$msg = '已取消点赞！';
+			
+			
+		}else{
+			//不存在
+			$ww['addtime'] = time();
+			M('likes')->add($ww);
+			$task['aid'] = $id;
+			$task['tid'] = $tid;
+			$task['userid'] = $member_id;
+			$task['puserid'] = $this->member['id'];
+			$task['molds'] = $molds;
+			$task['type'] = 'likes';
+			$task['addtime'] = time();
+			$task['body'] = $data['title'];
+			$task['url'] = gourl($data['id'],$data['htmlurl']);
+			M('task')->add($task);
+			if($award){
+				$start = mktime(0, 0, 0, date('m'), date('d'), date('Y'));
+				$end = mktime(23, 59, 59, date('m'), date('d'), date('Y'));
 
-		$_SESSION['member']['likes'] = $xnew;
+				$sql = " addtime>=".$start." and addtime<".$end." and userid=".$member_id." and type=3 and msg='点赞奖励' ";
+				$all = M('buylog')->findAll($sql,null,'amount');
+				$all_jifen = 0;
+				if($all){
+					foreach($all as $v){
+						$all_jifen+=$v['amount'];
+					}
+				}
+				//奖励
+				if($max_award==0 || ($all_jifen<$max_award && $max_award>0)){
+					$w['userid'] = $member_id;
+					$w['buytype'] = 'jifen';
+					$w['type'] = 3;
+					$w['molds'] = $molds;
+					$w['aid'] = $id;
+					$w['msg'] = '点赞奖励';
+					$w['addtime'] = time();
+					$w['orderno'] = 'No'.date('YmdHis');
+					$w['amount'] = $award;
+					$w['money'] = $w['amount']/($this->webconf['money_exchange']);
+					$r = M('buylog')->add($w);
+					M('member')->goInc(['id'=>$member_id],'jifen',$award);	
+				}
+			}
+			$msg = '点赞成功！';
+			
+		}
+		
+		
+		
 		if($this->frparam('ajax')){
 			JsonReturn(['code'=>0,'msg'=>$msg,'url'=>$_SESSION['return_url']]);
 		}
@@ -638,42 +618,37 @@ class UserController extends CommonController
 	function likes(){
 		$this->checklogin();
 		$lists = [];
-		if($this->member['likes']!=''){
-	
-			$likes = explode('||',$this->member['likes']);
-
-			foreach($likes as $v){
-				if($v!=''){
-					$d = explode('-',$v);
-					//tid-id
-					if(is_array($d) && isset($this->classtypedata[$d[0]])){
-						$xdata=M($this->classtypedata[$d[0]]['molds'])->find(['id'=>$d[1]]);
-						if($xdata){
-							$lists[]=$xdata;
-						}
-					}
-				}
-			}
-		}
 		
-		$arraypage = new \ArrayPage($lists);
-		$data = $arraypage->query(['page'=>$this->frparam('page',0,1)])->setPage(['limit'=>$this->frparam('limit',0,10)])->go();
+		$model = new Page('likes');
+		$data = $model->where(['userid'=>$this->member['id']])->orderby('addtime desc')->limit($this->frparam('limit',0,15))->page($this->frparam('page',0,1))->go();
+		$model->file_ext = '';
+		$pages = $model->pageList(5,'?page=');
+		$this->pages = $pages;
+		
+		
 		foreach($data as $k=>$v){
-			$data[$k]['url'] = gourl($v['id'],$v['htmlurl']);
 			if(isset($this->classtypedata[$v['tid']])){
 				$data[$k]['classname'] = $this->classtypedata[$v['tid']]['classname'];
+				$molds = $this->classtypedata[$v['tid']]['molds'];
+				$vdata = M($molds)->find(['id'=>$v['aid']]);
+				$data[$k]['url'] = gourl($vdata['id'],$vdata['htmlurl']);
+				$data[$k]['details'] = $vdata;
 			}else{
 				$data[$k]['classname'] = '[ 已被删除 ]';
+				$data[$k]['url'] = '';
+				$data[$k]['details'] = [];
 			}
+			
+			
 			
 			$data[$k]['del'] = U('user/likesdel',['id'=>$v['id'],'tid'=>$v['tid']]);
 		}
-		$this->lists = $data;
-		$this->pages = $arraypage->pageList();
-		$this->listpage = $arraypage->listpage;//分页数组-自定义分页可用
-		$this->prevpage = $arraypage->prevpage;//上一页
-		$this->nextpage = $arraypage->nextpage;//下一页
-		$this->allpage = $arraypage->allpage;//总页数
+		$this->lists = $data;//列表数据
+		$this->sum = $model->sum;//总数据
+		$this->listpage = $model->listpage;//分页数组-自定义分页可用
+		$this->prevpage = $model->prevpage;//上一页
+		$this->nextpage = $model->nextpage;//下一页
+		$this->allpage = $model->allpage;//总页数
 		if($this->frparam('ajax')){
 			JsonReturn(['code'=>0,'data'=>$data]);
 		}
@@ -686,9 +661,7 @@ class UserController extends CommonController
 		$id = $this->frparam('id');
 		$tid = $this->frparam('tid');
 		if($id && $tid){
-			$ids = str_replace('||'.$tid.'-'.$id.'||','',$this->member['likes']);
-			M('member')->update(['id'=>$this->member['id']],['likes'=>$ids]);
-			$_SESSION['member']['likes'] = $ids;
+			M('likes')->delete(['aid'=>$id,'tid'=>$tid,'userid'=>$this->member['id']]);
 			
 			Success('删除成功！',U('user/likes'));
 		}else{
@@ -711,117 +684,111 @@ class UserController extends CommonController
 			}
 			Error('参数错误！');
 		}
-		$collection = explode('||',$this->member['collection']);
-		$new = [];
-		$add = $tid.'-'.$id;
-		$isadd = true;
-		if($collection && $this->member['collection']!=''){
-			foreach($collection as $k=>$v){
-				if($v!=''){
-					
-					if($v==$add){
-						$isadd = false;
-					}else{
-						$new[]=$v;
-					}
-					
-				}
-				
+		if(!$this->classtypedata[$tid]['molds']){
+			if($this->frparam('ajax')){
+				JsonReturn(['code'=>0,'msg'=>'栏目未绑定模型，无法收藏！','url'=>$_SESSION['return_url']]);
 			}
-			if($isadd){
-				$new[]=$add;
-				$msg = '收藏成功！';
-			}else{
-				$msg = '已移出我的收藏！';
-			}
-			$xnew = '||'.implode('||',$new).'||';
-		}else{
-			$xnew = '||'.$add.'||';
-			$msg = '收藏成功！';
+			Error('栏目未绑定模型，无法收藏！');
 		}
-		M('member')->update(['id'=>$this->member['id']],['collection'=>$xnew]);
-		//检查是否收藏的站内用户发布的信息
-		$molds = $this->classtypedata[$tid]['molds'];
-		$data = M($molds)->find(['id'=>$id]);
-		if(isset($data['member_id']) && $data['member_id']!=0 && $data['member_id']!=$this->member['id']){
-			if($isadd){
-				$task['aid'] = $id;
-				$task['tid'] = $tid;
-				$task['userid'] = $data['member_id'];
-				$task['puserid'] = $this->member['id'];
-				$task['molds'] = $molds;
-				$task['type'] = 'collect';
-				$task['addtime'] = time();
-				$task['body'] = $data['title'];
-				$task['url'] = gourl($data['id'],$data['htmlurl']);
-				M('task')->add($task);
-			}else{
-				$task['aid'] = $id;
-				$task['tid'] = $tid;
-				$task['userid'] = $data['member_id'];
-				$task['puserid'] = $this->member['id'];
-				$task['molds'] = $molds;
-				$task['type'] = 'collect';
-				M('task')->delete($task);
-			}
-			
-		}
-		if($this->webconf['collect_award_open']==1 && $tid!=0){
+		
+		$r = M('shouchang')->find(['userid'=>$this->member['id'],'tid'=>$tid,'aid'=>$id]);
+		$w['tid'] = $tid;
+		$w['aid'] = $id;
+		$w['userid'] = $this->member['id'];
+		$isaward = 0;
+		if($this->webconf['collect_award_open']==1 && $this->webconf['collect_award']>0){
 			$award = round($this->webconf['collect_award'],2);
 			$max_award = round($this->webconf['collect_max_award'],2);
-			$molds = $this->classtypedata[$tid]['molds'];
-			$member_id = M($molds)->getField(['id'=>$id],'member_id');
-			
-			if($member_id!=0 && $award>0){
-				$rr = M('buylog')->find(['userid'=>$member_id,'type'=>3,'molds'=>$molds,'aid'=>$id,'msg'=>'收藏奖励']);
-				if(!$rr){
-					$start = mktime(0, 0, 0, date('m'), date('d'), date('Y'));
-					$end = mktime(23, 59, 59, date('m'), date('d'), date('Y'));
-
-					$sql = " addtime>=".$start." and addtime<".$end." and userid=".$member_id." and type=3 and msg='收藏奖励' ";
-					$all = M('buylog')->findAll($sql,null,'amount');
-					$all_jifen = 0;
-					if($all){
-						foreach($all as $v){
-							$all_jifen+=$v['amount'];
-						}
-					}
-					if($isadd){
-						if($max_award==0 || ($all_jifen<$max_award && $max_award!=0)){
-							$w['userid'] = $member_id;
-							$w['buytype'] = 'jifen';
-							$w['type'] = 3;
-							$w['molds'] = $molds;
-							$w['aid'] = $id;
-							$w['msg'] = '收藏奖励';
-							$w['addtime'] = time();
-							$w['orderno'] = 'No'.date('YmdHis');
-							$w['amount'] = $award;
-							$w['money'] = $w['amount']/($this->webconf['money_exchange']);
-							$r = M('buylog')->add($w);
-							M('member')->goInc(['id'=>$member_id],'jifen',$award);
-						}
-					}else{
-						$w['userid'] = $member_id;
-						$w['buytype'] = 'jifen';
-						$w['type'] = 3;
-						$w['molds'] = $molds;
-						$w['aid'] = $id;
-						$w['msg'] = '取消收藏';
-						$w['addtime'] = time();
-						$w['orderno'] = 'No'.date('YmdHis');
-						$w['amount'] = -$award;
-						$w['money'] = $w['amount']/($this->webconf['money_exchange']);
-						$r = M('buylog')->add($w);
-						M('member')->goDec(['id'=>$member_id],'jifen',$award);
-					}
-					
-				}
-				
-			}
+			$isaward = 1;
 		}
+		$molds = $this->classtypedata[$tid]['molds'];
+		$data = M($molds)->find(['tid'=>$tid,'id'=>$id]);
+		$member_id = $data['member_id'];
+		if($r){
+			//已存在
+			M('shouchang')->delete($w);
+			$task['aid'] = $id;
+			$task['tid'] = $tid;
+			$task['userid'] = $member_id;
+			$task['puserid'] = $this->member['id'];
+			$task['molds'] = $molds;
+			$task['type'] = 'collect';
+			M('task')->delete($task);
+			$w['userid'] = $member_id;
+			$w['buytype'] = 'jifen';
+			$w['type'] = 3;
+			$w['molds'] = $molds;
+			$w['aid'] = $id;
+			$w['msg'] = '取消收藏';
+			$w['addtime'] = time();
+			$w['orderno'] = 'No'.date('YmdHis');
+			$w['amount'] = -$award;
+			$w['money'] = $w['amount']/($this->webconf['money_exchange']);
+			$r = M('buylog')->add($w);
+			
+			if($isaward){
+				//扣除
+				$w['userid'] = $member_id;
+				$w['buytype'] = 'jifen';
+				$w['type'] = 3;
+				$w['molds'] = $molds;
+				$w['aid'] = $id;
+				$w['msg'] = '取消收藏';
+				$w['addtime'] = time();
+				$w['orderno'] = 'No'.date('YmdHis');
+				$w['amount'] = -$award;
+				$w['money'] = $w['amount']/($this->webconf['money_exchange']);
+				$r = M('buylog')->add($w);
+				M('member')->goDec(['id'=>$member_id],'jifen',$award);
+			}
+			$msg = $w['msg'];
+		}else{
+			//新增
+			$w['addtime'] = time();
+			M('shouchang')->add($w);
+			$task['aid'] = $id;
+			$task['tid'] = $tid;
+			$task['userid'] = $member_id;
+			$task['puserid'] = $this->member['id'];
+			$task['molds'] = $molds;
+			$task['type'] = 'collect';
+			$task['addtime'] = time();
+			$task['body'] = $data['title'];
+			$task['url'] = gourl($data['id'],$data['htmlurl']);
+			M('task')->add($task);
+			if($isaward){
+				$start = mktime(0, 0, 0, date('m'), date('d'), date('Y'));
+				$end = mktime(23, 59, 59, date('m'), date('d'), date('Y'));
 
-		$_SESSION['member']['collection'] = $xnew;
+				$sql = " addtime>=".$start." and addtime<".$end." and userid=".$member_id." and type=3 and msg='收藏奖励' ";
+				$all = M('buylog')->findAll($sql,null,'amount');
+				$all_jifen = 0;
+				if($all){
+					foreach($all as $v){
+						$all_jifen+=$v['amount'];
+					}
+				}
+				if($max_award==0 || ($all_jifen<$max_award && $max_award>0)){
+					$w['userid'] = $member_id;
+					$w['buytype'] = 'jifen';
+					$w['type'] = 3;
+					$w['molds'] = $molds;
+					$w['aid'] = $id;
+					$w['msg'] = '收藏奖励';
+					$w['addtime'] = time();
+					$w['orderno'] = 'No'.date('YmdHis');
+					$w['amount'] = $award;
+					$w['money'] = $w['amount']/($this->webconf['money_exchange']);
+					$r = M('buylog')->add($w);
+					M('member')->goInc(['id'=>$member_id],'jifen',$award);
+				}
+			
+			}
+			
+			$msg = '收藏成功！';
+			
+		}
+		
 		if($this->frparam('ajax')){
 			JsonReturn(['code'=>0,'msg'=>$msg,'url'=>$_SESSION['return_url']]);
 		}
@@ -832,41 +799,36 @@ class UserController extends CommonController
 	function collect(){
 		$this->checklogin();
 		$lists = [];
-		if($this->member['collection']!=''){
-			$collection = explode('||',$this->member['collection']);
-
-			foreach($collection as $v){
-				if($v!=''){
-					$d = explode('-',$v);
-					//tid-id
-					if(is_array($d) && isset($this->classtypedata[$d[0]])){
-						$xdata=M($this->classtypedata[$d[0]]['molds'])->find(['id'=>$d[1]]);
-						if($xdata){
-							$lists[] = $xdata;
-						}
-					}
-				}
-			}
-		}
+		$model = new Page('shouchang');
+		$data = $model->where(['userid'=>$this->member['id']])->orderby('addtime desc')->limit($this->frparam('limit',0,15))->page($this->frparam('page',0,1))->go();
+		$model->file_ext = '';
+		$pages = $model->pageList(5,'?page=');
+		$this->pages = $pages;
 		
-		$arraypage = new \ArrayPage($lists);
-		$data = $arraypage->query(['page'=>$this->frparam('page',0,1)])->setPage(['limit'=>$this->frparam('limit',0,10)])->go();
+		
 		foreach($data as $k=>$v){
-			$data[$k]['url'] = gourl($v['id'],$v['htmlurl']);
 			if(isset($this->classtypedata[$v['tid']])){
 				$data[$k]['classname'] = $this->classtypedata[$v['tid']]['classname'];
+				$molds = $this->classtypedata[$v['tid']]['molds'];
+				$vdata = M($molds)->find(['id'=>$v['aid']]);
+				$data[$k]['url'] = gourl($vdata['id'],$vdata['htmlurl']);
+				$data[$k]['details'] = $vdata;
 			}else{
 				$data[$k]['classname'] = '[ 已被删除 ]';
+				$data[$k]['url'] = '';
+				$data[$k]['details'] = [];
 			}
 			
-			$data[$k]['del'] = U('user/collectdel',['id'=>$v['id'],'tid'=>$v['tid']]);
+			
+			
+			$data[$k]['del'] = U('user/likesdel',['id'=>$v['id'],'tid'=>$v['tid']]);
 		}
-		$this->lists = $data;
-		$this->pages = $arraypage->pageList();
-		$this->listpage = $arraypage->listpage;//分页数组-自定义分页可用
-		$this->prevpage = $arraypage->prevpage;//上一页
-		$this->nextpage = $arraypage->nextpage;//下一页
-		$this->allpage = $arraypage->allpage;//总页数
+		$this->lists = $data;//列表数据
+		$this->sum = $model->sum;//总数据
+		$this->listpage = $model->listpage;//分页数组-自定义分页可用
+		$this->prevpage = $model->prevpage;//上一页
+		$this->nextpage = $model->nextpage;//下一页
+		$this->allpage = $model->allpage;//总页数
 		if($this->frparam('ajax')){
 			
 			JsonReturn(['code'=>0,'data'=>$data]);
@@ -1031,6 +993,7 @@ class UserController extends CommonController
 			$data[$k]['date'] = date('Y-m-d H:i:s',$v['addtime']);
 			$data[$k]['edit'] =  U('user/release',['id'=>$v['id'],'molds'=>$molds]);
 			$data[$k]['del'] =  U('user/del',['id'=>$v['id'],'molds'=>$molds]);
+			$data[$k]['view'] =  U('user/preview',['id'=>$v['id'],'tid'=>$v['tid']]);
 			$data[$k]['url'] = gourl($v['id'],$v['htmlurl']);
 			
 		}
@@ -1062,25 +1025,11 @@ class UserController extends CommonController
 			}
 			
 			$w = get_fields_data($data,$w['molds']);
-			unset($w['userid']);
-			unset($w['ishot']);
-			unset($w['istuijian']);
-			unset($w['istop']);
-			unset($w['hits']);
-			unset($w['htmlurl']);
-			unset($w['orders']);
-			unset($w['comment_num']);
-			unset($w['tags']);
-			unset($w['target']);
-			unset($w['ownurl']);
-			foreach($w as $k=>$v){
-				$w[$k] = format_param($v,4);
-			}
 			$w['molds'] = $this->frparam('molds',1);
 			//违禁词检测
 			if(isset($this->webconf['mingan']) && $this->webconf['mingan']!=''){
 				$mingan = explode(',',$this->webconf['mingan']);
-				foreach($data as $v){
+				foreach($w as $v){
 					if($v){
 						if(is_array($v)){
 							foreach($v as $vv){
@@ -1168,7 +1117,7 @@ class UserController extends CommonController
 			if($w['tid']!=0){
 				$sql[] = " tids like '%,".$w['tid'].",%' "; 
 			}
-			$sql[] = " molds = '".$w['molds']."' and isshow=1 ";
+			$sql[] = " molds = '".$w['molds']."' and isshow=1 and ishome=1 ";
 			$sql = implode(' and ',$sql);
 			$fields_list = M('Fields')->findAll($sql,'orders desc,id asc');
 			if($fields_list){
@@ -1200,7 +1149,7 @@ class UserController extends CommonController
 
 			switch($w['molds']){
 				case 'article':
-					if(!$data['body']){
+					if(!$w['body']){
 						
 						if($this->frparam('ajax')){
 							JsonReturn(['code'=>1,'msg'=>'内容不能为空！']);
@@ -1208,36 +1157,25 @@ class UserController extends CommonController
 							Error('内容不能为空！');
 						}
 					}
-					if(!$data['title']){
+					if(!$w['title']){
 						if($this->frparam('ajax')){
 							JsonReturn(['code'=>1,'msg'=>'标题不能为空！']);
 						}else{
 							Error('标题不能为空！');
 						}
 					}
-					$data['body'] = $this->frparam('body',4);
-					$w['title'] = $this->frparam('title',1);
 					$w['seo_title'] = $w['title'];
-					$w['keywords'] = $this->frparam('keywords',1);
-					$w['litpic'] = $this->frparam('litpic',1);
-					$w['body'] = $data['body'];
-					if($this->frparam('description',1)){
-						$w['description'] = $this->frparam('description',1);
-					}else{
-						$w['description'] = newstr(strip_tags($data['body']),200);
-					}
-					
 
 				break;
 				case 'product':
-					if(!$data['body']){
+					if(!$w['body']){
 						if($this->frparam('ajax')){
 							JsonReturn(['code'=>1,'msg'=>'内容不能为空！']);
 						}else{
 							Error('内容不能为空！');
 						}
 					}
-					if(!$data['title']){
+					if(!$w['title']){
 						if($this->frparam('ajax')){
 							JsonReturn(['code'=>1,'msg'=>'标题不能为空！']);
 						}else{
@@ -1245,51 +1183,26 @@ class UserController extends CommonController
 						}
 					}
 					
-					if(!$data['stock_num']){
+					if(!$w['stock_num']){
 						if($this->frparam('ajax')){
 							JsonReturn(['code'=>1,'msg'=>'库存不能为0！']);
 						}else{
 							Error('库存不能为0！');
 						}
 					}
-					$w['title'] = $this->frparam('title',1);
-					$w['stock_num'] = $this->frparam('stock_num',0,0);
-					$w['price'] = $this->frparam('price',3,0);
 					$w['seo_title'] = $w['title'];
-					$w['litpic'] = $this->frparam('litpic',1);
-					$w['keywords'] = $this->frparam('keywords',1);
-					$w['pictures'] = $this->frparam('pictures',1);
-					if($this->frparam('pictures_urls',2)){
-						if($this->webconf['ispicsdes']==1){
-							 $pic_des = $this->frparam('pictures_des',2);
-							 $pics = $this->frparam('pictures_urls',2);
-							 foreach($pics as $k=>$v){
-								 if($pic_des[$k]){
-									 $pics[$k] = $v.'|'.$pic_des[$k];
-								 }
-							 }
-							 $w['pictures'] = implode('||',$pics);
-						}else{
-							$w['pictures'] = implode('||',$this->frparam('pictures_urls',2));
-						}
-						
-					}
-					$data['body'] = $this->frparam('body',4);
-					$w['body'] = $data['body'];
-					if($this->frparam('description',1)){
-						$w['description'] = $this->frparam('description',1);
-					}else{
-						$w['description'] = newstr(strip_tags($data['body']),200);
-					}
-					
 				break;
 				default:
 
 				break;
 			}
-			$w['isshow'] = 0;//修改后的文章一律为未审核
-			$w['member_id'] = $this->member['id'];
+			if(!isset($this->webconf['homerelease']) || $this->webconf['homerelease']==1){
+				$w['isshow'] = 0;
+			}else{
+				$w['isshow'] = 1;
+			}
 			
+			$w['member_id'] = $this->member['id'];
 			$w['addtime'] = time();
 			
 			if($this->frparam('id')){
@@ -1389,56 +1302,17 @@ class UserController extends CommonController
 				$data['code'] = 1003;
 				JsonReturn($data);
 			}
-		  if(isset($this->webconf['home_save_path'])){
-			  //替换日期事件
-				$t = time();
-				$d = explode('-', date("Y-y-m-d-H-i-s"));
-				$format = $this->webconf['home_save_path'];
-				$format = str_replace("{yyyy}", $d[0], $format);
-				$format = str_replace("{yy}", $d[1], $format);
-				$format = str_replace("{mm}", $d[2], $format);
-				$format = str_replace("{dd}", $d[3], $format);
-				$format = str_replace("{hh}", $d[4], $format);
-				$format = str_replace("{ii}", $d[5], $format);
-				$format = str_replace("{ss}", $d[6], $format);
-				$format = str_replace("{time}", $t, $format);
-				if($format!=''){
-					//检查文件是否存在
-					if(strpos($format,'/')!==false && !file_exists(APP_PATH.$format)){
-						$path = explode('/',$format);
-						$path1 = APP_PATH;
-						foreach($path as $v){
-							if($path1==APP_PATH){
-								if(!file_exists($path1.$v)){
-									mkdir($path1.$v,0777);
-								}
-								$path1.=$v;
-							}else{
-								if(!file_exists($path1.'/'.$v)){
-									mkdir($path1.'/'.$v,0777);
-								}
-								$path1.='/'.$v;
-							}
-						}
-					}else if(!file_exists(APP_PATH.$format)){
-						mkdir(APP_PATH.$format,0777);
-					}
-					$home_save_path = $format;
-					
-				}else{
-					$home_save_path = 'Public/Home';
-				}
-				
-				
-			  }else{
-				 $home_save_path = 'Public/Home';
-			  }
+		 
+			$home_save_path = 'static/upload/user';  
+			if(!file_exists(APP_PATH.$home_save_path)){
+				mkdir(APP_PATH.$home_save_path,0777);
+			}  
 			 
 		  
-		    $filename =  $home_save_path.'/'.date('Ymd').rand(1000,9999).'.'.$pix;
+		    $filename =  $home_save_path.'/head_'.$this->member['id'].'.'.$pix;
 		  
 			if(move_uploaded_file($_FILES[$file]['tmp_name'],$filename)){
-				$data['url'] = $filename;
+				$data['url'] = '/'.$filename;
 				$data['code'] = 0;
 				if(isset($_SESSION['member'])){
 					$userid = $_SESSION['member']['id'];
@@ -1680,6 +1554,13 @@ class UserController extends CommonController
        
     }
 
+	function allread(){
+		$this->checklogin();
+		M('task')->update(['userid'=>$this->member['id']],['isread'=>1]);
+		JsonReturn(['code'=>0,'msg'=>'操作成功！']);
+		
+	}
+	
     function notifyto(){
     	$this->checklogin();
     	$id = $this->frparam('id');
@@ -2162,6 +2043,165 @@ class UserController extends CommonController
     	}
     	
     }
+	
+	//动态获取消息
+	function getmsg(){
+		echo has_no_read_msg();
+	}
+	
+	//预览信息
+	function preview(){
+    	
+    	$this->checklogin();
+    	$tid = $this->frparam('tid');
+    	$id = $this->frparam('id');
+    	
+    	if(!$id){
+			$this->error('缺少ID！');
+		}
+		if(!$tid){
+			$this->error('缺少栏目ID！');
+		}
+		$this->type = $this->classtypedata[$tid];
+		
+		
+		$details = M($this->type['molds'])->find(array('id'=>$id,'member_id'=>$this->member['id']));
+		if(!$details){
+			$this->error('未找到相应内容！');
+			exit;
+		}
+		if(!isset($details['url'])){
+			$details['url'] = gourl($details,$details['htmlurl']);
+		}
+		
+		
+		//body
+		if(array_key_exists('body',$details)){
+			$con = $details['body'];
+			$chains = M('chain')->findAll(['isshow'=>1]);
+			if($chains){
+				foreach($chains as $v){
+					$url = $v['url'];
+					$num = $v['num'];
+					$name = $v['title'];
+					$newname = $v['newtitle']!='' ? $v['newtitle'] : $name;
+					if($url!=''){
+						$astr = "<a href='".$url."' target='_blank' title='".$newname."'><strong>".$newname."</strong></a>";
+					}else{
+						$astr = $newname;
+					}
+					
+					$con = preg_replace( '|(<img\b[^>]*?)('.$name.')([^>]*?\=)([^>]*?)('.$name.')([^>]*?>)|U', '$1%&&&&&%$3$4%&&&&&%$6', $con);
+					$con = preg_replace( '|(<img\b[^>]*?)('.$name.')([^>]*?>)|U', '$1%&&&&&%$3', $con);
+					$con = preg_replace( '|(<a\b[^>]*?)('.$name.')([^>]*?>)(<[^<]*?)('.$name.')([^>]*?>)|U', '$1%&&&&&%$3$4%&&&&&%$6', $con);
 
+					$con = str_replace_limit($name, $astr, $con, $num);
+					$con = str_replace('%&&&&&%', $newname, $con);
+					
+					
+				}
+				
+			}
+			
+			$details['body'] = $con;
+			
+		}
+		
+		
+		$this->jz = $details;
+		
+		$aprev_sql = ' id<'.$id.' and tid in ('.implode(',',$this->classtypedata[$this->type['id']]['children']['ids']).') ';
+		$anext_sql = ' id>'.$id.' and tid in ('.implode(',',$this->classtypedata[$this->type['id']]['children']['ids']).') ';
+		$aprev = M($this->type['molds'])->find($aprev_sql,'id desc');
+		$anext = M($this->type['molds'])->find($anext_sql,'id asc');
+		if($aprev){
+			$aprev['url'] = gourl($aprev,$aprev['htmlurl']);
+		}
+		if($anext){
+			$anext['url'] = gourl($anext,$anext['htmlurl']);
+		}
+		$this->aprev = $aprev;
+		$this->anext = $anext;
+		
+		//面包屑导航
+		$classtypetree = array_reverse($this->classtypetree);
+		$isgo = false;
+		$newarray = [];
+		$parent = [];//标记父类
+		$istop = false;
+		foreach($classtypetree as $k=>$v){
+			if($v['id']==$this->type['id'] && !$isgo){
+				$isgo = true;
+				$this->type['level'] = $v['level'];
+				$newarray[]=$v;
+			}
+			if($v['id']==$this->type['id'] && $v['level']==0){
+				break;
+			}
+			if($v['level']==0 && $v['id']!=$this->type['id'] && $v['id']!=$this->type['pid']){
+				if(!$istop && $isgo && $parent['level']!=0){
+					$newarray[]=$v;
+					$istop = true;
+				}
+				$isgo = false;
+			}
+			if($isgo &&  $v['id']!=$this->type['id'] && $this->type['level']>$v['level']){
+				
+				if(isset($parent['pid'])){
+					if($parent['level']!=$v['level']){
+						$newarray[]=$v;
+					}
+					
+				}else{
+					$newarray[]=$v;
+				}
+				$parent = $v;
+				
+			}
+		}
+		$newarray2 = array_reverse($newarray);
+		$positions='<a href="'.get_domain().'">首页</a>';
+		foreach($newarray2 as $v){
+			$positions.='  &gt;  <a href="'.$v['url'].'">'.$v['classname'].'</a>';
+		}
+		
+		$this->positions_data = $newarray2;
+		$this->positions = $positions;
+		
+		if($this->frparam('ajax') && $this->webconf['isajax'] ){
+			
+			$sql = [];
+			$sql[] = " tids like '%,".$details['tid'].",%' "; 
+			$sql[] = " molds = '".$this->type['molds']."' and isshow=1 ";
+			$sql[] = " isajax=0 ";//查询出不允许访问的字段，进行限制
+			$sql = implode(' and ',$sql);
+			
+			$fields_list = M('Fields')->findAll($sql,'orders desc,id asc');
+			if($fields_list){
+				$noallow = [];
+				foreach($fields_list as $v){
+					$noallow[]=$v['field'];
+				}
+
+				foreach($details as $kk=>$vv){
+					if(in_array($kk,$noallow)){
+						unset($details[$kk]);
+						unset($aprev[$kk]);
+						unset($anext[$kk]);
+					}
+				}
+				
+
+			}
+			
+			JsonReturn(['code'=>0,'jz'=>$details,'prev'=>$aprev,'next'=>$anext]);
+		}
+		if(!$this->type['details_html']){
+			$details_html = M('molds')->getField(['biaoshi'=>$this->type['molds']],'details_html');
+			$this->type['details_html'] = str_replace('.html','',$details_html);
+		}
+		$this->display($this->template.'/'.$this->type['molds'].'/'.$this->type['details_html']);
+    	
+    }
 
 }

@@ -15,7 +15,7 @@ if(isset($model)){
         <script type="text/javascript">
 			$(document).ready(function(){
 			var ue_body'.$rd.' = UE.getEditor("body'.$rd.'",{
-				toolbars:[["undo", "redo", "|","paragraph","bold","forecolor","fontfamily","fontsize", "italic", "blockquote", "insertparagraph", "justifyleft", "justifycenter", "justifyright","justifyjustify","|","indent", "insertorderedlist", "insertunorderedlist","|", "insertimage", "inserttable", "deletetable", "insertparagraphbeforetable", "insertrow", "deleterow", "insertcol", "deletecol","mergecells", "mergeright", "mergedown", "splittocells", "splittorows", "splittocols", "|","drafts", "|","fullscreen"]]
+				toolbars : [['.$this->webconf['ueditor_user_config'].']]
 				});
 			});
 		</script>';
@@ -32,7 +32,7 @@ if(isset($model)){
         <script type="text/javascript">
 			$(document).ready(function(){
 			var ue_body'.$rd.' = UE.getEditor("body'.$rd.'",{
-				toolbars:[["undo", "redo", "|","paragraph","bold","forecolor","fontfamily","fontsize", "italic", "blockquote", "insertparagraph", "justifyleft", "justifycenter", "justifyright","justifyjustify","|","indent", "insertorderedlist", "insertunorderedlist","|", "insertimage", "inserttable", "deletetable", "insertparagraphbeforetable", "insertrow", "deleterow", "insertcol", "deletecol","mergecells", "mergeright", "mergedown", "splittocells", "splittorows", "splittocols", "|","drafts", "|","fullscreen"]]
+				toolbars : [['.$this->webconf['ueditor_user_config'].']]
 				});
 			});
 		</script>';
@@ -47,7 +47,7 @@ if(isset($model)){
 		        </div><script>
 						$(document).ready(function(){
 						var ue_'.$v['field'].$rd.' = UE.getEditor("'.$v['field'].$rd.'",{
-							toolbars : [['.$this->webconf['ueditor_config'].']]
+							toolbars : [['.htmlspecialchars_decode($this->webconf['ueditor_user_config']).']]
 							}		
 						);	
 						});

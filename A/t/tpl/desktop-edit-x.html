@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html>
+    
+    <head>
+       <meta charset="UTF-8">
+        {include="style"}
+		
+    </head>
+    
+    <body>
+	 <div class="x-nav">
+            <span class="layui-breadcrumb">
+              <a><cite>首页</cite></a>
+              <a><cite>系统扩展</cite></a>
+              <a><cite>桌面管理</cite></a>
+              <a><cite>修改配置</cite></a>
+            </span>
+            <a class="layui-btn layui-btn-small" style="line-height:1.6em;margin-top:3px;float:right"  href="javascript:location.replace(location.href);" title="刷新"><i class="iconfont" style="line-height:30px">&#xe6aa;</i></a>
+        </div>
+        <div class="x-body">
+            <form  class="layui-form layui-form-pane" >
+			<input type="hidden" name="go" value="1" />
+			<input type="hidden" name="type" value="{$type}" />
+			<input type="hidden" name="id" value="{$data['id']}" />
+			<input type="hidden" name="left_num" id="left_num" value="{if($left_num==0)}1{else}{$left_num}{/if}" />
+			<input type="hidden" name="top_num" id="top_num" value="{if($top_num==0)}1{else}{$top_num}{/if}" />
+			
+			
+                 <div class="layui-form-item">
+                    <label for="name" class="layui-form-label">
+                        <span class="x-red">*</span>配置名称
+                    </label>
+                    <div class="layui-input-inline">
+                        <input type="text" id="name" value="{if($type=='edit')}{$data['name']}{/if}" required="" lay-verify="required"   name="name" 
+                        autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+				
+				 <div class="layui-form-item layui-form-text">
+                    <label class="layui-form-label">
+                        左侧菜单栏&nbsp;&nbsp;&nbsp;&nbsp;<button type="button" class="layui-btn layui-btn layui-btn-xs" onclick="x_all_show('查看图标库','{fun U('unicode')}')">查看图标库</button>
+                    </label>
+                    <table  class="layui-table layui-input-block">
+                        <tbody>
+						
+                            <tr>
+                                <td>
+                                    顶级菜单
+                                </td>
+								<td>
+                                    菜单图标
+                                </td>
+                                <td>
+                                    二级菜单
+                                </td>
+								<td>
+                                    操作
+                                </td>
+                            </tr>
+							{if(($left_num)>0)}
+						{foreach $left_layout as $k=>$v}
+							<tr data="{$k+1}">
+								<td>
+                                    <input type="text" name="left_nav[]" value="{$v['name']}" title="填写顶级菜单" required="" lay-verify="required" autocomplete="off" class="layui-input" >
+									
+                                </td>
+								<td>
+                                    <input type="text" name="left_nav_icon[]" value="{$v['icon']}" title="填写菜单图标" autocomplete="off" class="layui-input" >
+									
+									
+                                </td>
+                                <td>
+								{foreach $v['nav'] as $s}
+								{if($s)}
+                                    <div class="layui-input-inline">
+										<select name="left_nav_func_{$k+1}[]"   >
+										<option value="0">选择功能</option>
+									   {foreach $lists as $vv}
+									   {if($vv['isdesktop']==1 || $vv['pid']==0)}
+									   <option  value="{$vv['id']}" {if($vv['pid']==0)}disabled{/if} {if($s==$vv['id'])}selected{/if} >{fun str_repeat('--', $vv['level'])}{$vv['name']}</option>
+									   {/if}
+									   {/foreach}
+									   <option   disabled >栏目列表</option>
+									   {foreach $classtypetree as $vv}
+									   <option  value="class_{$vv['id']}"  {if($s=='class_'.$vv['id'])}selected{/if} >--{fun str_repeat('--', $vv['level'])}{$vv['classname']}</option>
+									   {/foreach}
+									   </select>
+									   
+									</div>
+								{/if}
+								{/foreach}	
+									<button  type="button" onClick="addfunc(this,1)" class="layui-btn" >新增+</button>
+									
+                                </td>
+								<td>
+									<button  class="layui-btn layui-btn layui-btn-xs" type="button"  onClick="addfunc(this,2)" ><i class="layui-icon">&#xe642;</i>新增+</button>
+									<button type="button" class="layui-btn-danger layui-btn layui-btn-xs" onClick="addfunc(this,3)"  href="javascript:;" ><i class="layui-icon">&#xe640;</i>删除</button>
+								</td>
+								<input name="left_num_count[]" type="hidden" id="tr_left_{$k+1}" value="{$k+1}">
+                            </tr>
+							
+						{/foreach}
+						{else}
+						
+                            <tr data="1">
+                                <td>
+                                    <input type="text" name="left_nav[]" value="" title="填写顶级菜单"  autocomplete="off" class="layui-input" >
+									
+                                </td>
+								<td>
+                                    <input type="text" name="left_nav_icon[]" value="" title="填写菜单图标" autocomplete="off" class="layui-input" >
+									
+									
+                                </td>
+                                <td>
+                                    <div class="layui-input-inline">
+										<select name="left_nav_func_1[]"   >
+										<option value="0">选择功能</option>
+									   {foreach $lists as $v}
+									   {if($v['isdesktop']==1 || $v['pid']==0)}
+									   <option {if($v['pid']==0)}disabled{/if}  value="{$v['id']}">{fun str_repeat('--', $v['level'])}{$v['name']}</option>
+									   {/if}
+									   {/foreach}
+									   <option   disabled >栏目列表</option>
+									   {foreach $classtypetree as $vv}
+									   <option  value="class_{$vv['id']}"  >--{fun str_repeat('--', $vv['level'])}{$vv['classname']}</option>
+									   {/foreach}
+									   </select>
+									   
+									</div>
+									
+									<button  type="button" onClick="addfunc(this,1)" class="layui-btn" >新增+</button>
+									
+                                </td>
+								<td>
+									<button  class="layui-btn layui-btn layui-btn-xs" type="button"  onClick="addfunc(this,2)" ><i class="layui-icon">&#xe642;</i>新增+</button>
+									
+								</td>
+								<input name="left_num_count[]" type="hidden" id="tr_left_1" value="1">
+                            </tr>
+							
+						{/if}
+                           
+                        </tbody>
+                    </table>
+                </div>
+				
+				 <div class="layui-form-item layui-form-text">
+                    <label class="layui-form-label">
+                        顶部菜单栏&nbsp;&nbsp;&nbsp;&nbsp;<button type="button" class="layui-btn layui-btn layui-btn-xs" onclick="x_all_show('查看图标库','{fun U('unicode')}')">查看图标库</button>
+                    </label>
+                    <table  class="layui-table layui-input-block">
+                        <tbody>
+						
+                            <tr>
+                                <td>
+                                    顶级菜单
+                                </td>
+								<td>
+                                    菜单图标
+                                </td>
+                                <td>
+                                    二级菜单
+                                </td>
+								<td>
+                                    操作
+                                </td>
+                            </tr>
+							{if($top_num)}
+							{foreach $top_layout as $k=>$v}
+							<tr data="{$k+1}">
+                                <td>
+                                    <input type="text" name="top_nav[]" value="{$v['name']}" title="填写顶级菜单" autocomplete="off" class="layui-input" >
+									
+                                </td>
+								<td>
+                                    <input type="text" name="top_nav_icon[]" value="{$v['icon']}" title="填写菜单图标" autocomplete="off" class="layui-input" >
+									
+									
+                                </td>
+                                <td>
+								{foreach $v['nav'] as $s}
+								{if($s)}
+                                    <div class="layui-input-inline">
+										<select name="top_nav_func_{$k+1}[]"   >
+										<option value="0">选择功能</option>
+									   {foreach $lists as $vv}
+									   {if($vv['isdesktop']==1 || $vv['pid']==0)}
+									   <option {if($vv['pid']==0)}disabled{/if}  value="{$vv['id']}" {if($s==$vv['id'])}selected{/if}>{fun str_repeat('--', $vv['level'])}{$vv['name']}</option>
+									   {/if}
+									   {/foreach}
+									   <option   disabled >栏目列表</option>
+									   {foreach $classtypetree as $vv}
+									   <option  value="class_{$vv['id']}" {if($s=='class_'.$vv['id'])}selected{/if}  >--{fun str_repeat('--', $vv['level'])}{$vv['classname']}</option>
+									   {/foreach}
+									   </select>
+									   
+									</div>
+								{/if}
+								{/foreach}
+									<button  type="button" onClick="addfunc(this,4)" class="layui-btn" >新增+</button>
+									
+                                </td>
+								<td>
+									<button  class="layui-btn layui-btn layui-btn-xs" type="button"  onClick="addfunc(this,5)" ><i class="layui-icon">&#xe642;</i>新增+</button>
+									<button type="button" class="layui-btn-danger layui-btn layui-btn-xs" onClick="addfunc(this,6)"  href="javascript:;" ><i class="layui-icon">&#xe640;</i>删除</button>
+								</td>
+								
+								<input name="top_num_count[]" type="hidden" id="tr_top_{$k+1}" value="{$k+1}">
+                            </tr>
+							
+							{/foreach}
+							{else}
+                            <tr data="1">
+                                <td>
+                                    <input type="text" name="top_nav[]" value="" title="填写顶级菜单"  autocomplete="off" class="layui-input" >
+									
+                                </td>
+								<td>
+                                    <input type="text" name="top_nav_icon[]" value="" title="填写菜单图标" autocomplete="off" class="layui-input" >
+									
+									
+                                </td>
+                                <td>
+                                    <div class="layui-input-inline">
+										<select name="top_nav_func_1[]"   >
+										<option value="0">选择功能</option>
+									   {foreach $lists as $v}
+									   {if($v['isdesktop']==1 || $v['pid']==0)}
+									   <option {if($v['pid']==0)}disabled{/if}  value="{$v['id']}">{fun str_repeat('--', $v['level'])}{$v['name']}</option>
+									   {/if}
+									   {/foreach}
+									   <option   disabled >栏目列表</option>
+									   {foreach $classtypetree as $vv}
+									   <option  value="class_{$vv['id']}"  >--{fun str_repeat('--', $vv['level'])}{$vv['classname']}</option>
+									   {/foreach}
+									   </select>
+									   
+									</div>
+									
+									<button  type="button" onClick="addfunc(this,4)" class="layui-btn" >新增+</button>
+									
+                                </td>
+								<td>
+									<button  class="layui-btn layui-btn layui-btn-xs" type="button"  onClick="addfunc(this,5)" ><i class="layui-icon">&#xe642;</i>新增+</button>
+									
+								</td>
+								<input name="top_num_count[]" type="hidden" id="tr_top_1" value="1">
+                            </tr>
+							
+							{/if}
+                           
+                        </tbody>
+                    </table>
+                </div>
+				
+				
+				
+				<div class="layui-form-item layui-form-text">
+					<label class="layui-form-label">
+						<span class='x-red'>*</span>备注
+					</label>
+					<div class="layui-input-block">
+						<textarea placeholder="备注"  name="ext" class="layui-textarea">{$data['ext']}</textarea>
+					</div>
+				</div>
+				
+				
+				<div class="layui-form-item">
+                    <label for="isopen" class="layui-form-label">
+                        <span class="x-red"></span>适用角色
+                    </label>
+                    <div class="layui-input-inline">
+						<select name="gid" lay-filter="gid" id="gid" >
+						<option value="0">默认所有</option>
+					   {foreach get_all_info_table('level_group') as $v}
+					   <option  value="{$v['id']}" {if($data['gid']==$v['id'])}selected{/if}>{$v['name']}</option>
+					   {/foreach}
+					   </select>
+					</div>
+					 
+					
+                </div>
+				<div class="layui-form-item" pane>
+                    <label for="isdefault" class="layui-form-label">
+                        <span class="x-red"></span>系统默认
+                    </label>
+                    <div class="layui-input-inline">
+                        <input type="radio" name="isdefault" value="0" title="否" {if($data['isdefault']==0)}checked{/if}>
+						<input type="radio" name="isdefault" value="1" title="是" {if($data['isdefault']==1)}checked{/if}>
+                    </div>
+					<div class="layui-form-mid layui-word-aux">
+					  系统默认指没有指定桌面配置的管理员，进入后台后默认的配置
+					</div>
+					
+                </div>
+                
+                <div class="layui-form-item" style="text-align:center;">
+                   
+                     <button  class="layui-btn" lay-filter="save" lay-submit="">
+                        保存
+                    </button>
+                </div>
+            </form>
+        </div>
+		<br/>
+		<br/>
+		<br/>
+		<br/>
+		<br/>
+		<br/>
+		<br/>
+		<br/>
+		<br/>
+      
+        <script>
+		
+		
+			   
+		
+            layui.use(['laydate','form','layer','upload'], function(){
+                $ = layui.jquery;
+              var form = layui.form
+              ,layer = layui.layer;
+			  laydate = layui.laydate;
+			
+			  
+			    //监听提交
+              form.on('submit(save)', function(data){
+                
+                //发异步，把数据提交给php
+				$.post("{fun U('desktop_edit')}",data.field,function(r){
+					//console.log(r);return false;
+					var r = JSON.parse(r);
+					if(r.code==0){
+						layer.msg(r.msg, {icon: 6,time: 2000},function () {
+							// 获得frame索引
+							{if($webconf['admintpl']=='tpl')}
+							window.location.href="{fun U('Index/desktop')}";
+							{else}
+							parent.location.reload();
+							{/if}
+							
+						});
+						// parent.layer.close(index);
+						 
+					}else{
+						layer.alert(r.msg, {icon: 5});
+					}
+				});
+				
+               
+                return false;
+              });
+            
+			
+              
+              
+            });
+			//重新渲染表单
+			function renderForm(){
+				layui.use('form', function(){
+				var form = layui.form; //只有执行了这一步，部分表单元素才会自动修饰成功
+				  form.render();
+				});
+			}
+		
+			function addfunc(n,m){
+				
+				if(m==1){
+					var nn = parseInt($(n).parent().parent().attr('data'));
+					var html='<div class="layui-input-inline"><select name="left_nav_func_'+nn+'[]"   ><option value="0">选择功能</option>'+
+					{foreach $lists as $v}
+				   {if($v['isdesktop']==1 || $v['pid']==0)}
+				   '<option {if($v['pid']==0)}disabled{/if}  value="{$v['id']}">{fun str_repeat('--', $v['level'])}{$v['name']}</option>'+
+				   {/if}
+				   {/foreach}
+				   '<option   disabled >栏目列表</option>'+
+				   {foreach $classtypetree as $vv}
+				   '<option  value="class_{$vv['id']}"  >--{fun str_repeat('--', $vv['level'])}{$vv['classname']}</option>'+
+				   {/foreach}
+										   '</select></div>';
+					$(n).before(html);
+					
+					renderForm();
+				}else if(m==2){
+					var nn = parseInt($("#left_num").val());
+					var html=' <tr data='+(nn+1)+'><td><input type="text" name="left_nav[]" value="" title="填写顶级菜单" required="" lay-verify="required" autocomplete="off" class="layui-input" ></td><td><input type="text" name="left_nav_icon[]" value="" title="填写菜单图标" autocomplete="off" class="layui-input" ></td><td><div class="layui-input-inline"><select name="left_nav_func_'+(nn+1)+'[]"   ><option value="0">选择功能</option>'+
+				   {foreach $lists as $v}
+				   {if($v['isdesktop']==1 || $v['pid']==0)}
+				   '<option {if($v['pid']==0)}disabled{/if}  value="{$v['id']}">{fun str_repeat('--', $v['level'])}{$v['name']}</option>'+
+				   {/if}
+				   {/foreach}
+				   '<option   disabled >栏目列表</option>'+
+				   {foreach $classtypetree as $vv}
+				   '<option  value="class_{$vv['id']}"  >--{fun str_repeat('--', $vv['level'])}{$vv['classname']}</option>'+
+				   {/foreach}
+				   '</select></div><button  type="button" onClick="addfunc(this,1)" class="layui-btn" >新增+</button></td><td><button  type="button" class="layui-btn layui-btn layui-btn-xs"  onClick="addfunc(this,2)" ><i class="layui-icon">&#xe642;</i>新增+</button><button type="button" class="layui-btn-danger layui-btn layui-btn-xs" onClick="addfunc(this,3)"  href="javascript:;" ><i class="layui-icon">&#xe640;</i>删除</button></td><input name="left_num_count[]" type="hidden" id="tr_left_'+(nn+1)+'" value="'+(nn+1)+'"></tr>';
+					$(n).parent().parent().after(html);
+					$("#left_num").val(nn+1);
+					renderForm();
+				}else if(m==3){
+					//var nn = parseInt($("#left_num").val());
+					//$("#left_num").val(nn-1);
+					$(n).parent().parent().remove();
+				}else if(m==4){
+					var nn = parseInt($(n).parent().parent().attr('data'));
+					var html='<div class="layui-input-inline"><select name="top_nav_func_'+nn+'[]"   ><option value="0">选择功能</option>'+
+					{foreach $lists as $v}
+				   {if($v['isdesktop']==1 || $v['pid']==0)}
+				   '<option {if($v['pid']==0)}disabled{/if}  value="{$v['id']}">{fun str_repeat('--', $v['level'])}{$v['name']}</option>'+
+				   {/if}
+				   {/foreach}
+				   '<option   disabled >栏目列表</option>'+
+				   {foreach $classtypetree as $vv}
+				   '<option  value="class_{$vv['id']}"  >--{fun str_repeat('--', $vv['level'])}{$vv['classname']}</option>'+
+				   {/foreach}
+				   '</select></div>';
+					$(n).before(html);
+					
+					renderForm();
+				}else if(m==5){
+					var nn = parseInt($("#top_num").val());
+					var html=' <tr data="'+(nn+1)+'"><td><input type="text" name="top_nav[]" value="" title="填写顶级菜单" required="" lay-verify="required" autocomplete="off" class="layui-input" ></td><td><input type="text" name="top_nav_icon[]" value="" title="填写菜单图标" autocomplete="off" class="layui-input" ></td><td><div class="layui-input-inline"><select name="top_nav_func_'+(nn+1)+'[]"   ><option value="0">选择功能</option>'+
+				   {foreach $lists as $v}
+				   {if($v['isdesktop']==1 || $v['pid']==0)}
+				   '<option {if($v['pid']==0)}disabled{/if}  value="{$v['id']}">{fun str_repeat('--', $v['level'])}{$v['name']}</option>'+
+				   {/if}
+				   {/foreach}
+				   '<option   disabled >栏目列表</option>'+
+				   {foreach $classtypetree as $vv}
+				   '<option  value="class_{$vv['id']}"  >--{fun str_repeat('--', $vv['level'])}{$vv['classname']}</option>'+
+				   {/foreach}
+				   '</select></div><button  type="button" onClick="addfunc(this,4)" class="layui-btn" >新增+</button></td><td><button  type="button" class="layui-btn layui-btn layui-btn-xs"  onClick="addfunc(this,5)" ><i class="layui-icon">&#xe642;</i>新增+</button><button type="button" class="layui-btn-danger layui-btn layui-btn-xs" onClick="addfunc(this,6)"  href="javascript:;" ><i class="layui-icon">&#xe640;</i>删除</button></td><input name="top_num_count[]" type="hidden" id="tr_top_'+(nn+1)+'" value="'+(nn+1)+'"></tr>';
+					$(n).parent().parent().parent().after(html);
+					$("#top_num").val(nn+1);
+					renderForm();
+				}else if(m==6){
+					//var nn = parseInt($("#top_num").val());
+					//$("#top_num").val(nn-1);
+					$(n).parent().parent().remove();
+				}
+			}
+		
+			
+			
+        </script>
+      
+    </body>
+
+</html>

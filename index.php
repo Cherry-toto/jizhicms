@@ -21,8 +21,11 @@ define('APP_PATH', __DIR__ . '/');
 //定义项目目录
 define('APP_HOME','Home');
 
+//定义模板文件夹
+define('TPL_PATH','static');
+
 //定义项目模板文件目录
-define('HOME_VIEW','template');
+define('HOME_VIEW','');
 
 //定义项目模板公共文件目录
 define('Tpl_common','');

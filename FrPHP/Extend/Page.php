@@ -50,7 +50,7 @@ namespace FrPHP\Extend;
 		//分页url设置
 		public $typeurl = '';
 		//是否需要后缀File_TXT
-		public $file_ext = File_TXT;
+		public $file_ext = '.html';
 		
 		
 		
@@ -156,7 +156,7 @@ namespace FrPHP\Extend;
 			$this->pv = $pv;
 			$this->sep = ($sep==false) ? ($this->sep) : $sep;
 			$url = $this->getUrl();
-			if(strpos($url,$this->sep)!==false){
+			if( strpos($url,$this->sep)!==false && $this->currentPage!=1){
 				$urls = explode($this->sep,$url);
 				$num = array_pop($urls);
 				if(is_numeric($num)){
@@ -211,19 +211,21 @@ namespace FrPHP\Extend;
 			$end = $this->currentPage+$this->pv;
 			$end = $end>$this->allpage ? $this->allpage : $end;
 			while($start<=$end){
+				$urlx = $start==1 ? $this->url.$file_ext : $this->url.$this->sep.$start.$file_ext;
 				if($start==$this->currentPage){
 					$list.='<li class="active" ><a >'.$this->currentPage.'</a></li>';
-					$listpage['current'] = $this->url.$this->sep.$start.$file_ext;
+					$listpage['current'] = $urlx;
 					$listpage['current_num'] = $this->currentPage;
 				}else{
-					$list .= '<li><a href="'.$this->url.$this->sep.$start.$file_ext.'" data-page="'.$start.'">'.$start.'</a></li>';
+					$list .= '<li><a href="'.$urlx.'" data-page="'.$start.'">'.$start.'</a></li>';
 				}
-				$listpage['list'][] = array('url'=>$this->url.$this->sep.$start.$file_ext,'num'=>$start);
+				
+				$listpage['list'][] = array('url'=>$urlx,'num'=>$start);
 				$start++;
 			}
 			$listpage['allpage'] = $this->allpage;
-			
-			$prev = '<li><a href="'.$this->url.$this->sep.($this->currentPage-1).$file_ext.'" class="layui-laypage-prev" data-page="'.($this->currentPage-1).'"><em>&lt;</em></a></li>';
+			$prev_url = $this->currentPage==1 ? '' : $this->url.$this->sep.($this->currentPage-1).$file_ext;
+			$prev = '<li><a href="'.$prev_url.'" class="layui-laypage-prev" data-page="'.($this->currentPage-1).'"><em>&lt;</em></a></li>';
 			
 			if($this->currentPage!=1){
 				$this->prevpage = $this->url.$this->sep.($this->currentPage-1).$file_ext;
@@ -235,8 +237,8 @@ namespace FrPHP\Extend;
 			}
 			
 			$all = '<li><a href="javascript:;" data-page="'.$this->currentPage.'">总共'.$this->currentPage.'/'.$this->allpage.'</a></li>';
-			
-			$last = '<li><a href="'.$this->url.$this->sep.$this->allpage.$file_ext.'" class="layui-laypage-prev" data-page="'.$this->allpage.'"><em>尾页</em></a></li>';
+			$last_url = $this->allpage==1 ? $this->url.$file_ext : $this->url.$this->sep.$this->allpage.$file_ext;
+			$last = '<li><a href="'.$last_url.'" class="layui-laypage-prev" data-page="'.$this->allpage.'"><em>尾页</em></a></li>';
 			
 			$ext = '<div class="pagination"><ul>';
 			$list = $all.$list;
@@ -252,7 +254,7 @@ namespace FrPHP\Extend;
 			if($this->allpage > $this->pv){
 				$list .= $last;
 			}
-			$listpage['last'] = $this->url.$this->sep.$this->allpage.$file_ext;
+			$listpage['last'] = $last_url;
 			$list = $ext.$list.'</ul></div>';
 			$this->listpage = $listpage;
 			return $list;
@@ -379,12 +381,14 @@ namespace FrPHP\Extend;
 				}
 				
 			}
+			$sum = M()->findSql($this->sql);
+			$this->sum = count($sum);
 			$orderby = $this->order ? ' order by '.$this->order : '';
 			$limit = ' limit '.$limitsql;
 			$sql = $this->sql.' '.$orderby.' '.$limit;
 			$this->datalist = M()->findSql($sql);
 			$this->limit = $this->limit;
-
+			
 			$allpage = ceil($this->sum/$this->limit);
 			if($allpage==0){$allpage=1;}
 			$this->allpage = $allpage;

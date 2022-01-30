@@ -49,13 +49,14 @@
 					
                 </div>
 				
+				<span id="content_fields"></span>
 				<span id="ext_fields"></span>
 				
 				
 				
 				<div class="layui-form-item" pane>
                     <label for="isshow" class="layui-form-label">
-                        <span class="x-red"></span>是否显示
+                        <span class="x-red">*</span>是否显示
                     </label>
                     <div class="layui-input-block">
                         <input type="radio" name="isshow" value="0" title="不显示" {if($data['isshow']==0)}checked{/if}>
@@ -133,6 +134,7 @@
                 return false;
               });
             get_fields(0,{$data['id']});
+            get_fields_ext(0,{$data['id']});
 			
 			  
 			

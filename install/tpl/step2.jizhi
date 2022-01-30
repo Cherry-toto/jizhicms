@@ -156,11 +156,12 @@
 										<td>备份数据库列表:</td>
 										<td>
 											<select name="backup_db" id="backup_db">
+											<option value="">选择备份数据库</option>
 											<?php foreach($dblists as $v){
 												echo "<option value='".$v."'>".$v."</option>";
 											}?>
 											</select>
-											<label class="normal passwordinfo"><input onclick="godbback()" value="点击安装备份" type="button" /></label>
+											
 										</td>
 									</tr>
 								</thead>
@@ -185,8 +186,9 @@
 	</div>
 
 <script type="text/javascript">
+		var install = 1;
 		function godbback(){
-		
+			console.log('安装备份数据库');
 			var host = $("#host").val();
 			var port = $("#port").val();
 			var name = $("#name").val();
@@ -244,7 +246,12 @@
 			
 		}
 		function formSubmit(){
-
+			if(install==2){
+				godbback();
+				return false;
+			}else{
+				console.log('下一步');
+			}
 			var check = true;
 
 			var host = $("#host").val();
@@ -301,6 +308,17 @@
 				
 			if(check){$("form[name='submitForm']").submit();}
 		}
+
+		$(function(){
+			$("#backup_db").change(function(){
+				if($(this).val()!=''){
+					install = 2;//安装备份数据库
+				}else{
+					install = 1;
+				}
+			})
+		
+		})
 </script>
 <?php include('footer.tpl');?>
 </body>

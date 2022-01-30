@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html class="no-js" lang="cn">
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <title>搜索 “{$word}” -{$webconf['web_name']}</title>
+	<meta name="keywords" content="搜索 “{$word}”" />
+	<meta name="description" content="搜索 “{$word}”" />
+
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    {include="style"}
+  </head>
+  <body>
+    {include="header"}
+    <div id="main-wrapper">
+      <div class="site-wrapper-reveal">
+        <!-- Blog Details Wrapper Start -->
+        <div class="blog-details-wrapper section-space--ptb_80">
+          <div class="container">
+			<div class="row" style="margin-bottom: 20px;">
+			<h3>搜索 “{$word}” 结果如下：</h3>
+			</div>
+            <div class="row row--17">
+			{if($lists)}
+			{foreach $lists as $v}
+              <div class="col-lg-4 col-md-6 col-sm-6">
+                <!-- Single Following Post Start -->
+                <div class="single-following-post wow fadeInUp" >
+                  <a href="{$v['url']}" class="following-post-thum">
+                    <img src="{$v['litpic']}" />
+                  </a>
+                  <div class="following-post-content">
+                    <div class="following-blog-post-top">
+                      <div class="trending-blog-post-category">
+                        <a href="{$classtypedata[$v['tid']]['url']}" class="business">{$classtypedata[$v['tid']]['classname']}</a>
+                      </div>
+                    </div>
+                    <h5 class="following-blog-post-title">
+                      <a href="{$v['url']}"
+                        >{$v['title']}
+                      </a>
+                    </h5>
+                    <div class="following-blog-post-meta">
+                      <div class="post-meta-left-side">
+                        <span class="post-date">
+                          <i class="icofont-ui-calendar"></i>
+                          <a href="{$v['url']}">{fun date('Y-m-d',$v['addtime'])}</a>
+                        </span>
+                        <span>热度 {$v['hits']}</span>
+                      </div>
+                      <div class="post-meta-right-side">
+                        {if(checkCollect($v['tid'],$v['id']))}
+						<a title="已收藏" onclick="collect({$v['tid']},{$v['id']})"
+                          ><img src="{$tpl}static/picture/collect.png" alt=""
+                        /></a>
+						{else}
+						<a title="点击收藏" onclick="collect({$v['tid']},{$v['id']})"
+                          ><img src="{$tpl}static/picture/small-bookmark.png" alt=""
+                        /></a>
+						{/if}
+                        
+						{if(checkLikes($v['tid'],$v['id']))}
+						<a title="已点赞" onclick="likes({$v['tid']},{$v['id']})"
+                          ><img src="{$tpl}static/picture/zan.png" alt=""
+                        /></a>
+						{else}
+						<a title="点赞" onclick="likes({$v['tid']},{$v['id']})"
+                          ><img src="{$tpl}static/picture/heart.png" alt=""
+                        /></a>
+						
+						{/if}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <!-- Single Following Post End -->
+              </div>
+			{/foreach}
+			{else}
+			<div class="row">
+              <div class="col-lg-12">
+                <div class="error-404-content text-center">
+                  <div class="banner wow fadeInUp animated" style="visibility: visible; animation-name: fadeInUp;">
+                    <img src="/static/cms/static/picture/error-404.png" alt="">
+                  </div>
+                  <div class="error-text wow fadeInUp animated" style="visibility: visible; animation-name: fadeInUp;">
+                    <h5>This Page is Not Found.</h5>
+                    <h2>很抱歉，可以找到你要的信息。</h2>
+
+                    
+                  </div>
+                </div>
+              </div>
+            </div>
+			{/if}
+			
+			</div>
+          </div>
+        </div>
+       
+      </div>
+    </div>
+   
+    {include="footer"}
+    {include="js"}
+  </body>
+</html>

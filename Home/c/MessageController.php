@@ -42,6 +42,19 @@ class MessageController extends CommonController
 				$w['isshow'] = 0;
 			}
 			
+			if(!isset($this->webconf['messagevercode']) || $this->webconf['messagevercode']){
+				$vercode = strtolower($this->frparam('vercode',1));
+				if(!$vercode || md5(md5($vercode))!=$_SESSION['message_vercode']){
+					$xdata = array('code'=>1,'msg'=>'验证码错误！');
+					if($this->frparam('ajax')){
+						JsonReturn($xdata);
+					}
+					Error('验证码错误！');
+				}
+				
+			}
+			
+			
 			$w['ip'] = GetIP();
 			$w['addtime'] = time();
 			if(isset($_SESSION['member'])){

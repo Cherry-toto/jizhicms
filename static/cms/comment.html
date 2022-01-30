@@ -1,0 +1,65 @@
+  <div class="comment-area section-space--pt_60 section-space--pb_100">
+					<div class="container">
+					<div class="row comment-area section-space--pt_60">
+					  <div class="m-auto">
+						<div class="comment-list-wrapper">
+						  <h3 class="widget-title mb-30">评论 (<span id="jz_comment_num">{$jz['comment_num']}</span>)</h3>
+						  <ol class="comment-list" id="jz_comment_list">
+							
+						  </ol>
+						  <div class="comment-page-bar">
+						  <span class="comment-page" onclick="prevmessagelist()" >上一页</span>
+						  <span class="comment-page" onclick="nextmessagelist()" >下一页</span>
+						  </div>
+						</div>
+					  </div>
+					</div>
+
+					<div class="row comment-area section-space--pt_60">
+                      <div class="section-title">
+                        <h3 class="title">我要点评</h3>
+                      </div>
+                      <form action="" class="comment-form-area">
+                        <div class="row">
+                        <input name="go" value="1" placeholder="表示" id="go" type="hidden" />
+						<input name="star" value="0" placeholder="评论星星数"  id="star" type="hidden" />
+						<input name="tid" id="tid" value="{$type['id']}"  type="hidden" />
+						<input name="aid" id="aid" value="{$jz['id']}" placeholder="文章ID"   type="hidden" />
+						<input name="zid" value="0" id="zid" placeholder="评论层ID"  type="hidden" />
+						<input name="pid" value="0" id="pid" placeholder="回复层ID"  type="hidden" />
+                          <div class="col-lg-12">
+                            <div class="single-input">
+                              <textarea
+								id="content"
+                                name="textarea"
+								{if(!$islogin)}disabled{/if}
+                                placeholder="输入评论内容"
+                              ></textarea>
+                            </div>
+                          </div>
+                          <div class="col-lg-12">
+						  {if($islogin)}
+                            <div class="submit-button text-center">
+                              <button
+                                class="btn-large btn-primary"
+                                type="button"
+								onclick="sendmsg()"
+                              >
+                                提 交
+                              </button>
+                            </div>
+						   {else}
+						   您还未登录，无法发表评论！<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#loginModel">立即登录</button>
+						   {/if}
+                          </div>
+                        </div>
+                      </form>
+                    </div>
+                  
+					
+					
+					
+					</div>
+					</div>
+					
+                    

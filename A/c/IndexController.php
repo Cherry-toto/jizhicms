@@ -263,10 +263,57 @@ class IndexController extends CommonController
 		$this->display('desktop');
 	}
 	
+	function viewPower(){
+		$rulers = M('ruler')->findAll(null,'id ASC');
+		$ruler_top = array();
+		$ruler_children = array();
+		foreach($rulers as $v){
+			if($v['pid']==0){
+				$ruler_top[]=$v;
+			}else{
+				$ruler_children[$v['pid']][]=$v;
+			}
+		}
+		$this->ruler_top = $ruler_top;
+		$this->ruler_children = $ruler_children;
+		$this->display('power-tree');
+	}
+	
+	function getNav(){
+		$ids = $this->frparam('ids',1);
+		$idsArr = explode(',',$ids);
+		if(!$ids || !count($idsArr)){
+			JsonReturn(['code'=>1,'msg'=>'参数有误！']);
+		}
+		
+		foreach($this->classtypetree as $v){
+			$k = 'class_'.$v['id'];
+			$classnav[$k] = $v;
+		}
+		$rulers = M('ruler')->findAll(null,'id ASC');
+		$rulerArr = [];
+		foreach($rulers as $v){
+			$rulerArr[$v['id']] = $v;
+		}
+		$nav = [];
+		foreach($idsArr as $v){
+			if(strpos($v,'class')!==false){
+				$nav[] = ['id'=>$v,'title'=>$classnav[$v]['classname']];
+				
+			}else{
+				$nav[] = ['id'=>$v,'title'=>$rulerArr[$v]['name']];
+			}
+			
+		}
+		JsonReturn(['code'=>0,'msg'=>'success','data'=>$nav]);
+		
+		
+	}
+	
 	function desktop_add(){
 		if($this->frparam('go')==1){
 			$data['name'] = $this->frparam('name',1);
-			
+			/*
 			$left_nav = $this->frparam('left_nav',2);//数组
 			$top_nav = $this->frparam('top_nav',2);//数组
 			$left_nav_icon = $this->frparam('left_nav_icon',2);//数组
@@ -300,6 +347,24 @@ class IndexController extends CommonController
 					$top_layout[] = array('name'=>$v,'icon'=>$top_nav_icon[$k],'nav'=>$top_nav_func[$k]);
 				}
 			}
+			*/
+			$leftNav = $this->frparam('leftNav',2);
+			$topNav = $this->frparam('topNav',2);
+			$left_layout = array();
+			$top_layout = array();
+			foreach($leftNav as $v){
+				if($v['title'] && count($v['children'])>0){
+					$left_layout[] = array('name'=>$v['title'],'icon'=>$v['icon'],'nav'=>$v['children']);
+				}
+				
+			}
+			foreach($top_layout as $v){
+				if($v['title'] && count($v['children'])>0){
+					$top_layout[] = array('name'=>$v['title'],'icon'=>$v['icon'],'nav'=>$v['children']);
+				}
+				
+			}
+			
 			$data['left_layout'] = json_encode($left_layout,JSON_UNESCAPED_UNICODE);
 			$data['top_layout'] = json_encode($top_layout,JSON_UNESCAPED_UNICODE);
 			$data['gid'] = $this->frparam('gid');
@@ -331,7 +396,7 @@ class IndexController extends CommonController
 		}
 		if($this->frparam('go')==1){
 			$data['name'] = $this->frparam('name',1);
-			
+			/*
 			$left_nav = $this->frparam('left_nav',2);//数组
 			$top_nav = $this->frparam('top_nav',2);//数组
 			$left_nav_icon = $this->frparam('left_nav_icon',2);//数组
@@ -364,6 +429,23 @@ class IndexController extends CommonController
 				if($v!=''){
 					$top_layout[] = array('name'=>$v,'icon'=>$top_nav_icon[$k],'nav'=>$top_nav_func[$k]);
 				}
+			}
+			*/
+			$leftNav = $this->frparam('leftNav',2);
+			$topNav = $this->frparam('topNav',2);
+			$left_layout = array();
+			$top_layout = array();
+			foreach($leftNav as $v){
+				if($v['title'] && count($v['children'])>0){
+					$left_layout[] = array('name'=>$v['title'],'icon'=>$v['icon'],'nav'=>$v['children']);
+				}
+				
+			}
+			foreach($top_layout as $v){
+				if($v['title'] && count($v['children'])>0){
+					$top_layout[] = array('name'=>$v['title'],'icon'=>$v['icon'],'nav'=>$v['children']);
+				}
+				
 			}
 			$data['left_layout'] = json_encode($left_layout,JSON_UNESCAPED_UNICODE);
 			$data['top_layout'] = json_encode($top_layout,JSON_UNESCAPED_UNICODE);
@@ -410,8 +492,18 @@ class IndexController extends CommonController
 		$this->top_num = count($top_layout);
 		$this->left_num = count($left_layout);
 		$lists = M('Ruler')->findAll(null,'id asc');
-		$lists = getTree($lists);
-		$this->lists = $lists;
+		$rulers = [];
+		foreach($lists as $v){
+			$rulers[$v['id']] = $v;
+		}
+		$this->rulers = $rulers;
+		
+		
+		foreach($this->classtypetree as $v){
+			$k = 'class_'.$v['id'];
+			$classnav[$k] = $v;
+		}
+		$this->classnav = $classnav;
 		$this->display('desktop-edit');
 	}
 	
@@ -646,9 +738,6 @@ class IndexController extends CommonController
 	//模板标签生成
 	function showlabel(){
 		
-		
-		//$classtype = M('classtype')->findAll(null,'orders desc');
-		//$classtype = getTree($classtype);
 		$this->classtypes = $this->classtypetree;
 		$this->display('showlabel');
 	}
@@ -674,6 +763,7 @@ class IndexController extends CommonController
   <changefreq>yearly</changefreq>
   <priority>1.00</priority>
 </url>';
+			$mobile_xml = $l;
 			$pc_html = (trim($this->webconf['pc_html'])=='' || $this->webconf['pc_html']=='/') ? '/' : '/'.$this->webconf['pc_html'].'/';
 			$pc_html = trim($pc_html);
 			$mobile_html = (trim($this->webconf['mobile_html'])=='' || $this->webconf['mobile_html']=='/') ? '/' : '/'.$this->webconf['mobile_html'].'/';;
@@ -700,7 +790,7 @@ class IndexController extends CommonController
 								</url>';
 							if($this->webconf['iswap']==1){
 								if($classtypedataMobile[$s['id']]['url']){
-									$l.='<url>
+									$mobile_xml.='<url>
 									  <loc>'.$classtypedataMobile[$s['id']]['url'].'</loc>
 									  <lastmod>'.date('Y-m-d').'T08:00:00+00:00</lastmod>
 									  <changefreq>'.$freq[$k].'</changefreq>
@@ -729,7 +819,7 @@ class IndexController extends CommonController
 						if($this->webconf['iswap']==1){
 							$murl = $this->murl($s,$s['htmlurl']);
 							if($murl){
-								$l.='<url>
+								$mobile_xml.='<url>
 								  <loc>'.$murl.'</loc>
 								  <lastmod>'.date('Y-m-d',$s['addtime']).'T08:00:00+00:00</lastmod>
 								  <changefreq>'.$freq[$k].'</changefreq>
@@ -746,15 +836,21 @@ class IndexController extends CommonController
 			}
 			
 			$l.='</urlset>';
+			$mobile_xml.='</urlset>';
 			
 			//$f = @fopen(APP_PATH.'sitemap.xml','w');
 			//$n = @fwrite($f,$l);
 			//@fclose($f);
 			$n = file_put_contents(APP_PATH.'sitemap.xml',$l);
+			
+			if($this->webconf['iswap']==1){
+				$m = file_put_contents(APP_PATH.'mobile_sitemap.xml',$mobile_xml);
+			}
 			if($n){
 				JsonReturn(['code'=>0,'msg'=>'网站地图创建成功！']);
 				
 			}
+			
 			JsonReturn(['code'=>1,'msg'=>'网站地图创建失败，请检查根目录权限！']);
 			
 			
@@ -1176,7 +1272,7 @@ class IndexController extends CommonController
 		$modelname = get_info_table('molds',['biaoshi'=>$model],'name');
 		
 		
-		$lists = M($model)->findAll($sql,' id asc ',null,$limit);
+		$lists = M($model)->findAll($sql,' id asc ','id,htmlurl,tid,target,ownurl,molds',$limit);
 		$www = get_domain();
 		$urls=[];//存储更新url链接
 		if($lists && is_array($lists)){

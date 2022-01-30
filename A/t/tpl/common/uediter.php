@@ -20,9 +20,9 @@ if(APP_CONTROLLER=='Sys'){
 			});
 		   </script>';
 }else{
-	return '<div class="layui-form-item layui-form-text">
+	$html = '<div class="layui-form-item layui-form-text">
 			<label for="'.$v['field'].'" class="layui-form-label">
-				<span class="x-red">*</span>'.$v['fieldname'].'
+				'.$v['fieldname'].'
 			</label>
 			<div class="layui-input-block" style="width:100%;">
 			<script id="'.$v['field'].$rd.'" name="'.$v['field'].'" type="text/plain" style="width:100%;height:400px;">'.$data[$v['field']].'</script>
@@ -34,9 +34,19 @@ if(APP_CONTROLLER=='Sys'){
 			var ue_'.$v['field'].$rd.' = UE.getEditor("'.$v['field'].$rd.'",{
 				toolbars : [['.$this->webconf['ueditor_config'].']]
 				}		
-			);	
-			});
+			);';
+			if(!$data[$v['field']]){
+			$html .= 'var alldata = localStorage.getItem("cachedata");
+				if(alldata){
+					var alldatajson = JSON.parse(alldata);
+					ue_'.$v['field'].$rd.'.addListener("ready", function () {
+						ue_'.$v['field'].$rd.'.setContent(alldatajson.'.$v['field'].');
+					});
+				}';
+			}
+			$html .= '});
 			</script>';
+	return $html;
 
 }
 

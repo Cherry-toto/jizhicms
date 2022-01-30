@@ -82,7 +82,7 @@ class WxpayH5Service
             'notify_url' => $this->notifyUrl,
             'out_trade_no' => $this->outTradeNo,
             'spbill_create_ip' => $this->webip,
-            'total_fee' => intval($this->totalFee * 100),       //单位 转为分
+            'total_fee' => $this->totalFee * 100,       //单位 转为分
             'trade_type' => 'MWEB',
             'scene_info'=>json_encode($scene_info)
         );

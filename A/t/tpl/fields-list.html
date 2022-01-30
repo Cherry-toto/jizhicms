@@ -35,112 +35,46 @@
 			   {/if}
 		    </form>	
 			
-	        <span class="x-right" style="line-height:40px">共有数据：{$sum} 条</span>
+
 		  </xblock>
-            <table class="layui-table">
-                <thead>
-                    <tr>
-                        
-                        <th>
-                            ID
-                        </th>
-						<th>
-						  <div class="layui-unselect header layui-form-checkbox" lay-skin="primary"><i class="layui-icon">&#xe605;</i></div>
-						</th>
-						<th>
-                            排序
-                        </th>
-                        <th>
-                            字段名称
-                        </th>
-						<th>
-                            字段标识
-                        </th>
-						<th>
-                            是否必填
-                        </th>
-						<th>
-                            前台显示
-                        </th>
-						<th>
-                            后台列表
-                        </th>
-						<th>
-                            默认值
-                        </th>
-                        <th>
-                            操作
-                        </th>
-                    </tr>
-                </thead>
-                <tbody id="x-link">
-				  {foreach $lists as $v}
-                    <tr>
-                     
-                        <td>
-                            {$v['id']}
-                        </td>
-						<td>
-						<div class="layui-unselect layui-form-checkbox" lay-skin="primary" data-id="{$v['id']}"><i class="layui-icon">&#xe605;</i></div>
-						</td>
-                        <td>
-                            <input data-id="{$v['id']}" class="layui-input orderchange" type="number" name="orders" value="{$v['orders']}">
-                        </td>
-                        <td>
-                            {$v['fieldname']}
-                        </td>
-						
-						 <td>
-                           {$v['field']}
-                        </td>
-						 <td>
-                            {if($v['ismust']==0)}
-							
-							<span class="layui-badge layui-bg-gray">非必填</span>
-							{else}
-							<span class="layui-badge">必填项</span>
-							{/if}
-              
-                        </td>
-						 <td>
-                            {if($v['isshow']==0)}
-							<span class="layui-badge layui-bg-gray">不显示</span>
-							{else}
-							<span class="layui-badge layui-bg-green">显示</span>
-							{/if}
-              
-                        </td>
-						 <td>
-                            {if($v['islist']==0)}
-							<span class="layui-badge layui-bg-gray">不显示</span>
-							{else}
-							<span class="layui-badge layui-bg-green">显示</span>
-							{/if}
-              
-                        </td>
-						<td>{$v['vdata']}</td>
-					
-                        <td class="td-manage">
-                        {if(checkAction('Fields/editFields'))}	
-							 <a class="layui-btn layui-btn layui-btn-xs"  onClick="x_admin_show('编辑','{fun U('Fields/editFields',array('id'=>$v['id']))}')" >编辑</a>
-						{/if}	 
-						{if(checkAction('Fields/deleteFields'))}	
-							 <a class="layui-btn-danger layui-btn layui-btn-xs"  onClick="molds_del(this,'{$v['id']}')" href="javascript:;" >删除</a>
-						{/if}
-                        </td>
-						
-                    </tr>
-					{/foreach}
-                </tbody>
-            </table>
-			
-            <div class="page">
-				{$pages}
-			  </div>
+		    <table id="fieldtable" lay-filter="fieldtable"></table>
+			<input id="select_data" type="hidden" value="" />
+
 			</div>
 		</div>
           
         </div>
+		<script type="text/html" id="adminbar">
+			<input type="checkbox" name="isadmin" data-id="{{d.id}}" lay-filter="sw" {{#if(d.isadmin=='显示'){ }}checked value="0" {{# }else{ }} value="1" {{# } }}  lay-skin="switch">
+		</script>
+		<script type="text/html" id="homebar">
+			<input type="checkbox" name="isshow" data-id="{{d.id}}"  lay-filter="sw"  {{#if(d.isshow=='显示'){ }}checked value="0" {{# }else{ }} value="1"{{# } }} value="1" lay-skin="switch">
+		</script>
+		<script type="text/html" id="ishome">
+			<input type="checkbox" name="ishome" data-id="{{d.id}}"  lay-filter="sw"  {{#if(d.ishome=='显示'){ }}checked value="0" {{# }else{ }} value="1"{{# } }} value="1" lay-skin="switch">
+		</script>
+		<script type="text/html" id="searchbar">
+			<input type="checkbox" name="issearch" data-id="{{d.id}}" lay-filter="sw"  {{#if(d.issearch=='显示'){ }}checked value="0" {{# }else{ }} value="1"{{# } }} value="1" lay-skin="switch">
+		</script>
+		<script type="text/html" id="listbar">
+			<input type="checkbox" name="islist" data-id="{{d.id}}"  lay-filter="sw"  {{#if(d.islist=='显示'){ }}checked value="0" {{# }else{ }} value="1"{{# } }} value="1" lay-skin="switch">
+		</script>
+		<script type="text/html" id="mustbar">
+			<input type="checkbox" name="ismust" data-id="{{d.id}}"  lay-filter="sw"  {{#if(d.ismust=='是'){ }}checked value="0" {{# }else{ }} value="1"{{# } }} value="1" lay-skin="switch">
+		</script>
+		<script type="text/html" id="extbar">
+			<input type="checkbox" name="isext" data-id="{{d.id}}" lay-filter="sw"  {{#if(d.isext=='是'){ }}checked value="0" {{# }else{ }} value="1"{{# } }} value="1" lay-skin="switch">
+		</script>
+		<script type="text/html" id="rightbar">
+		 
+		 {if(checkAction('Fields/editFields'))}	
+			<a class="layui-btn layui-btn-xs layui-btn-primary" lay-event="edit">设置</a>
+		 {/if}
+		 {if(checkAction('Fields/deleteFields'))}	
+			<a class="layui-btn layui-btn-xs layui-btn-danger" lay-event="delete">删除</a>
+		 {/if}
+		 
+		</script>
        <script>
 	   $(document).ready(function(){
 			
@@ -155,28 +89,130 @@
 			 var  form = layui.form;
 			 var  table = layui.table;
 			
-              form.on('select(change_tid)', function(data){
+			
+			  table.render({
+				elem: '#fieldtable'
+				,height: 500
+				,url: '{fun U('fields/index')}?molds={$molds['biaoshi']}&ajax=1' //数据接口
+				,page: false //开启分页
+				,cols: [[ //表头
+				  {type:'checkbox',fixed: 'left'}
+				  ,{field: 'field', title: '字段', width:150}
+				  ,{field: 'orders', title: '排序', width:80,edit:'text'}
+				  ,{field: 'fieldname', title: '名称',width:150,edit:'text'}
+				  ,{field: 'isadmin', title: '后台', toolbar: '#adminbar'}
+				  ,{field: 'isshow', title: '前台显示', toolbar: '#homebar'}
+				  ,{field: 'ishome', title: '前台表单', toolbar: '#ishome'}
+				  ,{field: 'issearch', title: '搜索', toolbar: '#searchbar'}
+				  ,{field: 'islist', title: '列表' , toolbar: '#listbar'}
+				  ,{field: 'ismust', title: '必填' , toolbar: '#mustbar'}
+				  ,{field: 'isext', title: '扩展' , toolbar: '#extbar'}
+				  ,{field: 'fieldtypename', title: '类型'}
+				  ,{field: '', title: '操作',width:200, toolbar: '#rightbar', fixed:'right'}
+				]]
+			  });
 			  
-			  	var datax = tableCheck.getData();
-				if(datax==''){
+			  table.on('tool(fieldtable)', function(obj){
+					var data = obj.data; //获得当前行数据
+					var layEvent = obj.event; //获得 lay-event 对应的值（也可以是表头的 event 参数对应的值）
+					var tr = obj.tr; //获得当前行 tr 的DOM对象
+					 
+					switch(layEvent){
+					  case 'edit':
+						 x_admin_show('设置',data.edit_url);
+					  break;
+	
+					  break;
+					  case 'delete':
+							layer.confirm('确认要删除吗？',function(index){
+				
+								$.post("{fun U('Fields/deleteFields')}",{id:data.id},function(r){
+										var r = JSON.parse(r);
+										if(r.code==0){
+										 //发异步删除数据
+											$(tr).remove();
+											layer.msg(r.msg,{icon: 1,time:1000},function(){
+												table.reload('fieldtable', {
+												  url: '{fun U('fields/index')}?molds={$molds['biaoshi']}&ajax=1'
+												  ,where: {} //设定异步数据接口的额外参数
+												 
+												});
+											
+											});
+											
+											
+											
+										}else{
+											
+											layer.msg(r.msg,{icon: 5,time:1000});
+										}
+								})
+								
+							
+							   
+							});
+					  break;
+					  
+					 
+					}
+				});
+			  
+			  table.on('edit(fieldtable)', function(obj){ 
+				  var id = obj.data.id;
+				  var value = obj.value;
+				  var field = obj.field;
+				  $.post("{fun U('Fields/editFieldsValue')}",{'id':id,'value':value,'field':field},function(r){
+						var r = JSON.parse(r);
+						if(r.code==0){
+							$("#select_data").val('');
+							table.reload('fieldtable', {
+							  url: '{fun U('Fields/index')}?molds={$molds['biaoshi']}&ajax=1'
+							  ,where: {} //设定异步数据接口的额外参数
+							 
+							});
+						}else{
+							layer.msg(r.info,{icon: 5,time:1000});
+						}
+						
+					});
+				  
+				  
+				});
+						
+              form.on('select(change_tid)', function(data){
+				var checkStatus = table.checkStatus('fieldtable'); 
+				var datas = checkStatus.data;
+				var ids = [];
+				for(var i=0;i<datas.length;i++){
+					ids.push(datas[i].id);
+				}
+				if(ids.length==0){
 					alert('请选择对象！');return false;
 				}
-				$.post("{fun U('changeTid')}",{data:datax.join(','),tid:data.value},function(r){
+				$.post("{fun U('changeTid')}",{data:ids.join(','),tid:data.value},function(r){
 						if(r.code==0){
-							layer.msg(r.msg,{icon: 1,time:1000});
+							layer.msg(r.msg,{icon: 1,time:1000},function(){
+								location.reload();
+							});
+							
 						}else{
 							layer.msg(r.msg,{icon: 5,time:1000});
 						}
 				},'json')
-			  
-				  console.log(datax); 
-				  console.log(data.elem); //得到select原始DOM对象
-				  console.log(data.value); //得到被选中的值
-				  console.log(data.othis); //得到美化后的DOM对象
+		
 				});
-							 
-              
-            });
+
+			  form.on('switch(sw)', function(data){
+				console.log(data.value)
+				var field = $(data.elem).attr('name');
+				var id = $(data.elem).attr('data-id');
+					$.post('{fun U('editFieldsValue')}',{id:id,field:field,value:data.value},function(res){
+					console.log(res);
+					
+					},'json')
+					return false;
+			  });
+		});
 		 /*删除*/
             function molds_del(obj,id){
                 layer.confirm('确认要删除吗？删除的同时将删除对应的表内容！',function(index){

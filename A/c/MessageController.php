@@ -23,7 +23,14 @@ class MessageController extends CommonController
 	function deleteAll(){
 		$data = $this->frparam('data',1);
 		if($data!=''){
+			$all = M('message')->findAll('id in('.$data.')');
 			if(M('message')->delete('id in('.$data.')')){
+				foreach($all as $v){
+					$w['molds'] = 'message';
+					$w['data'] = json_encode($v,JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+					$w['addtime'] = time();
+					M('recycle')->add($w);
+				}
 				JsonReturn(array('code'=>0,'msg'=>'批量删除成功！'));
 				
 			}else{
@@ -137,8 +144,12 @@ class MessageController extends CommonController
 	function deletemessage(){
 		$id = $this->frparam('id');
 		if($id){
-			if(M('Message')->delete('id='.$id)){
-				//Success('删除成功！',U('index'));
+			$data = M('Message')->find(['id'=>$id]);
+			if(M('Message')->delete(['id'=>$id])){
+				$w['molds'] = 'message';
+				$w['data'] = json_encode($data,JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+				$w['addtime'] = time();
+				M('recycle')->add($w);
 				JsonReturn(array('code'=>0,'msg'=>'删除成功！'));
 			}else{
 				//Error('删除失败！');

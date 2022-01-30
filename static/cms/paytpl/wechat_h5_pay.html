@@ -1,0 +1,28 @@
+<html>
+<head>
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1"/>
+	<title>微信支付</title>
+	<script type="text/javascript" src="http://res.wx.qq.com/open/js/jweixin-1.2.0.js"></script>
+    <script src="/static/common/user/js/jquery.min-1.10.2.js"></script>
+	<script type="text/javascript">
+		
+		setInterval(function(){
+			$.post("{fun U('Mypay/check_wechat_order')}",{orderno:'{$orderno}',ajax:1},function(r){
+				if(r.code==0){
+					window.location.href="{fun U('Mypay/wechat_scan_over',['orderno'=>$orderno])}";
+				}else{
+					
+				}
+			
+			},'json')
+		
+		
+		},1500);
+		
+	</script>
+</head>
+<body>
+<div><h2>等待支付......</h2></div>
+</body>
+</html>

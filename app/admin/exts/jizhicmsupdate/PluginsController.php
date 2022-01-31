@@ -10,9 +10,9 @@
 // | Date：2020/02/16
 // +----------------------------------------------------------------------
 
-namespace A\exts;
+namespace app\admin\exts;
 
-
+use frphp\lib\Controller;
 use frphp\extend\Page;
 class PluginsController extends Controller {
 	

@@ -120,7 +120,7 @@
 					 
 					switch(layEvent){
 					  case 'restore':
-						layer.confirm('你确定要还原吗？')},function(index){
+						layer.confirm('{fun JZLANG('你确定要还原吗？')}',function(index){
 				
 								$.post("{fun U('Recycle/restore')}",{id:data.id},function(r){
 										var r = JSON.parse(r);

@@ -338,6 +338,7 @@ class MoldsController extends CommonController
 				$w['islist'] = 1;
 				$w['vdata'] = '0';
 				M('fields')->add($w);
+                $id = M('molds')->getField(['biaoshi'=>'attr'],'id');
 				$w['field'] = 'jzattr';
 				$w['molds'] = $data['biaoshi'];
 				$w['fieldname'] = JZLANG('推荐属性');
@@ -345,7 +346,7 @@ class MoldsController extends CommonController
 				$w['fieldtype'] = 16;
 				$w['fieldlong'] = 50;
 				$w['format'] = NULL;
-				$w['body'] = JZLANG('置顶=1,热点=2,推荐=3');
+				$w['body'] = $id.',name';
 				$w['ismust'] = 0;
 				$w['isshow'] = 1;
 				$w['isadmin'] = 1;
@@ -854,7 +855,7 @@ class MoldsController extends CommonController
                         case 'jzattr':
                             $id = M('molds')->getField(['biaoshi'=>'attr'],'id');
                             if($id){
-                                $w['body'] = $id.','.'name';
+                                $w['body'] = $id.',name';
                             }
                             break;
                         case 'member_id':
@@ -904,7 +905,7 @@ class MoldsController extends CommonController
                         case 'jzattr':
                             $id = M('molds')->getField(['biaoshi'=>'attr'],'id');
                             if($id){
-                                $w['body'] = $id.','.'name';
+                                $w['body'] = $id.',name';
                             }
                             break;
                         case 'istop':

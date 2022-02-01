@@ -668,7 +668,7 @@ CREATE TABLE `jz_sysconfig` (
   `orders` int(11) NOT NULL DEFAULT '0' COMMENT '排序',
   `sys` tinyint(1) NOT NULL DEFAULT '1' COMMENT '是否系统字段',
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=132 DEFAULT CHARSET=utf8 COMMENT='系统配置';
+) ENGINE=MyISAM AUTO_INCREMENT=131 DEFAULT CHARSET=utf8 COMMENT='系统配置';
 -- ----------------------------
 -- Table structure for jz_tags
 -- ----------------------------
@@ -1471,15 +1471,14 @@ INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`,`typeid`,`c
 INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`,`typeid`,`config`,`orders`,`sys`) VALUES ('120','search_table_muti','多模块允许搜索的表','防止数据泄露,填写允许搜索的表名,留空表示不允许搜索,多个表可用|分割,如：article|product','2','article|product','3', NULL,'0','1');
 INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`,`typeid`,`config`,`orders`,`sys`) VALUES ('121','search_fields_muti','允许查询显示的字段','多模块搜索允许查询显示的字段','3','id,tid,litpic,title,tags,keywords,molds,htmlurl,description,addtime,userid,member_id,hits','3', NULL,'0','1');
 INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`,`typeid`,`config`,`orders`,`sys`) VALUES ('122','ueditor_user_config','前台编辑器设置','前台的编辑器功能菜单设置','3','&quot;undo&quot;, &quot;redo&quot;, &quot;|&quot;,&quot;paragraph&quot;,&quot;bold&quot;,&quot;forecolor&quot;,&quot;fontfamily&quot;,&quot;fontsize&quot;, &quot;italic&quot;, &quot;blockquote&quot;, &quot;insertparagraph&quot;, &quot;justifyleft&quot;, &quot;justifycenter&quot;, &quot;justifyright&quot;,&quot;justifyjustify&quot;,&quot;|&quot;,&quot;indent&quot;, &quot;insertorderedlist&quot;, &quot;insertunorderedlist&quot;,&quot;|&quot;, &quot;insertimage&quot;, &quot;inserttable&quot;, &quot;deletetable&quot;, &quot;insertparagraphbeforetable&quot;, &quot;insertrow&quot;, &quot;deleterow&quot;, &quot;insertcol&quot;, &quot;deletecol&quot;,&quot;mergecells&quot;, &quot;mergeright&quot;, &quot;mergedown&quot;, &quot;splittocells&quot;, &quot;splittorows&quot;, &quot;splittocols&quot;, &quot;|&quot;,&quot;drafts&quot;, &quot;|&quot;,&quot;fullscreen&quot;','2', NULL,'1','1');
-INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`,`typeid`,`config`,`orders`,`sys`) VALUES ('123','article_config','内容配置', NULL,'3','{"seotitle":1,"litpic":1,"description":1,"tags":1}','0', NULL,'0','1');
-INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`,`typeid`,`config`,`orders`,`sys`) VALUES ('124','article_config','内容配置', NULL,'3','{"seotitle":1,"litpic":1,"description":1,"tags":1,"filter":"title,keywords,body"}','0', NULL,'0','1');
-INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`,`typeid`,`config`,`orders`,`sys`) VALUES ('125','product_config','商品配置', NULL,'3','{"seotitle":1,"litpic":1,"description":1,"tags":1,"filter":"title,keywords,body"}','0', NULL,'0','1');
-INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`,`typeid`,`config`,`orders`,`sys`) VALUES ('126','isdebug','PHP调试','测试环境，开启调试，提示错误，实时更新模板。正式上线，请关闭调试，打开页面更快。','6','1','2','开启=1,关闭=0','0','1');
-INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`,`typeid`,`config`,`orders`,`sys`) VALUES ('127','plugins_config','插件配置', NULL,'2','http://api.jizhicms.cn/plugins.php','0', NULL,'0','1');
-INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`,`typeid`,`config`,`orders`,`sys`) VALUES ('128','template_config','插件配置', NULL,'2','http://api.jizhicms.cn/template.php','0', NULL,'0','1');
-INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`,`typeid`,`config`,`orders`,`sys`) VALUES ('129','closesession','前台SESSION','关闭前台SESSION后，前台会员模块无法使用，但是可以减少session缓存文件。纯内容网站可以开启，使用会员支付等必须关闭','6','0','2','关闭=1,开启=0','0','1');
-INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`,`typeid`,`config`,`orders`,`sys`) VALUES ('130','messageyzm','留言验证码','开启后，前台留言需要填写验证码','6','1','2','开启=1,关闭=0','0','1');
-INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`,`typeid`,`config`,`orders`,`sys`) VALUES ('131','homerelease','前台发布审核','开启后需要后台审核，关闭则不需要','6','1','2','开启=1,关闭=0','0','1');
+INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`,`typeid`,`config`,`orders`,`sys`) VALUES ('123','article_config','内容配置', NULL,'3','{"seotitle":1,"litpic":1,"description":1,"tags":1,"filter":"title,keywords,body"}','0', NULL,'0','1');
+INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`,`typeid`,`config`,`orders`,`sys`) VALUES ('124','product_config','商品配置', NULL,'3','{"seotitle":1,"litpic":1,"description":1,"tags":1,"filter":"title,keywords,body"}','0', NULL,'0','1');
+INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`,`typeid`,`config`,`orders`,`sys`) VALUES ('125','isdebug','PHP调试','测试环境，开启调试，提示错误，实时更新模板。正式上线，请关闭调试，打开页面更快。','6','1','2','开启=1,关闭=0','0','1');
+INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`,`typeid`,`config`,`orders`,`sys`) VALUES ('126','plugins_config','插件配置', NULL,'2','http://api.jizhicms.cn/plugins.php','0', NULL,'0','1');
+INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`,`typeid`,`config`,`orders`,`sys`) VALUES ('127','template_config','插件配置', NULL,'2','http://api.jizhicms.cn/template.php','0', NULL,'0','1');
+INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`,`typeid`,`config`,`orders`,`sys`) VALUES ('128','closesession','前台SESSION','关闭前台SESSION后，前台会员模块无法使用，但是可以减少session缓存文件。纯内容网站可以开启，使用会员支付等必须关闭','6','0','2','关闭=1,开启=0','0','1');
+INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`,`typeid`,`config`,`orders`,`sys`) VALUES ('129','messageyzm','留言验证码','开启后，前台留言需要填写验证码','6','1','2','开启=1,关闭=0','0','1');
+INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`,`typeid`,`config`,`orders`,`sys`) VALUES ('130','homerelease','前台发布审核','开启后需要后台审核，关闭则不需要','6','1','2','开启=1,关闭=0','0','1');
 -- ----------------------------
 -- Records of jz_tags
 -- ----------------------------

@@ -79,7 +79,11 @@ class View
 		$cache_file = Cache_Path.'/'.md5($controllerLayout).'.php';
 		$this->_cachefile = $cache_file;//传入系统中
 		$now_time = time();
-		$last_time = filemtime($cache_file);
+        if(file_exists($cache_file)){
+            $last_time = filemtime($cache_file);
+        }else{
+            $last_time = 0;
+        }
 		$cache_time = webConf('cache_time') ? webConf('cache_time') : 0;
 		$isclear = 0;
 		if((($now_time - $last_time)/60)>$cache_time){

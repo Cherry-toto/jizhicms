@@ -1403,7 +1403,7 @@ INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`,`typeid`,`c
 INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`,`typeid`,`config`,`orders`,`sys`) VALUES ('51','wx_login_appsecret','公众号appsecret','用户登录相关，如果跟支付的一样，那就再填写一遍','2', NULL,'6', NULL,'0','1');
 INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`,`typeid`,`config`,`orders`,`sys`) VALUES ('52','wx_login_token','公众号token','用户登录相关，如果跟支付的一样，那就再填写一遍','2', NULL,'6', NULL,'0','1');
 INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`,`typeid`,`config`,`orders`,`sys`) VALUES ('53','huanying','公众号关注欢迎语','公众号关注时发送的第一句推送','3','欢迎关注公众号~','6', NULL,'0','1');
-INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`,`typeid`,`config`,`orders`,`sys`) VALUES ('54','wx_token','公众号token','支付相关','3', NULL,'6', NULL,'0','1');
+INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`,`typeid`,`config`,`orders`,`sys`) VALUES ('54','wx_token','公众号token','支付相关','2', NULL,'5', NULL,'0','1');
 INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`,`typeid`,`config`,`orders`,`sys`) VALUES ('55','web_logo','网站LOGO', NULL,'1','/static/cms/static/images/logo.png','1', NULL,'0','1');
 INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`,`typeid`,`config`,`orders`,`sys`) VALUES ('56','admintpl','后台模板风格','内页弹窗：点击新增/修改等操作，页面是一个弹出层，更美观。内嵌页面：点击新增/修改等操作，页面直接进入新页面，不会弹出层。','6','default','2','内页弹窗=default,内嵌页面=tpl','0','1');
 INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`,`typeid`,`config`,`orders`,`sys`) VALUES ('58','isopenwebsite','是否绑定多域名','开启绑定多域名后，需要到插件中配置','0','1','0', NULL,'0','1');

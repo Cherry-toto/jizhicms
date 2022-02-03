@@ -668,7 +668,7 @@ CREATE TABLE `jz_sysconfig` (
   `orders` int(11) NOT NULL DEFAULT '0' COMMENT '排序',
   `sys` tinyint(1) NOT NULL DEFAULT '1' COMMENT '是否系统字段',
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=131 DEFAULT CHARSET=utf8 COMMENT='系统配置';
+) ENGINE=MyISAM AUTO_INCREMENT=132 DEFAULT CHARSET=utf8 COMMENT='系统配置';
 -- ----------------------------
 -- Table structure for jz_tags
 -- ----------------------------
@@ -1479,6 +1479,7 @@ INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`,`typeid`,`c
 INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`,`typeid`,`config`,`orders`,`sys`) VALUES ('128','closesession','前台SESSION','关闭前台SESSION后，前台会员模块无法使用，但是可以减少session缓存文件。纯内容网站可以开启，使用会员支付等必须关闭','6','0','2','关闭=1,开启=0','0','1');
 INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`,`typeid`,`config`,`orders`,`sys`) VALUES ('129','messageyzm','留言验证码','开启后，前台留言需要填写验证码','6','1','2','开启=1,关闭=0','0','1');
 INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`,`typeid`,`config`,`orders`,`sys`) VALUES ('130','homerelease','前台发布审核','开启后需要后台审核，关闭则不需要','6','1','2','开启=1,关闭=0','0','1');
+INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`,`typeid`,`config`,`orders`,`sys`) VALUES ('131','hideclasspath','栏目隐藏.html','开启后栏目链接将没有.html后缀','6','0','2','开启=1,关闭=0','0','1');
 -- ----------------------------
 -- Records of jz_tags
 -- ----------------------------

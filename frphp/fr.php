@@ -319,7 +319,7 @@ class frphp
 			//['module'=>APP_HOME,'controller'=>APP_CONTROLLER,'action'=>APP_ACTION]
 			foreach($hookconfig as $v){
 				if($v['module']==$app_home && $v['controller']==APP_CONTROLLER && (strpos(','.$v['action'].',',','.APP_ACTION.',')!==false || $v['all_action']==1)){
-					$newhook_controller = '\\'.$v['module'].'\\plugins\\'.$v['hook_controller'].'Controller';
+					$newhook_controller = '\\app\\'.$v['module'].'\\plugins\\'.$v['hook_controller'].'Controller';
 					/* //防止数据库反斜杠出错，做出更改，hook_namespace参数将失效
 					if($v['hook_namespace']!=''){
 						$newhook_controller = $v['hook_namespace'].'\\'.$v['hook_controller'].'Controller';

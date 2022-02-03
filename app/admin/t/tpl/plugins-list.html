@@ -147,7 +147,7 @@
           	var DISABLED = 'layui-btn-disabled';
 		    if(othis.hasClass(DISABLED)) return;
 			//获取文件大小
-			$.post({
+			$.ajax({
 				url:"{fun U('plugins/update')}",
 				data:{action:'prepare-download',filepath:filepath,download_url:download_url},
 				async : false,

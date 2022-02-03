@@ -795,7 +795,7 @@ class PluginsController extends CommonController
 			}
 			$config = require_once(APP_PATH.'app/admin/exts/'.$filepath.'/config.php');
 			$webapi = $this->webconf['plugins_config'];
-			$r = file_get_contents($webapi.'?name='.$filepath.'&v='.$config['version']);
+			$r = file_get_contents($webapi.'?name='.$filepath.'&v='.$config['version'].'&version='.$this->webconf['web_version']);
 			$rr = json_decode($r,1);
 			if($rr['code']==0){
 				$this->plugin = $config;

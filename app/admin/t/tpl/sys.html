@@ -188,7 +188,7 @@
                         </div>
 						{else if($v['type']==4)}
 						{php
-						$edit = include(APP_PATH.APP_HOME.'/'.HOME_VIEW.'/'.Tpl_template.'common/uediter.php');
+						$edit = require_once(APP_PATH.APP_HOME.'/'.HOME_VIEW.'/'.Tpl_template.'/common/uediter.php');
 						echo $edit;
 						/}
 						{if($admin['gid']==1)}
@@ -197,7 +197,7 @@
 						</div>
 							{if($v['sys']!=1)}
 							<div class="layui-inline">
-							<button type="button" lay-filter="del" data="custom_{$v['field']}"  lay-submit=""  class="layui-btn layui-btn-danger layui-btn-sm">{fun JZLANG('删除')}</button>
+							<button type="button" lay-filter="del" data="custom_{$v['field']}"  lay-submit=""  class="layui-btn layui-btn-danger layui-btn-sm">{fun JZLANG('删除')}</button></div>
 							{/if}
 						{/if}
 						{else if($v['type']==5)}

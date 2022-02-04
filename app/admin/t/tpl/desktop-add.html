@@ -295,12 +295,12 @@
 				}, function(){
 				  layer.close(i);
 				}, function(){
-				    var t = parseInt(t);
+				    var tt = parseInt(t);
 					var obj = getCurrentNav(n);
 					var len = obj.length;
 					var newNav = [];
-					console.log(t);
-					if(len==1 && t!=1){
+					console.log(tt);
+					if(len==1 && tt!=1){
 						layer.msg('{fun JZLANG('最后一个索引不能删除！')}',{icon:5});
 						return false;
 					}

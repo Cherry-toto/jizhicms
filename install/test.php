@@ -1363,7 +1363,7 @@ INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`,`typeid`,`c
 INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`,`typeid`,`config`,`orders`,`sys`) VALUES ('11','web_email','网站邮箱','网站邮箱','2','123456@qq.com','1', NULL,'0','1');
 INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`,`typeid`,`config`,`orders`,`sys`) VALUES ('12','web_address','公司地址','公司地址','2','河北省廊坊市广阳区xxx大厦xx楼001号','1', NULL,'0','1');
 INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`,`typeid`,`config`,`orders`,`sys`) VALUES ('13','pc_template','PC网站模板','将模板名称填写到此处','2','cms','2', NULL,'1','1');
-INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`,`typeid`,`config`,`orders`,`sys`) VALUES ('14','wap_template','WAP网站模板','开启了手机端，这个设置才会生效，否则调用电脑端模板','6','1','2','开启=1,关闭=0','1','1');
+INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`,`typeid`,`config`,`orders`,`sys`) VALUES ('14','wap_template','WAP网站模板','开启了手机端，这个设置才会生效，否则调用电脑端模板','2','1','2',NULL,'1','1');
 INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`,`typeid`,`config`,`orders`,`sys`) VALUES ('15','weixin_template','微信网站模板','开启了手机端，这个设置才会生效，否则调用电脑端模板。由于微信内有一些特殊的js，所以可以在这里单独设置微信模板','2','cms','2', NULL,'1','1');
 INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`,`typeid`,`config`,`orders`,`sys`) VALUES ('16','iswap','是否开启手机端','如果不开启手机端，则默认调用电脑端模板','6','1','2','开启=1,关闭=0','1','1');
 INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`,`typeid`,`config`,`orders`,`sys`) VALUES ('17','isopenhomeupload','是否开启前台上传','关闭后，前台无法上传文件。如果网站没有使用会员，建议关闭前台上传。','6','1','2','开启=1,关闭=0','1','1');

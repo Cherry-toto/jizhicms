@@ -356,26 +356,20 @@ class HomeController extends CommonController
 			$url = ($position!==FALSE) ? substr($request_url,0,$position) : $request_url;
 			$url = substr($url,1,strlen($url)-1);
 			$html = str_ireplace('.html','',$url);
-			$indexdata = file_get_contents(APP_PATH.'index.php');
-			$rr = preg_match("/define\('TPL_PATH',[\'|\"](.*?)[\'|\"]\)/",$indexdata,$matches);
-			if($rr){
-				$tplpath = $matches[1];
-			}else{
-				$tplpath = 'Home';
-			}
-			
-			if(defined('TPL_PATH')){
-				$path = TPL_PATH;
-			}else{
-				$path = APP_HOME;
-			}
-			$filepath = HOME_VIEW ? $path.HOME_VIEW.'/'.TEMPLATE.'/page/'.$html.File_TXT : $path.TEMPLATE.'/page/'.$html.File_TXT;
-			
-			$filepath = APP_PATH.$tplpath.'/'.HOME_VIEW.'/'.$this->template.'/page/'.$html.File_TXT;
-			if(file_exists($filepath)){
-				$this->display($this->template.'/page/'.$html);
-				exit;
-			}
+            if(defined('TPL_PATH')){
+                $path = TPL_PATH;
+            }else{
+                $path = APP_HOME;
+            }
+            $filepath = HOME_VIEW ? $path.'/'.HOME_VIEW.'/'.TEMPLATE.'/page/'.$html.File_TXT : $path.'/'.TEMPLATE.'/page/'.$html.File_TXT;
+            if(file_exists(APP_PATH.$filepath)){
+                $this->display($this->template.'/page/'.$html);
+                exit;
+            }
+            if(file_exists($filepath)){
+                $this->display($this->template.'/page/'.$html);
+                exit;
+            }
 			
 			
 			//错误页面->404

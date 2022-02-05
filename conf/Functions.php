@@ -90,16 +90,12 @@ function get_template(){
             if(isWeixin()){
                 //wechat
                 $template = $wechat;
-                setCache('wxhometpl',$template);
-            }else{
-                setCache('mobilehometpl',$template);
             }
 
 
         }else{
             //pc
             $template = $pc;
-            setCache('hometpl',$template);
         }
 
 
@@ -113,19 +109,24 @@ function get_template(){
         if($webconf['iswap']==1 && isMobile()){
             if(isWeixin()){
                 $template = ($webconf['weixin_template']!='')?$webconf['weixin_template']:$webconf['wap_template'];
-                setCache('wxhometpl',$template);
             }else{
                 $template = $webconf['wap_template'];
-                setCache('mobilehometpl',$template);
             }
 
         }else{
             $template = $webconf['pc_template'];
-            setCache('hometpl',$template);
         }
 
     }
-
+    if(isMobile()){
+        if(isWeixin()){
+            setCache('wxhometpl',$template);
+        }else{
+            setCache('mobilehometpl',$template);
+        }
+    }else{
+        setCache('hometpl',$template);
+    }
 
     return $template;
 }

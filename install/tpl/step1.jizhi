@@ -76,7 +76,7 @@
 				        </tr>
 				        <tr>
 				          <th>配置文件/Conf/config.php</th>
-				          <td><?php echo new_is_writeable('../Conf/config.php')?'满足':'不支持';?></td>
+				          <td><?php echo new_is_writeable('../conf/config.php')?'满足':'不支持';?></td>
 				          <td>可写</td>
 				        </tr>
 						<tr>
@@ -91,7 +91,7 @@
 				        </tr>
 				        <tr>
 				          <th>上传文件夹/Public/</th>
-				          <td><?php echo new_is_writeable('../Public')?'满足':'不支持';?></td>
+				          <td><?php echo new_is_writeable('../public')?'满足':'不支持';?></td>
 				          <td>可写</td>
 				        </tr>
 						<tr>

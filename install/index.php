@@ -287,7 +287,7 @@ switch($act){
 			);
 			$config['APP_DEBUG'] = true;
 			
-			$ress = file_put_contents('../Conf/config.php', '<?php return ' . var_export($config, true) . '; ?>');
+			$ress = file_put_contents('../conf/config.php', '<?php return ' . var_export($config, true) . '; ?>');
 			
 			
 			
@@ -317,7 +317,7 @@ switch($act){
 	case 'install_testdb':
 		$start= ((int)$_POST['start']==0)?1:$_POST['start'];
 		$to=((int)$_POST['to']==0)?1:$_POST['to'];	
-		$config = include('../Conf/config.php');
+		$config = include('../conf/config.php');
 		$db = new PDO("mysql:host=".$config['db']['host'].";port=".$config['db']['port'].";dbname=".$config['db']['dbname'],$config['db']['username'], $config['db']['password']);
 		$sql = file_get_contents('test.php');
 		$sql = str_replace('jz_',$config['db']['prefix'],$sql);
@@ -332,7 +332,7 @@ switch($act){
 	case 'go_install':
 		$start= ((int)$_POST['start']==0)?1:$_POST['start'];
 		$to=((int)$_POST['to']==0)?1:$_POST['to'];	
-		$config = include('../Conf/config.php');
+		$config = include('../conf/config.php');
 		if($_GET['db']==''){
 			$sql = file_get_contents('db.php');
 			$sql.="UPDATE `jz_level` SET `name`='".$_POST['admin_name']."',`pass`='".md5(md5($_POST['admin_pass']).'YF')."' , `regtime` = '".time()."' , `logintime` = ".time()."   WHERE id=1";

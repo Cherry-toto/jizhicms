@@ -409,7 +409,9 @@ class TemplateController extends CommonController
 						}
 						
 						setCache('webconfig',null);
-						
+                        setCache('hometpl',null);
+                        setCache('wxhometpl',null);
+                        setCache('mobilehometpl',null);
 						JsonReturn(array('code'=>0,'msg'=>JZLANG('安装成功！')));
 				    	break;
 					case 'backup':

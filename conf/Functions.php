@@ -49,79 +49,85 @@ function get_custom($str=null){
 }
 
 function get_template(){
-	$hometpl = getCache('hometpl');
-	if($hometpl){
-		return $hometpl;
-	}
-	$webconf = webConf();
-	$isgo = true;
-	//检测是否安装插件
-	$res = M('plugins')->find(['filepath'=>'website','isopen'=>1]);
-	if($res  && $res['config']){ 
-		$website = $_SERVER['HTTP_HOST'];
-		$config = json_decode($res['config'],1);
-		$pc = $webconf['pc_template'];
-		$wap = $webconf['wap_template'];
-		$wechat = $webconf['weixin_template'];
-		foreach($config as $v){
-			if($v['website']==$website){
-				$isgo = false;
-				$v['model'] = (int)$v['model'];
-				switch($v['model']){
-					case 0:
-					$pc=$wap=$wechat=$v['tpl'];
-					break;
-					case 1:
-					$pc=$v['tpl'];
-					break;
-					case 2:
-					$wap=$v['tpl'];
-					break;
-					case 3:
-					$wechat=$v['tpl'];
-					break;
-				}
-			}
-		}
-		//当前端口检测
-		if($webconf['iswap']==1 && isMobile()){
-			$template = $wap;
-			//wap
-			if(isWeixin()){
-				//wechat
-				$template = $wechat;
-			}
-			
-			
-		}else{
-			//pc
-			$template = $pc;
-		}
-	
-		
-		if($template==''){
-			//全局
-			$isgo = true;//直接跳转下面进行默认设置
-		}
-		
-	}
-	if($isgo){
-		if($webconf['iswap']==1 && isMobile()){
-			if(isWeixin()){
-				$template = ($webconf['weixin_template']!='')?$webconf['weixin_template']:$webconf['wap_template'];
-			}else{
-				$template = $webconf['wap_template'];
-			}
-			
-		}else{
-			$template = $webconf['pc_template'];
-		}
-		
-	}
-	
-	setCache('hometpl',$template);
-	
-	return $template;
+    $hometpl = isMobile() ? (isWeixin() ? getCache('wxhometpl') : getCache('mobilehometpl')) : getCache('hometpl');
+    if($hometpl){
+        return $hometpl;
+    }
+    $webconf = webConf();
+    $isgo = true;
+    //检测是否安装插件
+    $res = M('plugins')->find(['filepath'=>'website','isopen'=>1]);
+    if($res  && $res['config']){
+        $website = $_SERVER['HTTP_HOST'];
+        $config = json_decode($res['config'],1);
+        $pc = $webconf['pc_template'];
+        $wap = $webconf['wap_template'];
+        $wechat = $webconf['weixin_template'];
+        foreach($config as $v){
+            if($v['website']==$website){
+                $isgo = false;
+                $v['model'] = (int)$v['model'];
+                switch($v['model']){
+                    case 0:
+                        $pc=$wap=$wechat=$v['tpl'];
+                        break;
+                    case 1:
+                        $pc=$v['tpl'];
+                        break;
+                    case 2:
+                        $wap=$v['tpl'];
+                        break;
+                    case 3:
+                        $wechat=$v['tpl'];
+                        break;
+                }
+            }
+        }
+        //当前端口检测
+        if($webconf['iswap']==1 && isMobile()){
+            $template = $wap;
+            //wap
+            if(isWeixin()){
+                //wechat
+                $template = $wechat;
+                setCache('wxhometpl',$template);
+            }else{
+                setCache('mobilehometpl',$template);
+            }
+
+
+        }else{
+            //pc
+            $template = $pc;
+            setCache('hometpl',$template);
+        }
+
+
+        if($template==''){
+            //全局
+            $isgo = true;//直接跳转下面进行默认设置
+        }
+
+    }
+    if($isgo){
+        if($webconf['iswap']==1 && isMobile()){
+            if(isWeixin()){
+                $template = ($webconf['weixin_template']!='')?$webconf['weixin_template']:$webconf['wap_template'];
+                setCache('wxhometpl',$template);
+            }else{
+                $template = $webconf['wap_template'];
+                setCache('mobilehometpl',$template);
+            }
+
+        }else{
+            $template = $webconf['pc_template'];
+            setCache('hometpl',$template);
+        }
+
+    }
+
+
+    return $template;
 }
 
 function curl_http($url,$data=null,$method='GET'){
@@ -2150,4 +2156,4 @@ function jztpldatafield(){
     return $tpldata;
 }
 
-include(APP_PATH.'Conf/FunctionsExt.php');
+include(APP_PATH.'conf/FunctionsExt.php');

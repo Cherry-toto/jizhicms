@@ -140,7 +140,10 @@ class SysController extends CommonController
 			   setCache('classtypedatapc',null);
 		   }
 		   setCache('webconfig',null);
-		   
+		   setCache('hometpl',null);
+		   setCache('wxhometpl',null);
+		   setCache('mobilehometpl',null);
+
 		   JsonReturn(['code'=>0,'msg'=>JZLANG('提交成功！')]);
 		   
 		}

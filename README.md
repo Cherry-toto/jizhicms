@@ -1,4 +1,32 @@
-# 极致CMS建站系统2.0 重磅更新！
+[![极致CMS建站系统](http://down.jizhicms.cn/header_1920x700.png)](http://down.jizhicms.cn/jizhicms.zip)
+
+<h1 align="center">极致CMS建站系统</h1>
+
+<p align="center">一款免费开源的PHP建站CMS系统，可以免授权商业使用该系统。</p>
+
+<p align="center">
+<img src="https://img.shields.io/badge/jizhicms-v2.0-important.svg" title="jizhicms" />
+<img src="https://img.shields.io/badge/PHP-5.6+-blue.svg" title="PHP" />
+<img src="https://img.shields.io/badge/MySQL-4.8+-red.svg" title="MySQL" />
+</p>
+<p align="center">
+<img src="https://img.shields.io/badge/Apache-green.svg" title="Apache" />
+<img src="https://img.shields.io/badge/Linux-success.svg" title="Linux" />
+<img src="https://img.shields.io/badge/MIT-brightgreen.svg" title="MIT" />
+</p>
+<p align="center">
+	<img src="https://gitee.com/Cherry_toto/jizhicms/badge/star.svg?theme=dark" alt="Gitee stars"/>  
+	<img src="https://img.shields.io/github/stars/Cherry-toto/jizhicms" alt="GitHub stars"/>
+</p>
+
+官网：[www.jizhicms.cn](https://www.jizhicms.cn) | [www.jizhicms.com](https://www.jizhicms.com) | [应用市场](https://app.jizhicms.cn)   
+演示：[demo.jizhicms.cn](http://demo.jizhicms.cn)   
+后台：[http://demo.jizhicms.cn/admin.php](http://demo.jizhicms.cn/admin.php) [ 账户：test 密码：123456 ]  
+作者：留恋风（QQ：2581047041 微信：TF-2581047041）  
+商务合作：13660240863    
+QQ交流群：774764507 , 869094463 , 651403450 [【加群】](https://jq.qq.com/?_wv=1027&k=6zjN1tgq) 
+
+## 极致CMS建站系统2.0 重磅更新！
 > 支持后台在线模板，可以下载和更新模板，提供更多免费模板  
 > 支持后台多语言本地化配置  
 > 更新一套精美模板免费使用  
@@ -8,16 +36,8 @@
 > 后台增加模板自定义方式，让你二开更方便！  
 > 后台插件模板接口开放设定，可以自由维护自己的客户进行客制化服务！  
 > 免费开源，代码无任何加密，可免费商用，前台界面可以去除版权显示，支持MIT协议，真正开源免费！  
-## 一款免费开源的PHP建站CMS系统，可以免授权商业使用该系统。
 
-[![极致CMS建站系统](http://down.jizhicms.cn/header_1920x700.png)](http://down.jizhicms.cn/jizhicms.zip)
-
-官网：[www.jizhicms.cn](https://www.jizhicms.cn) | [www.jizhicms.com](https://www.jizhicms.com) | [应用市场](https://app.jizhicms.cn)   
-演示：[demo.jizhicms.cn](http://demo.jizhicms.cn)   
-后台：[http://demo.jizhicms.cn/admin.php](http://demo.jizhicms.cn/admin.php) [ 账户：test 密码：123456 ]  
-作者：留恋风（QQ：2581047041 微信：TF-2581047041）  
-商务合作：13660240863    
-QQ交流群：774764507 , 869094463 , 651403450 [【加群】](https://jq.qq.com/?_wv=1027&k=6zjN1tgq)    
+   
 
 *****
 ## 安装环境
@@ -28,12 +48,13 @@ QQ交流群：774764507 , 869094463 , 651403450 [【加群】](https://jq.qq.com
 
 ## 安装须知  
 * PHP5.6+   
-* 数据库目前仅支持MySQL，版本5.0+，数据编码utf-8或者utf8-general-ci   
-* 部署环境需支持伪静态    
+* MySQL4.8+，数据编码 <b>utf-8</b> 或者 <b>utf8-general-ci</b>   
+* 部署环境必须支持伪静态  
+* 支持Apache、Linux     
 
 ## 开始安装  
 1. 下载源码并解压源码到空间根目录(www)      
-2. 浏览器访问 http://localhost/install/ (本地环境) http://绑定域名/install/ (空间服务器环境)   
+2. 浏览器访问 http://127.0.0.1/install/ (本地环境) http://绑定域名/install/ (空间服务器环境)   
 3. 进入安装步骤，逐步进行安装   
 4. 初次安装请安装备份或者测试数据    
 5. 安装完毕后，为了安全，请删除根目录intall安装文件夹    
@@ -50,7 +71,7 @@ QQ交流群：774764507 , 869094463 , 651403450 [【加群】](https://jq.qq.com
 ## 版权声明
 ![极致CMS 2.0版权证明](http://down.jizhicms.cn/copyright.png)
 
-## 许可证  
+## 支持协议  
 [MIT](https://gitee.com/Cherry_toto/jizhicms/blob/2.0/LICENSE)
 
 ![极致CMS建站系统](http://down.jizhicms.cn/footer_1920x273.png)

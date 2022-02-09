@@ -639,7 +639,7 @@ CREATE TABLE `jz_ruler` (
   `isdesktop` tinyint(1) NOT NULL DEFAULT '0' COMMENT '是否桌面配置显示（已废弃）',
   `sys` tinyint(1) NOT NULL DEFAULT '0' COMMENT '系统：1是0否',
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=238 DEFAULT CHARSET=utf8 COMMENT='角色权限表';
+) ENGINE=MyISAM AUTO_INCREMENT=239 DEFAULT CHARSET=utf8 COMMENT='角色权限表';
 -- ----------------------------
 -- Table structure for jz_shouchang
 -- ----------------------------
@@ -1342,6 +1342,7 @@ INSERT INTO `jz_ruler` (`id`,`name`,`fc`,`pid`,`isdesktop`,`sys`) VALUES ('234',
 INSERT INTO `jz_ruler` (`id`,`name`,`fc`,`pid`,`isdesktop`,`sys`) VALUES ('235','批量修改用户评价列表','Extmolds/editOrders/molds/pingjia','77','0','0');
 INSERT INTO `jz_ruler` (`id`,`name`,`fc`,`pid`,`isdesktop`,`sys`) VALUES ('236','批量审核用户评价','Extmolds/checkAll/molds/pingjia','77','0','0');
 INSERT INTO `jz_ruler` (`id`,`name`,`fc`,`pid`,`isdesktop`,`sys`) VALUES ('237','重构字段','Molds/restrucFields','60','0','1');
+INSERT INTO `jz_ruler` (`id`,`name`,`fc`,`pid`,`isdesktop`,`sys`) VALUES ('238','基本配置','Sys/base','39','0','1');
 -- ----------------------------
 -- Records of jz_shouchang
 -- ----------------------------

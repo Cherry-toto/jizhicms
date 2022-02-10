@@ -244,7 +244,7 @@ class ExtmoldsController extends Controller
 			$data = $this->frparam();
 			$data = get_fields_data($data,$molds);
 			if($data['tid']){
-				$data['htmlurl'] = $this->classtypetree[$data['tid']]['htmlurl'];
+				$data['htmlurl'] = $this->classtypedata[$data['tid']]['htmlurl'];
 			}
 			
 			if($this->frparam('id')){

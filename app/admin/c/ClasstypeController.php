@@ -381,53 +381,58 @@ class ClasstypeController extends CommonController
 		
 		
 	}
-	
-	public function get_html(){
-		$molds = $this->frparam('molds',1,'article');
-		//获取前台template
-		$indexdata = file_get_contents(APP_PATH.'index.php');
-		$r = preg_match("/define\('HOME_VIEW',[\'|\"](.*?)[\'|\"]\)/",$indexdata,$matches);
-		if($r){
-			$template = $matches[1];
-		}else{
-			$template = 'template';
-		}
-		$rr = preg_match("/define\('TPL_PATH',[\'|\"](.*?)[\'|\"]\)/",$indexdata,$matches2);
-		if($rr){
-			$tplpath = $matches2[1];
-		}else{
-			$tplpath = 'Home';
-		}
-		if($template){
-			$dir = APP_PATH.$tplpath.'/'.$template.'/'.$this->webconf['pc_template'].'/'.strtolower($molds);
-		}else{
-			$dir = APP_PATH.$tplpath.'/'.$this->webconf['pc_template'].'/'.strtolower($molds);
-		} 
-		$fileArray=array();
-		if(is_dir($dir)){
-
-			if (false != ($handle = opendir ( $dir ))) {
-				$i=0;
-				while ( false !== ($file = readdir ( $handle )) ) {
-					//去掉"“.”、“..”以及带“.xxx”后缀的文件
-					if ($file != "." && $file != ".."&& strpos($file,".html")!==false) {
-						$fileArray[$i]=['html'=>$file,'value'=>str_replace('.html','',$file)];
-						$i++;
-					}
-				}
-				//关闭句柄
-				closedir ( $handle );
-			}
-		}
-		$m = M('molds')->find(['biaoshi'=>$molds]);
-		if(!count($fileArray)){
-			$fileArray[] = ['html'=>$m['list_html'],'value'=>str_replace('.html','',$m['list_html'])];
-			$fileArray[] = ['html'=>$m['details_html'],'value'=>str_replace('.html','',$m['details_html'])];
-			
-		}
-		JsonReturn(['code'=>0,'data'=>$fileArray,'path'=>$dir,'lists_html'=>str_replace('.html','',$m['list_html']),'details_html'=>str_replace('.html','',$m['details_html'])]);
-
-	}
+    
+    public function get_html(){
+        $molds = $this->frparam('molds',1,'article');
+        //获取前台template
+        $indexdata = file_get_contents(APP_PATH.'index.php');
+        $r = preg_match("/define\('HOME_VIEW',[\'|\"](.*?)[\'|\"]\)/",$indexdata,$matches);
+        if($r){
+            $template = $matches[1];
+        }else{
+            $template = 'template';
+        }
+        $rr = preg_match("/define\('TPL_PATH',[\'|\"](.*?)[\'|\"]\)/",$indexdata,$matches2);
+        if($rr){
+            $tplpath = $matches2[1];
+        }else{
+            $tplpath = 'app/home';
+        }
+        if($template){
+            $dir = APP_PATH.$tplpath.'/'.$template.'/'.$this->webconf['pc_template'].'/'.strtolower($molds);
+        }else{
+            $dir = APP_PATH.$tplpath.'/'.$this->webconf['pc_template'].'/'.strtolower($molds);
+        }
+        
+        
+        $fileArray=array();
+        if(is_dir($dir)){
+            
+            if (false != ($handle = opendir ( $dir ))) {
+                $i=0;
+                while ( false !== ($file = readdir ( $handle )) ) {
+                    //去掉"“.”、“..”以及带“.xxx”后缀的文件
+                    if ($file != "." && $file != "..") {
+                        $fileArray[$i]=['html'=>$file,'value'=>$file];
+                        $i++;
+                        
+                    }
+                    
+                }
+                //关闭句柄
+                closedir ( $handle );
+            }
+        }
+        
+        $m = M('molds')->find(['biaoshi'=>$molds]);
+        if(!count($fileArray)){
+            $fileArray[] = ['html'=>$m['list_html'],'value'=>$m['list_html']];
+            $fileArray[] = ['html'=>$m['details_html'],'value'=>$m['details_html']];
+            
+        }
+        JsonReturn(['code'=>0,'data'=>$fileArray,'path'=>$dir,'lists_html'=>$m['list_html'],'details_html'=>$m['details_html']]);
+        
+    }
 	
 		
 	function changeClass(){

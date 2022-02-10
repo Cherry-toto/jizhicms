@@ -26,27 +26,27 @@
 		 {foreach $top_layout as $v}
 			<li class="layui-nav-item">
 				<a href="javascript:;"><i class="iconfont">{fun htmlspecialchars_decode($v['icon'])}</i><cite>{fun JZLANG($v['name'])}</cite></a>
-				<dl class="layui-nav-child"> 
-				
-				{foreach $v['nav'] as $vv}
-				{if(!is_array($vv) && $vv)}
+				<dl class="layui-nav-child">
+
+					{foreach $v['nav'] as $vv}
+					{if(!is_array($vv) && $vv)}
 					{if(strpos($vv,'class')!==false)}
-					<dd class="top-nav"><a x_href="{$classnav[$vv]['act']}" class="top_nav">{$classnav[$vv]['classname']}</a></dd>	
+					<dd class="top-nav"><a x_href="{$classnav[$vv]['act']}" class="top_nav">{$classnav[$vv]['classname']}</a></dd>
 					{else}
 					<dd class="top-nav"><a x_href="{fun U($actions[$vv]['fc'])}" class="top_nav">{fun JZLANG($actions[$vv]['name'])}</a></dd>
 					{/if}
-				{else if(is_array($vv))}
-					
+					{else if(is_array($vv))}
+
 					{if(strpos($vv['value'],'class')!==false)}
-						<dd class="top-nav">{if($vv['icon'])}<i class="iconfont">{fun htmlspecialchars_decode($vv['icon'])}</i>{/if}<a x_href="{$classnav[$vv['value']]['act']}" class="top_nav">{fun JZLANG($vv['value'])}</a></dd>
+					<dd class="top-nav"><a x_href="{$classnav[$vv['value']]['act']}" class="top_nav">{if($vv['icon'])}<i class="iconfont">{fun htmlspecialchars_decode($vv['icon'])}</i>{/if}{fun JZLANG($vv['title'])}</a></dd>
 					{else}
-						<dd class="top-nav">{if($vv['icon'])}<i class="iconfont">{fun htmlspecialchars_decode($vv['icon'])}</i>{/if}<a x_href="{fun U($actions[$vv['value']]['fc'])}" class="top_nav">{fun JZLANG($vv['value'])}</a></dd>
+					<dd class="top-nav"><a x_href="{fun U($actions[$vv['value']]['fc'])}" class="top_nav">{if($vv['icon'])}<i class="iconfont">{fun htmlspecialchars_decode($vv['icon'])}</i>{/if}{fun JZLANG($vv['title'])}</a></dd>
 					{/if}
-					
-					
-				
-				{/if}             
-				{/foreach}  
+
+
+
+					{/if}
+					{/foreach}
 				  
 				</dl>
 			</li>

@@ -313,41 +313,7 @@ class IndexController extends CommonController
 	function desktop_add(){
 		if($this->frparam('go')==1){
 			$data['name'] = $this->frparam('name',1);
-			/*
-			$left_nav = $this->frparam('left_nav',2);//数组
-			$top_nav = $this->frparam('top_nav',2);//数组
-			$left_nav_icon = $this->frparam('left_nav_icon',2);//数组
-			$top_nav_icon = $this->frparam('top_nav_icon',2);//数组
-			$left_num_count = $this->frparam('left_num_count',2);//数组
-			$top_num_count = $this->frparam('top_num_count',2);//数组
 			
-			$left_nav_func = array();
-			$top_nav_func = array();
-			
-			
-			foreach($left_num_count as $v){
-				$lf = 'left_nav_func_'.$v;
-				$left_nav_func[] = $this->frparam($lf,2);
-			}
-			foreach($top_num_count as $v){
-				$lf = 'top_nav_func_'.$v;
-				$top_nav_func[] = $this->frparam($lf,2);
-			}
-			
-			
-			$left_layout = array();
-			foreach($left_nav as $k=>$v){
-				if($v!=''){
-					$left_layout[] = array('name'=>$v,'icon'=>$left_nav_icon[$k],'nav'=>$left_nav_func[$k]);
-				}
-			}
-			$top_layout = array();
-			foreach($top_nav as $k=>$v){
-				if($v!=''){
-					$top_layout[] = array('name'=>$v,'icon'=>$top_nav_icon[$k],'nav'=>$top_nav_func[$k]);
-				}
-			}
-			*/
 			$leftNav = $this->frparam('leftNav',2);
 			$topNav = $this->frparam('topNav',2);
 			$left_layout = array();
@@ -358,7 +324,7 @@ class IndexController extends CommonController
 				}
 				
 			}
-			foreach($top_layout as $v){
+			foreach($topNav as $v){
 				if($v['title'] && count($v['children'])>0){
 					$top_layout[] = array('name'=>$v['title'],'icon'=>$v['icon'],'nav'=>$v['children']);
 				}
@@ -396,41 +362,7 @@ class IndexController extends CommonController
 		}
 		if($this->frparam('go')==1){
 			$data['name'] = $this->frparam('name',1);
-			/*
-			$left_nav = $this->frparam('left_nav',2);//数组
-			$top_nav = $this->frparam('top_nav',2);//数组
-			$left_nav_icon = $this->frparam('left_nav_icon',2);//数组
-			$top_nav_icon = $this->frparam('top_nav_icon',2);//数组
-			$left_num_count = $this->frparam('left_num_count',2);//数组
-			$top_num_count = $this->frparam('top_num_count',2);//数组
 			
-			$left_nav_func = array();
-			$top_nav_func = array();
-			
-			
-			foreach($left_num_count as $v){
-				$lf = 'left_nav_func_'.$v;
-				$left_nav_func[] = $this->frparam($lf,2);
-			}
-			foreach($top_num_count as $v){
-				$lf = 'top_nav_func_'.$v;
-				$top_nav_func[] = $this->frparam($lf,2);
-			}
-			
-			
-			$left_layout = array();
-			foreach($left_nav as $k=>$v){
-				if($v!=''){
-					$left_layout[] = array('name'=>$v,'icon'=>$left_nav_icon[$k],'nav'=>$left_nav_func[$k]);
-				}
-			}
-			$top_layout = array();
-			foreach($top_nav as $k=>$v){
-				if($v!=''){
-					$top_layout[] = array('name'=>$v,'icon'=>$top_nav_icon[$k],'nav'=>$top_nav_func[$k]);
-				}
-			}
-			*/
 			$leftNav = $this->frparam('leftNav',2);
 			$topNav = $this->frparam('topNav',2);
 			$left_layout = array();
@@ -441,7 +373,7 @@ class IndexController extends CommonController
 				}
 				
 			}
-			foreach($top_layout as $v){
+			foreach($topNav as $v){
 				if($v['title'] && count($v['children'])>0){
 					$top_layout[] = array('name'=>$v['title'],'icon'=>$v['icon'],'nav'=>$v['children']);
 				}

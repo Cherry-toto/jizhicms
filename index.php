@@ -36,6 +36,8 @@ define('HOME_CONTROLLER','c');
 //定义项目模型文件目录
 define('HOME_MODEL','m');
 
+//定义模板文件后缀
+define('File_TXT','.php');
 
 //定义项目默认方法
 define('DefaultAction','jizhi');

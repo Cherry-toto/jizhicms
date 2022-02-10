@@ -63,7 +63,14 @@ class View
         if (file_exists($controllerLayout)) {
 			$this->template($controllerLayout);
         } else {
-           Error_msg('无法找到视图文件，页面模板：'.$name.File_TXT);
+            //兼容自定义扩展和.html模板
+            $controllerLayout = str_replace(File_TXT,'.html',$controllerLayout);
+            if (file_exists($controllerLayout)) {
+                $this->template($controllerLayout);
+            }else{
+                Error_msg('无法找到视图文件，页面模板：'.$name.File_TXT);
+            }
+          
         }
 		
 		
@@ -215,8 +222,14 @@ class View
 			$file = Tpl_common .'/'.$filename. $prefix;
 		}
 		if(!is_file($includefile)){
-			Error_msg($file.'不存在！');
+            //兼容自定义扩展和.html模板
+            $includefile = str_replace(File_TXT,'.html',$includefile);
+            if (!is_file($includefile)) {
+                Error_msg($file.'不存在！');
+            }
+			
 		}
+  
 		$content = file_get_contents($includefile);
 		$content = $this->template_html($content);
 		return $content;

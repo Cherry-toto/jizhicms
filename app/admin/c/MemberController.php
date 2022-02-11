@@ -256,7 +256,7 @@ class MemberController extends CommonController
 	function editOrders(){
 		$w['orders'] = $this->frparam('orders');
 		
-		$r = M('membergroup')->update(array('id'=>$this->frparam('id')),$w);
+		$r = M('member_group')->update(array('id'=>$this->frparam('id')),$w);
 		if(!$r){
 			JsonReturn(array('code'=>1,'info'=>JZLANG('修改失败！')));
 		}

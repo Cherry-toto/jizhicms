@@ -116,7 +116,7 @@ class SysController extends CommonController
 			   M('ruler')->add($con);
 			   
 		   }
-		   $config = include(APP_PATH.'Conf/config.php');
+		   $config = include(APP_PATH.'conf/config.php');
 		   if(checkAction('Sys/high-level')){
 			   if($this->frparam('isdebug')){
 					$config['APP_DEBUG'] = true;
@@ -131,7 +131,7 @@ class SysController extends CommonController
 		   }
 		   
 		   
-		   $ress = file_put_contents(APP_PATH.'Conf/config.php', '<?php return ' . var_export($config, true) . '; ?>');
+		   $ress = file_put_contents(APP_PATH.'conf/config.php', '<?php return ' . var_export($config, true) . '; ?>');
 
 		   if($this->webconf['pc_html']!=$this->frparam('pc_html',1) || $this->webconf['mobile_html']!=$this->frparam('mobile_html',1)){
 			   setCache('classtype',null);

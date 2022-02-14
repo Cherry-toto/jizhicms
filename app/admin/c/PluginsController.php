@@ -80,14 +80,24 @@ class PluginsController extends CommonController
 					}
 					$arraypage = new \ArrayPage($fileArray);
 					$data = $arraypage->query(['page'=>$this->frparam('page',0,1),'title'=>$this->title,'isdown'=>$this->frparam('isdown')])->setPage(['limit'=>$this->frparam('limit',0,10)])->go();
-					
+                    $pls = M('plugins')->findAll();
+                    $plugins = [];
+                    foreach($pls as $k=>$v){
+                        $plugins[$v['filepath']] = $v;
+                    }
 					foreach($data as $k=>$v){
 						//已下载该插件
 						if(!file_exists($dir.'/'.$v.'/config.php')){
 							continue;
 						}
 						$config = require_once($dir.'/'.$v.'/config.php');
-						$data[$k] = ['name'=>$config['name'],'filepath'=>$v,'description'=>$config['desc'],'version'=>$config['version'],'author'=>$config['author'],'update_time'=>strtotime($config['update_time']),'module'=>$config['module'],'isopen'=>0,'config'=>'','isinstall'=>false];
+                        if(isset($plugins[$v])){
+                            $data[$k] = $plugins[$v];
+                            $data[$k]['isinstall'] = true;
+                        }else{
+                            $data[$k] = ['name'=>$config['name'],'filepath'=>$v,'description'=>$config['desc'],'version'=>$config['version'],'author'=>$config['author'],'update_time'=>strtotime($config['update_time']),'module'=>$config['module'],'isopen'=>0,'config'=>'','isinstall'=>false];
+
+                        }
 						
 						if($isok && array_key_exists($v,$allplugins) && version_compare($config['version'],$allplugins[$v]['version'],'<')){
 							//有更新

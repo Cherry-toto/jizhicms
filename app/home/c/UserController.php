@@ -102,7 +102,10 @@ class UserController extends CommonController
 			$w['email'] = $this->frparam('email',1);
 			$w['litpic'] = $this->frparam('litpic',1);
 			$w['signature'] = $this->frparam('signature',1);
-			
+			$w['province'] = $this->frparam('province',1);
+			$w['city'] = $this->frparam('city',1);
+			$w['address'] = $this->frparam('address',1);
+
 			if($w['tel']!=''){
 				if(preg_match("/^(13[0-9]|14[579]|15[0-3,5-9]|16[6]|17[0135678]|18[0-9]|19[89])\\d{8}$/",$w['tel'])){  
 				

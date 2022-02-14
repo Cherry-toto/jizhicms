@@ -999,7 +999,7 @@ class MypayController extends CommonController
 			//echo json_encode($result);die;
 			//$res = json_encode($result);
 			if($res['code']==0){
-				$r = M('orders')->update(['orderno'=>$outTradeNo],['ispay'=>1,'isshow'=>2,'paytime'=>$res['time']]);
+				$r = M('orders')->update(['orderno'=>$outTradeNo],['ispay'=>1,'isshow'=>2,'paytime'=>time()]);
 				//检查是否金币或积分充值
 			if($order['ptype']==2){
 					//金币充值

@@ -97,7 +97,7 @@
 						  <span class="x-red"></span>{fun JZLANG('密码')}
 					  </label>
 					  <div class="layui-input-inline">
-						  <input type="password" id="L_pass" name="pass" required="" lay-verify="pass"
+						  <input type="password" id="L_pass" name="pass" lay-verify="pass"
 						  autocomplete="off" class="layui-input">
 					  </div>
 					  <div class="layui-form-mid layui-word-aux">
@@ -110,7 +110,7 @@
 						  <span class="x-red"></span>{fun JZLANG('确认密码')}
 					  </label>
 					  <div class="layui-input-inline">
-						  <input type="password" id="L_repass" name="repass" required="" lay-verify="repass"
+						  <input type="password" id="L_repass" name="repass"  lay-verify="repass"
 						  autocomplete="off" class="layui-input">
 					  </div>
 					  <div class="layui-form-mid layui-word-aux">
@@ -191,7 +191,7 @@
           });
       
 			get_fields({$member['gid']},{$member['id']});
-            get_fields_ext({$data['gid']},{$member['id']});
+            get_fields_ext({$member['gid']},{$member['id']});
 			form.on('select(gid)', function(data){
 			 
 			  get_fields(data.value,{$member['id']}); 

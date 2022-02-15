@@ -68,7 +68,8 @@ class View
             if (file_exists($controllerLayout)) {
                 $this->template($controllerLayout);
             }else{
-                Error_msg('无法找到视图文件，页面模板：'.$name.File_TXT);
+                $f = strpos($name,File_TXT)!==false ? $name : $name.File_TXT;
+                Error_msg('无法找到视图文件，页面模板：'.$f);
             }
           
         }
@@ -497,13 +498,13 @@ class View
 				
 			}else if($k=='istop'){
 				$v = (int)$v;
-				$w.=" and jzattr like \'%,".$v.",%\' ";
+				$w.=" and jzattr like \'%,1,%\' ";
 			}else if($k=='ishot'){
 				$v = (int)$v;
-				$w.=" and jzattr like \'%,".$v.",%\' ";
+				$w.=" and jzattr like \'%,2,%\' ";
 			}else if($k=='istuijian'){
 				$v = (int)$v;
-				$w.=" and jzattr like \'%,".$v.",%\' ";
+				$w.=" and jzattr like \'%,3,%\' ";
 			}else if($k=='jzattr'){
 				if(strpos($v,',')!==false){
 					$s = explode(',',$v);

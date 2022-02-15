@@ -162,7 +162,7 @@ class frphp
 		
 		$method = '';
 		if(open_url_route){
-			$open_url_route = include (APP_PATH.'Conf/route.php');
+			$open_url_route = include (APP_PATH.'conf/route.php');
 			$urls = '';
 			foreach($open_url_route as $k=>$v){
 				if($v!='' && $v[0]!='' && $v[1]!=''){

@@ -92,7 +92,7 @@
 							{/if}
 							{if($admin['gid']==1)}
 							<div  class="layui-inline">
-							<span data-clipboard-action="copy" id="copy_{$v['field']}_text"  data-clipboard-target="#copy_{$v['field']}_text" title="{fun JZLANG('点击复制')}" class="layui-badge-rim copy">{$v['field']}</span>
+							<span data-clipboard-action="copy" id="copy_{$v['field']}_text"  data-clipboard-target="#copy_{$v['field']}_text" title="{fun JZLANG('点击复制')}" class="layui-badge-rim copy">{!--$webconf['{$v['field']}']--}</span>
 							</div>
 							{if($v['sys']!=1)}
 							<div class="layui-inline">
@@ -151,7 +151,7 @@
 							{/if}
 							{if($admin['gid']==1)}
 							<div  class="layui-inline">
-							<span data-clipboard-action="copy" id="copy_{$v['field']}_text"  data-clipboard-target="#copy_{$v['field']}_text" title="{fun JZLANG('点击复制')}" class="layui-badge-rim copy">{$v['field']}</span>
+							<span data-clipboard-action="copy" id="copy_{$v['field']}_text"  data-clipboard-target="#copy_{$v['field']}_text" title="{fun JZLANG('点击复制')}" class="layui-badge-rim copy">{!--$webconf['{$v['field']}']--}</span>
 							</div>
 							{if($v['sys']!=1)}
 							<div class="layui-inline">
@@ -169,7 +169,7 @@
 							<i data-info="{$v['tip']}" data-field="f{$v['id']}" class="layui-sys-icon layui-icon layui-icon-about f{$v['id']}"></i>
 							{/if}
 							{if($admin['gid']==1)}
-							<span data-clipboard-action="copy" id="copy_{$v['field']}_text"  data-clipboard-target="#copy_{$v['field']}_text" title="{fun JZLANG('点击复制')}" class="layui-badge-rim copy">{$v['field']}</span>
+							<span data-clipboard-action="copy" id="copy_{$v['field']}_text"  data-clipboard-target="#copy_{$v['field']}_text" title="{fun JZLANG('点击复制')}" class="layui-badge-rim copy">{!--$webconf['{$v['field']}']--}</span>
 							{/if}
                             </label>
 							
@@ -193,7 +193,7 @@
 						/}
 						{if($admin['gid']==1)}
 						<div  class="layui-inline">
-						<span data-clipboard-action="copy" id="copy_{$v['field']}_text"  data-clipboard-target="#copy_{$v['field']}_text" title="{fun JZLANG('点击复制')}" class="layui-badge-rim copy">{$v['field']}</span>
+						<span data-clipboard-action="copy" id="copy_{$v['field']}_text"  data-clipboard-target="#copy_{$v['field']}_text" title="{fun JZLANG('点击复制')}" class="layui-badge-rim copy">{!--$webconf['{$v['field']}']--}</span>
 						</div>
 							{if($v['sys']!=1)}
 							<div class="layui-inline">
@@ -219,7 +219,7 @@
 							{/if}
 							{if($admin['gid']==1)}
 							<div  class="layui-inline">
-							<span data-clipboard-action="copy" id="copy_{$v['field']}_text"  data-clipboard-target="#copy_{$v['field']}_text" title="{fun JZLANG('点击复制')}" class="layui-badge-rim copy">{$v['field']}</span>
+							<span data-clipboard-action="copy" id="copy_{$v['field']}_text"  data-clipboard-target="#copy_{$v['field']}_text" title="{fun JZLANG('点击复制')}" class="layui-badge-rim copy">{!--$webconf['{$v['field']}']--}</span>
 							</div>
 							{if($v['sys']!=1)}
 							<div class="layui-inline">
@@ -284,7 +284,7 @@
 							{/if}
 							{if($admin['gid']==1)}
 							<div  class="layui-inline">
-							<span data-clipboard-action="copy" id="copy_{$v['field']}_text"  data-clipboard-target="#copy_{$v['field']}_text" title="{fun JZLANG('点击复制')}" class="layui-badge-rim copy">{$v['field']}</span>
+							<span data-clipboard-action="copy" id="copy_{$v['field']}_text"  data-clipboard-target="#copy_{$v['field']}_text" title="{fun JZLANG('点击复制')}" class="layui-badge-rim copy">{!--$webconf['{$v['field']}']--}</span>
 							</div>
 							{if($v['sys']!=1)}
 							<div class="layui-inline">
@@ -316,7 +316,7 @@
 							{/if}
 							{if($admin['gid']==1)}
 							<div  class="layui-inline">
-							<span data-clipboard-action="copy" id="copy_{$v['field']}_text"  data-clipboard-target="#copy_{$v['field']}_text" title="{fun JZLANG('点击复制')}" class="layui-badge-rim copy">{$v['field']}</span>
+							<span data-clipboard-action="copy" id="copy_{$v['field']}_text"  data-clipboard-target="#copy_{$v['field']}_text" title="{fun JZLANG('点击复制')}" class="layui-badge-rim copy">{!--$webconf['{$v['field']}']--}</span>
 							</div>
 							{if($v['sys']!=1)}
 							<div class="layui-inline">
@@ -328,8 +328,9 @@
 						{else if($v['type']==8)}
 						<div class="layui-form-item layui-form-text">
                             <label  class="layui-form-label">
-                                {$v['title']}  <span class="x-red">{$v['tip']}</span>{if($admin['gid']==1)}
-								<span data-clipboard-action="copy" id="copy_{$v['field']}_text"  data-clipboard-target="#copy_{$v['field']}_text" title="{fun JZLANG('点击复制')}" class="layui-badge-rim copy">{$v['field']}</span>
+                                {$v['title']}  <span class="x-red">{$v['tip']}</span>
+								{if($admin['gid']==1)}
+								<span data-clipboard-action="copy" id="copy_{$v['field']}_text"  data-clipboard-target="#copy_{$v['field']}_text" title="{fun JZLANG('点击复制')}" class="layui-badge-rim copy">{!--$webconf['{$v['field']}']--}</span>
 								{/if}
                             </label>
                             <div class="layui-input-block">

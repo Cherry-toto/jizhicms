@@ -1027,7 +1027,7 @@ class UserController extends CommonController
 				JsonReturn(array('code'=>1,'msg'=>JZLANG('该模块不允许发布！')));
 			}
 			
-			$w = get_fields_data($data,$w['molds']);
+			$w = get_fields_data($data,$w['molds'],0);
 			$w['molds'] = $this->frparam('molds',1);
 			//违禁词检测
 			if(isset($this->webconf['mingan']) && $this->webconf['mingan']!=''){

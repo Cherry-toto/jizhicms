@@ -101,6 +101,7 @@ namespace frphp\extend;
 						if(isset($param['page'])){
 							unset($param['page']);
 						}
+                        unset($param['PHPSESSID']);
 						unset($param['ajax']);
 						unset($param['ajax_tpl']);
 						$urlparse = parse_url($request_uri);
@@ -177,6 +178,7 @@ namespace frphp\extend;
 				}
 				if(strpos($url,'?')===false){
 					$param = $_REQUEST;
+                    unset($param['PHPSESSID']);
 					if(isset($param['page'])){
 						unset($param['page']);
 					}

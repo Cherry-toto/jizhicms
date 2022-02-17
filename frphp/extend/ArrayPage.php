@@ -63,6 +63,7 @@
 				if(isset($param[$this->pagetype])){
 					unset($param[$this->pagetype]);
 				}
+                unset($param['PHPSESSID']);
 				$url = http_build_query($param);
 			}else{
 				$url = '';

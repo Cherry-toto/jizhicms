@@ -502,7 +502,6 @@ function get_fields_data($data,$molds,$isadmin=1){
 			 case 9:
 			 case 12:
 			 case 18:
-			 case 19:
 			 $data[$v['field']] = format_param($data[$v['field']],1);
 			 break;
 			 case 11:
@@ -531,6 +530,10 @@ function get_fields_data($data,$molds,$isadmin=1){
 			 $r = implode('||',format_param($data[$v['field']],2));
 			 $data[$v['field']] = $r;
 			 break;
+             case 19:
+                 $data[$v['field']] = format_param($data[$v['field']],1);
+                 $data[$v['field']] = $data[$v['field']] ? ','.$data[$v['field']].',' : '';
+                 break;
 			
 		 }
 		 $newdata[$v['field']] = $data[$v['field']];

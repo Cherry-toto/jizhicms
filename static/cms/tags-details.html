@@ -3,9 +3,9 @@
   <head>
     <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <title>搜索 “{$word}” -{$webconf['web_name']}</title>
-	<meta name="keywords" content="搜索 “{$word}”" />
-	<meta name="description" content="搜索 “{$word}”" />
+    <title>搜索 “{$tagname}” -{$webconf['web_name']}</title>
+	<meta name="keywords" content="搜索 “{$tagname}”" />
+	<meta name="description" content="搜索 “{$tagname}”" />
 
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     {include="style"}
@@ -18,7 +18,7 @@
         <div class="blog-details-wrapper section-space--ptb_80">
           <div class="container">
 			<div class="row" style="margin-bottom: 20px;">
-			<h3>搜索 “{$word}” 结果如下：</h3>
+			<h3>搜索 “{$tagname}” 结果如下：</h3>
 			</div>
             <div class="row row--17">
 			{if($lists)}

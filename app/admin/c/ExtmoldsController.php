@@ -412,7 +412,7 @@ class ExtmoldsController extends Controller
 		$data = $this->frparam('data',1);
 		$molds = $this->frparam('molds',1);
 		if($data!=''){
-			$all = M('product')->findAll('id in('.$data.')');
+			$all = M($molds)->findAll('id in('.$data.')');
 			if(M($molds)->delete('id in('.$data.')')){
 				$customurls = M('customurl')->findAll(" aid in(".$data.") and molds='".$molds."' ");
 				M('customurl')->delete(" aid in(".$data.") and molds='".$molds."' ");
@@ -455,7 +455,7 @@ class ExtmoldsController extends Controller
 				M('customurl')->delete(['molds'=>$molds,'aid'=>$id]);
 				
 				$w['molds'] = $molds;
-				$w['data'] = json_encode($v,JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+				$w['data'] = json_encode($data,JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
 				$w['addtime'] = time();
 				$r = M('recycle')->add($w);
 				if($customurl){

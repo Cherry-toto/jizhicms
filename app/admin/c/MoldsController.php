@@ -99,7 +99,7 @@ class MoldsController extends CommonController
 				`isshow` tinyint(1) DEFAULT 1 COMMENT '".JZLANG("是否显示")."',
 				`target` varchar(255) DEFAULT NULL COMMENT '".JZLANG("外链")."',
 				`ownurl` varchar(255) DEFAULT NULL COMMENT '".JZLANG("自定义URL")."',
-				`jzattr` tinyint(2) DEFAULT 0 COMMENT '".JZLANG("推荐属性")."',
+				`jzattr` varchar(50) DEFAULT NULL COMMENT '".JZLANG("推荐属性")."',
 				`hits` int(11) DEFAULT 0 COMMENT '".JZLANG("点击量")."',
 				`zan` int(11) DEFAULT 0 COMMENT '".JZLANG("点赞数")."',
 				`tags` varchar(255) DEFAULT NULL COMMENT 'TAG',

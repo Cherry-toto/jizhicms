@@ -51,8 +51,9 @@
 					<td><button onclick="tohtml(this)" data="classtype" class="layui-btn" type="button">{fun JZLANG('生成电脑静态')}</button>
 					<button onclick="tohtmlmobile(this)" data="classtype" class="layui-btn  layui-btn-warm" type="button">{fun JZLANG('生成手机静态')}</button>
 
-					<button onclick="clearhtml(this)" data="classtype" class="layui-btn layui-btn-gray" type="button">{fun JZLANG('清理电脑静态HTML')}</button>
-					<button onclick="clearhtmlmobile(this)" data="classtype" class="layui-btn  layui-btn-gray" type="button">{fun JZLANG('清理手机静态HTML')}</button>
+					<button onclick="clearhtml(this)" data="classtype" class="layui-btn layui-btn-success" type="button">{fun JZLANG('清理电脑静态HTML')}</button>
+					<button onclick="clearhtmlmobile(this)" data="classtype" class="layui-btn  layui-btn-success" type="button">{fun JZLANG('清理手机静态HTML')}</button>
+					<button onclick="del(this)"  class="layui-btn  layui-btn-gray" type="button">{fun JZLANG('删除')}</button>
 
 					</td>
 					
@@ -76,8 +77,9 @@
 						</td>
 					<td><button onclick="tohtml(this)" data="article" class="layui-btn" type="button">{fun JZLANG('生成电脑静态')}</button>
 					<button onclick="tohtmlmobile(this)" data="article" class="layui-btn  layui-btn-warm" type="button">{fun JZLANG('生成手机静态')}</button>
-					<button onclick="clearhtml(this)" data="article" class="layui-btn layui-btn-gray" type="button">{fun JZLANG('清理电脑静态HTML')}</button>
-					<button onclick="clearhtmlmobile(this)" data="article" class="layui-btn  layui-btn-gray" type="button">{fun JZLANG('清理手机静态HTML')}</button>
+					<button onclick="clearhtml(this)" data="article" class="layui-btn layui-btn-success" type="button">{fun JZLANG('清理电脑静态HTML')}</button>
+					<button onclick="clearhtmlmobile(this)" data="article" class="layui-btn  layui-btn-success" type="button">{fun JZLANG('清理手机静态HTML')}</button>
+					<button onclick="del(this)"  class="layui-btn  layui-btn-gray" type="button">{fun JZLANG('删除')}</button>
 					</td>
 					
 					</tr>
@@ -99,8 +101,9 @@
 						</td>
 					<td><button onclick="tohtml(this)" data="product" class="layui-btn" type="button">{fun JZLANG('生成电脑静态')}</button>
 					<button onclick="tohtmlmobile(this)" data="product" class="layui-btn  layui-btn-warm" type="button">{fun JZLANG('生成手机静态')}</button>
-					<button onclick="clearhtml(this)" data="product" class="layui-btn layui-btn-gray" type="button">{fun JZLANG('清理电脑静态HTML')}</button>
-					<button onclick="clearhtmlmobile(this)" data="product" class="layui-btn  layui-btn-gray" type="button">{fun JZLANG('清理手机静态HTML')}</button>
+					<button onclick="clearhtml(this)" data="product" class="layui-btn layui-btn-success" type="button">{fun JZLANG('清理电脑静态HTML')}</button>
+					<button onclick="clearhtmlmobile(this)" data="product" class="layui-btn  layui-btn-success" type="button">{fun JZLANG('清理手机静态HTML')}</button>
+					<button onclick="del(this)"  class="layui-btn  layui-btn-gray" type="button">{fun JZLANG('删除')}</button>
 					</td>
 					
 					</tr>
@@ -124,8 +127,9 @@
 						</td>
 					<td><button onclick="tohtml(this)" data="{$v['biaoshi']}" class="layui-btn" type="button">{fun JZLANG('生成电脑静态')}</button>
 					<button onclick="tohtmlmobile(this)" data="{$v['biaoshi']}" class="layui-btn  layui-btn-warm" type="button">{fun JZLANG('生成手机静态')}</button>
-					<button onclick="clearhtml(this)" data="{$v['biaoshi']}" class="layui-btn layui-btn-gray" type="button">{fun JZLANG('清理电脑静态HTML')}</button>
-					<button onclick="clearhtmlmobile(this)" data="{$v['biaoshi']}" class="layui-btn  layui-btn-gray" type="button">{fun JZLANG('清理手机静态HTML')}</button>
+					<button onclick="clearhtml(this)" data="{$v['biaoshi']}" class="layui-btn layui-btn-success" type="button">{fun JZLANG('清理电脑静态HTML')}</button>
+					<button onclick="clearhtmlmobile(this)" data="{$v['biaoshi']}" class="layui-btn  layui-btn-success" type="button">{fun JZLANG('清理手机静态HTML')}</button>
+					<button onclick="del(this)"  class="layui-btn  layui-btn-gray" type="button">{fun JZLANG('删除')}</button>
 					</td>
 					</tr>
 					{/if}
@@ -143,8 +147,8 @@
 					  <div class="layui-form-item" style="text-align:center;">
 						 <button class="layui-btn" lay-submit lay-filter="formDemo">{fun JZLANG('批量生成电脑静态')}</button>
 						  <button class="layui-btn  layui-btn-warm" lay-submit lay-filter="formDemomobile">{fun JZLANG('批量生成手机静态')}</button>
-						  <button class="layui-btn layui-btn-gray" lay-submit lay-filter="clearformDemo">{fun JZLANG('批量清理电脑静态')}</button>
-						  <button class="layui-btn  layui-btn-gray" lay-submit lay-filter="clearformDemomobile">{fun JZLANG('批量清理手机静态')}</button>
+						  <button class="layui-btn layui-btn-success" lay-submit lay-filter="clearformDemo">{fun JZLANG('批量清理电脑静态')}</button>
+						  <button class="layui-btn  layui-btn-success" lay-submit lay-filter="clearformDemomobile">{fun JZLANG('批量清理手机静态')}</button>
 					  </div>
 					</form>
                 </div>
@@ -330,7 +334,7 @@
 				 data:{type:1,model:model,isshow:isshow,tid:tid,terminal:'pc'},
 				 type:"POST",
 				 beforeSend:function(){
-					layer.msg('正在处理~')};
+					layer.msg('{fun JZLANG('正在处理~')}');
 							
 				},
 				 success:function(r){
@@ -477,7 +481,10 @@
 			
 		}
 		
-
+		function del(a){
+			$(a).parent().parent().remove();
+		}
+		
         </script>
     </body>
 </html>

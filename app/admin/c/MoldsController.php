@@ -791,7 +791,7 @@ class MoldsController extends CommonController
                 'fieldtype'=>16,
                 'length'=>255,
 				'default'=>null,
-				'type'=>'varchar(255)',
+				'type'=>'varchar(50)',
             ],
 			'addtime'=>[
                 'field'=>'addtime',

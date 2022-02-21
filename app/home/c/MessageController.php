@@ -42,7 +42,7 @@ class MessageController extends CommonController
 				$w['isshow'] = 0;
 			}
 			
-			if(!isset($this->webconf['messagevercode']) || $this->webconf['messagevercode']){
+			if(!isset($this->webconf['messageyzm']) || $this->webconf['messageyzm']){
 				$vercode = strtolower($this->frparam('vercode',1));
 				if(!$vercode || md5(md5($vercode))!=$_SESSION['message_vercode']){
 					$xdata = array('code'=>1,'msg'=>JZLANG('验证码错误！'));

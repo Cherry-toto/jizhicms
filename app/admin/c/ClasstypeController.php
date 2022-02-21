@@ -80,7 +80,7 @@ class ClasstypeController extends CommonController
 			$w['details_html'] = $this->frparam('details_html',1);
 			$w['gourl'] = $this->frparam('gourl',1);
 			$w['lists_num'] = $this->frparam('lists_num');
-			$w['gids'] = implode(',',$this->frparam('gids',2));
+            $w['gids'] = $this->frparam('gids',2) ? implode(',',$this->frparam('gids',2)) : '';
 			
 			if($w['pid']){
 				$parent = M('classtype')->find(array('id'=>$w['pid']));
@@ -170,7 +170,7 @@ class ClasstypeController extends CommonController
 			$w['gourl'] = $this->frparam('gourl',1);
 			$w['lists_html'] = str_ireplace('.html','',$w['lists_html']);
 			$w['details_html'] = str_ireplace('.html','',$w['details_html']);
-			$w['gids'] = implode(',',$this->frparam('gids',2));
+            $w['gids'] = $this->frparam('gids',2) ? implode(',',$this->frparam('gids',2)) : '';
 			
 			$data = $this->frparam();
 			$data = get_fields_data($data,'classtype');

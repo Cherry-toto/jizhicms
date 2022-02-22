@@ -664,7 +664,11 @@ function extendFile($filepath){
 	if(strpos($filepath,'.')!==false){
 		require_once(CORE_PATH.'/extend/'.$filepath);
 	}else{
-		$Extend = scandir(CORE_PATH.'/extend'.$filepath);
+        if(substr($filepath,1)=='/'){
+            $Extend = scandir(CORE_PATH.'/extend'.$filepath);
+        }else{
+            $Extend = scandir(CORE_PATH.'/extend/'.$filepath);
+        }
 		
 		foreach($Extend as $v){
 			if(strpos($v,'.php')!==false){

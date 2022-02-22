@@ -394,30 +394,33 @@ function start_session($expire = 0)  {
 **/
 
 function register_log($data=null,$dataname=null){
-	if($dataname==null){
-		Error_msg('日志名称不能为空！');
-	}
-	
-	$st = array('m'=>APP_CONTROLLER,'a'=>APP_ACTION,'t'=>date('Y-m-d H:i:s',time()),'ip'=>GetIP(),'data'=>$data);
-	if(!is_dir(APP_PATH.'cache/log')){
-		mkdir(APP_PATH.'cache/log');
-	}
-	//读取日志文件
-	$logurl = APP_PATH.'cache/log/'.$dataname.'.php';
-	$log = @fopen($logurl,"r");
-	$log_txt=@fread($log,filesize($logurl));
-	@fclose($log);
-
-	if($log_txt!=''){
-		$log_txt = substr($log_txt,14);
-		$log_txt = json_decode($log_txt,true);
-	}
-	$log_txt[]=$st;
-	$log_txt = json_encode($log_txt,JSON_UNESCAPED_UNICODE);
-	$log_txt = '<?php die();?>'.$log_txt;
-	$log_x=@fopen($logurl,"w");
-	@fwrite($log_x,$log_txt);
-	@fclose($log_x);
+    if($dataname==null){
+        Error_msg('日志名称不能为空！');
+    }
+    
+    $st = array('m'=>APP_CONTROLLER,'a'=>APP_ACTION,'t'=>date('Y-m-d H:i:s',time()),'ip'=>GetIP(),'data'=>$data);
+    if(!is_dir(APP_PATH.'cache/log')){
+        mkdir(APP_PATH.'cache/log');
+    }
+    //读取日志文件
+    $logurl = APP_PATH.'cache/log/'.$dataname.'.php';
+    if(file_exists($logurl)){
+        $log = @fopen($logurl,"r");
+        $log_txt=@fread($log,filesize($logurl));
+        @fclose($log);
+    }else{
+        $log_txt = '';
+    }
+    if($log_txt!=''){
+        $log_txt = substr($log_txt,14);
+        $log_arr = json_decode($log_txt,true);
+    }
+    $log_arr[]=$st;
+    $log_txt = json_encode($log_arr,JSON_UNESCAPED_UNICODE);
+    $log_txt = '<?php die();?>'.$log_txt;
+    $log_x=@fopen($logurl,"w");
+    @fwrite($log_x,$log_txt);
+    @fclose($log_x);
 }
 
 
@@ -453,31 +456,34 @@ function show_log($dataname=null){
 	记录报错
 **/
 function actionLog(){
-	if(APP_DEBUG === true){
-		//开启调试模式自动记录事件,可以手动关闭
-		if(!StopLog){
-			
-			$st = array('m'=>APP_CONTROLLER,'a'=>APP_ACTION,'t'=>date('Y-m-d H:i:s',time()),'ip'=>GetIP(),'data'=>'');
-			//读取日志文件
-			$logurl = APP_PATH.'cache/log/memberAction.php';
-			
-			$log = @fopen($logurl,"r");
-			$log_txt=@fread($log,filesize($logurl));
-			@fclose($log);
-
-			if($log_txt!=''){
-				$log_txt = substr($log_txt,14);
-				$log_txt = json_decode($log_txt,true);
-			}
-			$log_txt[]=$st;
-			$log_txt = '<?php die();?>'.$log_txt;
-			$log_txt = json_encode($log_txt,JSON_UNESCAPED_UNICODE);
-			$log_x=@fopen($logurl,"w");
-			@fwrite($log_x,$log_txt);
-			@fclose($log_x);
-			
-		}
-	}
+    if(APP_DEBUG === true){
+        //开启调试模式自动记录事件,可以手动关闭
+        if(!StopLog){
+            
+            $st = array('m'=>APP_CONTROLLER,'a'=>APP_ACTION,'t'=>date('Y-m-d H:i:s',time()),'ip'=>GetIP(),'data'=>'');
+            //读取日志文件
+            $logurl = APP_PATH.'cache/log/memberAction.php';
+            
+            if(file_exists($logurl)){
+                $log = @fopen($logurl,"r");
+                $log_txt=@fread($log,filesize($logurl));
+                @fclose($log);
+            }else{
+                $log_txt = '';
+            }
+            if($log_txt!=''){
+                $log_txt = substr($log_txt,14);
+                $log_arr = json_decode($log_txt,true);
+            }
+            $log_arr[]=$st;
+            $log_txt = json_encode($log_arr,JSON_UNESCAPED_UNICODE);
+            $log_txt = '<?php die();?>'.$log_txt;
+            $log_x=@fopen($logurl,"w");
+            @fwrite($log_x,$log_txt);
+            @fclose($log_x);
+            
+        }
+    }
 }
 
 /**

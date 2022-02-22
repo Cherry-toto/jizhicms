@@ -538,7 +538,7 @@ CREATE TABLE `jz_pingjia` (
   `isshow` tinyint(1) DEFAULT '1' COMMENT '是否显示',
   `target` varchar(255) DEFAULT NULL COMMENT '外链',
   `ownurl` varchar(255) DEFAULT NULL COMMENT '自定义URL',
-  `jzattr` tinyint(2) DEFAULT '0' COMMENT '推荐属性',
+  `jzattr` varchar(50) DEFAULT NULL COMMENT '推荐属性',
   `hits` int(11) DEFAULT '0' COMMENT '点击量',
   `zan` int(11) DEFAULT '0' COMMENT '点赞数',
   `tags` varchar(255) DEFAULT NULL COMMENT 'TAG',
@@ -845,7 +845,7 @@ INSERT INTO `jz_fields` (`id`,`field`,`molds`,`fieldname`,`tips`,`fieldtype`,`ti
 INSERT INTO `jz_fields` (`id`,`field`,`molds`,`fieldname`,`tips`,`fieldtype`,`tids`,`fieldlong`,`body`,`orders`,`ismust`,`isshow`,`isadmin`,`issearch`,`islist`,`format`,`vdata`,`isajax`,`listorders`,`isext`,`width`,`ishome`) VALUES ('87','comment_num','pingjia','评论数','系统自带','4', NULL,'11', NULL,'100','0','0','0','0','0', NULL,'0','1','0','0', NULL,'0');
 INSERT INTO `jz_fields` (`id`,`field`,`molds`,`fieldname`,`tips`,`fieldtype`,`tids`,`fieldlong`,`body`,`orders`,`ismust`,`isshow`,`isadmin`,`issearch`,`islist`,`format`,`vdata`,`isajax`,`listorders`,`isext`,`width`,`ishome`) VALUES ('88','zan','pingjia','点赞数','系统自带','4', NULL,'11', NULL,'100','0','0','0','0','0', NULL,'0','1','0','0', NULL,'0');
 INSERT INTO `jz_fields` (`id`,`field`,`molds`,`fieldname`,`tips`,`fieldtype`,`tids`,`fieldlong`,`body`,`orders`,`ismust`,`isshow`,`isadmin`,`issearch`,`islist`,`format`,`vdata`,`isajax`,`listorders`,`isext`,`width`,`ishome`) VALUES ('89','addtime','pingjia','添加时间','选择时间','11',',10,','11', NULL,'100','0','1','1','0','1','date_2','0','1','0','0', NULL,'1');
-INSERT INTO `jz_fields` (`id`,`field`,`molds`,`fieldname`,`tips`,`fieldtype`,`tids`,`fieldlong`,`body`,`orders`,`ismust`,`isshow`,`isadmin`,`issearch`,`islist`,`format`,`vdata`,`isajax`,`listorders`,`isext`,`width`,`ishome`) VALUES ('90','jzattr','pingjia','推荐属性','1置顶2热点3推荐','16', NULL,'50','置顶=1,热点=2,推荐=3','100','0','1','0','0','0', NULL,'0','1','0','0', NULL,'1');
+INSERT INTO `jz_fields` (`id`,`field`,`molds`,`fieldname`,`tips`,`fieldtype`,`tids`,`fieldlong`,`body`,`orders`,`ismust`,`isshow`,`isadmin`,`issearch`,`islist`,`format`,`vdata`,`isajax`,`listorders`,`isext`,`width`,`ishome`) VALUES ('90','jzattr','pingjia','推荐属性','1置顶2热点3推荐','16', NULL,'50','14,name','100','0','1','0','0','0', NULL,'0','1','0','0', NULL,'1');
 INSERT INTO `jz_fields` (`id`,`field`,`molds`,`fieldname`,`tips`,`fieldtype`,`tids`,`fieldlong`,`body`,`orders`,`ismust`,`isshow`,`isadmin`,`issearch`,`islist`,`format`,`vdata`,`isajax`,`listorders`,`isext`,`width`,`ishome`) VALUES ('91','isshow','pingjia','是否显示','显示隐藏','7',',10,','1','显示=1,隐藏=0,退回=2','100','0','1','1','1','1', NULL,'1','1','0','0', NULL,'1');
 INSERT INTO `jz_fields` (`id`,`field`,`molds`,`fieldname`,`tips`,`fieldtype`,`tids`,`fieldlong`,`body`,`orders`,`ismust`,`isshow`,`isadmin`,`issearch`,`islist`,`format`,`vdata`,`isajax`,`listorders`,`isext`,`width`,`ishome`) VALUES ('92','zhiye','pingjia','职业', NULL,'1',',10,','255', NULL,'100','0','1','1','0','1', NULL, NULL,'1','0','0', NULL,'1');
 INSERT INTO `jz_fields` (`id`,`field`,`molds`,`fieldname`,`tips`,`fieldtype`,`tids`,`fieldlong`,`body`,`orders`,`ismust`,`isshow`,`isadmin`,`issearch`,`islist`,`format`,`vdata`,`isajax`,`listorders`,`isext`,`width`,`ishome`) VALUES ('93','orders','pingjia','排序', NULL,'4', NULL,'4', NULL,'1','0','1','1','0','1', NULL,'0','1','0','0', NULL,'1');

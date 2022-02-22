@@ -47,9 +47,12 @@
                                     <h3>{$jz['title']}</h3>
 									
 									<p>
-									{foreach explode(',',$jz['tags']) as $v}
-									{if($v)}<span class="badge bg-primary">{$v}</span>{/if}
-									{/foreach}
+										{if($jz['tags'])}
+										{foreach explode(',',$jz['tags']) as $v}
+										{if($v)}<span class="badge bg-primary">{$v}</span>{/if}
+										{/foreach}
+										{/if}
+
 									</p>
                                     <div class="price">
                                         ￥{$jz['price']} <span class="nsbar">

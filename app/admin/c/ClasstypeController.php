@@ -97,8 +97,8 @@ class ClasstypeController extends CommonController
 				$w['details_html']= $w['details_html'] ? $w['details_html'] : $this->frparam('details_html_write',1);
 			}
 			
-			$w['lists_html'] = str_ireplace('.html','',$w['lists_html']);
-			$w['details_html'] = str_ireplace('.html','',$w['details_html']);
+			//$w['lists_html'] = str_ireplace('.html','',$w['lists_html']);
+			//$w['details_html'] = str_ireplace('.html','',$w['details_html']);
 			
 			
 			$data = $this->frparam();
@@ -168,8 +168,8 @@ class ClasstypeController extends CommonController
 			$w['details_html'] = $this->frparam('details_html',1) ? $this->frparam('details_html',1) : $this->frparam('details_html_write',1);
 			$w['lists_num'] = $this->frparam('lists_num');
 			$w['gourl'] = $this->frparam('gourl',1);
-			$w['lists_html'] = str_ireplace('.html','',$w['lists_html']);
-			$w['details_html'] = str_ireplace('.html','',$w['details_html']);
+			//$w['lists_html'] = str_ireplace('.html','',$w['lists_html']);
+			//$w['details_html'] = str_ireplace('.html','',$w['details_html']);
             $w['gids'] = $this->frparam('gids',2) ? implode(',',$this->frparam('gids',2)) : '';
 			
 			$data = $this->frparam();

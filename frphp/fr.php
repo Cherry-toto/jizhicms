@@ -101,7 +101,7 @@ class frphp
 		
 		//读取系统配置
 		$webconfig = getCache('webconfig');
-		if( !isset($webconfig['closesession']) || (isset($webconfig['closesession']) && $webconfig['closesession']==0) || APP_HOME=='A'){
+		if( !isset($webconfig['closesession']) || (isset($webconfig['closesession']) && $webconfig['closesession']==0) || APP_HOME=='app/admin'){
 			//检查是否开启redis_session ---2019/09/05 留恋风
 			if(open_redis_session){
 				$session = new \SessionRedis($this->config['redis']);

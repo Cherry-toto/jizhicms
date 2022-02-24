@@ -50,7 +50,7 @@ class View
 				$controllerLayout =  str_replace('@','',$name);
 			}else{
 				$controllerLayout =  HOME_VIEW ? $path.'/'.HOME_VIEW.'/'.Tpl_template.'/' . $name : $path.'/'.Tpl_template.'/' . $name;
-				$controllerLayout = stripos($controllerLayout,File_TXT)!==false ? $controllerLayout : $controllerLayout.File_TXT;
+				$controllerLayout = (stripos($controllerLayout,File_TXT)!==false || stripos($controllerLayout,'.html')!==false ) ? $controllerLayout : $controllerLayout.File_TXT;
 			}
 			
 		}else{

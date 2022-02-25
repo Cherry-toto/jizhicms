@@ -763,13 +763,13 @@ laydate.render({elem: "#laydate_'.$v['field'].'" });});</script>';
 				  <option value="">请选择栏目</option>';
 		if($_SESSION['admin']['isadmin']!=1){
 			$tids = $_SESSION['admin']['tids'];
-			foreach ($classtypedata as $k => $v) {
-				if($v['pid']==0){
-					if(strpos($_SESSION['admin']['tids'],','.$v['id'].',')!==false){
-						$children = get_children($v,$classtypetree,5);
+			foreach ($classtypedata as $k => $vs) {
+				if($vs['pid']==0){
+					if(strpos($_SESSION['admin']['tids'],','.$vs['id'].',')!==false){
+						$children = get_children($vs,$classtypetree,5);
 						foreach($children as $vv){
 							if(strpos($_SESSION['admin']['tids'],','.$vv['id'].',')===false){
-								$tids .= ','.$vv['id'].',';
+                                $tids .=  $tids ? $vv['id'].',' : ','.$vv['id'].',';
 							}
 						}
 					}
@@ -784,7 +784,7 @@ laydate.render({elem: "#laydate_'.$v['field'].'" });});</script>';
 		$moldsdata = M('molds')->find(['biaoshi'=>$molds]);
 		$d = format_param($data[$v['field']]);
 			foreach ($classtypedata as $vs){
-			  if($v['molds']==$molds){
+			  if($vs['molds']==$molds){
 				  if($admin['classcontrol']==0 || $admin['isadmin']==1 || strpos($tids,','.$vs['id'].',')!==false || $moldsdata['iscontrol']==0){
 					  if($d==$vs['id']){
 						  $fields_search.='<option selected="selected" value="'.$vs['id'].'">'.str_repeat('--', $vs['level']).$vs['classname'].'</option>'; 

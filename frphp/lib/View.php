@@ -34,7 +34,8 @@ class View
     // 分配变量
     public function assign($name, $value)
     {
-        $this->variables[$name] = $value;
+        //$this->variables[$name] = $value;
+        $GLOBALS[$name] = $value;
     }
  
     // 渲染显示
@@ -80,7 +81,8 @@ class View
 	
 	//模板解析
 	public function template($controllerLayout){
-		extract($this->variables);//分配变量到模板中
+		//extract($this->variables);//分配变量到模板中
+		extract($GLOBALS);//分配变量到模板中
 		//对路径文件换为缓存目录  '/'换为'-'
 		//$layout = str_ireplace(array("//","/"),'_',$controllerLayout);
 		//$cache_file = str_ireplace('.html','.php',APP_PATH.'/cache/'.$layout);

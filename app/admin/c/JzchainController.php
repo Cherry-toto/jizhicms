@@ -46,7 +46,7 @@ class JzchainController extends CommonController
 			foreach($data as $k=>$v){
 				
 				$v['isshow'] = $v['isshow']==1 ? JZLANG('显示') : JZLANG('隐藏');
-				$v['newtitle'] = $v['newtitle'] ?? '';
+				$v['newtitle'] = $v['newtitle'] ? $v['newtitle'] : '';
 				$ajaxdata[]=$v;
 				
 			}

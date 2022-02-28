@@ -273,14 +273,14 @@ class CommentController extends CommonController
 		$sql = "isshow=1 and pid=0 and aid=".$aid." and tid=".$tid;
 		$data = $comment->where($sql)->orderby('likes desc,id desc')->limit($limit)->page($page)->go();
 		foreach($data as $k=>$v){
-			$data[$k]['classname'] = $v['tid'] ?? $this->classtypedata[$v['tid']];
+			$data[$k]['classname'] = $v['tid'] ? $v['tid'] : $this->classtypedata[$v['tid']];
 			$data[$k]['article'] = !$v['aid'] ? [] : M($this->classtypedata[$v['tid']]['molds'])->find(['id'=>$v['aid'],'isshow'=>1]);
 			$data[$k]['user'] = !$v['userid'] ? [] : M('member')->find(['id'=>$v['userid']],null,'id,username,litpic');
 			$data[$k]['addtime'] = formatTime($v['addtime']);
 			$children = M('comment')->findAll(['pid'=>$v['id'],'isshow'=>1]);
 			if($children){
 				foreach($children as $kk=>$vv){
-					$children[$kk]['classname'] = $vv['tid'] ?? $this->classtypedata[$vv['tid']];
+					$children[$kk]['classname'] = $vv['tid'] ? $vv['tid'] : $this->classtypedata[$vv['tid']];
 					$children[$kk]['article'] = !$vv['aid'] ? [] : M($this->classtypedata[$vv['tid']]['molds'])->find(['id'=>$vv['aid'],'isshow'=>1]);
 					$children[$kk]['user'] = !$vv['userid'] ? [] : M('member')->find(['id'=>$vv['userid']],null,'id,username,litpic');
 					$children[$kk]['addtime'] = formatTime($v['addtime']);

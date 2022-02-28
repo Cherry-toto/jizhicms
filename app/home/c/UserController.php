@@ -1761,43 +1761,36 @@ class UserController extends CommonController
 				$this->allpage = $page->allpage;//总页数
 			break;
 			case 5:
-				$lists = [];
-				if($this->user['collection']!=''){
-					
-					$collection = explode('||',$this->user['collection']);
+                $model = new Page('shouchang');
+                $data = $model->where(['userid'=>$this->member['id']])->orderby('addtime desc')->limit($this->frparam('limit',0,15))->page($this->frparam('page',0,1))->go();
+                $model->file_ext = '';
+                $pages = $model->pageList(5,'?page=');
+                $this->pages = $pages;
 
-					foreach($collection as $v){
-						if($v!=''){
-							$d = explode('-',$v);
-							//tid-id
-							if($d!=''){
-								$xdata=M($this->classtypedata[$d[0]]['molds'])->find(['id'=>$d[1]]);
-								if($xdata){
-									$lists[] = $xdata;
-								}
-							}
-						}
-					}
-				}
-				
-				$arraypage = new \ArrayPage($lists);
-				$data = $arraypage->query(['page'=>$this->frparam('page',0,1),'uname'=>$username,'type'=>$this->frparam('type',0,1)])->setPage(['limit'=>10])->go();
-				foreach($data as $k=>$v){
-					$data[$k]['url'] = gourl($v['id'],$v['htmlurl']);
-					if(isset($this->classtypedata[$v['tid']])){
-						$data[$k]['classname'] = $this->classtypedata[$v['tid']]['classname'];
-					}else{
-						$data[$k]['classname'] = '[ '.JZLANG('已被删除').' ]';
-					}
-					
-					
-				}
+
+                foreach($data as $k=>$v){
+                    if(isset($this->classtypedata[$v['tid']])){
+                        $data[$k]['classname'] = $this->classtypedata[$v['tid']]['classname'];
+                        $molds = $this->classtypedata[$v['tid']]['molds'];
+                        $vdata = M($molds)->find(['id'=>$v['aid']]);
+                        $data[$k]['url'] = gourl($vdata['id'],$vdata['htmlurl']);
+                        $data[$k]['details'] = $vdata;
+                    }else{
+                        $data[$k]['classname'] = '[ '.JZLANG('已被删除').' ]';
+                        $data[$k]['url'] = '';
+                        $data[$k]['details'] = [];
+                    }
+
+
+
+                }
+
+
 				$this->lists = $data;
-				$this->pages = $arraypage->pageList();
-				$this->listpage = $arraypage->listpage;//分页数组-自定义分页可用
-				$this->prevpage = $arraypage->prevpage;//上一页
-				$this->nextpage = $arraypage->nextpage;//下一页
-				$this->allpage = $arraypage->allpage;//总页数
+				$this->listpage = $model->listpage;//分页数组-自定义分页可用
+				$this->prevpage = $model->prevpage;//上一页
+				$this->nextpage = $model->nextpage;//下一页
+				$this->allpage = $model->allpage;//总页数
 				if($this->frparam('ajax')){
 					
 					JsonReturn(['code'=>0,'data'=>$data]);
@@ -1841,42 +1834,38 @@ class UserController extends CommonController
 			break;
 			case 7:
 				$lists = [];
-				if($this->user['likes']!=''){
-			
-					$likes = explode('||',$this->user['likes']);
+                $model = new Page('likes');
+                $data = $model->where(['userid'=>$this->member['id']])->orderby('addtime desc')->limit($this->frparam('limit',0,15))->page($this->frparam('page',0,1))->go();
+                $model->file_ext = '';
+                $pages = $model->pageList(5,'?page=');
+                $this->pages = $pages;
 
-					foreach($likes as $v){
-						if($v!=''){
-							$d = explode('-',$v);
-							//tid-id
-							if($d!=''){
-								$xdata=M($this->classtypedata[$d[0]]['molds'])->find(['id'=>$d[1]]);
-								if($xdata){
-									$lists[]=$xdata;
-								}
-							}
-						}
-					}
-				}
-				
-				$arraypage = new \ArrayPage($lists);
-				$data = $arraypage->query(['page'=>$this->frparam('page',0,1),'uname'=>$username,'type'=>$this->frparam('type',0,1)])->setPage(['limit'=>10])->go();
-				foreach($data as $k=>$v){
-					$data[$k]['url'] = gourl($v['id'],$v['htmlurl']);
-					if(isset($this->classtypedata[$v['tid']])){
-						$data[$k]['classname'] = $this->classtypedata[$v['tid']]['classname'];
-					}else{
-						$data[$k]['classname'] = '[ '.JZLANG('已被删除').' ]';
-					}
-					
-					
-				}
-				$this->lists = $data;
-				$this->pages = $arraypage->pageList();
-				$this->listpage = $arraypage->listpage;//分页数组-自定义分页可用
-				$this->prevpage = $arraypage->prevpage;//上一页
-				$this->nextpage = $arraypage->nextpage;//下一页
-				$this->allpage = $arraypage->allpage;//总页数
+
+                foreach($data as $k=>$v){
+                    if(isset($this->classtypedata[$v['tid']])){
+                        $data[$k]['classname'] = $this->classtypedata[$v['tid']]['classname'];
+                        $molds = $this->classtypedata[$v['tid']]['molds'];
+                        $vdata = M($molds)->find(['id'=>$v['aid']]);
+                        $data[$k]['url'] = gourl($vdata['id'],$vdata['htmlurl']);
+                        $data[$k]['details'] = $vdata;
+                    }else{
+                        $data[$k]['classname'] = '[ '.JZLANG('已被删除 ').']';
+                        $data[$k]['url'] = '';
+                        $data[$k]['details'] = [];
+                    }
+
+
+
+
+                }
+
+
+
+                $this->lists = $data;
+				$this->listpage = $model->listpage;//分页数组-自定义分页可用
+				$this->prevpage = $model->prevpage;//上一页
+				$this->nextpage = $model->nextpage;//下一页
+				$this->allpage = $model->allpage;//总页数
 				if($this->frparam('ajax')){
 					JsonReturn(['code'=>0,'data'=>$data]);
 				}

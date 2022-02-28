@@ -13,7 +13,7 @@ CREATE TABLE `jz_article` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `title` varchar(255) DEFAULT NULL COMMENT '文章标题',
   `tid` int(11) NOT NULL DEFAULT '0' COMMENT '所属栏目',
-  `molds` varchar(50) DEFAULT NULL COMMENT '模型标识',
+  `molds` varchar(50) DEFAULT 'article' COMMENT '模型标识',
   `htmlurl` varchar(50) DEFAULT NULL COMMENT '栏目链接',
   `keywords` varchar(255) DEFAULT NULL COMMENT '关键词',
   `description` text COMMENT '简介',

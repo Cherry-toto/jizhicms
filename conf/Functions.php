@@ -1815,139 +1815,108 @@ function deldir($dir) {
  * direct=1 中间开始裁剪  direct=0 左上角开始裁剪
  * debug=1 调试状态，每次请求都生成缓存 debug=0 会直接调用已生成的缩略图
  */
-function jzresize($src_image,$out_width = NULL, $out_height = NULL, $mode = 1, $out_image = NULL,  $direct = 0 ,$debug=0 , $img_quality = 90 ) {
-	if(!is_dir(APP_PATH.'cache/image')){
-		if(!mkdir(APP_PATH.'cache/image',0777)){
-			exit('图片缓存文件夹不存在cache/image');
-		}		
-	}
-	// 检查原图是否存在
-	if(!file_exists('.'.$src_image)){
-		// 检查是否远程图片,并下载
-		if(strpos($src_image,'http')!==false){
-			  $path = 'cache/image';
-			  $ch = curl_init();
-			  curl_setopt($ch, CURLOPT_URL, $src_image);
-			  curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-			  curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 30);
-			  $file = curl_exec($ch);
-			  curl_close($ch);
-			  if($file==false){
-				  exit('无法下载！');
-			  }
-			  $filename = pathinfo($src_image, PATHINFO_BASENAME);
-			  $resource = fopen($path . $filename, 'w');
-			  fwrite($resource, $file);
-			  fclose($resource);
-			  $src_image = '/'.$path . $filename;
-		}else{
-			return '错误链接';//返回空，避免程序停止执行
-		}
-		
-	}
-	
-	
-	// 处理图片名称
-	if(!$out_image){
-		
-		$imageinfo = pathinfo($src_image);
-		$filename = str_replace('.'.$imageinfo['extension'],'_'.$out_width.'x'.$out_height.'.'.$imageinfo['extension'],$imageinfo['basename']);
-		$out_image = 'cache/image/'.$filename;
-	}
-	
-	// 检查生成图片是否存在
-	if(file_exists(APP_PATH.$out_image) && !$debug){
-		return '/'.$out_image;
-	}
-	
-	//$out_image = $out_image;
-	// 将图片拷贝到缓存目录
-	if(!copy(APP_PATH.$src_image, $out_image)){
-		return '';
-	}
-	$src_image = $out_image;
-	
-	// 获取图片属性
-	list($width, $height, $type, $attr) = getimagesize($src_image);
-	switch ($type) {
-		case 1:
-			$img = imagecreatefromgif($src_image);
-			break;
-		case 2:
-			$img = imagecreatefromjpeg($src_image);
-			break;
-		case 3:
-			$img = imagecreatefrompng($src_image);
-			break;
-	}
-	
-	$thumbnail_w = $width;
-	$thumbnail_h = $height;
-	// 压缩形式
-	if($mode==1){
-		//尺寸
-		$new_img_thumbnail_width = $out_width;
-		$new_img_thumbnail_height = $out_height;
-		
-	}else{
-		//比例
-		$new_img_thumbnail_width = $width;
-		$new_img_thumbnail_height = $width/($out_width/$out_height);
-		if($new_img_thumbnail_height>$height){
-			$new_img_thumbnail_height = $height;
-			$new_img_thumbnail_width = $height*($out_width/$out_height);
-		}
-		
-		
-		
-	}
-	if($direct==1){
-		//正中间裁剪
+function jzresize($src_image,$out_width = NULL, $out_height = NULL, $mode = 1, $out_image = NULL,  $direct = 1 ,$debug = 0 , $img_quality = 90 ) {
+    if(!file_exists('.'.$src_image)){
+        if(strpos($src_image,'http')!==false){return $src_image;}
+    }else{
+        list($width, $height, $type, $attr) = getimagesize('.'.$src_image);
+        if($width==$out_width && $height==$out_height){
+            return $src_image;
+        }
+        if(!is_dir(APP_PATH.'cache/image')){
+            if(!mkdir(APP_PATH.'cache/image',0777)){
+                exit('没有权限[cache/image]');
+            }
+        }
+        if(!$out_image){
+            $imageinfo = pathinfo($src_image);
+            $filename = str_replace('.'.$imageinfo['extension'],'_'.$out_width.'x'.$out_height.'.'.$imageinfo['extension'],$imageinfo['basename']);
+            $out_image = 'cache/image/'.$filename;
+        }
+        if(file_exists(APP_PATH.$out_image) && !$debug){
+            return '/'.$out_image;
+        }else{
+            if(!copy(APP_PATH.$src_image, $out_image)){return '';}
+            list($width, $height, $type, $attr) = getimagesize($out_image);
+            switch ($type) {
+                case 1:
+                    $img = imagecreatefromgif($out_image);
+                    break;
+                case 2:
+                    $img = imagecreatefromjpeg($out_image);
+                    break;
+                case 3:
+                    $img = imagecreatefrompng($out_image);
+                    break;
+            }
+            $out_scale = $out_height/$out_width;
+            $src_scale = $height/$width;
+            if($mode==1){
+                $w = $out_width;
+                $h = $out_height;
+            }else{
+                $w = $width;
+                $h = intval($out_scale*$w);
+                if($h>$height){
 
-		$start_x = ($width - $new_img_thumbnail_width)/2;
-		$start_y = ($height - $new_img_thumbnail_height)/2;
-		
-		if($height-$thumbnail_h<0){
-			$height = $height+$start_y;
-		}
-		if($width-$thumbnail_w<0){
-			$width = $width+$start_x;
-		}
-	
-	}else{
-		//左上角裁剪
-		$start_x = 0;
-		$start_y = 0;
-	}
-	
-	$new_img = imagecreatetruecolor($new_img_thumbnail_width, $new_img_thumbnail_height); // 创建画布
-															  
-	// 创建透明画布,避免黑色
-	if ($type == 1 || $type == 3) {
-		$color = imagecolorallocate($new_img, 255, 255, 255);
-		imagefill($new_img, 0, 0, $color);
-		imagecolortransparent($new_img, $color);
-	}
-	imagecopyresampled($new_img, $img, 0, 0, $start_x, $start_y, $thumbnail_w, $thumbnail_h, $width, $height);
-	
-	switch ($type) {
-		case 1:
-			imagegif($new_img, $out_image, $img_quality);
-			break;
-		case 2:
-			imagejpeg($new_img, $out_image, $img_quality);
-			break;
-		case 3:
-			imagepng($new_img, $out_image); 
-			break;
-		default:
-			imagejpeg($new_img, $out_image, $img_quality);
-	}
-	imagedestroy($new_img);
-	imagedestroy($img);
-	
-	
-	return '/'.$out_image;
+                    $h = $height;
+                    $w = intval($h/$out_scale);
+                }
+            }
+
+            if($direct==1){
+                if ($src_scale>=$out_scale){
+                    $w = intval($width);
+                    $h = intval($out_scale*$w);
+                    $start_x = 0;
+                    $start_y = ($height - $h)/2;
+
+                } else {
+                    $h = intval($height);
+                    $w = intval($h/$out_scale);
+                    $start_x = ($width - $w)/2;
+                    $start_y = 0;
+                }
+            }else{
+                $w = intval($width);
+                $h = intval($height);
+                $start_x = 0;
+                $start_y = 0;
+            }
+
+
+            $scale = $out_width/$w;
+
+            $new_img = imagecreatetruecolor($out_width, $out_height);
+            $new_img_width = intval($w * $scale);
+            $new_img_height = intval($h * $scale);
+
+
+            if($type == 1 || $type == 3){
+                $alpha = imagecolorallocatealpha($new_img,0,0,0,127);
+                imagefill($new_img, 0, 0, $alpha);
+            }
+
+            imagecopyresampled($new_img, $img, 0, 0, $start_x, $start_y, $new_img_width, $new_img_height, $w, $h);
+            switch ($type) {
+                case 1:
+                    imagegif($new_img, $out_image, $img_quality);
+                    break;
+                case 2:
+                    imagejpeg($new_img, $out_image, $img_quality);
+                    break;
+                case 3:
+                    imagesavealpha($new_img, true);
+                    imagepng($new_img, $out_image);
+                    break;
+                default:
+                    imagejpeg($new_img, $out_image, $img_quality);
+            }
+            imagedestroy($new_img);
+            imagedestroy($img);
+            return '/'.$out_image;
+        }
+    }
 }
 
 function jzcachedata($field){

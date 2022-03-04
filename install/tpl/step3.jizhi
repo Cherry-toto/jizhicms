@@ -58,7 +58,7 @@
 								$('#progress_bar .ui-progress').animateProgress(num)
 								 $('#main_content').html("安装中");
 									 if (num==100){
-										  $('#main_content').html("<span >数据库初始化完成</span>");
+										  $('#main_content').html("<span >数据库初始化完成！请点击 安装完成 。</span>");
 										 $(".button_step5").val("完成安装").removeAttr("disabled");
 										if("0"=="1"){ $(".button_testsql").show(); }
 									 }	

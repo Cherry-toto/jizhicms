@@ -147,7 +147,7 @@ class ExtmoldsController extends Controller
 		}
 		
 		
-		if(file_exists(APP_PATH.APP_HOME.'/'.HOME_VIEW.'/'.Tpl_template.'/'.$molds.'-list')){
+		if(file_exists(APP_PATH.APP_HOME.'/'.HOME_VIEW.'/'.Tpl_template.'/'.$molds.'-list.html')){
 			$this->display($molds.'-list');
 		}else{
 			$this->display('extmolds-list');
@@ -229,7 +229,7 @@ class ExtmoldsController extends Controller
 		$this->classtypes = $this->classtypetree;
 		$this->tid =  $this->frparam('tid',0,0);
 		$this->molds = M('Molds')->find(array('biaoshi'=>$molds));
-		if(file_exists(APP_PATH.APP_HOME.'/'.HOME_VIEW.'/'.Tpl_template.'/'.$molds.'-add')){
+		if(file_exists(APP_PATH.APP_HOME.'/'.HOME_VIEW.'/'.Tpl_template.'/'.$molds.'-add.html')){
 			$this->display($molds.'-add');
 		}else{
 			$this->display('extmolds-add');
@@ -380,7 +380,7 @@ class ExtmoldsController extends Controller
 		$this->tid =  $this->data['tid'];
 		$this->classtypetree =  get_classtype_tree();
 		$this->classtypes = $this->classtypetree;
-		if(file_exists(APP_PATH.APP_HOME.'/'.HOME_VIEW.'/'.Tpl_template.'/'.$molds.'-edit')){
+		if(file_exists(APP_PATH.APP_HOME.'/'.HOME_VIEW.'/'.Tpl_template.'/'.$molds.'-edit.html')){
 			$this->display($molds.'-edit');
 		}else{
 			$this->display('extmolds-edit');

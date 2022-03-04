@@ -47,7 +47,7 @@ class SysController extends CommonController
 			$lists = M('sysconfig')->findAll();
 			foreach($lists as $k=>$v){
 				if (array_key_exists($v['field'],$data)) {
-					if($v['type']==8){
+                    if($v['type']==9 || $v['type']==8){
 						$value = $_POST[$v['field']];
 						$value=htmlspecialchars(trim($value), ENT_QUOTES);
 						if(version_compare(PHP_VERSION,'7.4','>=')){

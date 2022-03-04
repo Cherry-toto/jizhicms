@@ -325,7 +325,7 @@
 							{/if}
 							{/if}
 						</div>
-						{else if($v['type']==8)}
+						{else if($v['type']==8 || $v['type']==9)}
 						<div class="layui-form-item layui-form-text">
                             <label  class="layui-form-label">
                                 {$v['title']}  <span class="x-red">{$v['tip']}</span>
@@ -345,6 +345,7 @@
 							
 							
                         </div>
+
 						{/if}
                         
                         {/loop}

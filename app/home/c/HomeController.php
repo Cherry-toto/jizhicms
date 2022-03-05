@@ -366,7 +366,7 @@ class HomeController extends CommonController
                 $this->display($this->template.'/page/'.$html);
                 exit;
             }
-            if(file_exists($filepath)){
+            if(file_exists(str_replace(File_TXT,'.html',APP_PATH.$filepath))){
                 $this->display($this->template.'/page/'.$html);
                 exit;
             }

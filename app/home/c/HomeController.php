@@ -827,9 +827,9 @@ class HomeController extends CommonController
 			}else{
 				$path = APP_HOME;
 			}
-			$file = str_replace('//','/',APP_PATH . $path .'/'.HOME_VIEW.'/'.$this->template.'/'.strtolower($molds).'-search.html');
-			if(file_exists($file)){
-				$this->display($this->template.'/'.strtolower($molds).'-search');
+			$file = str_replace('//','/',APP_PATH . $path .'/'.HOME_VIEW.'/'.$this->template.'/'.strtolower($molds).'-search'.File_TXT);
+			if(file_exists($file) || file_exists(str_replace(File_TXT,'.html',$file))){
+                $this->display($this->template.'/'.strtolower($molds).'-search');
 			}else{
 				$this->display($this->template.'/search');
 			}

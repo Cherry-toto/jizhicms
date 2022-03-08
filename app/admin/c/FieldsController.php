@@ -249,7 +249,7 @@ class FieldsController extends CommonController
 				if($data['vdata']){
 					$sql .=  "'".$data['vdata']."'";
 				}else{
-					$sql .= " '".$data['body_14']."' NOT NULL ";
+					$sql .= " '".$this->frparam('body_14',1)."' NOT NULL ";
 				}
 				break;
 				case 16:
@@ -432,7 +432,7 @@ class FieldsController extends CommonController
 					if($data['vdata']){
 						$sql .=  "'".$data['vdata']."'";
 					}else{
-						$sql .= " '".$data['body_14']."' NOT NULL ";
+						$sql .= " '".$this->frparam('body_14',1)."' NOT NULL ";
 					}
 					break;
 

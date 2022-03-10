@@ -118,9 +118,9 @@
 		</script>
 		<script type="text/html" id="isshow">
 			{{#  if(d.isshow ==1){ }}
-			<span class="layui-badge layui-bg-green">{fun JZLANG('显示')}}</span>
+			<span class="layui-badge layui-bg-green">{fun JZLANG('显示')}</span>
 		    {{#  } else{ }}
-		    <span class="layui-badge">{fun JZLANG('不显示')}}</span>
+		    <span class="layui-badge">{fun JZLANG('不显示')}</span>
 		    {{#  } }}
 		</script>
 	 
@@ -158,7 +158,7 @@
 				  {field: 'id', title: 'ID', width:60}
 				  ,{type:'checkbox'}
 				  ,{field: 'orders', title: '{fun JZLANG('排序')}',width: 100, edit:'text'}
-				  ,{field: 'new_tid', title: '{fun JZLANG('分类')}'
+				  ,{field: 'new_tid', title: '{fun JZLANG('分类')}'}
 				  {foreach $fields_list as $k=>$v}
 				  ,{field: '{$v['field']}', title: '{$v['fieldname']}'{if($v['fieldtype']==1 || $v['fieldtype']==2)},edit:'text'{/if}}
 				  {/foreach}

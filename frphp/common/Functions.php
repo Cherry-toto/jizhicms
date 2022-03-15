@@ -189,7 +189,7 @@ function U($action=null,$field=null){
 **/
 function Error_msg($msg,$url=null){
 	//检测是否定义了错误处理--2019/2/24  by 留恋风
-	$controller = APP_HOME.'\\'.HOME_CONTROLLER.'\\ErrorController';
+	$controller = str_replace('/','\\',APP_HOME.'\\'.HOME_CONTROLLER.'\\ErrorController');
 	if (!class_exists($controller) || !method_exists($controller,'index')) {
 		$traces = debug_backtrace();
 		$bufferabove = ob_get_clean();

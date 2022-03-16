@@ -157,7 +157,7 @@ namespace frphp\extend;
 			$this->pv = $pv;
 			$this->sep = ($sep==false) ? ($this->sep) : $sep;
 			$url = $this->getUrl();
-			if( strpos($url,$this->sep)!==false && $this->currentPage!=1){
+			if( (strpos($url,$this->sep)!==false && $this->currentPage!=1) || (strpos($url,$this->sep.'1')!==false && $this->currentPage==1)){
 				$urls = explode($this->sep,$url);
 				$num = array_pop($urls);
 				if(is_numeric($num)){

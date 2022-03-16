@@ -693,7 +693,7 @@ laydate.render({elem: "#laydate_'.$v['field'].'" });});</script>';
 			 $datalist = M($moldsdata['biaoshi'])->findAll(null,'id desc','id,'.$body[1]);
 			 $fields_search .= '<div class="layui-input-inline">
 			  <select name="'.$v['field'].'" lay-search="" class="layui-inline">
-			  <option value="">请选择关联'.$moldsdata['name'].'</option>';
+			  <option value="">请选择'.$v['fieldname'].'</option>';
 			 foreach($datalist as $vv){
 			   $fields_search .= '<option ';
 			   if(array_key_exists($v['field'],$data)){
@@ -733,7 +733,7 @@ laydate.render({elem: "#laydate_'.$v['field'].'" });});</script>';
 			 $datalist = M($moldsdata['biaoshi'])->findAll(null,'id desc','id,'.$body[1]);
 			 $fields_search .= '<div class="layui-input-inline">
 			  <select name="'.$v['field'].'" lay-search="" class="layui-inline">
-			  <option value="">请选择'.$moldsdata['name'].'</option>';
+			  <option value="">请选择'.$v['fieldname'].'</option>';
 			  $d = format_param($data[$v['field']]);
 			 foreach($datalist as $vv){
 			   $fields_search .= '<option ';

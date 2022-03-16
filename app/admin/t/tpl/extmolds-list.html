@@ -44,8 +44,9 @@
 		{if(checkAction('Extmolds/editmolds/molds/'.$molds['biaoshi']))}
 			<a class="layui-btn layui-btn-xs" lay-event="edit">{fun JZLANG('编辑')}</a>
 		{/if}
-		
+		{if($molds['ispreview']==1)}
 			<a class="layui-btn layui-btn-xs layui-btn-normal" lay-event="view">{fun JZLANG('预览')}</a>
+		{/if}
 		{if(checkAction('Extmolds/deletemolds/molds/'.$molds['biaoshi']))}
 			<a class="layui-btn layui-btn-xs layui-btn-danger" lay-event="delete">{fun JZLANG('删除')}</a>
 		{/if}

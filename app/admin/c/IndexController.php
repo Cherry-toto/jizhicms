@@ -692,7 +692,7 @@ class IndexController extends CommonController
 			$l.='<url>
   <loc>'.$www.'/</loc>
   <lastmod>'.date('Y-m-d').'T08:00:00+00:00</lastmod>
-  <changefreq>yearly</changefreq>
+  <changefreq>always</changefreq>
   <priority>1.00</priority>
 </url>';
 			$mobile_xml = $l;

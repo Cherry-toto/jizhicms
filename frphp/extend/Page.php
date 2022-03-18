@@ -316,11 +316,11 @@ namespace frphp\extend;
 		}
 		
 		public function go(){
-			if($this->currentPage!=1){
+			if($this->currentPage>1){
 				$limitsql = (($this->limit*($this->currentPage-1)) - ($this->limit_t)).','.$this->limit;
 				//1-0:1  2-2:3
 			}else{
-				if($this->limit_t!=0){
+				if($this->limit_t==1){
 					$limitsql = $this->limit_t.','.$this->limit;
 				}else{
 					$limitsql = $this->limit;

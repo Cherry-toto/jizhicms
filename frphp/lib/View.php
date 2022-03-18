@@ -447,7 +447,7 @@ class View
 			}
 			$pagenum = "\$pagenum = (int)\$_REQUEST['".$jzpage."'] ? (int)\$_REQUEST['".$jzpage."']  : 1; ";
 		}else{
-			$pagenum = "\$pagenum = \$frpage;";
+			$pagenum = "\$pagenum = isset(\$frpage) ? \$frpage : (int)\$_REQUEST['page'];";
 		}
 		
 		foreach($a as $k=>$v){

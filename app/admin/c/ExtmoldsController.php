@@ -96,7 +96,7 @@ class ExtmoldsController extends Controller
 		$this->isshow = $this->frparam('isshow');
 		$this->tid = $this->frparam('tid');
 		$this->fields_search = $res['fields_search'];
-		$this->fields_list = M('Fields')->findAll(array('molds'=>$molds,'islist'=>1),'orders desc,id asc');
+		$this->fields_list = M('Fields')->findAll(array('molds'=>$molds,'islist'=>1),'listorders desc,id asc');
 		$this->classtypes = $this->classtypetree;
 		if($this->frparam('ajax')){
 			

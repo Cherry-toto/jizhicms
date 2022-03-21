@@ -170,7 +170,7 @@
 					
 				}
 				$.post("{fun U('addproduct')}",data.field,function(r){
-				
+					localStorage.setItem('cachedata', '');
 					var r = JSON.parse(r);
 					if(r.code==0){
 						layer.confirm(r.msg, {

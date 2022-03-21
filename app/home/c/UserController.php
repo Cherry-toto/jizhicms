@@ -494,7 +494,10 @@ class UserController extends CommonController
 				}else{
 					$u['likes'] = '';
 				}
-				
+                $molds = $this->classtypedata[$tid]['molds'];
+                if($molds){
+                    M($molds)->goDec(['id'=>$id],'zan');
+                }
 				
 			}else{
 				$msg = JZLANG('点赞成功！');
@@ -504,7 +507,10 @@ class UserController extends CommonController
 				}else{
 					$u['likes'] = '||'.$lk.'||';
 				}
-				
+                $molds = $this->classtypedata[$tid]['molds'];
+                if($molds){
+                    M($molds)->goInc(['id'=>$id],'zan');
+                }
 			}
 			$_SESSION['likes'] = $likes;
 			M('member')->update(['id'=>$u['id']],['likes'=>$u['likes']]);
@@ -561,7 +567,10 @@ class UserController extends CommonController
 				M('member')->goDec(['id'=>$member_id],'jifen',$award);
 			}
 			$msg = JZLANG('已取消点赞！');
-			
+            $molds = $this->classtypedata[$tid]['molds'];
+            if($molds){
+                M($molds)->goDec(['id'=>$id],'zan');
+            }
 			
 		}else{
 			//不存在
@@ -606,7 +615,10 @@ class UserController extends CommonController
 				}
 			}
 			$msg = JZLANG('点赞成功！');
-			
+            $molds = $this->classtypedata[$tid]['molds'];
+            if($molds){
+                M($molds)->goInc(['id'=>$id],'zan');
+            }
 		}
 		
 		

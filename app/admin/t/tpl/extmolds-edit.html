@@ -112,6 +112,7 @@
 					
 				}
 				$.post("{fun U('Extmolds/editmolds',array('molds'=>$molds['biaoshi']))}",data.field,function(r){
+					localStorage.setItem('cachedata', '');
 					var r = JSON.parse(r);
 					if(r.code==0){
 					

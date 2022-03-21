@@ -166,6 +166,7 @@
 					
 				}
 				$.post("{fun U('editarticle')}",data.field,function(r){
+					localStorage.setItem('cachedata', '');
 					var r = JSON.parse(r);
 					if(r.code==0){
 					

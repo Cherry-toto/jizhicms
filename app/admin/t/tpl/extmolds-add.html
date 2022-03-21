@@ -118,7 +118,7 @@
 				}
                 //发异步，把数据提交给php
 				$.post("{fun U('Extmolds/addmolds',array('molds'=>$molds['biaoshi']))}",data.field,function(r){
-					//console.log(r);return false;
+					localStorage.setItem('cachedata', '');
 					var r = JSON.parse(r);
 					if(r.code==0){
 						layer.confirm(r.msg, {

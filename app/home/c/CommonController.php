@@ -733,6 +733,28 @@ class CommonController extends Controller
 				})
 				</script>';
 				break;
+                case 16:
+                    $l .= ' <div class="form-control">
+					<label for="'.$v['field'].'">'.$v['fieldname'].'：</label>
+					<div class="check-box">';
+                    $body = explode(',',$v['body']);
+                    $biaoshi = M('molds')->getField(['id'=>$body[0]],'biaoshi');
+                    if(!$biaoshi){
+                        echo $v['field'].JZLANG('字段关联绑定失败，请重新绑定！');exit;
+                    }
+                    $datalist = M($biaoshi)->findAll();
+
+                    foreach($datalist as $vv){
+
+                        $l.='<input type="checkbox" title="'.$vv[$body[1]].'" name="'.$v['field'].'[]" value="'.$vv['id'].'" ';
+                        if(strpos($data[$v['field']],','.$vv['id'].',')!==false){
+                            $l.='checked="checked"';};
+                        $l.='>'.$vv[$body[1]];
+                    }
+                    $l 	.= '</div>
+					<label>'.$must.$v['tips'].'</label>
+					</div>';
+                    break;
 			}
 			
 		}

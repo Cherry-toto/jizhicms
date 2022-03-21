@@ -171,7 +171,7 @@
 					
 				}
 				$.post("{fun U('addarticle')}",data.field,function(r){
-					//console.log(r);return false;
+					localStorage.setItem('cachedata', '');
 					var r = JSON.parse(r);
 					if(r.code==0){
 						layer.confirm(r.msg, {

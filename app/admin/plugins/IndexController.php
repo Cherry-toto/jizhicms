@@ -11,7 +11,7 @@
 // +----------------------------------------------------------------------
 
 
-namespace app\admin\c\plugins;
+namespace app\admin\plugins;
 
 use app\admin\c\CommonController;
 use frphp\extend\Page;

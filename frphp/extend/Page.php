@@ -124,9 +124,9 @@ namespace frphp\extend;
 					$url = (strripos($url,'/')+1 == strlen($url)) ? substr($url,0,strripos($url,'/')) : $url; 
 				}
 			}
-			
-			
-			
+            
+            
+            $url = $url=='' ? '/' : $url;
 			return $url;
             
 		}

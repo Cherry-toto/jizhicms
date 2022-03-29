@@ -51,6 +51,7 @@ class MypayController extends CommonController
 		$w['receive_address'] = $this->frparam('address',1);
 		$id = $this->frparam('id');
 		$tid = $this->frparam('tid');
+		$w['tid'] = $tid;
 		if(!$id){
 			Error(JZLANG('缺少id参数！'));
 		}

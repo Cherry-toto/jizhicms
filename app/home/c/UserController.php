@@ -1038,7 +1038,10 @@ class UserController extends CommonController
 			if(!in_array($w['molds'],$release_table)){
 				JsonReturn(array('code'=>1,'msg'=>JZLANG('该模块不允许发布！')));
 			}
-			
+            $ishome = M('molds')->getField(['biaoshi'=>$w['molds']],'ishome');
+            if(!$ishome){
+                JsonReturn(array('code'=>1,'msg'=>JZLANG('该模块不允许发布！')));
+            }
 			$w = get_fields_data($data,$w['molds'],0);
 			$w['molds'] = $this->frparam('molds',1);
 			//违禁词检测

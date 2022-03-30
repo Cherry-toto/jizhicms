@@ -1091,7 +1091,7 @@ layui.use("laydate", function(){
 					if(!$biaoshi){
 						echo $v['field'].JZLANG('字段关联绑定失败，请重新绑定！');exit;
 					}
-					$datalist = M($biaoshi)->findAll();
+					$datalist = M($biaoshi)->findAll(['isshow'=>1]);
 				foreach($datalist as $vv){
 					
 					$l.='<input type="checkbox" title="'.$vv[$body[1]].'" name="'.$v['field'].'[]" value="'.$vv['id'].'" ';

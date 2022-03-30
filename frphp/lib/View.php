@@ -408,6 +408,33 @@ class View
 			}
 			
 		}else{ $lk='';}
+		if(isset($a['notlike'])){
+            $not = array();
+            if(strpos($a['notlike'],',')!==false){
+                $like = explode(',',trim($a['notlike'],"'"));
+                foreach($like as $v){
+                    $s = explode('|',$v);
+                    if(strpos($s[1],'$')!==false){
+                        $not[] = " ".$s[0]." not like \'%'.".trim($s[1]).".'%\' or ".$s[0]." is null  ";
+                    }else{
+                        $not[]= " ".$s[0]." not like \'%".trim($s[1])."%\' or ".$s[0]." is null ";
+                    }
+                    
+                }
+                $notlike = " and ( ". implode(" or ",$not)." )";
+            }else{
+                if(strpos($a['notlike'],'$')!==false){
+                    $like = explode('|',trim($a['notlike'],"'"));
+                    $notlike = " and (".$like[0]." not like \'%'.".trim($like[1]).".'%\' or ".$like[0]." is null) ";
+                }else{
+                    $like = explode('|',trim($a['notlike'],"'"));
+                    $notlike = " and (".$like[0]." not like \'%".trim($like[1])."%\' or ".$like[0]." is null)  ";
+                }
+                
+            }
+        }else{
+		    $notlike = '';
+        }
 		//不在某个参数范围内
 		$notin_sql = '';
 		if(isset($a['notin'])){
@@ -437,7 +464,7 @@ class View
 		if($sql){
 			$sql = " and ('.".$sql.".' ) ";
 		}
-		unset($a['table']);unset($a['orderby']);unset($a['limit']);unset($a['as']);unset($a['like']);unset($a['fields']);unset($a['isall']);unset($a['notin']);unset($a['notempty']);unset($a['empty']);unset($a['day']);unset($a['in']);unset($a['sql']);unset($a['jzpage']);unset($a['jzcache']);unset($a['jzcachetime']);
+		unset($a['table']);unset($a['orderby']);unset($a['limit']);unset($a['as']);unset($a['like']);unset($a['notlike']);unset($a['fields']);unset($a['isall']);unset($a['notin']);unset($a['notempty']);unset($a['empty']);unset($a['day']);unset($a['in']);unset($a['sql']);unset($a['jzpage']);unset($a['jzcache']);unset($a['jzcachetime']);
 		$pages='';
 		$w = ' 1=1 ';
 		$ispage=false;
@@ -572,6 +599,7 @@ class View
 		$w .= $in_sql;
 		$w .= $sql;
 		$w.= $lk;
+		$w.= $notlike;
 		$as = trim($as,"'");
 		$txt="<?php
 		\$".$as."_table =$db;

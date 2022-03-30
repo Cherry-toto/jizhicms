@@ -742,7 +742,7 @@ class CommonController extends Controller
                     if(!$biaoshi){
                         echo $v['field'].JZLANG('字段关联绑定失败，请重新绑定！');exit;
                     }
-                    $datalist = M($biaoshi)->findAll();
+                    $datalist = M($biaoshi)->findAll(['isshow'=>1]);
 
                     foreach($datalist as $vv){
 

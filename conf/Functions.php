@@ -730,7 +730,7 @@ laydate.render({elem: "#laydate_'.$v['field'].'" });});</script>';
 				
 			 }
 		  }else{
-			 $datalist = M($moldsdata['biaoshi'])->findAll(null,'id desc','id,'.$body[1]);
+			 $datalist = M($moldsdata['biaoshi'])->findAll(['isshow'=>1],'id desc','id,'.$body[1]);
 			 $fields_search .= '<div class="layui-input-inline">
 			  <select name="'.$v['field'].'" lay-search="" class="layui-inline">
 			  <option value="">请选择'.$v['fieldname'].'</option>';

@@ -103,6 +103,8 @@
                         <textarea placeholder="{fun JZLANG('请输入内容')}" id="description" name="description" class="layui-textarea">{$data['description']}</textarea>
                     </div>
                 </div>
+            <span id="content_fields"></span>
+            <span id="ext_fields"></span>
 				<div class="layui-form-item" pane>
                     <label for="isagree" class="layui-form-label">
                         <span class="x-red"></span>{fun JZLANG('登录状态')}
@@ -124,6 +126,7 @@
 			</div>
     </div>
     <script>
+        {include="fields"}
         layui.use(['form','layer'], function(){
             $ = layui.jquery;
           var form = layui.form
@@ -152,7 +155,8 @@
 			
             return false;
           });
-          
+            get_fields(0,{$data['id']});
+            get_fields_ext(0,{$data['id']});
           
         });
     </script>

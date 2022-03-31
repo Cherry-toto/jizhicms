@@ -211,47 +211,62 @@
       });
 
 	  function actionDo(path,type){
+		  var type = parseInt(type);
+		  var msg = '';
+		  if(type==0){
+			  msg = {fun JZLANG('确定要卸载？')};
+		  }else if(type==1){
+			  msg = {fun JZLANG('确定要安装？')};
+		  }else{
+			  msg = {fun JZLANG('确定要删除？')};
+		  }
+		  layer.confirm(msg,function(index){
 			  $.ajax({
-				 url:"{fun U('action_do')}",
-				 dataType:"json",
-				 async:true,
-				 data:{path:path,type:type},
-				 type:"POST",
-				 beforeSend:function(){
-					//请求前的处理
-					if(parseInt(type)==1){
-						layer.msg('{fun JZLANG('正在安装中，请稍等~')}');
-					}else if(parseInt(type)==-1){
-						layer.msg('{fun JZLANG('正在删除中，请稍等~')}');
-					}else{
-						layer.msg('{fun JZLANG('正在卸载中，请稍等~')}');
-					}
-					
-					},
-				 success:function(res){
-					layer.closeAll();
-				//请求成功时处理
-						if(res.code==0){
-							layer.msg(res.msg,{icon: 1,time:1000},function(){
-								window.location.reload();
-							})
-						}else{
-							layer.alert(res.msg);
-							
-						}
-				},
-				 complete:function(){
-				//请求完成的处理
-				},
-				 error:function(){
-				//请求出错处理
-				}
+				  url:"{fun U('action_do')}",
+				  dataType:"json",
+				  async:true,
+				  data:{path:path,type:type},
+				  type:"POST",
+				  beforeSend:function(){
+					  //请求前的处理
+					  if(parseInt(type)==1){
+						  layer.msg('{fun JZLANG('正在安装中，请稍等~')}');
+					  }else if(parseInt(type)==-1){
+						  layer.msg('{fun JZLANG('正在删除中，请稍等~')}');
+					  }else{
+						  layer.msg('{fun JZLANG('正在卸载中，请稍等~')}');
+					  }
 
-						
-				
-			})
-			  
-		 
+				  },
+				  success:function(res){
+					  layer.closeAll();
+					  //请求成功时处理
+					  if(res.code==0){
+						  layer.msg(res.msg,{icon: 1,time:1000},function(){
+							  window.location.reload();
+						  })
+					  }else{
+						  layer.alert(res.msg);
+
+					  }
+				  },
+				  complete:function(){
+					  //请求完成的处理
+				  },
+				  error:function(){
+					  //请求出错处理
+				  }
+
+
+
+			  })
+
+
+		  })
+
+
+
+
 	  }
 
 	  function setconf(){

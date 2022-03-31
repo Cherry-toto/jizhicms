@@ -36,7 +36,7 @@ define('HOME_MODEL','m');
 define('DefaultController','Index');
 
 //定义默认方法
-define('DefaultAction','Index');
+define('DefaultAction','index');
 
 //取消log
 define('StopLog',false);

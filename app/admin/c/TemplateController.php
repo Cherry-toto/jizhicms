@@ -112,7 +112,7 @@ class TemplateController extends CommonController
 						continue;
 					}
 					$config = require_once($dir.'/'.$v.'/info.php');
-					$lists[$k] = ['name'=>$config['name'],'template'=>$v,'description'=>$config['desc'],'version'=>$config['version'],'author'=>$config['author'],'update_time'=>strtotime($config['update_time']),'module'=>$config['module'],'isopen'=>0,'web'=>$config['web'],'isinstall'=>false,'thumbnail'=>'/static/'.$v.'/thumbnail.png'];
+					$lists[$k] = ['name'=>$config['name'],'template'=>$v,'description'=>$config['desc'],'version'=>$config['version'],'author'=>$config['author'],'update_time'=>strtotime($config['update_time']),'module'=>$config['module'],'isopen'=>0,'web'=>$config['web'],'isinstall'=>false,'thumbnail'=>$config['thumbnail']];
 					
 					if($isok && array_key_exists($v,$templates) && version_compare($config['version'],$templates[$v]['version'],'<')){
 						//有更新
@@ -154,7 +154,7 @@ class TemplateController extends CommonController
 								continue;
 							}
 							$config = require_once($dir.'/'.$k.'/info.php');
-							$lists[$k] = ['name'=>$config['name'],'template'=>$k,'description'=>$config['desc'],'version'=>$config['version'],'author'=>$config['author'],'update_time'=>strtotime($config['update_time']),'module'=>$config['module'],'isopen'=>0,'web'=>$config['web'],'isinstall'=>false,'thumbnail'=>'/static/'.$k.'/thumbnail.png'];
+							$lists[$k] = ['name'=>$config['name'],'template'=>$k,'description'=>$config['desc'],'version'=>$config['version'],'author'=>$config['author'],'update_time'=>strtotime($config['update_time']),'module'=>$config['module'],'isopen'=>0,'web'=>$config['web'],'isinstall'=>false,'thumbnail'=>$config['thumbnail']];
 							if(version_compare($config['version'],$v['version'],'<')){
 								//有更新
 								$lists[$k]['isupdate'] = true;
@@ -187,7 +187,7 @@ class TemplateController extends CommonController
 								continue;
 							}
 							$config = require_once($dir.'/'.$v.'/info.php');
-							$lists[$v] = ['name'=>$config['name'],'template'=>$v,'description'=>$config['desc'],'version'=>$config['version'],'author'=>$config['author'],'update_time'=>strtotime($config['update_time']),'module'=>$config['module'],'isopen'=>0,'web'=>$config['web'],'isinstall'=>false,'thumbnail'=>'/static/'.$v.'/thumbnail.png'];
+							$lists[$v] = ['name'=>$config['name'],'template'=>$v,'description'=>$config['desc'],'version'=>$config['version'],'author'=>$config['author'],'update_time'=>strtotime($config['update_time']),'module'=>$config['module'],'isopen'=>0,'web'=>$config['web'],'isinstall'=>false,'thumbnail'=>$config['thumbnail']];
 							$lists[$v]['isupdate'] = false;
 							$lists[$v]['exists'] = true;
 							$lists[$v]['official'] = 2;

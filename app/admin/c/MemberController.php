@@ -247,8 +247,7 @@ class MemberController extends CommonController
 		$list = M('member_group')->findAll(null,'orders desc');
 		$list = set_class_haschild($list);
 		$lists = getTree($list);
-		
-		
+        $this->fields_list = M('Fields')->findAll(array('molds'=>'member_group','islist'=>1),'orders desc');
 		$this->lists = $lists;
 		$this->display('membergroup-list');
 	}
@@ -268,6 +267,7 @@ class MemberController extends CommonController
 		$this->fields_biaoshi = 'member_group';
 		if($this->frparam('go')==1){
 			$data = $this->frparam();
+            $data = get_fields_data($data,'member_group');
 			$data['name'] = $this->frparam('name',1);
 			$data['description'] = $this->frparam('description',1);
 			if($this->frparam('ruler',2)){
@@ -307,6 +307,7 @@ class MemberController extends CommonController
 		$this->fields_biaoshi = 'member_group';
 		if($this->frparam('go')==1){
 			$data = $this->frparam();
+            $data = get_fields_data($data,'member_group');
 			$data['name'] = $this->frparam('name',1);
 			$data['description'] = $this->frparam('description',1);
 			if($this->frparam('ruler',2)){

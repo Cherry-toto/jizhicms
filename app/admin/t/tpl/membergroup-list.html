@@ -34,6 +34,9 @@
 			<th width="50">{fun JZLANG('排序')}</th>
             <th>{fun JZLANG('分组名')}</th>
             <th>{fun JZLANG('描述')}</th>
+              {foreach $fields_list as $v}
+              <th>{$v['fieldname']}</th>
+              {/foreach}
             <th>{fun JZLANG('状态')}</th>
             <th>{fun JZLANG('操作')}</th>
         </thead>
@@ -53,6 +56,9 @@
 			  {$v['name']}
             </td>
 			 <td>{$v['description']}</td>
+              {foreach $fields_list as $vv}
+              <td>{$v[$vv['field']]}</td>
+              {/foreach}
 			 <td class="td-status">
 			 {if(checkAction('Member/change_group_status'))}
              <input type="checkbox" value="{$v['id']}" name="switch" lay-filter="status"   lay-text="{fun JZLANG('正常|封禁')}"  lay-skin="switch" {if($v['isagree']==1)}checked{/if}>

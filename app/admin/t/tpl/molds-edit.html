@@ -182,8 +182,8 @@
                         {fun JZLANG('是否可以预览')}
                     </label>
                     <div class="layui-input-inline">
-                        <input type="radio" name="ispreview" value="0" title="{fun JZLANG('否')}" checked>
-						<input type="radio" name="ispreview" value="1" title="{fun JZLANG('是')}" >
+                        <input type="radio" name="ispreview" value="0" title="{fun JZLANG('否')}" {if($data['ispreview']==0)}checked{/if}>
+						<input type="radio" name="ispreview" value="1" title="{fun JZLANG('是')}" {if($data['ispreview']==1)}checked{/if}>
                     </div>
 					<div class="layui-form-mid layui-word-aux">
 					  {fun JZLANG('如果后台无法预览，则选择 “否” ，列表中将不会出现 [预览]')}

@@ -39,7 +39,7 @@ class MemberController extends CommonController
 				
 			}
 			if($this->frparam('end',1)){
-				$end = strtotime($this->frparam('end',1).' 23:59:59');
+				$end = strtotime($this->frparam('end',1));
 				$sql.="  and regtime <= ".$end;
 			}
 			if($this->frparam('tel',1)){

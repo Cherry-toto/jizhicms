@@ -656,7 +656,7 @@ class UserController extends CommonController
 			
 			
 			
-			$data[$k]['del'] = U('user/likesdel',['id'=>$v['id'],'tid'=>$v['tid']]);
+			$data[$k]['del'] = U('user/collectdel',['id'=>$v['id'],'tid'=>$v['tid']]);
 		}
 		$this->lists = $data;//列表数据
 		$this->sum = $model->sum;//总数据

@@ -94,7 +94,14 @@
               var layer = layui.layer;//弹出层
 			  var form = layui.form;
 			  var table = layui.table;
-			  
+			laydate.render({
+				elem: '#start' //指定元素
+				,type: 'datetime'
+			});
+			laydate.render({
+				elem: '#end' //指定元素
+				,type: 'datetime'
+			});
 			  table.render({
 				elem: '#jizhi_table'
 				,height: 700

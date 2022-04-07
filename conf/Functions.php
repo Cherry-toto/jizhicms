@@ -1569,6 +1569,7 @@ function has_no_read_msg(){
 }
 //数据库html反转义
 function html_decode($data=null){
+    if(!$data) return '';
 	$data = str_replace('&#039;',"'",htmlspecialchars_decode($data));
 	return $data;
 	

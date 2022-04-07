@@ -1965,9 +1965,14 @@ function getclasstypedata($array,$m=1){
 	$classtypedata = getCache($s);
 	if(!$classtypedata){
 	    $classtypedata = $array;
+	    $classtypemaxlevel = webConf('classtypemaxlevel');
 		foreach($classtypedata as $k=>$v){
-			//$classtypedata[$k]['children'] = get_children($v,$classtypedata);
-			$classtypedata[$k]['children'] = get_all_children($v,$classtypedata);
+            if($classtypemaxlevel){
+                $classtypedata[$k]['children'] = get_all_children($v,$classtypedata);
+            }else{
+                $classtypedata[$k]['children'] = get_children($v,$classtypedata);
+            }
+
 		}
 		setCache($s,$classtypedata);
 	}

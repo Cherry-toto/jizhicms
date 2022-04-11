@@ -22,6 +22,7 @@
 官网：[www.jizhicms.cn](https://www.jizhicms.cn) | [www.jizhicms.com](https://www.jizhicms.com) | [应用市场](https://app.jizhicms.cn)   
 演示：[demo.jizhicms.cn](https://demo.jizhicms.cn)   
 后台：[https://demo.jizhicms.cn/admin.php](https://demo.jizhicms.cn/admin.php) [ 账户：test 密码：123456 ]  
+单入口后台：[https://demo.jizhicms.cn/index.php/admins](https://demo.jizhicms.cn/index.php/admins) [ 账户：test 密码：123456 ]  
 文档：[https://help.jizhicms.cn](https://help.jizhicms.cn)   
 工具：[https://h.jizhicms.cn](https://h.jizhicms.cn)   
 作者：留恋风（QQ：2581047041 微信：TF-2581047041）  
@@ -52,7 +53,7 @@ QQ交流群：774764507 , 869094463 , 651403450 [【加群】](https://jq.qq.com
 * PHP5.6+   
 * MySQL4.8+，数据编码 <b>utf-8</b> 或者 <b>utf8-general-ci</b>   
 * 部署环境必须支持伪静态  
-* 支持Apache、Linux     
+* 支持Apache、Nginx、IIS     
 
 ## 开始安装  
 1. 下载源码并解压源码到空间根目录(www)      

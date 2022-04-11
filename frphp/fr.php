@@ -205,21 +205,25 @@ class frphp
         $param = array();
 		$tpl = get_template();
 		define('TEMPLATE',$tpl);
-       // $url = urldecode($url);
         // 清除?之后的内容
         $position = strpos($url, '?');
         $url = $position === false ? $url : substr($url, 0, $position);
 		//删除入口文件字符串
-		if(strpos($url,'.php')!==False){
+		if(stripos($url,'.php')!==false){
 			//获取入口文件
-            $ds = strpos($url,'.php');
-            define('APP_URL',substr($url,0,($ds+4)));
+            $ds = stripos($url,'.php');
+            if(stripos($url,ADMIN_MODEL)!==false){
+                define('APP_URL',substr($url,0,($ds+4)).'/'.ADMIN_MODEL);
+                $url = str_replace(ADMIN_MODEL,'',$url);
+            }else{
+                define('APP_URL',substr($url,0,($ds+4)));
+            }
             $url = substr(strstr($url,'.php'),4);
 		}else{
             define('APP_URL','/index.php');
         }
 		//去除最后的.html后缀
-		if(strpos($url,'.html')!==False){
+		if(stripos($url,'.html')!==false){
 			$url = str_ireplace('.html','',$url);
 		}
 		
@@ -456,6 +460,61 @@ class frphp
 
 // 加载配置文件
 $config = require(APP_PATH . 'conf/config.php');
+
+
+$url = urldecode($_SERVER['REQUEST_URI']);
+
+defined('ADMIN_MODEL') or define('ADMIN_MODEL', 'admins');
+
+//判断是否后台入口
+if(strpos($url,ADMIN_MODEL)!==false || (defined('APP_HOME') && APP_HOME=='app/admin')){
+    //后台
+    //定义项目目录
+    defined('APP_HOME') or define('APP_HOME', 'app/admin');
+    //定义项目模板文件目录
+    defined('HOME_VIEW') or define('HOME_VIEW', 't');
+    defined('Tpl_template') or define('Tpl_template', 'tpl');
+    //定义项目控制器文件目录
+    defined('HOME_CONTROLLER') or define('HOME_CONTROLLER', 'c');
+
+    //定义项目模型文件目录
+    defined('HOME_MODEL') or define('HOME_MODEL', 'm');
+
+    //定义项目默认方法
+    defined('DefaultController') or define('DefaultController', 'Index');
+
+    defined('DefaultAction') or define('DefaultAction', 'index');
+
+    //定义静态文件路径
+    defined('Tpl_style') or define('Tpl_style', '/app/admin/t/tpl');
+}else{
+    //前台
+    //定义项目目录
+    defined('APP_HOME') or define('APP_HOME', 'app/home');
+    //定义模板文件夹
+    defined('TPL_PATH') or define('TPL_PATH', 'static');
+
+    //定义项目模板文件目录
+    defined('HOME_VIEW') or define('HOME_VIEW', '');
+
+    //定义项目模板公共文件目录
+    defined('Tpl_common') or define('Tpl_common', '');
+
+    //定义项目控制器文件目录
+    defined('HOME_CONTROLLER') or define('HOME_CONTROLLER', 'c');
+
+    //定义项目模型文件目录
+    defined('HOME_MODEL') or define('HOME_MODEL', 'm');
+
+    //定义模板文件后缀
+    defined('File_TXT') or define('File_TXT', '.php');
+
+    //定义项目默认方法
+    defined('DefaultAction') or define('DefaultAction', 'jizhi');
+
+    //定义静态文件路径
+    defined('Tpl_style') or define('Tpl_style', '/static/');
+}
 
 //实例化核心类
 (new frphp($config))->run();

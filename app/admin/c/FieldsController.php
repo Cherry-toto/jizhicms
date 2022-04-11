@@ -1025,7 +1025,7 @@ layui.use("laydate", function(){
 				}
                 $l .= $v['fieldname'].'
                     </label>
-                    <div class="layui-input-block">
+                    <div class="layui-input-inline">
                         <input type="text" id="'.$v['field'].'" value="'.$data[$v['field']].'" name="'.$v['field'].'" ';
 				if($v['ismust']==1){
 					$l.=' required="" lay-verify="required" ';

@@ -76,33 +76,8 @@ function new_is_writeable($file) {
 
 //获取后台文件名
 function get_admin_url(){
-	//读取根目录文件
-	$admin_url = '';
-	$filepath = '../';
-	if (false !== ($handle = opendir ($filepath))) {
-		$i=0;
-		while ( false !== ($file = readdir ( $handle )) ) {
-			//去掉"“.”、“..”以及带“.xxx”后缀的文件
-			if ($file != "." && $file != ".."&&strpos($file,".")) {
-				
-				if(strpos($file,'.php')!==false && $file!='index.php'){
-					$data = file_get_contents('../'.$file);
-					if(strpos($data,"define('APP_HOME','app/admin')")!==false){
-						$admin_url = $file;
-						break;
-					}
-					
-				}
-				
-			}
-		}
-		//关闭句柄
-		closedir ( $handle );
-	}
-	if($admin_url==''){
-		exit('缺少后台文件！');
-	}
-	return $admin_url;
+
+	return 'index.php/admins';
 }
 
 //获取域名

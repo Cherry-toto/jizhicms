@@ -148,20 +148,8 @@ class SysController extends CommonController
 		   
 		}
 		//获取前台template
-		$indexdata = file_get_contents(APP_PATH.'index.php');
-		$r = preg_match("/define\('HOME_VIEW',[\'|\"](.*?)[\'|\"]\)/",$indexdata,$matches);
-		if($r){
-			$template = $matches[1];
-		}else{
-			$template = 'template';
-		}
-		$rr = preg_match("/define\('TPL_PATH',[\'|\"](.*?)[\'|\"]\)/",$indexdata,$matches);
-		if($rr){
-			$tplpath = $matches[1];
-		}else{
-			$tplpath = 'Home';
-		}
-		$dir = APP_PATH.$tplpath.'/'.$template;
+		
+		$dir = APP_PATH.'static';
 		$fileArray=array();
 		if(is_dir($dir)){
 

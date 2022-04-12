@@ -385,25 +385,7 @@ class ClasstypeController extends CommonController
     public function get_html(){
         $molds = $this->frparam('molds',1,'article');
         //获取前台template
-        $indexdata = file_get_contents(APP_PATH.'index.php');
-        $r = preg_match("/define\('HOME_VIEW',[\'|\"](.*?)[\'|\"]\)/",$indexdata,$matches);
-        if($r){
-            $template = $matches[1];
-        }else{
-            $template = 'template';
-        }
-        $rr = preg_match("/define\('TPL_PATH',[\'|\"](.*?)[\'|\"]\)/",$indexdata,$matches2);
-        if($rr){
-            $tplpath = $matches2[1];
-        }else{
-            $tplpath = 'app/home';
-        }
-        if($template){
-            $dir = APP_PATH.$tplpath.'/'.$template.'/'.$this->webconf['pc_template'].'/'.strtolower($molds);
-        }else{
-            $dir = APP_PATH.$tplpath.'/'.$this->webconf['pc_template'].'/'.strtolower($molds);
-        }
-        
+        $dir = APP_PATH.'static/'.$this->webconf['pc_template'].'/'.strtolower($molds);
         
         $fileArray=array();
         if(is_dir($dir)){

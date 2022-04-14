@@ -282,15 +282,15 @@ function getmessagelist(tid,aid,page){
 function nextmessagelist(){
 	page++;
 	var tid = $("#tid").val();
-	var aid = $("#id").val();
+	var aid = $("#aid").val();
 	getmessagelist(tid,aid,page)
 }
 
 function prevmessagelist(){
-	page = page--;
+	page = page-1;
 	page = page<0 ? 1 : page;
 	var tid = $("#tid").val();
-	var aid = $("#id").val();
+	var aid = $("#aid").val();
 	getmessagelist(tid,aid,page)
 }
 

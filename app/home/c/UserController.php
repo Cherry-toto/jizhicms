@@ -656,7 +656,7 @@ class UserController extends CommonController
 			
 			
 			
-			$data[$k]['del'] = U('user/collectdel',['id'=>$v['id'],'tid'=>$v['tid']]);
+			$data[$k]['del'] = U('user/likesdel',['id'=>$v['id']]);
 		}
 		$this->lists = $data;//列表数据
 		$this->sum = $model->sum;//总数据
@@ -674,9 +674,8 @@ class UserController extends CommonController
 	function likesdel(){
 		$this->checklogin();
 		$id = $this->frparam('id');
-		$tid = $this->frparam('tid');
-		if($id && $tid){
-			M('likes')->delete(['aid'=>$id,'tid'=>$tid,'userid'=>$this->member['id']]);
+		if($id){
+			M('likes')->delete(['aid'=>$id,'userid'=>$this->member['id']]);
 			
 			Success(JZLANG('删除成功！'),U('user/likes'));
 		}else{
@@ -836,7 +835,7 @@ class UserController extends CommonController
 			
 			
 			
-			$data[$k]['del'] = U('user/likesdel',['id'=>$v['id'],'tid'=>$v['tid']]);
+			$data[$k]['del'] = U('user/collectdel',['id'=>$v['id']]);
 		}
 		$this->lists = $data;//列表数据
 		$this->sum = $model->sum;//总数据
@@ -855,16 +854,13 @@ class UserController extends CommonController
 	function collectdel(){
 		$this->checklogin();
 		$id = $this->frparam('id');
-		$tid = $this->frparam('tid');
-		if($id && $tid){
-			$ids = str_replace('||'.$tid.'-'.$id.'||','',$this->member['collection']);
-			M('member')->update(['id'=>$this->member['id']],['collection'=>$ids]);
-			$_SESSION['member']['collection'] = $ids;
-			
-			Success(JZLANG('删除成功！'),U('user/collect'));
-		}else{
-			Error(JZLANG('参数错误！'));
-		}
+        if($id){
+            M('shouchang')->delete(['aid'=>$id,'userid'=>$this->member['id']]);
+
+            Success(JZLANG('删除成功！'),U('user/collect'));
+        }else{
+            Error(JZLANG('参数错误！'));
+        }
 	}
 	
 	//购物车
@@ -1992,8 +1988,8 @@ class UserController extends CommonController
 		}
 		$sql.=" and userid=".$this->member['id'];
 		$data1 = $page1->where($sql)->orderby('addtime desc')->page($this->frparam('p',0,1))->go();
-		$page1->file_ext = '';
-		$pages1 = $page1->pageList(5,'?p=');
+        $page1->typeurl = 'search';
+		$pages1 = $page1->pageList(5,'&p=');
 		$this->pages1 = $pages1;
 		foreach($data1 as $k=>$v){
 			$data1[$k]['date'] = date('Y-m-d H:i:s',$v['addtime']);
@@ -2015,8 +2011,8 @@ class UserController extends CommonController
 		}
 		$sql.="  and isshow!=0 and userid=".$this->member['id'];
 		$data = $page->where($sql)->orderby('addtime desc')->page($this->frparam('page',0,1))->go();
-		$page->file_ext = '';
-		$pages = $page->pageList(5,'?page=');
+        $page1->typeurl = 'search';
+		$pages = $page->pageList(5,'&page=');
 		$this->pages = $pages;
 		foreach($data as $k=>$v){
 			$data[$k]['date'] = date('Y-m-d H:i:s',$v['addtime']);

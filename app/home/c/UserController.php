@@ -2011,7 +2011,7 @@ class UserController extends CommonController
 		}
 		$sql.="  and isshow!=0 and userid=".$this->member['id'];
 		$data = $page->where($sql)->orderby('addtime desc')->page($this->frparam('page',0,1))->go();
-        $page1->typeurl = 'search';
+        $page->typeurl = 'search';
 		$pages = $page->pageList(5,'&page=');
 		$this->pages = $pages;
 		foreach($data as $k=>$v){

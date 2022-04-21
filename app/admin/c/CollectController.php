@@ -122,6 +122,7 @@ class CollectController extends CommonController
 				foreach($all as $v){
 					$w['molds'] = 'collect';
 					$w['data'] = json_encode($v,JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+					$w['title'] = '['.$v['id'].']'.$v['title'];
 					$w['addtime'] = time();
 					M('recycle')->add($w);
 				}
@@ -181,6 +182,7 @@ class CollectController extends CommonController
 			if(M('collect')->delete(['id'=>$id])){
 				$w['molds'] = 'collect';
 				$w['data'] = json_encode($data,JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+				$w['title'] = '['.$data['id'].']'.$data['title'];
 				$w['addtime'] = time();
 				M('recycle')->add($w);
 				JsonReturn(array('code'=>0,'msg'=>JZLANG('删除成功！')));
@@ -236,8 +238,13 @@ class CollectController extends CommonController
 			if($r){
 				JsonReturn(array('code'=>1,'msg'=>JZLANG('该分类下存在内容，请先删除该分类下的内容！')));
 			}
-
+            $data = M('collect_type')->find(['id'=>$id]);
 			if(M('collect_type')->delete(['id'=>$id])){
+                $w['molds'] = 'collect_type';
+                $w['data'] = json_encode($data,JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+                $w['title'] = '['.$data['id'].']'.$data['title'];
+                $w['addtime'] = time();
+                M('recycle')->add($w);
 				JsonReturn(array('code'=>0,'msg'=>JZLANG('删除成功！')));
 			}else{
 				JsonReturn(array('code'=>1,'msg'=>JZLANG('删除失败！')));

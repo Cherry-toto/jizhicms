@@ -118,7 +118,13 @@ class JzchainController extends CommonController
 	function delchain(){
 		$id = $this->frparam('id');
 		if($id){
+		    $data = M('chain')->find(['id'=>$id]);
 			if(M('chain')->delete(['id'=>$id])){
+                $w['molds'] = 'chain';
+                $w['data'] = json_encode($data,JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+                $w['title'] = '['.$data['id'].']'.$data['title'];
+                $w['addtime'] = time();
+                M('recycle')->add($w);
 				JsonReturn(array('code'=>0,'msg'=>JZLANG('删除成功！')));
 			}else{
 				
@@ -141,7 +147,15 @@ class JzchainController extends CommonController
 	function delAll(){
 		$data = $this->frparam('data',1);
 		if($data!=''){
+		    $list = M('chain')->findAll('id in('.$data.')');
 			if(M('chain')->delete('id in('.$data.')')){
+			    foreach ($list as $v){
+                    $w['molds'] = 'chain';
+                    $w['data'] = json_encode($v,JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+                    $w['title'] = '['.$v['id'].']'.$v['title'];
+                    $w['addtime'] = time();
+                    M('recycle')->add($w);
+                }
 				JsonReturn(array('code'=>0,'msg'=>JZLANG('批量删除成功！')));
 				
 			}else{

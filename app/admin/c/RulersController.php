@@ -102,6 +102,11 @@ class RulersController extends CommonController
 			}else{
 				$m = M('Ruler')->delete(array('id'=>$id));
 				if($m){
+                    $w['molds'] = 'ruler';
+                    $w['data'] = json_encode($ruler,JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+                    $w['title'] = '['.$ruler['id'].']'.$ruler['name'];
+                    $w['addtime'] = time();
+                    $x = M('recycle')->add($w);
 					JsonReturn(array('code'=>0,'msg'=>JZLANG('删除成功！')));
 				}else{
 					JsonReturn(array('code'=>1,'msg'=>JZLANG('删除失败！')));

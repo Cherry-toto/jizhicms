@@ -230,7 +230,13 @@ class OrderController extends CommonController
 	function deleteorder(){
 		$id = $this->frparam('id');
 		if($id){
-			if(M('orders')->delete('id='.$id)){
+		    $data = M('orders')->find(['id'=>$id]);
+			if(M('orders')->delete(['id'=>$id])){
+                $w['molds'] = 'orders';
+                $w['data'] = json_encode($data,JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+                $w['title'] = '['.$data['id'].']'.$data['orderno'];
+                $w['addtime'] = time();
+                M('recycle')->add($w);
 				JsonReturn(array('code'=>0,'msg'=>JZLANG('删除成功！')));
 			}else{
 				JsonReturn(array('code'=>1,'msg'=>JZLANG('删除失败！')));
@@ -243,7 +249,15 @@ class OrderController extends CommonController
 	function deleteAll(){
 		$data = $this->frparam('data',1);
 		if($data!=''){
+		    $list = M('Orders')->findAll('id in('.$data.')');
 			if(M('Orders')->delete('id in('.$data.')')){
+                foreach ($list as $v) {
+                    $w['molds'] = 'orders';
+                    $w['data'] = json_encode($v,JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+                    $w['title'] = '['.$v['id'].']'.$v['orderno'];
+                    $w['addtime'] = time();
+                    M('recycle')->add($w);
+			    }
 				JsonReturn(array('code'=>0,'msg'=>JZLANG('批量删除成功！')));
 				
 			}else{
@@ -386,7 +400,13 @@ class OrderController extends CommonController
    function delbuylog(){
 		$id = $this->frparam('id');
 		if($id){
+		    $data = M('buylog')->find('id='.$id);
 			if(M('buylog')->delete('id='.$id)){
+                $w['molds'] = 'buylog';
+                $w['data'] = json_encode($data,JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+                $w['title'] = '['.$data['id'].']'.$data['orderno'];
+                $w['addtime'] = time();
+                M('recycle')->add($w);
 				JsonReturn(array('code'=>0,'msg'=>JZLANG('删除成功！')));
 			}else{
 				JsonReturn(array('code'=>1,'msg'=>JZLANG('删除失败！')));
@@ -399,7 +419,15 @@ class OrderController extends CommonController
 	function delAllbuylog(){
 		$data = $this->frparam('data',1);
 		if($data!=''){
+		    $list = M('buylog')->delete('id in('.$data.')');
 			if(M('buylog')->delete('id in('.$data.')')){
+			    foreach ($list as $v){
+                    $w['molds'] = 'buylog';
+                    $w['data'] = json_encode($v,JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+                    $w['title'] = '['.$v['id'].']'.$v['orderno'];
+                    $w['addtime'] = time();
+                    M('recycle')->add($w);
+                }
 				JsonReturn(array('code'=>0,'msg'=>JZLANG('批量删除成功！')));
 				
 			}else{

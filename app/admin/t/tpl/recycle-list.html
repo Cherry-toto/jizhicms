@@ -104,9 +104,10 @@
 				,cols: [[ //表头
 				  {field: 'id', title: 'ID', width:60}
 				  ,{type:'checkbox'}
-				  ,{field: 'moldsname', title: '{fun JZLANG('模型')}'}
+				  ,{field: 'title', title: '{fun JZLANG("标记")}'}
+				  ,{field: 'moldsname', title: '{fun JZLANG("模型")}'}
 				  {if(checkAction('Recycle/restore') || checkAction('Recycle/del'))}
-				  ,{field: '', title: '{fun JZLANG('操作')}', toolbar: '#rightbar',width:200, fixed:'right'}
+				  ,{field: '', title: '{fun JZLANG("操作")}', toolbar: '#rightbar',width:200, fixed:'right'}
 				  {/if}
 				 
 				 

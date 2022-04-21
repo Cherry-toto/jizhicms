@@ -27,7 +27,7 @@ class RecycleController extends CommonController
 			if($this->frparam('molds',1)){
 				$sql.=" and molds='".$this->frparam('molds',1)."'";
 			}
-			$data = $page->where($sql)->orderby('id desc')->page($this->frparam('page',0,1))->go();
+			$data = $page->where($sql)->limit($this->frparam('limit',0,10))->orderby('id desc')->page($this->frparam('page',0,1))->go();
 			$ajaxdata = [];
 			$molds = M('molds')->findAll();
 			$moldsname = [];

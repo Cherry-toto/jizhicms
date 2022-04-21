@@ -50,6 +50,7 @@ class AdminController extends CommonController
 			if(M('level_group')->delete(array('id'=>$id))){
 				$w['molds'] = 'level_group';
 				$w['data'] = json_encode($data,JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+				$w['title'] = '['.$data['id'].']'.$data['name'];
 				$w['addtime'] = time();
 				M('recycle')->add($w);
 				JsonReturn(array('code'=>0,'msg'=>JZLANG('删除成功！')));
@@ -421,6 +422,7 @@ class AdminController extends CommonController
 		  if($x){
 			$w['molds'] = 'level';
 			$w['data'] = json_encode($data,JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+			$w['title'] = '['.$data['id'].']'.$data['name'];
 			$w['addtime'] = time();
 			M('recycle')->add($w);
 			JsonReturn(array('code'=>0,'msg'=>JZLANG('删除成功！')));
@@ -446,6 +448,7 @@ class AdminController extends CommonController
 				foreach($all as $v){
 					$w['molds'] = 'level';
 					$w['data'] = json_encode($v,JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+					$w['title'] = '['.$v['id'].']'.$v['name'];
 					$w['addtime'] = time();
 					M('recycle')->add($w);
 				}

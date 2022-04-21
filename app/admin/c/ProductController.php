@@ -195,10 +195,14 @@ class ProductController extends CommonController
 								$w['num'] = -1;
 								$w['isshow'] = 1;
 								$w['number'] = 1;
+                                $w['tids'] = $data['tid'] ? ','.$data['tid'].',' : '';
 								$w['target'] = '_blank';
 								M('tags')->add($w);
 							}else{
-								M('tags')->goInc(['keywords'=>$v],'number',1);
+                                $tags_tids = $r['tids'] ? $r['tids'].$data['tid'].',' : ','.$data['tid'].',';
+                                $ww['tids'] = $tags_tids;
+                                $ww['number'] = $r['number']+1;
+                                M('tags')->update(['keywords'=>$v],$ww);
 							}
 						}
 					}
@@ -373,13 +377,26 @@ class ProductController extends CommonController
 									$w['num'] = -1;
 									$w['isshow'] = 1;
 									$w['number'] = 1;
+                                    $w['tids'] = $data['tid'] ? ','.$data['tid'].',' : '';
 									$w['target'] = '_blank';
 									M('tags')->add($w);
 								}else{
                                     if(strpos($old_tags,','.$v.',')===false){
-                                        M('tags')->goInc(['keywords'=>$v],'number');
+                                        if($data['tid']){
+                                            $tags_tids = $r['tids'] ? $r['tids'].$data['tid'].',' : ','.$data['tid'].',';
+                                            $ww['tids'] = $tags_tids;
+                                        }
+
+                                        $ww['number'] = $r['number']+1;
+                                        M('tags')->update(['keywords'=>$v],$ww);
                                     }else if(strpos($data['tags'],','.$v.',')===false && strpos($old_tags,','.$v.',')!==false){
-                                        M('tags')->goDec(['keywords'=>$v],'number');
+                                        if($data['tid']){
+                                            $tags_tids = str_replace(','.$data['tid'].',',',',$r['tids']);
+                                            $ww['tids'] = $tags_tids==',' ? '' : $tags_tids;
+                                        }
+
+                                        $ww['number'] = $r['number']-1;
+                                        M('tags')->update(['keywords'=>$v],$ww);
                                     }
 								}
 								
@@ -483,13 +500,14 @@ class ProductController extends CommonController
 			if(M('product')->delete(['id'=>$id])){
 				$customurl = M('customurl')->find(['molds'=>'product','aid'=>$id]);
 				M('customurl')->delete(['molds'=>'product','aid'=>$id]);
-				
+				$w['title'] = '['.$data['id'].']'.$data['title'];
 				$w['molds'] = 'product';
-				$w['data'] = json_encode($v,JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+				$w['data'] = json_encode($data,JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
 				$w['addtime'] = time();
 				$r = M('recycle')->add($w);
 				if($customurl){
 					$w['molds'] = 'customurl';
+					$w['title'] = '['.$customurl['id'].']'.JZLANG('自定义链接');
 					$w['data'] = json_encode($customurl,JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
 					$w['addtime'] = time();
 					$w['aid'] = $r;
@@ -542,10 +560,12 @@ class ProductController extends CommonController
 				foreach($all as $v){
 					$w['molds'] = 'product';
 					$w['data'] = json_encode($v,JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+					$w['title'] = '['.$v['id'].']'.$v['title'];
 					$w['addtime'] = time();
 					$x = M('recycle')->add($w);
 					if($x && $newcustomurl[$v['id']]){
 						$w['molds'] = 'customurl';
+						$w['title'] = '['.$newcustomurl['id'].']'.JZLANG('自定义链接');
 						$w['data'] = json_encode($newcustomurl[$v['id']],JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
 						$w['addtime'] = time();
 						$w['aid'] = $x;

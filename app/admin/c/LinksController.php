@@ -255,7 +255,16 @@ class LinksController extends CommonController
 		$data = $this->frparam('data',1);
 		$molds = 'links';
 		if($data!=''){
+		    $list = M($molds)->findAll('id in('.$data.')');
 			if(M($molds)->delete('id in('.$data.')')){
+			    foreach ($list as $v){
+                    $w['molds'] = 'links';
+                    $w['data'] = json_encode($v,JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+                    $w['title'] = '['.$v['id'].']'.$v['title'];
+                    $w['addtime'] = time();
+                    M('recycle')->add($w);
+                }
+
 				JsonReturn(array('code'=>0,'msg'=>JZLANG('批量删除成功！')));
 				
 			}else{
@@ -268,8 +277,13 @@ class LinksController extends CommonController
 		$id = $this->frparam('id');
 		$molds = 'links';
 		if($id){
-			if(M($molds)->delete('id='.$id)){
-				
+		    $data = M($molds)->find(['id'=>$id]);
+			if(M($molds)->delete(['id'=>$id])){
+                $w['molds'] = 'links';
+                $w['data'] = json_encode($data,JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+                $w['title'] = '['.$data['id'].']'.$data['title'];
+                $w['addtime'] = time();
+                M('recycle')->add($w);
 				JsonReturn(array('code'=>0,'msg'=>JZLANG('删除成功！')));
 			}else{
 				

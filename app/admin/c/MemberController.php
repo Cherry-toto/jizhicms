@@ -195,6 +195,7 @@ class MemberController extends CommonController
 			if(M('member')->delete(array('id'=>$id))){
 				$w['molds'] = 'member';
 				$w['data'] = json_encode($data,JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+				$w['title'] = '['.$data['id'].']'.$data['username'];
 				$w['addtime'] = time();
 				M('recycle')->add($w);
 				JsonReturn(array('code'=>0,'msg'=>JZLANG('删除成功！')));
@@ -216,6 +217,7 @@ class MemberController extends CommonController
 				foreach($all as $v){
 					$w['molds'] = 'member';
 					$w['data'] = json_encode($v,JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+                    $w['title'] = '['.$v['id'].']'.$v['username'];
 					$w['addtime'] = time();
 					M('recycle')->add($w);
 				}
@@ -372,6 +374,7 @@ class MemberController extends CommonController
 			if(M('member_group')->delete(array('id'=>$id))){
 				$w['molds'] = 'member_group';
 				$w['data'] = json_encode($data,JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+				$w['title'] = '['.$data['id'].']'.$data['name'];
 				$w['addtime'] = time();
 				M('recycle')->add($w);
 				JsonReturn(array('code'=>0,'msg'=>JZLANG('删除成功！')));
@@ -461,6 +464,11 @@ class MemberController extends CommonController
 			}else{
 				$m = M('power')->delete(array('id'=>$id));
 				if($m){
+                    $w['molds'] = 'power';
+                    $w['data'] = json_encode($ruler,JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+                    $w['title'] = '['.$ruler['id'].']'.$ruler['name'];
+                    $w['addtime'] = time();
+                    M('recycle')->add($w);
 					JsonReturn(array('code'=>0,'msg'=>JZLANG('删除成功！')));
 				}else{
 					JsonReturn(array('code'=>1,'msg'=>JZLANG('删除失败！')));

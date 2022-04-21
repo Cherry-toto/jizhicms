@@ -279,6 +279,7 @@ class ClasstypeController extends CommonController
 				$w['molds'] = 'classtype';
 				$w['data'] = json_encode($data,JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
 				$w['addtime'] = time();
+				$w['title'] = '['.$data['id'].']'.$data['classname'];
 				M('recycle')->add($w);
 				setCache('classtypetree',null);
 				setCache('classtype',null);

@@ -621,6 +621,7 @@ CREATE TABLE `jz_product` (
 DROP TABLE IF EXISTS `jz_recycle`;
 CREATE TABLE `jz_recycle` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
+  `title` varchar(255) DEFAULT NULL COMMENT '标记',
   `molds` varchar(50) DEFAULT NULL COMMENT '回收模型标志',
   `data` mediumtext COMMENT '回收数据',
   `addtime` int(11) NOT NULL DEFAULT '0' COMMENT '删除时间',
@@ -676,6 +677,7 @@ DROP TABLE IF EXISTS `jz_tags`;
 CREATE TABLE `jz_tags` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `tid` int(11) DEFAULT '0' COMMENT '栏目ID',
+  `tids` varchar(500) DEFAULT NULL COMMENT '相关栏目',
   `orders` int(11) DEFAULT '0' COMMENT '排序',
   `comment_num` int(11) DEFAULT '0' COMMENT '评论数',
   `molds` varchar(50) DEFAULT 'tags' COMMENT '模型标识',
@@ -1246,7 +1248,7 @@ INSERT INTO `jz_ruler` (`id`,`name`,`fc`,`pid`,`isdesktop`,`sys`) VALUES ('238',
 -- ----------------------------
 -- Records of jz_sysconfig
 -- ----------------------------
-INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`,`typeid`,`config`,`orders`,`sys`) VALUES ('1','web_version','系统版号','版本号是系统自带，请勿改动','0','2.2.0','0', NULL,'0','1');
+INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`,`typeid`,`config`,`orders`,`sys`) VALUES ('1','web_version','系统版号','版本号是系统自带，请勿改动','0','2.2.1','0', NULL,'0','1');
 INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`,`typeid`,`config`,`orders`,`sys`) VALUES ('2','web_name','网站SEO名称','控制在25个字、50个字节以内','2','极致CMS建站系统','1', NULL,'0','1');
 INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`,`typeid`,`config`,`orders`,`sys`) VALUES ('3','web_keyword','网站SEO关键词','5个左右，8汉字以内，用英文逗号隔开','2','极致建站,cms,开源cms,免费cms,cms系统,phpcms,免费企业建站,建站系统,企业cms,jizhicms,极致cms,建站cms,建站系统,极致博客,极致blog,内容管理系统&quot;','1', NULL,'0','1');
 INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`,`typeid`,`config`,`orders`,`sys`) VALUES ('4','web_desc','网站SEO描述','控制在80个汉字，160个字符以内','3','极致CMS是开源免费的PHPCMS网站内容管理系统，无商业授权，简单易用，提供丰富的插件，帮您实现零基础搭建不同类型网站（企业站，门户站，个人博客站等），是您建站的好帮手。极速建站，就选极致CMS。','1', NULL,'0','1');

@@ -63,6 +63,7 @@ class CommentController extends CommonController
 				foreach($all as $v){
 					$w['molds'] = 'comment';
 					$w['data'] = json_encode($v,JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+					$w['title'] = '['.$v['id'].']'.newstr($v['body'],40);
 					$w['addtime'] = time();
 					M('recycle')->add($w);
 				}
@@ -242,6 +243,7 @@ class CommentController extends CommonController
 			if(M('Comment')->delete(['id'=>$id])){
 				$w['molds'] = 'comment';
 				$w['data'] = json_encode($data,JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+				$w['title'] = '['.$data['id'].']'.newstr($data['body'],40);
 				$w['addtime'] = time();
 				M('recycle')->add($w);
 				JsonReturn(array('code'=>0,'msg'=>JZLANG('删除成功！')));

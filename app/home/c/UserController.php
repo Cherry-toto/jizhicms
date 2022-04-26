@@ -48,19 +48,9 @@ class UserController extends CommonController
 		//统计评论数
 		$this->comment_num = M('comment')->getCount(['userid'=>$this->member['id'],'isshow'=>1]);
 		//统计点赞数
-		if($this->member['likes']!=''){
-			//,1,2,3,4,
-			$this->likes_num = substr_count($this->member['likes'],'||')-1;
-		}else{
-			$this->likes_num = 0;
-		}
+        $this->likes_num = M('likes')->getCount(['userid'=>$this->member['id']]);
 		//统计收藏
-		if($this->member['collection']!=''){
-			//,1,2,3,4,
-		$this->collect_num = substr_count($this->member['collection'],'||')-1;
-		}else{
-			$this->collect_num = 0;
-		}
+        $this->collect_num = M('shouchang')->getCount(['userid'=>$this->member['id']]);
 		//发布文章统计
 		$this->article_num = M('article')->getCount(['member_id'=>$this->member['id']]);
 		$this->product_num = M('product')->getCount(['member_id'=>$this->member['id']]);
@@ -675,7 +665,7 @@ class UserController extends CommonController
 		$this->checklogin();
 		$id = $this->frparam('id');
 		if($id){
-			M('likes')->delete(['aid'=>$id,'userid'=>$this->member['id']]);
+			M('likes')->delete(['id'=>$id,'userid'=>$this->member['id']]);
 			
 			Success(JZLANG('删除成功！'),U('user/likes'));
 		}else{
@@ -855,7 +845,7 @@ class UserController extends CommonController
 		$this->checklogin();
 		$id = $this->frparam('id');
         if($id){
-            M('shouchang')->delete(['aid'=>$id,'userid'=>$this->member['id']]);
+            M('shouchang')->delete(['id'=>$id,'userid'=>$this->member['id']]);
 
             Success(JZLANG('删除成功！'),U('user/collect'));
         }else{

@@ -83,6 +83,17 @@
 			   </div>
 			   {/if}
 		 {/if}
+		 {if(checkAction('Extmolds/changeAttribute/molds/'.$molds['biaoshi']))}
+		 <div class="layui-input-inline" style="margin-right: 10px;margin-bottom: 10px;">
+			 <select class="" id="change_tuijian"  lay-filter="change_tuijian" >
+				 <option value="0">{fun JZLANG('修改推荐属性')}</option>
+				 {loop table="attr" isshow="1" as="v"}
+				 <option   value="{$v['id']}">{$v['name']}</option>
+				 {/loop}
+
+			 </select>
+		 </div>
+		 {/if}
 		 {if(checkAction('Extmolds/checkAll/molds/'.$molds['biaoshi']))}
 		  <div class="layui-input-inline" style="margin-right: 10px;margin-bottom: 10px;width:150px;">
 			   <select class="layui-btn" id="change_isshow"  lay-filter="change_isshow" >
@@ -355,8 +366,36 @@
 					
 				
 			    });
-				
 
+			form.on('select(change_tuijian)', function(data){
+				var datas =  $("#select_data").val();
+				var tj = parseInt(data.value);
+				if(tj==0){
+					alert('{fun JZLANG('请选择修改属性！')}');return false;
+				}
+				if(datas==''){
+					alert('{fun JZLANG('请选择修改对象！')}');return false;
+				}
+				$.post("{fun U('Extmolds/changeAttribute')}",{molds:"{$molds['biaoshi']}",data:datas,tj:tj},function(r){
+					var r = JSON.parse(r);
+					if(r.code==0){
+						$("#select_data").val('');
+						layer.msg('{fun JZLANG('批量修改成功')}', {icon: 1,time:1000},function(){
+							table.reload('jizhi_table', {
+								url: window.location.href+'?ajax=1'
+								,where: {} //设定异步数据接口的额外参数
+
+							});
+						});
+
+					}else{
+
+						layer.msg(r.msg,{icon: 5,time:1000});
+					}
+				})
+
+
+			});
 			
 			 
               

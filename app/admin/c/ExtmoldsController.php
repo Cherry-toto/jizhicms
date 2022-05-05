@@ -525,6 +525,36 @@ class ExtmoldsController extends Controller
 			JsonReturn(array('code'=>0,'msg'=>JZLANG('批量修改成功！')));
 		}
 	}
+
+    //批量修改推荐属性
+    function changeAttribute(){
+        $data = $this->frparam('data',1);
+        $molds = $this->frparam('molds',1);
+        $tj = $this->frparam('tj');
+        if($data && $molds){
+            $list = M($molds)->findAll('id in('.$data.')');
+
+            foreach($list as $v){
+                if(strpos($v['jzattr'],','.$tj.',')!==false){
+                    $attr = str_replace(','.$tj.',','',$v['jzattr']);
+                    if(!$attr){
+                        $w['jzattr'] = '';
+                    }else{
+                        $w['jzattr'] = ','.trim($attr,',').',';
+                    }
+                }else{
+                    if($v['jzattr']){
+                        $w['jzattr'] = $v['jzattr'].$tj.',';
+                    }else{
+                        $w['jzattr'] = ','.$tj.',';
+                    }
+                }
+                M($molds)->update(array('id'=>$v['id']),$w);
+            }
+            JsonReturn(array('code'=>0,'msg'=>JZLANG('批量修改成功！')));
+        }
+    }
+
 	//批量复制
 	function copyAll(){
 		$data = $this->frparam('data',1);

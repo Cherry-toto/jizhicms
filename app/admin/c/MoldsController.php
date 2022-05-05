@@ -414,6 +414,9 @@ class MoldsController extends CommonController
 				$ruler['name'] = JZLANG('批量审核').$data['name'];
 				$ruler['fc'] = 'Extmolds/checkAll/molds/'.$data['biaoshi'];
 				M('Ruler')->add($ruler);
+                $ruler['name'] = JZLANG('批量修改推荐属性').$data['name'];
+                $ruler['fc'] = 'Extmolds/changeAttribute/molds/'.$data['biaoshi'];
+                M('Ruler')->add($ruler);
 				
 				//写入左侧导航栏
 				$dao = M('Layout')->find(array('gid'=>$_SESSION['admin']['gid']));

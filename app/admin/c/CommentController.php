@@ -66,6 +66,9 @@ class CommentController extends CommonController
 					$w['title'] = '['.$v['id'].']'.newstr($v['body'],40);
 					$w['addtime'] = time();
 					M('recycle')->add($w);
+                    if($this->classtypedata[$v['tid']] && $v['aid']){
+                        M($this->classtypedata[$v['tid']]['molds'])->goDec(['id'=>$v['aid']],'comment_num');
+                    }
 				}
 				JsonReturn(array('code'=>0,'msg'=>JZLANG('批量删除成功！')));
 				
@@ -246,6 +249,10 @@ class CommentController extends CommonController
 				$w['title'] = '['.$data['id'].']'.newstr($data['body'],40);
 				$w['addtime'] = time();
 				M('recycle')->add($w);
+                //更新统计数
+                if($this->classtypedata[$data['tid']] && $data['aid']){
+                    M($this->classtypedata[$data['tid']]['molds'])->goDec(['id'=>$data['aid']],'comment_num');
+                }
 				JsonReturn(array('code'=>0,'msg'=>JZLANG('删除成功！')));
 			}else{
 				//Error('删除失败！');

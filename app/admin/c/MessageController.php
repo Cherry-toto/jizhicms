@@ -68,7 +68,7 @@ class MessageController extends CommonController
 			}
 			
 			if($this->frparam('tid')!=0){
-				$sql = 'tid='.$this->frparam('tid');
+				$sql .= ' and tid='.$this->frparam('tid');
 			}
 			if($this->frparam('aid')){
 				$sql.=" and aid = ".$this->frparam('aid')." ";

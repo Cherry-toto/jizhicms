@@ -283,7 +283,7 @@ class CommentController extends CommonController
 					$children[$kk]['classname'] = $vv['tid'] ? $vv['tid'] : $this->classtypedata[$vv['tid']];
 					$children[$kk]['article'] = !$vv['aid'] ? [] : M($this->classtypedata[$vv['tid']]['molds'])->find(['id'=>$vv['aid'],'isshow'=>1]);
 					$children[$kk]['user'] = !$vv['userid'] ? [] : M('member')->find(['id'=>$vv['userid']],null,'id,username,litpic');
-					$children[$kk]['addtime'] = formatTime($v['addtime']);
+					$children[$kk]['addtime'] = formatTime($vv['addtime']);
 				}
 			}
 			

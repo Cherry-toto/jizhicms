@@ -209,23 +209,27 @@ namespace frphp\extend;
 			
 			
 			$listpage['home'] = $this->url.$file_ext;
-			$start = $this->currentPage-$this->pv;
-			$start = $start<1 ? 1 : $start;
-			$end = $this->currentPage+$this->pv;
-			$end = $end>$this->allpage ? $this->allpage : $end;
-			while($start<=$end){
-				$urlx = $start==1 ? $this->url.$file_ext : $this->url.$this->sep.$start.$file_ext;
-				if($start==$this->currentPage){
-					$list.='<li class="active" ><a >'.$this->currentPage.'</a></li>';
-					$listpage['current'] = $urlx;
-					$listpage['current_num'] = $this->currentPage;
-				}else{
-					$list .= '<li><a href="'.$urlx.'" data-page="'.$start.'">'.$start.'</a></li>';
-				}
-				
-				$listpage['list'][] = array('url'=>$urlx,'num'=>$start);
-				$start++;
-			}
+            $num = floor($this->pv/2);
+            $start = $this->currentPage-$num;
+            $start = ($this->currentPage+$num) > $this->allpage ? ($this->allpage-$this->pv+1) : $start;
+            $start = $start<1 ? 1 : $start;
+            
+            $end = $this->currentPage+$num;
+            $end = $end>$this->allpage ? $this->allpage : $end;
+            $end = $start<$num ? ($this->pv>=$this->allpage ? $this->allpage : $this->pv) : $end;
+            while($start<=$end){
+                $urlx = $start==1 ? $this->url.$file_ext : $this->url.$this->sep.$start.$file_ext;
+                if($start==$this->currentPage){
+                    $list.='<li class="active" ><a >'.$this->currentPage.'</a></li>';
+                    $listpage['current'] = $urlx;
+                    $listpage['current_num'] = $this->currentPage;
+                }else{
+                    $list .= '<li><a href="'.$urlx.'" data-page="'.$start.'">'.$start.'</a></li>';
+                }
+                
+                $listpage['list'][] = array('url'=>$urlx,'num'=>$start);
+                $start++;
+            }
 			$listpage['allpage'] = $this->allpage;
 			$prev_url = $this->currentPage==1 ? '' : $this->url.$this->sep.($this->currentPage-1).$file_ext;
 			$prev = '<li><a href="'.$prev_url.'" class="layui-laypage-prev" data-page="'.($this->currentPage-1).'"><em>&lt;</em></a></li>';

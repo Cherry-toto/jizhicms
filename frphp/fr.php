@@ -467,7 +467,7 @@ $url = urldecode($_SERVER['REQUEST_URI']);
 defined('ADMIN_MODEL') or define('ADMIN_MODEL', 'admins');
 
 //判断是否后台入口
-if(strpos($url,ADMIN_MODEL)!==false || (defined('APP_HOME') && APP_HOME=='app/admin')){
+if(strpos($url,'/index.php/'.ADMIN_MODEL)!==false || (defined('APP_HOME') && APP_HOME=='app/admin')){
     //后台
     //定义项目目录
     defined('APP_HOME') or define('APP_HOME', 'app/admin');

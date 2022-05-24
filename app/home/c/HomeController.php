@@ -384,6 +384,7 @@ class HomeController extends CommonController
 	//自由定义链接
 	function auto_url(){
 		$html = $this->frparam('html',1);
+		$molds = $this->frparam('molds',1);
 		$id = $this->frparam('id');
 		$tid = $this->frparam('tid');
 		$isclass = true;
@@ -408,8 +409,24 @@ class HomeController extends CommonController
 			//栏目页
 			$res = M('classtype')->find(array('id'=>$tid,'isclose'=>0));
 			if(!$res){ $this->error(JZLANG('链接错误！'));}
-			
-		}else{
+        }else if($molds && $id){
+            $tables = explode('|',$this->webconf['search_table']);
+            if(!in_array(strtolower($molds),$tables)){
+                $this->error('链接错误！');
+            }
+            //默认是详情页-非详情页另做处理
+            $this->id = $id;
+            $tid = M($molds)->getField(['id'=>$id],'tid');
+            if(!$tid){
+                $this->error('链接错误！');
+            }
+            $this->type = $this->classtypedata[$tid];
+            $this->jizhi_details($this->id);
+            if(!$this->frparam('ajax')){
+                $this->end_cache($this->cache_file);
+            }
+
+        }else{
 			//html只有栏目页
 			$res = M('classtype')->find(array('htmlurl'=>$html,'isclose'=>0));
 			if(!$res){ $this->error(JZLANG('链接错误！'));}

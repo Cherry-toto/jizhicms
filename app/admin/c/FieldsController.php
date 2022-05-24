@@ -332,13 +332,18 @@ class FieldsController extends CommonController
 							case 7:
 							case 8:
 							case 9:
-							case 10:
 							case 12:
 							case 16:
 							case 18:
 							case 19:
 							$sql.=" varchar(".$data['fieldlong'].") ";
 							break;
+							case 3:
+							case 15:
+							case 6:
+							case 10:
+							$sql .= "TEXT CHARACTER SET utf8 default ";
+							$sql .= ' NULL ';
 							break;
 							case 4:
 							case 11:

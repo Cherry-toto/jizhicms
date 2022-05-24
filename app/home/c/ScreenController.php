@@ -65,7 +65,7 @@ class ScreenController extends CommonController
 				$isgo = false;
 			}
 			if($isgo &&  $v['id']!=$res['id'] && $res['level']>$v['level'] ){
-				if(count($parent['pid'])){
+				if($parent['pid']){
 					if($parent['level']>$v['level'] && $parent['pid']!=$v['pid']){
 						$newarray[]=$v;
 						$parent = $v;

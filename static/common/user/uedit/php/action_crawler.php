@@ -33,7 +33,7 @@ foreach ($source as $imgUrl) {
         "size" => $info["size"],
         "title" => htmlspecialchars($info["title"]),
         "original" => htmlspecialchars($info["original"]),
-        "source" => htmlspecialchars($imgUrl)
+        "source" => htmlspecialchars_decode($imgUrl)
     ));
 }
 

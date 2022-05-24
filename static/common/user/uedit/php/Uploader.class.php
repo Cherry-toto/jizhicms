@@ -66,7 +66,168 @@ class Uploader
         //$this->stateMap['ERROR_TYPE_NOT_ALLOWED'] = iconv('unicode', 'utf-8', $this->stateMap['ERROR_TYPE_NOT_ALLOWED']);
 		$this->stateMap['ERROR_TYPE_NOT_ALLOWED'];
     }
+    /**
+     * 图片加水印
+     * $source  string  图片资源
+     * $target  string  添加水印后的名字
+     * $w_pos   int     水印位置安排（1-10）【1:左头顶；2:中间头顶；3:右头顶...值空:随机位置】
+     * $w_img   string  水印图片路径
+     * $w_text  string  显示的文字
+     * $w_font  int     字体大小
+     * $w_color string  字体颜色
+     */
+    public function watermark($source, $target = '', $w_pos = '', $w_img = '', $w_text = '',$w_font = 10, $w_color = '#CC0000') {
+        $this->w_img = '../watermark.png';//水印图片
+        $this->w_pos = 8;
+        $this->w_minwidth = 400;//最少宽度
+        $this->w_minheight = 200;//最少高度
+        $this->w_quality = 80;//图像质量
+        $this->w_pct = 60;//透明度
 
+        $w_pos = $w_pos ? $w_pos : $this->w_pos;
+        $w_img = $w_img ? $w_img : $this->w_img;
+        if(!$this->check($source)) return false;
+        if(!$target) $target = $source;
+        $source_info = getimagesize($source);//图片信息
+        $source_w  = $source_info[0];//图片宽度
+        $source_h  = $source_info[1];//图片高度
+        if($source_w < $this->w_minwidth || $source_h < $this->w_minheight) return false;
+        switch($source_info[2]) { //图片类型
+            case 1 : //GIF格式
+                $source_img = imagecreatefromgif($source);
+                break;
+            case 2 : //JPG格式
+                $source_img = imagecreatefromjpeg($source);
+                break;
+            case 3 : //PNG格式
+                $source_img = imagecreatefrompng($source);
+                //imagealphablending($source_img,false); //关闭混色模式
+                imagesavealpha($source_img,true); //设置标记以在保存 PNG 图像时保存完整的 alpha 通道信息（与单一透明色相反）
+                break;
+            default :
+                return false;
+        }
+        if(!empty($w_img) && file_exists($w_img)) { //水印图片有效
+            $ifwaterimage = 1; //标记
+            $water_info  = getimagesize($w_img);
+            $width    = $water_info[0];
+            $height    = $water_info[1];
+            switch($water_info[2]) {
+                case 1 :
+                    $water_img = imagecreatefromgif($w_img);
+                    break;
+                case 2 :
+                    $water_img = imagecreatefromjpeg($w_img);
+                    break;
+                case 3 :
+                    $water_img = imagecreatefrompng($w_img);
+                    imagealphablending($w_img,false);
+                    imagesavealpha($w_img,true);
+                    break;
+                default :
+                    return;
+            }
+        }else{
+            $ifwaterimage = 0;
+            $temp = imagettfbbox(ceil($w_font*2.5), 0, '../../texb.ttf', $w_text); //imagettfbbox返回一个含有 8 个单元的数组表示了文本外框的四个角
+            $width = $temp[2] - $temp[6];
+            $height = $temp[3] - $temp[7];
+            unset($temp);
+        }
+
+        switch($w_pos) {
+            case 1:
+                $wx = 5;
+                $wy = 5;
+                break;
+            case 2:
+                $wx = ($source_w - $width) / 2;
+                $wy = 0;
+                break;
+            case 3:
+                $wx = $source_w - $width;
+                $wy = 0;
+                break;
+            case 4:
+                $wx = 0;
+                $wy = ($source_h - $height) / 2;
+                break;
+            case 5:
+                $wx = ($source_w - $width) / 2;
+                $wy = ($source_h - $height) / 2;
+                break;
+            case 6:
+                $wx = $source_w - $width;
+                $wy = ($source_h - $height) / 2;
+                break;
+            case 7:
+                $wx = 0;
+                $wy = $source_h - $height;
+                break;
+            case 8:
+                $wx = ($source_w - $width) / 2;
+                $wy = $source_h - $height;
+                break;
+            case 9:
+                $wx = $source_w - ($width+5);
+                $wy = $source_h - ($height+5);
+                break;
+            case 10:
+                $wx = rand(0,($source_w - $width));
+                $wy = rand(0,($source_h - $height));
+                break;
+            default:
+                $wx = rand(0,($source_w - $width));
+                $wy = rand(0,($source_h - $height));
+                break;
+        }
+
+        if($ifwaterimage) {
+            if($water_info[2] == 3) {
+                imagecopy($source_img, $water_img, $wx, $wy, 0, 0, $width, $height);
+            }else{
+                imagecopymerge($source_img, $water_img, $wx, $wy, 0, 0, $width, $height, $this->w_pct);
+            }
+        }else{
+            if(!empty($w_color) && (strlen($w_color)==7)) {
+                $r = hexdec(substr($w_color,1,2));
+                $g = hexdec(substr($w_color,3,2));
+                $b = hexdec(substr($w_color,5));
+            }else{
+                return;
+            }
+            imagestring($source_img,$w_font,$wx,$wy,$w_text,imagecolorallocate($source_img,$r,$g,$b));
+        }
+
+        switch($source_info[2]) {
+            case 1 :
+                imagegif($source_img, $target);
+                //GIF 格式将图像输出到浏览器或文件(欲输出的图像资源, 指定输出图像的文件名)
+                break;
+            case 2 :
+                imagejpeg($source_img, $target, $this->w_quality);
+                break;
+            case 3 :
+                imagepng($source_img, $target);
+                break;
+            default :
+                return;
+        }
+
+        if(isset($water_info)){
+            unset($water_info);
+        }
+        if(isset($water_img)) {
+            imagedestroy($water_img);
+        }
+        unset($source_info);
+        imagedestroy($source_img);
+        return true;
+    }
+
+    public function check($image){
+        return extension_loaded('gd') && preg_match("/\.(jpg|jpeg|gif|png)/i", $image, $m) && file_exists($image) && function_exists('imagecreatefrom'.($m[1] == 'jpg' ? 'jpeg' : $m[1]));
+    }
     /**
      * 上传文件的主处理方法
      * @return mixed
@@ -212,7 +373,7 @@ class Uploader
         }
         //格式验证(扩展名验证和Content-Type验证)
         $fileType = strtolower(strrchr($imgUrl, '.'));
-        if (!in_array($fileType, $this->config['allowFiles']) || !isset($heads['Content-Type']) || !stristr($heads['Content-Type'], "image")) {
+        if (!isset($heads['Content-Type']) || !stristr($heads['Content-Type'], "image")) {
             $this->stateInfo = $this->getStateInfo("ERROR_HTTP_CONTENTTYPE");
             return;
         }
@@ -278,7 +439,8 @@ class Uploader
      */
     private function getFileExt()
     {
-        return strtolower(strrchr($this->oriName, '.'));
+        $fix = strtolower(strrchr($this->oriName, '.'));
+        return $fix ? $fix : '.png';
     }
 
     /**
@@ -375,6 +537,8 @@ class Uploader
 	
 	//引入系统，并存入数据库
 	public function save_files($filename){
+
+
 		include_once('../../../../../frphp/extend/DB_API.php');
 		$config = include('../../../../../conf/config.php');
 		
@@ -386,8 +550,17 @@ class Uploader
 		$conf['db_prefix'] = $config['db']['prefix'];
 		
 		$db = new DB_API($conf);
- 
-		//将传入表数据的对象类放入一个变量中，方便多次使用
+        $webconf = $db->set_table('sysconfig');
+        $wartermark = $webconf->find(['field'=>'iswatermark']);
+        if($wartermark['data']==1){
+            $wartermark_file = $webconf->find(['field'=>'watermark_file']);
+            if($wartermark_file['data']){
+                $wartermark_pos = $webconf->find(['field'=>'watermark_t']);
+                $this->watermark($this->filePath,$this->filePath,$wartermark_pos['data'],str_replace('/static/upload/','../../../../upload/',$wartermark_file['data']));
+            }
+        }
+
+        //将传入表数据的对象类放入一个变量中，方便多次使用
 		$pictures = $db->set_table('pictures');
 		//新增一条数据
 		$filesize = round(filesize($filename)/1024,2);

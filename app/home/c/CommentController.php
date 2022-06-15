@@ -51,9 +51,8 @@ class CommentController extends CommonController
 					Error(JZLANG('您的操作过于频繁，请十分钟后再试~'));
 				}
 			
-				$w = $this->frparam();
-				$w = get_fields_data($w,'comment',0);
-			
+				//$w = $this->frparam();
+				//$w = get_fields_data($w,'comment',0);
 				$w['tid'] = $this->frparam('tid',0,0);
 				$w['aid'] = $this->frparam('aid',0,0);
 				$w['zid'] = $this->frparam('zid',0,0);
@@ -95,6 +94,7 @@ class CommentController extends CommonController
 
 					}
 					foreach($match[1] as $v){
+					    $v = format_param($v,1);
 						$r = M('member')->getField(['username'=>$v],'id');
 						if($r && $r!=$z_userid && $r!=$p_userid){
 							$about[] = $r;

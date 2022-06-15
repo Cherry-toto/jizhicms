@@ -15,9 +15,7 @@
   <div class="container clearfix">
     {include="user/left_nav"}
     <div class="user-right">
-      <div class="user-tips">
-        <p><i class="iconfont iconxiaoxi3"></i> 欢迎注册本站会员，注册会员后您将享受专属会员服务!包括但不限于专属文章浏览权限，会员投稿权限，在线购物权限，下载会员可见附件等实用功能，欢迎注册体验！</p>
-      </div>
+      {include="user/tips"}
       <div class="common-tab">
         <h2><a href="{fun U('user/wallet')}">我的钱包</a><a href="{fun U('user/buylist')}?type=1" {if($type==1)}class="active"{/if} >交易记录</a><a href="{fun U('user/buylist')}?type=2" {if($type==2)}class="active"{/if} >充值记录</a><a href="{fun U('user/buylist')}?type=3" {if($type==3)}class="active"{/if} >赠送记录</a></h2>
       </div>

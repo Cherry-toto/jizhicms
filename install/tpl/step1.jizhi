@@ -79,19 +79,10 @@
 				          <td><?php echo new_is_writeable('../conf/config.php')?'满足':'不支持';?></td>
 				          <td>可写</td>
 				        </tr>
-						<tr>
-				          <th>后台入口文件/admin.php</th>
-				          <td><?php echo new_is_writeable('../admin.php')?'满足':'不支持';?></td>
-				          <td>可写</td>
-				        </tr>
+					
 				        <tr>
 				          <th>缓存文件/cache/</th>
 				          <td><?php echo new_is_writeable('../cache')?'满足':'不支持';?></td>
-				          <td>可写</td>
-				        </tr>
-				        <tr>
-				          <th>上传文件夹/public/</th>
-				          <td><?php echo new_is_writeable('../public')?'满足':'不支持';?></td>
 				          <td>可写</td>
 				        </tr>
 						<tr>

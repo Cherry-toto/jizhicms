@@ -16,9 +16,7 @@
   <div class="container clearfix">
     {include="user/left_nav"}
     <div class="user-right">
-      <div class="user-tips">
-        <p><i class="iconfont iconxiaoxi3"></i> 欢迎注册本站会员，注册会员后您将享受专属会员服务!包括但不限于专属文章浏览权限，会员投稿权限，在线购物权限，下载会员可见附件等实用功能，欢迎注册体验！</p>
-      </div>
+      {include="user/tips"}
       <div class="common-tab">
         <h2><a href="{fun U('user/notify')}" {if(!$msgtype)}class="active"{/if}>全部消息</a><a href="{fun U('user/notify',['msgtype'=>1])}" {if($msgtype==1)}class="active"{/if} >评论提醒</a><a href="{fun U('user/notify',['msgtype'=>2])}" {if($msgtype==2)}class="active"{/if}>收藏提醒</a><a href="{fun U('user/notify',['msgtype'=>3])}" {if($msgtype==3)}class="active"{/if}>赞同提醒</a><a href="{fun U('user/notify',['msgtype'=>4])}" {if($msgtype==4)}class="active"{/if}>@提到我</a><a href="{fun U('user/notify',['msgtype'=>5])}" {if($msgtype==5)}class="active"{/if}>交易提醒</a>
 		<button onclick="allread()" class="layui-btn layui-btn-sm">一键已读</button>

@@ -68,7 +68,7 @@ class AdminController extends CommonController
 		$this->fields_biaoshi = 'level_group';
 		if($this->frparam('go')==1){
 			$data = $this->frparam();
-			if($this->admin['gid']!=1){
+			if($this->admin['gid']!=1 && $this->frparam('isadmin')==1){
 				JsonReturn(array('code'=>1,'msg'=>JZLANG('修改失败，您的权限不足！')));
 			}
 			$data['name'] = $this->frparam('name',1);
@@ -111,6 +111,9 @@ class AdminController extends CommonController
 		$this->fields_biaoshi = 'level_group';
 		if($this->frparam('go')==1){
 			$data = $this->frparam();
+            if($this->admin['gid']!=1 && $this->frparam('isadmin')==1){
+                JsonReturn(array('code'=>1,'msg'=>JZLANG('您的权限不足！')));
+            }
 			$data['name'] = $this->frparam('name',1);
 			$data['ischeck'] = $this->frparam('ischeck');
 			$data['description'] = $this->frparam('description',1);

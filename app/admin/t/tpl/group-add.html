@@ -31,6 +31,7 @@
                         autocomplete="off" class="layui-input">
                     </div>
                 </div>
+			{if($admin['gid']==1)}
 				<div class="layui-form-item" pane>
                     <label for="isadmin" class="layui-form-label">
                         <span class="x-red"></span>{fun JZLANG('是否超管')}
@@ -44,6 +45,9 @@
 					</div>
 					
                 </div>
+			{else}
+			<input type="hidden" name="isadmin" value="0">
+			{/if}
 				<div class="layui-form-item" pane>
                     <label for="ischeck" class="layui-form-label">
                         <span class="x-red"></span>{fun JZLANG('发布审核')}

@@ -5,7 +5,11 @@
        <meta charset="UTF-8">
         {include="style"}
 		{include="edit"}
-		
+		<style>
+		.preview{
+			width:100px;
+		}
+		</style>
     </head>
     
     <body>
@@ -47,6 +51,7 @@
 							<tr>
 							  <th>{fun JZLANG('栏目')}</th>
 							  <th>{fun JZLANG('标题')}</th>
+							  <th>{fun JZLANG('图片')}</th>
 							  <th>{fun JZLANG('链接')}</th>
 							  <th>{fun JZLANG('打开')}</th>
 							  <th>{fun JZLANG('显示')}</th>
@@ -65,6 +70,12 @@
 								</select>
 							  </td>
 							  <td><input type="text" name="title[]"  placeholder="{fun JZLANG('不填默认栏目名称')}" autocomplete="off" class="layui-input"></td>
+							  <td><input type="text" name="litpic[]"  placeholder="{fun JZLANG('不填默认空')}" autocomplete="off" class="layui-input">
+								<img class="preview" onerror="this.src='{__Tpl_style__}/style/images/nopic.jpg'" src="">
+							    <button type="button" class="layui-btn layui-btn-sm uploadimg">
+								  <i class="layui-icon">&#xe67c;</i>{fun JZLANG('上传图片')}
+								</button>
+							  </td>
 							  <td><input type="text" name="gourl[]"  placeholder="{fun JZLANG('自定义链接则需要填写')}" autocomplete="off" class="layui-input"></td>
 							  <td>
 								<select name="target[]" >
@@ -129,16 +140,41 @@
 		<br/>
       
         <script>
-		
+
+		$(function(){
+			$(".preview").click(function(){
+				var url = $(this).attr('src');
+				window.open(url)
+			
+			})
+			
+
+		})
             layui.use(['laydate','form','layer','upload'], function(){
                 $ = layui.jquery;
               var form = layui.form,layer = layui.layer,laydate = layui.laydate;
+			 var upload = layui.upload;
+			   
+			  //执行实例
+			  var uploadInst = upload.render({
+				elem: '.uploadimg' //绑定元素
+				,url: '{fun U('common/uploads')}' //上传接口
+				,done: function(res, index, upload){
+				  //上传完毕回调
+				  $(this.item).parent().children('.layui-input').val(res.url)
+				  $(this.item).parent().children('.preview').attr('src',res.url)
+				  
+				}
+				,error: function(){
+				  //请求异常回调
+				}
+			  });
 			 
 			   form.on('select(tid)', function(data){
 			 
-			 
-			  
-			});
+				 
+				  
+				});
 				
 			    //监听提交
               form.on('submit(save)', function(data){
@@ -175,13 +211,43 @@
 
               
             });
-			function renderForm(){
-				layui.use('form', function(){
-				var form = layui.form; //只有执行了这一步，部分表单元素才会自动修饰成功
+			function renderForm(a){
+				layui.use(['laydate','form','layer','upload'], function(){
+				  $ = layui.jquery;
+				  var form = layui.form,layer = layui.layer,laydate = layui.laydate,upload = layui.upload;
+
+				  upload.render({
+					elem: '.uploadimg_'+a //绑定元素
+					,url: '{fun U('common/uploads')}' //上传接口
+					,done: function(res, index, upload){
+					  //上传完毕回调
+					  $(this.item).parent().children('.layui-input').val(res.url)
+					  $(this.item).parent().children('.preview').attr('src',res.url)
+					  
+					}
+					,error: function(){
+					  //请求异常回调
+					}
+				  });
 				  form.render();
 				});
+				
+				
+				
 			}
+			function randomString(e) {  
+			  e = e || 32;
+			  var t = "ABCDEFGHJKMNPQRSTWXYZabcdefhijkmnprstwxyz2345678",
+			  a = t.length,
+			  n = "";
+			  for (i = 0; i < e; i++) n += t.charAt(Math.floor(Math.random() * a));
+			  return n
+			}
+
+
+
 			function add(a){
+				var rand = randomString(6);
 				var html = '<tr>'+
 							  '<td>'+
 								'<select name="tid[]" lay-filter="tid">'+
@@ -192,6 +258,7 @@
 								'</select>'+
 							  '</td>'+
 							  '<td><input type="text" name="title[]"  placeholder="{fun JZLANG('不填默认栏目名称')}" autocomplete="off" class="layui-input"></td>'+
+							  '<td><input type="text" name="litpic[]"  placeholder="{fun JZLANG('不填默认空')}" autocomplete="off" class="layui-input"><img class="preview" onerror="this.src=\'{__Tpl_style__}/style/images/nopic.jpg\'" src=""><button type="button" class="layui-btn layui-btn-sm uploadimg_'+rand+'"><i class="layui-icon">&#xe67c;</i>{fun JZLANG('上传图片')}</button></td>'+
 							  '<td><input type="text" name="gourl[]"  placeholder="{fun JZLANG('自定义链接则需要填写')}" autocomplete="off" class="layui-input"></td>'+
 							  '<td>'+
 								'<select name="target[]" >'+
@@ -211,7 +278,7 @@
 							  '</td>'+
 							'</tr>';
 				$(a).parent().parent().after(html);
-				renderForm();
+				renderForm(rand);
 			}
 			function del(a){
 				$(a).parent().parent().remove();

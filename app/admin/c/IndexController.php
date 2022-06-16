@@ -1303,6 +1303,7 @@ class IndexController extends CommonController
 			$gourl = $this->frparam('gourl',2);
 			$target = $this->frparam('target',2);
 			$status = $this->frparam('status',2);
+            $litpic = $this->frparam('litpic',2);
 			
 			$data = get_fields_data($data,'menu');
 			$nav = [];
@@ -1313,6 +1314,7 @@ class IndexController extends CommonController
 					'gourl'=>$gourl[$k],
 					'target'=>$target[$k],
 					'status'=>$status[$k],
+					'litpic'=>$litpic[$k],
 				];
 				
 			}
@@ -1352,6 +1354,7 @@ class IndexController extends CommonController
 			$gourl = $this->frparam('gourl',2);
 			$target = $this->frparam('target',2);
 			$status = $this->frparam('status',2);
+            $litpic = $this->frparam('litpic',2);
 			
 			$data = get_fields_data($data,'menu');
 			$nav = [];
@@ -1362,6 +1365,7 @@ class IndexController extends CommonController
 					'gourl'=>$gourl[$k],
 					'target'=>$target[$k],
 					'status'=>$status[$k],
+					'litpic'=>$litpic[$k],
 				];
 				
 			}

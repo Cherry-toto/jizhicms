@@ -76,8 +76,20 @@ function new_is_writeable($file) {
 
 //获取后台文件名
 function get_admin_url(){
-
-	return 'index.php/admins';
+    $data = file_get_contents("../index.php");
+    if(stripos($data,'ADMIN_MODEL')!==false){
+        $r = preg_match("/define\('ADMIN_MODEL',[\'|\"](.*?)[\'|\"]\)/",$data,$matches);
+        if($r){
+            $admins = $matches[1];
+        }else{
+            $admins = 'admins';
+        }
+        
+    }else{
+        $admins = 'admins';
+    }
+    
+    return 'index.php/'.$admins;
 }
 
 //获取域名

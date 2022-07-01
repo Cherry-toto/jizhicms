@@ -177,6 +177,7 @@ class ProductController extends CommonController
 			}else{
 				$data['isshow'] = 0;
 			}
+			$data['addtime'] = time();
 			$r = M('product')->add($data);
 			if($r){
 				if($data['ownurl']){
@@ -359,6 +360,7 @@ class ProductController extends CommonController
 				}else{
 					$data['isshow'] = 0;
 				}
+                $data['addtime'] = isset($data['addtime']) ? $data['addtime'] : time();
 				if(M('product')->update(array('id'=>$this->frparam('id')),$data)){
 					//tags处理
 					if($old_tags!=$data['tags']){

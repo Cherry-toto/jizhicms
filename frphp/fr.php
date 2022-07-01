@@ -515,6 +515,6 @@ if(strpos($url,'/index.php/'.ADMIN_MODEL)!==false || (defined('APP_HOME') && APP
     //定义静态文件路径
     defined('Tpl_style') or define('Tpl_style', '/static/');
 }
-
+header_remove('X-Powered-By');
 //实例化核心类
 (new frphp($config))->run();

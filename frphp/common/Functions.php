@@ -90,7 +90,6 @@ function SafeFilter($arr)
 function array_format(&$item, $key)
 {
 	$item=trim($item);
-	//$item = SafeFilter($item);
 	$item=htmlspecialchars($item, ENT_QUOTES);
 	if(version_compare(PHP_VERSION,'7.4','>=')){
 		$item = addslashes($item);

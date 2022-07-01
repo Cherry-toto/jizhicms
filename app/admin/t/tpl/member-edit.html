@@ -31,164 +31,30 @@
 			  </ul>
 			  <div class="layui-tab-content">
 				<div class="layui-tab-item layui-show">
-				<div class="layui-form-item">
-              <label for="L_email" class="layui-form-label">
-                  <span class="x-red"></span>{fun JZLANG('邮箱')}
-              </label>
-              <div class="layui-input-inline">
-                  <input type="text" id="L_email" value="{$data['email']}"  name="email" 
-                  autocomplete="off" class="layui-input">
-              </div>
-              <div class="layui-form-mid layui-word-aux">
-                  <span class="x-red"></span>{fun JZLANG('用于找回密码')}
-              </div>
-          </div>
-		  <div class="layui-form-item">
-              <label for="L_tel" class="layui-form-label">
-                  <span class="x-red"></span>{fun JZLANG('手机号')}
-              </label>
-              <div class="layui-input-inline">
-                  <input type="text" id="L_tel" value="{$data['tel']}"   name="tel"  
-                  autocomplete="off" class="layui-input">
-              </div>
-          </div>
-          <div class="layui-form-item">
-              <label for="L_username" class="layui-form-label">
-                  <span class="x-red">*</span>{fun JZLANG('昵称')}
-              </label>
-              <div class="layui-input-inline">
-                  <input type="text" id="L_username" name="username" value="{$data['username']}" required="" lay-verify="nikename"
-                  autocomplete="off" class="layui-input">
-              </div>
-          </div>
-		  
-		  {if(checkAction('Member/membergroup'))}
-		 
-          <div class="layui-form-item">
-              <label class="layui-form-label"><span class="x-red"></span>{fun JZLANG('分组')}</label>
-              <div class="layui-input-inline">
-			  
-                <select class="layui-input" name="gid" lay-verify="required">
-				{loop table="member_group" as="v"}
-				<option {if($data['gid']==$v['id'])}selected{/if} value="{$v['id']}">{$v['name']}</option>
-				{/loop}
-				
-				</select>
-              </div>
-          </div>
-		  {else}
-		  <input name="gid" type="hidden"	value="{$data['gid']}" />
-		  {/if}
-		  
-		  <div class="layui-form-item">
-              <label for="L_jifen" class="layui-form-label">
-                  {fun JZLANG('积分')}
-              </label>
-              <div class="layui-input-inline">
-                  <input type="text" id="L_jifen" name="jifen" value="{$data['jifen']}" 
-                  autocomplete="off" class="layui-input">
-              </div>
-          </div>
-		  <div class="layui-form-item">
-              <label for="money" class="layui-form-label">
-                  {fun JZLANG('钱包')}
-              </label>
-              <div class="layui-input-inline">
-                  <input type="text" id="money" name="money" value="{$data['money']}" 
-                  autocomplete="off" class="layui-input">
-              </div>
-          </div>
-		  
-		   
-		  
-		  
-		   <div class="layui-form-item">
-				<label for="litpic" class="layui-form-label">
-					{fun JZLANG('头像')}
-				</label>
-				
-				<div class="layui-input-inline">
-					<input name="litpic" placeholder="{fun JZLANG('上传图片')}" type="text" class="layui-input" id="litpic"  value="{$data['litpic']}" />
-				</div>
-				<div class="layui-input-inline">
-					<button class="layui-btn layui-btn-primary" id="litpic_upload" type="button" >{fun JZLANG('选择图片')}</button>
-				</div>
-				<div class="layui-input-inline">
-					<img id="litpic_img" class="img-responsive img-thumbnail" style="max-width: 200px;" src="{$data['litpic']}" onerror="javascipt:this.src='{__Tpl_style__}/style/images/nopic.jpg'; this.title='{fun JZLANG('图片未找到')}';this.onerror=''">
-					<button type="button" onclick="deleteImage(this)" class="layui-btn layui-btn-sm layui-btn-radius layui-btn-danger " title="{fun JZLANG('删除这张图片')}" >{fun JZLANG('删除')}</button>
-				</div>
-			</div>
-	  
-		  <div class="layui-form-item">
-              <label for="birthday" class="layui-form-label">
-                  {fun JZLANG('生日')}
-              </label>
-              <div class="layui-input-inline">
-                  <input type="text" id="birthday" name="birthday" value="{$data['birthday']}" 
-                  autocomplete="off" class="layui-input">
-              </div>
-          </div>
-	         <div class="layui-form-item">
-              <label for="signature" class="layui-form-label">
-                  {fun JZLANG('个性签名')}
-              </label>
-              <div class="layui-input-inline">
-                  <input type="text" id="signature" name="signature" value="{$data['signature']}" 
-                  autocomplete="off" class="layui-input">
-              </div>
-          </div>
-		     
-		      <div class="layui-form-item">
-              <label for="province" class="layui-form-label">
-                  {fun JZLANG('省份')}
-              </label>
-              <div class="layui-input-inline">
-                  <input type="text" id="province" name="province" value="{$data['province']}" 
-                  autocomplete="off" class="layui-input">
-              </div>
-          </div>
-          <div class="layui-form-item">
-              <label for="city" class="layui-form-label">
-                  {fun JZLANG('城市')}
-              </label>
-              <div class="layui-input-inline">
-                  <input type="text" id="city" name="city" value="{$data['city']}" 
-                  autocomplete="off" class="layui-input">
-              </div>
-          </div>
-		       <div class="layui-form-item">
-              <label for="address" class="layui-form-label">
-                  {fun JZLANG('详细地址')}
-              </label>
-              <div class="layui-input-inline">
-                  <input type="text" id="address" name="address" value="{$data['address']}" 
-                  autocomplete="off" class="layui-input">
-              </div>
-          </div>
-		  
-          <div class="layui-form-item">
-              <label for="L_pass" class="layui-form-label">
-                  <span class="x-red">*</span>{fun JZLANG('密码')}
-              </label>
-              <div class="layui-input-inline">
-                  <input type="password" id="L_pass" name="pass"  lay-verify="pass"
-                  autocomplete="off" class="layui-input">
-              </div>
-              <div class="layui-form-mid layui-word-aux">
-                  {fun JZLANG('6到16个字符,不修改请留空')}
-              </div>
-          </div>
-          <div class="layui-form-item">
-              <label for="L_repass" class="layui-form-label">
-                  <span class="x-red">*</span>{fun JZLANG('确认密码')}
-              </label>
-              <div class="layui-input-inline">
-                  <input type="password" id="L_repass" name="repass"  lay-verify="repass"
-                  autocomplete="off" class="layui-input">
-              </div>
-          </div>
+					  <span id="content_fields"></span>
+					  <div class="layui-form-item">
+						  <label for="L_pass" class="layui-form-label">
+							  {fun JZLANG('密码')}
+						  </label>
+						  <div class="layui-input-inline">
+							  <input type="password" id="L_pass" name="pass"  lay-verify="pass"
+							  autocomplete="off" class="layui-input">
+						  </div>
+						  <div class="layui-form-mid layui-word-aux">
+							  {fun JZLANG('6到16个字符,不修改请留空')}
+						  </div>
+					  </div>
+					  <div class="layui-form-item">
+						  <label for="L_repass" class="layui-form-label">
+							  {fun JZLANG('确认密码')}
+						  </label>
+						  <div class="layui-input-inline">
+							  <input type="password" id="L_repass" name="repass"  lay-verify="repass"
+							  autocomplete="off" class="layui-input">
+						  </div>
+					  </div>
 
-                    <span id="content_fields"></span>
+                   
 	  
 				</div>
 				<div class="layui-tab-item">

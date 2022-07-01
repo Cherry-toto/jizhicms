@@ -188,6 +188,7 @@ class ExtmoldsController extends Controller
 			}else{
 				$data['isshow'] = 0;
 			}
+			$data['addtime'] = time();
 			$r = M($molds)->add($data);
 			if($r){
 				if(isset($data['ownurl'])){
@@ -285,6 +286,7 @@ class ExtmoldsController extends Controller
 				}else{
 					$data['isshow'] = 0;
 				}
+                $data['addtime'] = isset($data['addtime']) ? $data['addtime'] : time();
 				if(M($molds)->update(array('id'=>$this->frparam('id')),$data)){
 					
 					if($old_tags!=$data['tags']){

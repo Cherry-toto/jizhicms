@@ -41,7 +41,7 @@
                         <span class="x-red">*</span>{fun JZLANG('栏目')}
                     </label>
                     <div class="layui-input-inline">
-						<select name="tid" lay-search="" {if($molds['ismust']==1)}lay-verify="required"{/if} id="tid" >
+						<select name="tid" lay-search="" lay-filter="tid" {if($molds['ismust']==1)}lay-verify="required"{/if} id="tid" >
 						{if($molds['ismust']==1)}
 						<option value="">{fun JZLANG('选择栏目')}</option>
 						{else}

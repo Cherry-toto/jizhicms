@@ -19,175 +19,127 @@ use frphp\extend\Page;
 class MemberController extends CommonController
 {
 
-	function index(){
-		$this->username  = $this->frparam('username',1);
-		$this->starttime  = $this->frparam('start',1);
-		$this->endtime  = $this->frparam('end',1);
-		$this->tel  = $this->frparam('tel',1);
-		$this->isshow  = $this->frparam('isshow');
-		$data = $this->frparam();
-		$res = molds_search('member',$data);
-		$this->fields_search = $res['fields_search'];
-		$this->fields_list = M('Fields')->findAll(array('molds'=>'member','islist'=>1),'orders desc');
-		if($this->frparam('ajax')){
-			
-			$page = new Page('member');
-			$sql='1=1';
-			if($this->frparam('start',1)){
-				$start = strtotime($this->frparam('start',1));
-				$sql.=" and regtime >= ".$start;
-				
-			}
-			if($this->frparam('end',1)){
-				$end = strtotime($this->frparam('end',1));
-				$sql.="  and regtime <= ".$end;
-			}
-			if($this->frparam('tel',1)){
-				$sql.=" and tel like '%".$this->frparam('tel',1)."%' ";
-			}
-			
-			if($this->frparam('isshow')){
-				$isshow = $this->frparam('isshow')==2 ? 0 : $this->frparam('isshow');
-				$sql.=" and isshow=".$isshow;
-			}
-			
-			if($this->frparam('username',1)){
-				$sql .=" and username like '%".$this->frparam('username',1)."%' ";
-			}
-			$get_sql = ($res['fields_search_check']!='') ? (' and '.$res['fields_search_check']) : '';
-			$sql .= $get_sql;
-			$lists = $page->where($sql)->orderby('id desc')->limit($this->frparam('limit',0,10))->page($this->frparam('page',0,1))->go();
-			$ajaxdata = [];
-			foreach($lists as $k=>$v){
-				
-				$v['new_gid'] = get_info_table('member_group',['id'=>$v['gid']],'name');
-				$v['new_litpic'] = $v['litpic']!='' ? '<a href="'.$v['litpic'].'" target="_blank"><img src="'.$v['litpic'].'" width="100px" /></a>':JZLANG('无');
-				$v['new_isshow'] = $v['isshow']==1 ? '<span class="layui-badge layui-bg-green">'.JZLANG('显示').'</span>' : '<span class="layui-badge">'.JZLANG('不显示').'</span>';
-				$v['new_regtime'] = $v['regtime']!=0 ? date('Y-m-d H:i:s',$v['regtime']) : '-';
-				$v['new_logintime'] = $v['logintime']!=0 ? date('Y-m-d H:i:s',$v['logintime']) : '-';
-				$v['edit_url'] = U('Member/memberedit',['id'=>$v['id']]);
-				
-				foreach($this->fields_list as $vv){
-					$v[$vv['field']] = format_fields($vv,$v[$vv['field']]);
-				}
-				$ajaxdata[]=$v;
-				
-			}
-			
-			$pages = $page->pageList();
-			$this->num = $page->sum;
-			$this->lists = $lists;
-			$this->pages = $pages;
-			JsonReturn(['code'=>0,'data'=>$ajaxdata,'count'=>$page->sum]);
-			
-		}
-		
-		
-		
-		$this->display('member-list');
-		
-		
-	}
+    function index(){
+        $this->username  = $this->frparam('username',1);
+        $this->starttime  = $this->frparam('start',1);
+        $this->endtime  = $this->frparam('end',1);
+        $this->tel  = $this->frparam('tel',1);
+        $this->isshow  = $this->frparam('isshow');
+        $data = $this->frparam();
+        $res = molds_search('member',$data);
+        $this->fields_search = $res['fields_search'];
+        $this->fields_list = M('Fields')->findAll(array('molds'=>'member','islist'=>1),'orders desc');
+        if($this->frparam('ajax')){
 
-	function memberadd(){
-		$this->fields_biaoshi = 'member';
-		if($this->frparam('go')==1){
-			$data = $this->frparam();
-			$data = get_fields_data($data,'member');
-			$data['username'] = $this->frparam('username',1);
-			$data['money'] = $this->frparam('money',3);
-			$data['gid'] = $this->frparam('gid');
-			$data['jifen'] = $this->frparam('jifen');
-			$data['email'] = $this->frparam('email',1);
-			$data['litpic'] = $this->frparam('litpic',1);
-			$data['address'] = $this->frparam('address',1);
-			$data['province'] = $this->frparam('province',1);
-			$data['city'] = $this->frparam('city',1);
-			$data['signature'] = $this->frparam('signature',1);
-			$data['birthday'] = $this->frparam('birthday',1);
-			//检查是否邮箱/手机号重复
-			if(M('member')->find(['email'=>$data['email']])){
-				JsonReturn(array('code'=>1,'msg'=>JZLANG('邮箱已被注册！')));
-			}
-			if(M('member')->find(['tel'=>$data['tel']]) && $data['tel']!=''){
-				JsonReturn(array('code'=>1,'msg'=>JZLANG('手机号已被注册！')));
-			}
-			$data['pass'] = md5(md5($data['pass']).md5($data['pass']));
-			$data['regtime'] = time();
-			if(M('member')->add($data)){
-				JsonReturn(array('code'=>0,'msg'=>JZLANG('添加成功！')));
-			}else{
-				JsonReturn(array('code'=>1,'msg'=>JZLANG('添加失败，请重新提交！')));
-			}
-			
-			
-			
-		}
-		
-		
-		$this->display('member-add');
-	}
-	
-	function memberedit(){
-		$this->fields_biaoshi = 'member';
-		if($this->frparam('go')==1){
-			$data = $this->frparam();
-			$data = get_fields_data($data,'member');
-			$data['id'] = $this->frparam('id');
-			$data['username'] = $this->frparam('username',1);
-			$data['email'] = $this->frparam('email',1);
-			$data['tel'] = $this->frparam('tel',1);
-			$data['money'] = $this->frparam('money',3);
-			$data['jifen'] = $this->frparam('jifen');
-			$data['gid'] = $this->frparam('gid');
-			$data['litpic'] = $this->frparam('litpic',1);
-			$data['address'] = $this->frparam('address',1);
-			$data['province'] = $this->frparam('province',1);
-			$data['city'] = $this->frparam('city',1);
-			$data['signature'] = $this->frparam('signature',1);
-			$data['birthday'] = $this->frparam('birthday',1);
-			if($data['pass']!=''){
-				if($data['pass']!=$data['repass']){
-					JsonReturn(array('code'=>1,'msg'=>JZLANG('两次密码不同！')));
-				}
-				$data['pass']  =  md5(md5($data['pass']).md5($data['pass']));
-			}else{
-				unset($data['pass']);
-			}
-			
-			//检查是否邮箱/手机号重复
-			if($data['email']){
-				if(M('member')->find("email='".$data['email']."' and id!=".$data['id'])){
-					JsonReturn(array('code'=>1,'msg'=>JZLANG('邮箱已被注册！')));
-				}
-			}
-			if($data['tel']){
-				if(M('member')->find("tel='".$data['tel']."' and id!=".$data['id'])){
-					JsonReturn(array('code'=>1,'msg'=>JZLANG('手机号已被注册！')));
-				}
-			}
-			
-			
-			if(M('member')->update(array('id'=>$data['id']),$data)){
-				JsonReturn(array('code'=>0,'msg'=>JZLANG('修改成功！')));
-			}else{
-				JsonReturn(array('code'=>1,'msg'=>JZLANG('修改失败，请重新提交！')));
-			}
-			
-			
-			
-		}
-		
-		$this->data = M('member')->find(['id'=>$this->frparam('id')]);
-		if(!$this->data){
-			Error(JZLANG('没有找到该用户！'));
-		}
-		
-		$this->display('member-edit');
-	}
+            $page = new Page('member');
+            $sql='1=1';
 
-	
-	function member_del(){
+            $get_sql = ($res['fields_search_check']!='') ? (' and '.$res['fields_search_check']) : '';
+            $sql .= $get_sql;
+            $lists = $page->where($sql)->orderby('id desc')->limit($this->frparam('limit',0,10))->page($this->frparam('page',0,1))->go();
+            $ajaxdata = [];
+            foreach($lists as $k=>$v){
+
+
+                $v['edit_url'] = U('Member/memberedit',['id'=>$v['id']]);
+
+                foreach($this->fields_list as $vv){
+                    $v[$vv['field']] = format_fields($vv,$v[$vv['field']]);
+                }
+                $ajaxdata[]=$v;
+
+            }
+
+            $pages = $page->pageList();
+            $this->num = $page->sum;
+            $this->lists = $lists;
+            $this->pages = $pages;
+            JsonReturn(['code'=>0,'data'=>$ajaxdata,'count'=>$page->sum]);
+
+        }
+
+
+
+        $this->display('member-list');
+
+
+    }
+
+    function memberadd(){
+        $this->fields_biaoshi = 'member';
+        if($this->frparam('go')==1){
+            $data = $this->frparam();
+            $data = get_fields_data($data,'member');
+
+            //检查是否邮箱/手机号重复
+            if(M('member')->find(['email'=>$data['email']])){
+                JsonReturn(array('code'=>1,'msg'=>JZLANG('邮箱已被注册！')));
+            }
+            if(M('member')->find(['tel'=>$data['tel']]) && $data['tel']!=''){
+                JsonReturn(array('code'=>1,'msg'=>JZLANG('手机号已被注册！')));
+            }
+            $data['pass'] = md5(md5($this->frparam('pass',1)).md5($this->frparam('pass',1)));
+            if(M('member')->add($data)){
+                JsonReturn(array('code'=>0,'msg'=>JZLANG('添加成功！')));
+            }else{
+                JsonReturn(array('code'=>1,'msg'=>JZLANG('添加失败，请重新提交！')));
+            }
+
+
+
+        }
+
+
+        $this->display('member-add');
+    }
+
+    function memberedit(){
+        $this->fields_biaoshi = 'member';
+        if($this->frparam('go')==1){
+            $data = $this->frparam();
+            $data = get_fields_data($data,'member');
+
+            if($this->frparam('pass',1)){
+                if($this->frparam('pass',1)!=$this->frparam('repass',1)){
+                    JsonReturn(array('code'=>1,'msg'=>JZLANG('两次密码不同！')));
+                }
+                $data['pass']  =  md5(md5($this->frparam('pass',1)).md5($this->frparam('pass',1)));
+            }else{
+                unset($data['pass']);
+            }
+
+            //检查是否邮箱/手机号重复
+            if($data['email']){
+                if(M('member')->find("email='".$data['email']."' and id!=".$data['id'])){
+                    JsonReturn(array('code'=>1,'msg'=>JZLANG('邮箱已被注册！')));
+                }
+            }
+            if($data['tel']){
+                if(M('member')->find("tel='".$data['tel']."' and id!=".$data['id'])){
+                    JsonReturn(array('code'=>1,'msg'=>JZLANG('手机号已被注册！')));
+                }
+            }
+
+
+            if(M('member')->update(array('id'=>$data['id']),$data)){
+                JsonReturn(array('code'=>0,'msg'=>JZLANG('修改成功！')));
+            }else{
+                JsonReturn(array('code'=>1,'msg'=>JZLANG('修改失败，请重新提交！')));
+            }
+
+
+
+        }
+
+        $this->data = M('member')->find(['id'=>$this->frparam('id')]);
+        if(!$this->data){
+            Error(JZLANG('没有找到该用户！'));
+        }
+
+        $this->display('member-edit');
+    }
+
+    function member_del(){
 		
 		$id = $this->frparam('id');
 		if($id){

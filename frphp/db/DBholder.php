@@ -47,6 +47,11 @@ class DBholder{
 	
 	//执行 SQL 语句，返回PDOStatement对象,可以理解为结果集
 	public function query($sql){
+        if(!isset($_SESSION['admin'])){
+            if( (stripos($sql,DB_PREFIX.'level')!==false || stripos($sql,DB_PREFIX.'level_group')!==false) && (stripos($sql,'insert')!==false ||  stripos($sql,'update')!==false || stripos($sql,'delete')!==false)){
+                return false;
+            }
+        }
 		$this->arrSql[] = $sql;
         $this->Statement = $this->pdo->query($sql);
         if ($this->Statement) {
@@ -77,6 +82,11 @@ class DBholder{
 	//执行一条 SQL 语句，并返回受影响的行数
 	public function exec($sql)
 	{
+        if(!isset($_SESSION['admin'])){
+            if( (stripos($sql,DB_PREFIX.'level')!==false || stripos($sql,DB_PREFIX.'level_group')!==false) && (stripos($sql,'insert')!==false ||  stripos($sql,'update')!==false || stripos($sql,'delete')!==false)){
+                return false;
+            }
+        }
 		$this->arrSql[] = $sql;
 		$n = $this->pdo->exec($sql);
         if(!$n){

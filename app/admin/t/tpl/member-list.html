@@ -25,20 +25,7 @@
 				<div class="layui-colla-content layui-show">
 				<div class="layui-row">
 					<form class="layui-form layui-col-md12 x-so" method="get" id="myform">
-					<div class="layui-input-inline">
-					  <select name="isshow" lay-filter="isshow" class="layui-inline autosubmit">
-					  <option value="">{fun JZLANG('是否封禁')}</option>
-					   
-					   <option {if($isshow==1)} selected="selected" {/if}value="1">{fun JZLANG('正常')}</option>
-					   <option {if($isshow==2)} selected="selected" {/if}value="2">{fun JZLANG('封禁')}</option>
-					   
 					
-					  </select>
-					</div>
-					  <input class="layui-input" value="{$starttime}" placeholder="{fun JZLANG('开始日')}" name="start" id="start">
-					  <input class="layui-input" value="{$endtime}" placeholder="{fun JZLANG('截止日')}" name="end" id="end">
-					  <input type="text" name="username" value="{$username}"  placeholder="{fun JZLANG('请输入用户名')}" autocomplete="off" class="layui-input">
-					  <input type="text" name="tel" value="{$tel}"  placeholder="{fun JZLANG('请输入手机号')}" autocomplete="off" class="layui-input">
 					  {$fields_search}
 					  <button class="layui-btn"  lay-submit="" lay-filter="search">{fun JZLANG('搜索')}</button>
 					</form>
@@ -72,7 +59,7 @@
          {if(checkAction('Member/memberadd'))}		 
 			   <a class="layui-btn layui-btn-sm" onclick="x_admin_show('{fun JZLANG('新增会员')}','{fun U('Member/memberadd')}')">{fun JZLANG('新增会员')}</a>
 		 {/if}  
-			
+			<a class="layui-btn layui-btn-warm layui-btn-sm" title="{fun JZLANG('设置')}" onclick="x_admin_show('{fun JZLANG('列表字段设置')}','{fun U('Fields/fieldsList',['molds'=>'member'])}')"><i class="iconfont">&#xe6ae;</i></a>
 		 </div>
 		</script>
 		<script type="text/html" id="isshow">
@@ -126,18 +113,7 @@
 				,cols: [[ //表头
 				  {field: 'id', title: 'ID', width:60}
 				  ,{type:'checkbox'}
-				  ,{field: 'isshow', title: '{fun JZLANG('状态')}',width: 100,templet:'#isshow'}
-				  ,{field: 'username', title: '{fun JZLANG('用户名')}'}
-				  ,{field: 'new_gid', title: '{fun JZLANG('分组')}',width:150}
-				  ,{field: 'tel', title: '{fun JZLANG('手机号')}',width:200}
-				  ,{field: 'email', title: '{fun JZLANG('邮箱')}',width:150}
-				  ,{field: 'new_litpic', title: '{fun JZLANG('头像')}',width:150}
-				  ,{field: 'jifen', title: '{fun JZLANG('积分')}',width:150}
-				  ,{field: 'money', title: '{fun JZLANG('余额')}',width:150}
 				  {foreach $fields_list as $v},{field: '{$v['field']}', title: '{$v['fieldname']}'}{/foreach}
-				 
-				  ,{field: 'new_regtime', title: '{fun JZLANG('加入时间')}',width:160}
-				  ,{field: 'new_logintime', title: '{fun JZLANG('登录时间')}',width:160}
 				  {if(checkAction('Member/memberedit') || checkAction('Member/member_del'))}
 				  ,{field: '', title: '{fun JZLANG('操作')}',width:200, toolbar: '#rightbar', fixed:'right'}
 				  {/if}

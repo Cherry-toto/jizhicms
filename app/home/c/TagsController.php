@@ -41,7 +41,7 @@ class TagsController extends CommonController
 			$sqlx = [];
 			$sqln = [];
 			foreach($tables as $v){
-				$sqlx[] = " select id,tid,litpic,title,tags,keywords,molds,htmlurl,ownurl,description,addtime,userid,member_id from ".DB_PREFIX.$v." where tags like '%,".$keywords.",%' and isshow=1 ";
+				$sqlx[] = " select id,tid,litpic,title,hits,tags,keywords,molds,htmlurl,ownurl,description,addtime,userid,member_id from ".DB_PREFIX.$v." where tags like '%,".$keywords.",%' and isshow=1 ";
 				$sqln[] = " select id from ".DB_PREFIX.$v." where tags like '%,".$keywords.",%' and isshow=1 ";
 			}
 			$sql = implode(' union all ',$sqlx);

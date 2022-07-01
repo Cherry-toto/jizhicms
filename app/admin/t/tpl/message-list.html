@@ -25,26 +25,7 @@
 				<div class="layui-colla-content">
 				<div class="layui-row">
 					<form class="layui-form layui-col-md12 x-so" method="get" id="myform">
-					<div class="layui-input-inline">
-					  <select name="isshow" lay-filter="isshow" class="layui-inline autosubmit">
-					  <option value="">{fun JZLANG('是否审核')}</option>
-					   
-					   <option {if($isshow==1)} selected="selected" {/if}value="1">{fun JZLANG('已审核')}</option>
-					   <option {if($isshow==2)} selected="selected" {/if}value="2">{fun JZLANG('未审核')}</option>
-					   
 					
-					  </select>
-					</div>
-					<div class="layui-input-inline">
-					  <select name="tid" lay-filter="tid" lay-search class="layui-inline">
-					  <option value="">{fun JZLANG('请选择栏目')}</option>
-					   {foreach $classtypes as $v}
-					   <option {if($tid==$v['id'])} selected="selected" {/if}value="{$v['id']}">{fun str_repeat('--', $v['level'])}{$v['classname']}</option>
-					   {/foreach}
-					
-					  </select>
-					</div>
-					  <input type="number" name="aid" value="{$aid}" placeholder="{fun JZLANG('请输入相关内容ID')}" autocomplete="off" class="layui-input">
 					  {$fields_search}
 					  <button class="layui-btn"  lay-submit="" lay-filter="search">{fun JZLANG('搜索')}</button>
 					</form>
@@ -85,7 +66,7 @@
 			   </select>
 			   </div>
 		  {/if}
-
+			<a class="layui-btn layui-btn-warm layui-btn-sm" title="{fun JZLANG('设置')}" onclick="x_admin_show('{fun JZLANG('列表字段设置')}','{fun U('Fields/fieldsList',['molds'=>'message'])}')"><i class="iconfont">&#xe6ae;</i></a>
 		 </div>
 		</script>
 		<script type="text/html" id="isshow">
@@ -132,14 +113,7 @@
 				,cols: [[ //表头
 				  {field: 'id', title: 'ID', width:60}
 				  ,{type:'checkbox'}
-				  ,{field: 'new_isshow', title: '{fun JZLANG('是否审核')}', width: 100,templet: '#isshow'}
-				  ,{field: 'orders', title: '{fun JZLANG('排序')}',width: 100}
-				  ,{field: 'new_tid', title: '{fun JZLANG('栏目')}',width:100}
-				  ,{field: 'aid', title: '{fun JZLANG('内容ID')}',width:100}
-				  ,{field: 'title', title: '{fun JZLANG('标题')}'}
 				  {foreach $fields_list as $k=>$v},{field: '{$v['field']}', title: '{$v['fieldname']}'}{/foreach}
-				  ,{field: 'body', title: '{fun JZLANG('内容')}'}
-				  ,{field: 'new_addtime', title: '{fun JZLANG('时间')}',width:160}
 				  ,{field: '', title: '{fun JZLANG('操作')}',width:160, toolbar: '#rightbar', fixed:'right'}
 				 
 				 

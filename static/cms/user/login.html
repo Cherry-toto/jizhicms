@@ -92,23 +92,24 @@
             <input type="password" value="" id="password" name="password" placeholder="请输入您的密码">
             <a style="color:#f00" href="{fun U('forget')}">忘记密码？</a>
           </div>
-		  {if($webconf['closehomevercode']!=1)}
+          {if($webconf['closehomevercode']!=1)}
           <div class="form-control">
             <label for="">验证码：</label>
             <input type="text" value="" name="vercode" id="yzm" placeholder="请输入验证码">
-            <img src="{fun U('common/vercode',['code_name'=>'login_vercode','r'=>rand(111,999)])}" onclick="this.src=this.src+'?'+Math.random()" style="height:50px;"/>
           </div>
-		  {/if}
-          <div class="form-group">
-              <div style="margin-left: 80px;height: 50px;">
-              
-              <input class="form-check-input" type="checkbox" id="jz_login">记住密码
-              <a  href="{fun U('login/register')}">还没有账号？立即注册</a>
-              </div>
+          <div class="form-control">
+            <label for=""></label><img src="{fun U('common/vercode',['code_name'=>'login_vercode','r'=>rand(111,999)])}" onclick="this.src=this.src+'?'+Math.random()" style="height:50px;"/>
           </div>
+          {/if}
+          <div class="form-control">
+            <label for=""></label>
+            <input class="form-check-input" type="checkbox" id="jz_login">记住密码
+          </div>
+
           <div class="form-control">
             <label for="submit"></label>
             <input type="submit" name="submit" value="提交">
+
           </div>
           {if(isWeixin())}
           <div class="form-control">
@@ -116,6 +117,11 @@
             <input type="button" style="border: 1px solid #6eb12d; background: #6eb12d;color: #fff;" onclick="wechat_login()" value="微信端登录">
           </div>
           {/if}
+          <div class="form-control">
+            <label for=""></label>
+            还没有账号？<a  href="{fun U('login/register')}" style="color:green">立即注册</a>&nbsp;<a style="color:#f00" href="{fun U('forget')}">忘记密码？</a>
+          </div>
+
          
         </form>
       </div>

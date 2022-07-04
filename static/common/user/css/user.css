@@ -425,7 +425,6 @@ footer {
   border-radius: 2px;
 }
 .user-form .form-control > input[type='submit'] {
-  width: auto;
   color: #666;
   font-size: 14px;
   line-height: 36px;

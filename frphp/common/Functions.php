@@ -83,7 +83,7 @@ function format_param($value=null,$int=0,$default=false){
 //过滤XSS攻击
 function SafeFilter($arr) 
 {
-   $ra=Array('/([\x00-\x08])/','/([\x0b-\x0c])/','/([\x0e-\x19])/','/script(.*)script/','/javascript(.*)javascript/');
+   $ra=Array('/([\x00-\x08])/','/([\x0b-\x0c])/','/([\x0e-\x19])/');
    $arr = preg_replace($ra,'',$arr);   
    return $arr;
 }

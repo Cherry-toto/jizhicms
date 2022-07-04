@@ -18,41 +18,8 @@
       {include="user/tips"}
       <div class="user-content">
         <h2>资料与账号</h2>
-        <form action="" method="POST" onsubmit="checkform()" id="jizhiform" class="user-form">
-          <div class="form-control">
-            <label for="">头像：</label>
-              <span class="view_img">{if($member['litpic'])}<img src="{$member['litpic']}" height="100" style="border-radius: 50%;" />{/if}</span><br/>
-              <input name="litpic" type="hidden" id="fileurl" value="{$member['litpic']}" /><br/>
-              <input type="file" class="btn layui-btn" name="file" id="fileid">
-          </div>
-          <div class="form-control">
-            <label for="">昵称：</label>
-            <input type="text" value="{$member['username']}" id="t_username" name="username" placeholder="请输入您的昵称">
-          </div>
-          <div class="form-control">
-            <label for="">手机：</label>
-            <input type="tel" value="{$member['tel']}" name="tel" id="t_tel" placeholder="请输入您的手机号">
-          </div>
-          <div class="form-control">
-            <label for="">邮箱：</label>
-            <input type="email" value="{$member['email']}" name="email" name="t_email" placeholder="请输入您的邮箱">
-          </div>
-          <div class="form-control">
-            <label for="">性别：</label>
-            <div class="check-box"><input type="radio" name="sex" value="1" {if($member['sex']==1)}checked{/if}>男 <input type="radio" name="sex" value="2" {if($member['sex']==2)}checked{/if}>女 <input type="radio" name="sex" value="0" {if($member['sex']==0)}checked{/if}>不展示</div>
-          </div>
-          <div class="form-control">
-            <label for="">省份：</label>
-            <input type="text" value="{$member['province']}" name="province" name="t_province" placeholder="可不填">
-          </div>
-		  <div class="form-control">
-            <label for="">城市：</label>
-            <input type="text" value="{$member['city']}" name="city" name="t_city" placeholder="可不填">
-          </div>
-		  <div class="form-control">
-            <label for="">详细地址：</label>
-            <input type="text" value="{$member['address']}" name="address" name="t_address" placeholder="可不填">
-          </div>
+        <form action="" method="POST" onsubmit="return checkform()" id="jizhiform" class="user-form">
+          <span id="fields_ext"></span>
           <div class="form-control">
             <label for="password">新密码：</label>
             <div class="form-password">
@@ -67,15 +34,10 @@
               <i class="iconfont iconyanjing"></i><i class="iconfont iconyanjing-guan"></i>
             </div>
           </div>
-		  <div class="form-control">
+          <div class="form-control">
             <label for="">邀请链接：</label>
             <input type="text" value="{fun U('login/register')}?invite={$member['id']}" readonly name="invite" id="t_invite" placeholder="邀请链接">
           </div>
-          <div class="form-control">
-            <span><label for="">个性签名：</label></span>
-            <textarea name="signature" id="signature" placeholder="请输入您的个性签名">{$member['signature']}</textarea>
-          </div>
-          <span id="fields_ext"></span>
           <div class="form-control">
             <label for="submit"></label>
             <input type="submit" name="submit" value="提交">
@@ -112,13 +74,10 @@ $(function(){
   get_fields(0,{$member['id']});
 })
 function checkform(){
-    var username = $.trim($("#t_username").val());
-    var tel = $.trim($("#t_tel").val());
+
     var password = $.trim($("#t_password").val());
     var repassword = $.trim($("#t_repassword").val());
-    if(username==''){
-      alert('账户名称不能为空！');$("#t_username").focus();return false;
-    }
+
     if(password!=repassword){
       alert('两次密码不同！');$("#t_password").focus();return false;
     }

@@ -47,7 +47,7 @@ CREATE TABLE `jz_attr` (
   `name` varchar(50) DEFAULT NULL COMMENT '属性名',
   `isshow` tinyint(1) NOT NULL DEFAULT '1' COMMENT '是否显示',
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=4 DEFAULT CHARSET=utf8 COMMENT='推荐属性';
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='推荐属性';
 -- ----------------------------
 -- Table structure for jz_buylog
 -- ----------------------------
@@ -185,8 +185,10 @@ CREATE TABLE `jz_ctype` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `title` varchar(50) DEFAULT NULL COMMENT '配置栏名称',
   `action` varchar(255) DEFAULT NULL COMMENT '配置标识，用于权限控制',
+  `sys` tinyint(1) DEFAULT 0 COMMENT '系统配置，1是0否',
+  `isopen` tinyint(1) DEFAULT 1 COMMENT '是否启用，1启用0关闭',
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=8 DEFAULT CHARSET=utf8 COMMENT='系统设置栏目名';
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='系统设置栏目名';
 -- ----------------------------
 -- Table structure for jz_customurl
 -- ----------------------------
@@ -263,7 +265,7 @@ CREATE TABLE `jz_layout` (
   `sys` tinyint(1) NOT NULL DEFAULT '0' COMMENT '是否系统配置：1是0否',
   `isdefault` tinyint(1) NOT NULL DEFAULT '0' COMMENT '默认配置：1是0否',
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=3 DEFAULT CHARSET=utf8 COMMENT='桌面设置';
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='桌面设置';
 -- ----------------------------
 -- Table structure for jz_level
 -- ----------------------------
@@ -279,7 +281,7 @@ CREATE TABLE `jz_level` (
   `logintime` int(11) NOT NULL DEFAULT '0' COMMENT '登录时间',
   `status` tinyint(1) NOT NULL DEFAULT '1' COMMENT '状态：1正常0冻结',
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 COMMENT='管理员表';
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='管理员表';
 -- ----------------------------
 -- Table structure for jz_level_group
 -- ----------------------------
@@ -295,7 +297,7 @@ CREATE TABLE `jz_level_group` (
   `isagree` tinyint(1) NOT NULL DEFAULT '1' COMMENT '状态：1正常0冻结',
   `description` varchar(500) DEFAULT NULL COMMENT '描述',
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 COMMENT='角色表';
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='角色表';
 -- ----------------------------
 -- Table structure for jz_likes
 -- ----------------------------
@@ -395,7 +397,7 @@ CREATE TABLE `jz_member_group` (
   `discount` decimal(10,2) NOT NULL DEFAULT '0.00' COMMENT '折扣价：现金折扣或者百分比折扣',
   `discount_type` tinyint(1) NOT NULL DEFAULT '0' COMMENT '折扣类型：0无折扣1现金折扣,1百分比折扣',
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 COMMENT='会员分组';
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='会员分组';
 -- ----------------------------
 -- Table structure for jz_menu
 -- ----------------------------
@@ -451,7 +453,7 @@ CREATE TABLE `jz_molds` (
   `ishome` tinyint(1) DEFAULT '0' COMMENT '前台发布',
   PRIMARY KEY (`id`),
   KEY `biaoshi` (`biaoshi`)
-) ENGINE=MyISAM AUTO_INCREMENT=16 DEFAULT CHARSET=utf8 COMMENT='模型表';
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='模型表';
 -- ----------------------------
 -- Table structure for jz_orders
 -- ----------------------------
@@ -575,7 +577,7 @@ CREATE TABLE `jz_power` (
   `pid` int(11) NOT NULL DEFAULT '0' COMMENT '父类权限ID',
   `isagree` tinyint(1) NOT NULL DEFAULT '1' COMMENT '是否开放',
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=77 DEFAULT CHARSET=utf8 COMMENT='用户权限表';
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='用户权限表';
 -- ----------------------------
 -- Table structure for jz_product
 -- ----------------------------
@@ -627,7 +629,7 @@ CREATE TABLE `jz_recycle` (
   `addtime` int(11) NOT NULL DEFAULT '0' COMMENT '删除时间',
   `aid` int(11) NOT NULL DEFAULT '0' COMMENT '关联删除',
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 COMMENT='回收站';
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='回收站';
 -- ----------------------------
 -- Table structure for jz_ruler
 -- ----------------------------
@@ -640,7 +642,7 @@ CREATE TABLE `jz_ruler` (
   `isdesktop` tinyint(1) NOT NULL DEFAULT '0' COMMENT '是否桌面配置显示（已废弃）',
   `sys` tinyint(1) NOT NULL DEFAULT '0' COMMENT '系统：1是0否',
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=240 DEFAULT CHARSET=utf8 COMMENT='角色权限表';
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='角色权限表';
 -- ----------------------------
 -- Table structure for jz_shouchang
 -- ----------------------------
@@ -669,7 +671,7 @@ CREATE TABLE `jz_sysconfig` (
   `orders` int(11) NOT NULL DEFAULT '0' COMMENT '排序',
   `sys` tinyint(1) NOT NULL DEFAULT '1' COMMENT '是否系统字段',
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=133 DEFAULT CHARSET=utf8 COMMENT='系统配置';
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='系统配置';
 -- ----------------------------
 -- Table structure for jz_tags
 -- ----------------------------
@@ -747,13 +749,13 @@ INSERT INTO `jz_attr` (`id`,`name`,`isshow`) VALUES ('3','推荐','1');
 -- ----------------------------
 -- Records of jz_ctype
 -- ----------------------------
-INSERT INTO `jz_ctype` (`id`,`title`,`action`) VALUES ('1','基本设置','base');
-INSERT INTO `jz_ctype` (`id`,`title`,`action`) VALUES ('2','高级设置','high-level');
-INSERT INTO `jz_ctype` (`id`,`title`,`action`) VALUES ('3','搜索配置','searchconfig');
-INSERT INTO `jz_ctype` (`id`,`title`,`action`) VALUES ('4','邮件订单','email-order');
-INSERT INTO `jz_ctype` (`id`,`title`,`action`) VALUES ('5','支付配置','payconfig');
-INSERT INTO `jz_ctype` (`id`,`title`,`action`) VALUES ('6','公众号配置','wechatbind');
-INSERT INTO `jz_ctype` (`id`,`title`,`action`) VALUES ('7','积分配置','jifenset');
+INSERT INTO `jz_ctype` (`id`,`title`,`action`,`sys`,`isopen`) VALUES ('1','基本设置','base',1,1);
+INSERT INTO `jz_ctype` (`id`,`title`,`action`,`sys`,`isopen`) VALUES ('2','高级设置','high-level',1,1);
+INSERT INTO `jz_ctype` (`id`,`title`,`action`,`sys`,`isopen`) VALUES ('3','搜索配置','searchconfig',1,1);
+INSERT INTO `jz_ctype` (`id`,`title`,`action`,`sys`,`isopen`) VALUES ('4','邮件订单','email-order',1,1);
+INSERT INTO `jz_ctype` (`id`,`title`,`action`,`sys`,`isopen`) VALUES ('5','支付配置','payconfig',1,1);
+INSERT INTO `jz_ctype` (`id`,`title`,`action`,`sys`,`isopen`) VALUES ('6','公众号配置','wechatbind',1,1);
+INSERT INTO `jz_ctype` (`id`,`title`,`action`,`sys`,`isopen`) VALUES ('7','积分配置','jifenset',1,1);
 -- ----------------------------
 -- Records of jz_customurl
 -- ----------------------------
@@ -852,23 +854,23 @@ INSERT INTO `jz_fields` (`id`,`field`,`molds`,`fieldname`,`tips`,`fieldtype`,`ti
 INSERT INTO `jz_fields` (`id`,`field`,`molds`,`fieldname`,`tips`,`fieldtype`,`tids`,`fieldlong`,`body`,`orders`,`ismust`,`isshow`,`isadmin`,`issearch`,`islist`,`format`,`vdata`,`isajax`,`listorders`,`isext`,`width`,`ishome`) VALUES ('92','zhiye','pingjia','职业', NULL,'1',',10,','255', NULL,'100','0','1','1','0','1', NULL, NULL,'1','0','0', NULL,'1');
 INSERT INTO `jz_fields` (`id`,`field`,`molds`,`fieldname`,`tips`,`fieldtype`,`tids`,`fieldlong`,`body`,`orders`,`ismust`,`isshow`,`isadmin`,`issearch`,`islist`,`format`,`vdata`,`isajax`,`listorders`,`isext`,`width`,`ishome`) VALUES ('93','orders','pingjia','排序', NULL,'4', NULL,'4', NULL,'1','0','1','1','0','1', NULL,'0','1','0','0', NULL,'1');
 INSERT INTO `jz_fields` (`id`,`field`,`molds`,`fieldname`,`tips`,`fieldtype`,`tids`,`fieldlong`,`body`,`orders`,`ismust`,`isshow`,`isadmin`,`issearch`,`islist`,`format`,`vdata`,`isajax`,`listorders`,`isext`,`width`,`ishome`) VALUES (94, 'username', 'member', '用户昵称', NULL, 1, ',0,', '255', NULL, 2, 1, 1, 1, 1, 1, NULL, NULL, 1, 0, 0, NULL, 1);
-INSERT INTO `jz_fields` (`id`,`field`,`molds`,`fieldname`,`tips`,`fieldtype`,`tids`,`fieldlong`,`body`,`orders`,`ismust`,`isshow`,`isadmin`,`issearch`,`islist`,`format`,`vdata`,`isajax`,`listorders`,`isext`,`width`,`ishome`) VALUES (95, 'openid', 'member', '微信OPENID', NULL, 1, ',0,', '255', NULL, 2, 0, 1, 1, 0, 1, NULL, NULL, 1, 0, 0, NULL, 1);
+INSERT INTO `jz_fields` (`id`,`field`,`molds`,`fieldname`,`tips`,`fieldtype`,`tids`,`fieldlong`,`body`,`orders`,`ismust`,`isshow`,`isadmin`,`issearch`,`islist`,`format`,`vdata`,`isajax`,`listorders`,`isext`,`width`,`ishome`) VALUES (95, 'openid', 'member', '微信OPENID', NULL, 1, ',0,', '255', NULL, 2, 0, 1, 1, 0, 1, NULL, NULL, 1, 0, 0, NULL, 0);
 INSERT INTO `jz_fields` (`id`,`field`,`molds`,`fieldname`,`tips`,`fieldtype`,`tids`,`fieldlong`,`body`,`orders`,`ismust`,`isshow`,`isadmin`,`issearch`,`islist`,`format`,`vdata`,`isajax`,`listorders`,`isext`,`width`,`ishome`) VALUES (96, 'sex', 'member', '性别', NULL, 12, ',0,', '2', '男=1,女=2,未知=0', 2, 0, 1, 1, 1, 1, NULL, '0', 1, 0, 0, NULL, 1);
-INSERT INTO `jz_fields` (`id`,`field`,`molds`,`fieldname`,`tips`,`fieldtype`,`tids`,`fieldlong`,`body`,`orders`,`ismust`,`isshow`,`isadmin`,`issearch`,`islist`,`format`,`vdata`,`isajax`,`listorders`,`isext`,`width`,`ishome`) VALUES (97, 'gid', 'member', '会员分组', NULL, 13, ',0,', '11', '6,name', 2, 0, 1, 1, 1, 1, NULL, NULL, 1, 0, 0, NULL, 1);
+INSERT INTO `jz_fields` (`id`,`field`,`molds`,`fieldname`,`tips`,`fieldtype`,`tids`,`fieldlong`,`body`,`orders`,`ismust`,`isshow`,`isadmin`,`issearch`,`islist`,`format`,`vdata`,`isajax`,`listorders`,`isext`,`width`,`ishome`) VALUES (97, 'gid', 'member', '会员分组', NULL, 13, ',0,', '11', '6,name', 2, 0, 1, 1, 1, 1, NULL, NULL, 1, 0, 0, NULL, 0);
 INSERT INTO `jz_fields` (`id`,`field`,`molds`,`fieldname`,`tips`,`fieldtype`,`tids`,`fieldlong`,`body`,`orders`,`ismust`,`isshow`,`isadmin`,`issearch`,`islist`,`format`,`vdata`,`isajax`,`listorders`,`isext`,`width`,`ishome`) VALUES (98, 'litpic', 'member', '会员头像', NULL, 5, ',0,', '255', NULL, 2, 0, 1, 1, 0, 1, NULL, NULL, 1, 0, 0, NULL, 1);
 INSERT INTO `jz_fields` (`id`,`field`,`molds`,`fieldname`,`tips`,`fieldtype`,`tids`,`fieldlong`,`body`,`orders`,`ismust`,`isshow`,`isadmin`,`issearch`,`islist`,`format`,`vdata`,`isajax`,`listorders`,`isext`,`width`,`ishome`) VALUES (99, 'tel', 'member', '电话号码', NULL, 1, ',0,', '12', NULL, 2, 0, 1, 1, 1, 1, NULL, NULL, 1, 0, 0, NULL, 1);
-INSERT INTO `jz_fields` (`id`,`field`,`molds`,`fieldname`,`tips`,`fieldtype`,`tids`,`fieldlong`,`body`,`orders`,`ismust`,`isshow`,`isadmin`,`issearch`,`islist`,`format`,`vdata`,`isajax`,`listorders`,`isext`,`width`,`ishome`) VALUES (100, 'jifen', 'member', '积分', NULL, 14, ',0,', '10,2', NULL, 2, 0, 1, 1, 0, 1, NULL, NULL, 1, 0, 0, NULL, 1);
-INSERT INTO `jz_fields` (`id`,`field`,`molds`,`fieldname`,`tips`,`fieldtype`,`tids`,`fieldlong`,`body`,`orders`,`ismust`,`isshow`,`isadmin`,`issearch`,`islist`,`format`,`vdata`,`isajax`,`listorders`,`isext`,`width`,`ishome`) VALUES (101, 'money', 'member', '金币', NULL, 14, ',0,', '10,2', NULL, 2, 0, 1, 1, 0, 1, NULL, NULL, 1, 0, 0, NULL, 1);
+INSERT INTO `jz_fields` (`id`,`field`,`molds`,`fieldname`,`tips`,`fieldtype`,`tids`,`fieldlong`,`body`,`orders`,`ismust`,`isshow`,`isadmin`,`issearch`,`islist`,`format`,`vdata`,`isajax`,`listorders`,`isext`,`width`,`ishome`) VALUES (100, 'jifen', 'member', '积分', NULL, 14, ',0,', '10,2', NULL, 2, 0, 1, 1, 0, 1, NULL, NULL, 1, 0, 0, NULL, 0);
+INSERT INTO `jz_fields` (`id`,`field`,`molds`,`fieldname`,`tips`,`fieldtype`,`tids`,`fieldlong`,`body`,`orders`,`ismust`,`isshow`,`isadmin`,`issearch`,`islist`,`format`,`vdata`,`isajax`,`listorders`,`isext`,`width`,`ishome`) VALUES (101, 'money', 'member', '金币', NULL, 14, ',0,', '10,2', NULL, 2, 0, 1, 1, 0, 1, NULL, NULL, 1, 0, 0, NULL, 0);
 INSERT INTO `jz_fields` (`id`,`field`,`molds`,`fieldname`,`tips`,`fieldtype`,`tids`,`fieldlong`,`body`,`orders`,`ismust`,`isshow`,`isadmin`,`issearch`,`islist`,`format`,`vdata`,`isajax`,`listorders`,`isext`,`width`,`ishome`) VALUES (102, 'email', 'member', '邮箱', NULL, 1, ',0,', '255', NULL, 2, 0, 1, 1, 1, 1, NULL, NULL, 1, 0, 0, NULL, 1);
 INSERT INTO `jz_fields` (`id`,`field`,`molds`,`fieldname`,`tips`,`fieldtype`,`tids`,`fieldlong`,`body`,`orders`,`ismust`,`isshow`,`isadmin`,`issearch`,`islist`,`format`,`vdata`,`isajax`,`listorders`,`isext`,`width`,`ishome`) VALUES (103, 'province', 'member', '省份', NULL, 1, ',0,', '50', NULL, 2, 0, 1, 1, 0, 0, NULL, NULL, 1, 0, 0, NULL, 1);
 INSERT INTO `jz_fields` (`id`,`field`,`molds`,`fieldname`,`tips`,`fieldtype`,`tids`,`fieldlong`,`body`,`orders`,`ismust`,`isshow`,`isadmin`,`issearch`,`islist`,`format`,`vdata`,`isajax`,`listorders`,`isext`,`width`,`ishome`) VALUES (104, 'city', 'member', '城市', NULL, 1, ',0,', '50', NULL, 2, 0, 1, 1, 0, 0, NULL, NULL, 1, 0, 0, NULL, 1);
 INSERT INTO `jz_fields` (`id`,`field`,`molds`,`fieldname`,`tips`,`fieldtype`,`tids`,`fieldlong`,`body`,`orders`,`ismust`,`isshow`,`isadmin`,`issearch`,`islist`,`format`,`vdata`,`isajax`,`listorders`,`isext`,`width`,`ishome`) VALUES (105, 'address', 'member', '详细地址', NULL, 1, ',0,', '255', NULL, 2, 0, 1, 1, 0, 0, NULL, NULL, 1, 0, 0, NULL, 1);
-INSERT INTO `jz_fields` (`id`,`field`,`molds`,`fieldname`,`tips`,`fieldtype`,`tids`,`fieldlong`,`body`,`orders`,`ismust`,`isshow`,`isadmin`,`issearch`,`islist`,`format`,`vdata`,`isajax`,`listorders`,`isext`,`width`,`ishome`) VALUES (106, 'regtime', 'member', '注册时间', NULL, 11, ',0,', '11', NULL, 2, 0, 1, 1, 1, 1, NULL, NULL, 1, 0, 0, NULL, 1);
-INSERT INTO `jz_fields` (`id`,`field`,`molds`,`fieldname`,`tips`,`fieldtype`,`tids`,`fieldlong`,`body`,`orders`,`ismust`,`isshow`,`isadmin`,`issearch`,`islist`,`format`,`vdata`,`isajax`,`listorders`,`isext`,`width`,`ishome`) VALUES (107, 'logintime', 'member', '最近登录', NULL, 11, ',0,', '11', NULL, 2, 0, 1, 1, 1, 1, NULL, NULL, 1, 0, 0, NULL, 1);
+INSERT INTO `jz_fields` (`id`,`field`,`molds`,`fieldname`,`tips`,`fieldtype`,`tids`,`fieldlong`,`body`,`orders`,`ismust`,`isshow`,`isadmin`,`issearch`,`islist`,`format`,`vdata`,`isajax`,`listorders`,`isext`,`width`,`ishome`) VALUES (106, 'regtime', 'member', '注册时间', NULL, 11, ',0,', '11', NULL, 2, 0, 1, 1, 1, 1, NULL, NULL, 1, 0, 0, NULL, 0);
+INSERT INTO `jz_fields` (`id`,`field`,`molds`,`fieldname`,`tips`,`fieldtype`,`tids`,`fieldlong`,`body`,`orders`,`ismust`,`isshow`,`isadmin`,`issearch`,`islist`,`format`,`vdata`,`isajax`,`listorders`,`isext`,`width`,`ishome`) VALUES (107, 'logintime', 'member', '最近登录', NULL, 11, ',0,', '11', NULL, 2, 0, 1, 1, 1, 1, NULL, NULL, 1, 0, 0, NULL, 0);
 INSERT INTO `jz_fields` (`id`,`field`,`molds`,`fieldname`,`tips`,`fieldtype`,`tids`,`fieldlong`,`body`,`orders`,`ismust`,`isshow`,`isadmin`,`issearch`,`islist`,`format`,`vdata`,`isajax`,`listorders`,`isext`,`width`,`ishome`) VALUES (108, 'signature', 'member', '个性签名', NULL, 1, ',0,', '255', NULL, 2, 0, 1, 1, 0, 0, NULL, NULL, 1, 0, 0, NULL, 1);
 INSERT INTO `jz_fields` (`id`,`field`,`molds`,`fieldname`,`tips`,`fieldtype`,`tids`,`fieldlong`,`body`,`orders`,`ismust`,`isshow`,`isadmin`,`issearch`,`islist`,`format`,`vdata`,`isajax`,`listorders`,`isext`,`width`,`ishome`) VALUES (109, 'birthday', 'member', '生日', NULL, 1, ',0,', '50', NULL, 2, 0, 1, 1, 0, 0, NULL, NULL, 1, 0, 0, NULL, 1);
-INSERT INTO `jz_fields` (`id`,`field`,`molds`,`fieldname`,`tips`,`fieldtype`,`tids`,`fieldlong`,`body`,`orders`,`ismust`,`isshow`,`isadmin`,`issearch`,`islist`,`format`,`vdata`,`isajax`,`listorders`,`isext`,`width`,`ishome`) VALUES (110, 'pid', 'member', '推荐人', NULL, 13, ',0,', '11', '3,username', 2, 0, 1, 1, 0, 0, NULL, NULL, 1, 0, 0, NULL, 1);
-INSERT INTO `jz_fields` (`id`,`field`,`molds`,`fieldname`,`tips`,`fieldtype`,`tids`,`fieldlong`,`body`,`orders`,`ismust`,`isshow`,`isadmin`,`issearch`,`islist`,`format`,`vdata`,`isajax`,`listorders`,`isext`,`width`,`ishome`) VALUES (111, 'isshow', 'member', '状态', '封禁后不能登录', 7, ',0,', '2', '正常=1,封禁=0', 2, 0, 1, 1, 1, 1, NULL, '1', 1, 0, 0, NULL, 1);
+INSERT INTO `jz_fields` (`id`,`field`,`molds`,`fieldname`,`tips`,`fieldtype`,`tids`,`fieldlong`,`body`,`orders`,`ismust`,`isshow`,`isadmin`,`issearch`,`islist`,`format`,`vdata`,`isajax`,`listorders`,`isext`,`width`,`ishome`) VALUES (110, 'pid', 'member', '推荐人', NULL, 13, ',0,', '11', '3,username', 2, 0, 1, 1, 0, 0, NULL, NULL, 1, 0, 0, NULL, 0);
+INSERT INTO `jz_fields` (`id`,`field`,`molds`,`fieldname`,`tips`,`fieldtype`,`tids`,`fieldlong`,`body`,`orders`,`ismust`,`isshow`,`isadmin`,`issearch`,`islist`,`format`,`vdata`,`isajax`,`listorders`,`isext`,`width`,`ishome`) VALUES (111, 'isshow', 'member', '状态', '封禁后不能登录', 7, ',0,', '2', '正常=1,封禁=0', 2, 0, 1, 1, 1, 1, NULL, '1', 1, 0, 0, NULL, 0);
 INSERT INTO `jz_fields` (`id`,`field`,`molds`,`fieldname`,`tips`,`fieldtype`,`tids`,`fieldlong`,`body`,`orders`,`ismust`,`isshow`,`isadmin`,`issearch`,`islist`,`format`,`vdata`,`isajax`,`listorders`,`isext`,`width`,`ishome`) VALUES (112, 'title', 'message', '标题', NULL, 1, ',4,', '255', NULL, 2, 0, 1, 1, 1, 1, NULL, NULL, 1, 0, 0, NULL, 1);
 INSERT INTO `jz_fields` (`id`,`field`,`molds`,`fieldname`,`tips`,`fieldtype`,`tids`,`fieldlong`,`body`,`orders`,`ismust`,`isshow`,`isadmin`,`issearch`,`islist`,`format`,`vdata`,`isajax`,`listorders`,`isext`,`width`,`ishome`) VALUES (113, 'user', 'message', '用户昵称', NULL, 1, ',4,', '255', NULL, 2, 0, 1, 0, 1, 0, NULL, NULL, 1, 0, 0, NULL, 1);
 INSERT INTO `jz_fields` (`id`,`field`,`molds`,`fieldname`,`tips`,`fieldtype`,`tids`,`fieldlong`,`body`,`orders`,`ismust`,`isshow`,`isadmin`,`issearch`,`islist`,`format`,`vdata`,`isajax`,`listorders`,`isext`,`width`,`ishome`) VALUES (114, 'tid', 'message', '相关栏目', NULL, 13, ',4,', '11', '2,classname', 2, 0, 1, 1, 1, 1, NULL, NULL, 1, 0, 0, NULL, 1);
@@ -1198,10 +1200,10 @@ INSERT INTO `jz_ruler` (`id`,`name`,`fc`,`pid`,`isdesktop`,`sys`) VALUES ('163',
 INSERT INTO `jz_ruler` (`id`,`name`,`fc`,`pid`,`isdesktop`,`sys`) VALUES ('164','批量修改TAG排序','Extmolds/editOrders/molds/tags','77','0','0');
 INSERT INTO `jz_ruler` (`id`,`name`,`fc`,`pid`,`isdesktop`,`sys`) VALUES ('165','删除订单','Order/deleteorder','128','0','1');
 INSERT INTO `jz_ruler` (`id`,`name`,`fc`,`pid`,`isdesktop`,`sys`) VALUES ('166','批量删除','Admin/deleteAll','48','0','1');
-INSERT INTO `jz_ruler` (`id`,`name`,`fc`,`pid`,`isdesktop`,`sys`) VALUES ('167','高级设置','Sys/high-level','39','0','1');
-INSERT INTO `jz_ruler` (`id`,`name`,`fc`,`pid`,`isdesktop`,`sys`) VALUES ('168','邮箱订单','Sys/email-order','39','0','1');
-INSERT INTO `jz_ruler` (`id`,`name`,`fc`,`pid`,`isdesktop`,`sys`) VALUES ('169','支付配置','Sys/payconfig','39','0','1');
-INSERT INTO `jz_ruler` (`id`,`name`,`fc`,`pid`,`isdesktop`,`sys`) VALUES ('170','公众号配置','Sys/wechatbind','39','0','1');
+INSERT INTO `jz_ruler` (`id`,`name`,`fc`,`pid`,`isdesktop`,`sys`) VALUES ('167','高级设置','Sys/ctype/type/high-level','39',1,'1');
+INSERT INTO `jz_ruler` (`id`,`name`,`fc`,`pid`,`isdesktop`,`sys`) VALUES ('168','邮箱订单','Sys/ctype/type/email-order','39',1,'1');
+INSERT INTO `jz_ruler` (`id`,`name`,`fc`,`pid`,`isdesktop`,`sys`) VALUES ('169','支付配置','Sys/ctype/type/payconfig','39',1,'1');
+INSERT INTO `jz_ruler` (`id`,`name`,`fc`,`pid`,`isdesktop`,`sys`) VALUES ('170','公众号配置','Sys/ctype/type/wechatbind','39',1,'1');
 INSERT INTO `jz_ruler` (`id`,`name`,`fc`,`pid`,`isdesktop`,`sys`) VALUES ('171','批量审核','Article/checkAll','8','0','1');
 INSERT INTO `jz_ruler` (`id`,`name`,`fc`,`pid`,`isdesktop`,`sys`) VALUES ('172','批量审核','Product/checkAll','104','0','1');
 INSERT INTO `jz_ruler` (`id`,`name`,`fc`,`pid`,`isdesktop`,`sys`) VALUES ('173','批量审核','Message/checkAll','21','0','1');
@@ -1212,7 +1214,7 @@ INSERT INTO `jz_ruler` (`id`,`name`,`fc`,`pid`,`isdesktop`,`sys`) VALUES ('177',
 INSERT INTO `jz_ruler` (`id`,`name`,`fc`,`pid`,`isdesktop`,`sys`) VALUES ('178','手动充值','Order/chongzhi','128','0','1');
 INSERT INTO `jz_ruler` (`id`,`name`,`fc`,`pid`,`isdesktop`,`sys`) VALUES ('179','删除记录','Order/delbuylog','128','0','1');
 INSERT INTO `jz_ruler` (`id`,`name`,`fc`,`pid`,`isdesktop`,`sys`) VALUES ('180','批量删除记录','Order/delAllbuylog','128','0','1');
-INSERT INTO `jz_ruler` (`id`,`name`,`fc`,`pid`,`isdesktop`,`sys`) VALUES ('181','积分配置','Sys/jifenset','39','0','1');
+INSERT INTO `jz_ruler` (`id`,`name`,`fc`,`pid`,`isdesktop`,`sys`) VALUES ('181','积分配置','Sys/ctype/type/jifenset','39',1,'1');
 INSERT INTO `jz_ruler` (`id`,`name`,`fc`,`pid`,`isdesktop`,`sys`) VALUES ('182','插件更新','Plugins/update','75','0','1');
 INSERT INTO `jz_ruler` (`id`,`name`,`fc`,`pid`,`isdesktop`,`sys`) VALUES ('183','获取栏目模板','Classtype/get_html','41','0','1');
 INSERT INTO `jz_ruler` (`id`,`name`,`fc`,`pid`,`isdesktop`,`sys`) VALUES ('184','批量修改栏目','Classtype/changeClass','41','0','1');
@@ -1230,7 +1232,7 @@ INSERT INTO `jz_ruler` (`id`,`name`,`fc`,`pid`,`isdesktop`,`sys`) VALUES ('195',
 INSERT INTO `jz_ruler` (`id`,`name`,`fc`,`pid`,`isdesktop`,`sys`) VALUES ('196','修改碎片','Sys/editcache','39','0','1');
 INSERT INTO `jz_ruler` (`id`,`name`,`fc`,`pid`,`isdesktop`,`sys`) VALUES ('197','删除碎片','Sys/delcache','39','0','1');
 INSERT INTO `jz_ruler` (`id`,`name`,`fc`,`pid`,`isdesktop`,`sys`) VALUES ('198','预览SQL','Sys/viewcache','39','0','1');
-INSERT INTO `jz_ruler` (`id`,`name`,`fc`,`pid`,`isdesktop`,`sys`) VALUES ('199','搜索配置','Sys/searchconfig','39','0','1');
+INSERT INTO `jz_ruler` (`id`,`name`,`fc`,`pid`,`isdesktop`,`sys`) VALUES ('199','搜索配置','Sys/ctype/type/searchconfig','39',1,'1');
 INSERT INTO `jz_ruler` (`id`,`name`,`fc`,`pid`,`isdesktop`,`sys`) VALUES ('200','修改字段属性','Fields/editFieldsValue','26','0','1');
 INSERT INTO `jz_ruler` (`id`,`name`,`fc`,`pid`,`isdesktop`,`sys`) VALUES ('201','推荐属性','Jzattr','0','0','1');
 INSERT INTO `jz_ruler` (`id`,`name`,`fc`,`pid`,`isdesktop`,`sys`) VALUES ('202','推荐属性','Jzattr/index','201','1','1');
@@ -1267,15 +1269,21 @@ INSERT INTO `jz_ruler` (`id`,`name`,`fc`,`pid`,`isdesktop`,`sys`) VALUES ('234',
 INSERT INTO `jz_ruler` (`id`,`name`,`fc`,`pid`,`isdesktop`,`sys`) VALUES ('235','批量修改用户评价列表','Extmolds/editOrders/molds/pingjia','77','0','0');
 INSERT INTO `jz_ruler` (`id`,`name`,`fc`,`pid`,`isdesktop`,`sys`) VALUES ('236','批量审核用户评价','Extmolds/checkAll/molds/pingjia','77','0','0');
 INSERT INTO `jz_ruler` (`id`,`name`,`fc`,`pid`,`isdesktop`,`sys`) VALUES ('237','重构字段','Molds/restrucFields','60','0','1');
-INSERT INTO `jz_ruler` (`id`,`name`,`fc`,`pid`,`isdesktop`,`sys`) VALUES ('238','基本配置','Sys/base','39','0','1');
+INSERT INTO `jz_ruler` (`id`,`name`,`fc`,`pid`,`isdesktop`,`sys`) VALUES ('238','基本配置','Sys/ctype/type/base','39',1,'1');
 INSERT INTO `jz_ruler` (`id`,`name`,`fc`,`pid`,`isdesktop`,`sys`) VALUES ('239','批量修改评价推荐属性','Extmolds/changeAttribute/molds/pingjia','77','0','0');
+INSERT INTO `jz_ruler` (`id`,`name`,`fc`,`pid`,`isdesktop`,`sys`) VALUES ('240','配置栏目','Sys/systype','39',1,'1');
+INSERT INTO `jz_ruler` (`id`,`name`,`fc`,`pid`,`isdesktop`,`sys`) VALUES ('241','设置配置状态','Sys/systypestatus','39',0,'1');
+INSERT INTO `jz_ruler` (`id`,`name`,`fc`,`pid`,`isdesktop`,`sys`) VALUES ('242','修改配置分组','Sys/editctype','39',0,'1');
+INSERT INTO `jz_ruler` (`id`,`name`,`fc`,`pid`,`isdesktop`,`sys`) VALUES ('243','新增配置分组','Sys/addctype','39',0,'1');
+INSERT INTO `jz_ruler` (`id`,`name`,`fc`,`pid`,`isdesktop`,`sys`) VALUES ('244','全局配置','Sys/ctype','39',0,'1');
+INSERT INTO `jz_ruler` (`id`,`name`,`fc`,`pid`,`isdesktop`,`sys`) VALUES ('245','修改配置字段','Sys/setfield','39',0,'1');
 -- ----------------------------
 -- Records of jz_shouchang
 -- ----------------------------
 -- ----------------------------
 -- Records of jz_sysconfig
 -- ----------------------------
-INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`,`typeid`,`config`,`orders`,`sys`) VALUES ('1','web_version','系统版号','版本号是系统自带，请勿改动','0','2.2.9','0', NULL,'0','1');
+INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`,`typeid`,`config`,`orders`,`sys`) VALUES ('1','web_version','系统版号','版本号是系统自带，请勿改动','0','2.3.0','0', NULL,'0','1');
 INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`,`typeid`,`config`,`orders`,`sys`) VALUES ('2','web_name','网站SEO名称','控制在25个字、50个字节以内','2','极致CMS建站系统','1', NULL,'0','1');
 INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`,`typeid`,`config`,`orders`,`sys`) VALUES ('3','web_keyword','网站SEO关键词','5个左右，8汉字以内，用英文逗号隔开','2','极致建站,cms,开源cms,免费cms,cms系统,phpcms,免费企业建站,建站系统,企业cms,jizhicms,极致cms,建站cms,建站系统,极致博客,极致blog,内容管理系统&quot;','1', NULL,'0','1');
 INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`,`typeid`,`config`,`orders`,`sys`) VALUES ('4','web_desc','网站SEO描述','控制在80个汉字，160个字符以内','3','极致CMS是开源免费的PHPCMS网站内容管理系统，无商业授权，简单易用，提供丰富的插件，帮您实现零基础搭建不同类型网站（企业站，门户站，个人博客站等），是您建站的好帮手。极速建站，就选极致CMS。','1', NULL,'0','1');

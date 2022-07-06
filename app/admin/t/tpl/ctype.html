@@ -33,45 +33,42 @@
 		}
 	}
 	.copy{ cursor:pointer;}
+	.m-form{
+		padding: 25px;
+	}
+	.m-form input{
+		margin:5px 0px;
+	}
+	.m-form .layui-input-block{
+		margin-left:0px;
+	}
 	</style>
-	
+
   </head>
     <body>
         <div class="x-nav">
             <span class="layui-breadcrumb">
               <a><cite>{fun JZLANG('首页')}</cite></a>
               <a><cite>{fun JZLANG('系统设置')}</cite></a>
-              <a><cite>{fun JZLANG('网站设置')}</cite></a>
+              <a><cite>{$ctypedata['title']}</cite></a>
             </span>
             <a class="layui-btn layui-btn-sm" style="line-height:1.6em;margin-top:3px;float:right"  href="javascript:location.replace(location.href);" title="{fun JZLANG('刷新')}"><i class="iconfont" style="line-height:30px">&#xe6aa;</i></a>
         </div>
         <form class="layui-form layui-form-pane" >
+		<input name="isorder" value="1" type="hidden">
         <div class="x-body">
             <div class="layui-tab layui-tab-brief" lay-filter="docDemoTabBrief">
               <ul class="layui-tab-title">
-			  {php 
-			  $ctype = [];
-			  $i = 0;
-			  /}
-			  {loop table="ctype" orderby="id asc" isopen="1" as="v"}
-			  {if(checkAction('Sys/'.$v['action']))}
-                <li {if($i==0)}class="layui-this"{/if}>{fun JZLANG($v['title'])}</li>
-				{php
-				$ctype[]=$v;
-				$i++;
-				/}
-			  {/if}
-				
-			  {/loop}
+			  
+			  <li>{$ctypedata['title']}</li>
 			  {if($admin['gid']==1)}
 			  <li>{fun JZLANG('自定义配置')}</li>
               {/if}
               </ul>
 
               <div class="layui-tab-content" >
-				{foreach $ctype as $s}
-                <div class="layui-tab-item {if($s_n==1)}layui-show{/if}">
-						{loop table="sysconfig" typeid="$s['id']" orderby="orders desc,id asc" as="v"}
+				<div class="layui-tab-item layui-show">
+						{loop table="sysconfig" typeid="$ctypedata['id']" orderby="orders desc,id asc" as="v"}
 						{if($v['type']==1)}
 						
 						<div class="layui-form-item" >
@@ -79,7 +76,6 @@
                                 {fun JZLANG($v['title'])}
                             </label>
                             <div class="layui-inline">
-                               
                               <input name="{$v['field']}" type="text" class="layui-input" id="{$v['field']}" value="{$v['data']}">
                             </div>
                              <div class="layui-inline">
@@ -92,7 +88,11 @@
 							{/if}
 							{if($admin['gid']==1)}
 							<div  class="layui-inline">
+								<input name="orders[{$v['field']}]" type="text" class="layui-input" value="{$v['orders']}">
+							</div>
+							<div  class="layui-inline">
 							<span data-clipboard-action="copy" id="copy_{$v['field']}_text"  data-clipboard-target="#copy_{$v['field']}_text" title="{fun JZLANG('点击复制')}" class="layui-badge-rim copy">{!--$webconf['{$v['field']}']--}</span>
+							<button class="layui-btn layui-btn-xs" type="button" onclick="edit({$v['id']},'{$v['field']}',{$v['type']},'{$v['title']}','{$v['tips']}','{$v['typeid']}','{$v['config']}',{$v['orders']})">{fun JZLANG('修改')}</button>
 							</div>
 							{if($v['sys']!=1)}
 							<div class="layui-inline">
@@ -151,7 +151,11 @@
 							{/if}
 							{if($admin['gid']==1)}
 							<div  class="layui-inline">
+								<input name="orders[{$v['field']}]" type="text" class="layui-input" value="{$v['orders']}">
+							</div>
+							<div  class="layui-inline">
 							<span data-clipboard-action="copy" id="copy_{$v['field']}_text"  data-clipboard-target="#copy_{$v['field']}_text" title="{fun JZLANG('点击复制')}" class="layui-badge-rim copy">{!--$webconf['{$v['field']}']--}</span>
+							<button class="layui-btn layui-btn-xs" type="button" onclick="edit({$v['id']},'{$v['field']}',{$v['type']},'{$v['title']}','{$v['tips']}','{$v['typeid']}','{$v['config']}',{$v['orders']})">{fun JZLANG('修改')}</button>
 							</div>
 							{if($v['sys']!=1)}
 							<div class="layui-inline">
@@ -170,6 +174,7 @@
 							{/if}
 							{if($admin['gid']==1)}
 							<span data-clipboard-action="copy" id="copy_{$v['field']}_text"  data-clipboard-target="#copy_{$v['field']}_text" title="{fun JZLANG('点击复制')}" class="layui-badge-rim copy">{!--$webconf['{$v['field']}']--}</span>
+							<button class="layui-btn layui-btn-xs" type="button" onclick="edit({$v['id']},'{$v['field']}',{$v['type']},'{$v['title']}','{$v['tips']}','{$v['typeid']}','{$v['config']}',{$v['orders']})">{fun JZLANG('修改')}</button>
 							{/if}
                             </label>
 							
@@ -177,7 +182,11 @@
                                 <textarea  name="{$v['field']}" class="layui-textarea">{$v['data']}</textarea>
 								
                             </div>
-							
+							{if($admin['gid']==1)}
+							<div  class="layui-inline">
+								<input name="orders[{$v['field']}]" type="text" class="layui-input" value="{$v['orders']}">
+							</div>
+							{/if}
 							{if($v['sys']!=1 && $admin['gid']==1)}
 							<div class="layui-inline">
 							<button type="button" lay-filter="del" data="custom_{$v['field']}"  lay-submit=""  class="layui-btn layui-btn-danger layui-btn-sm">{fun JZLANG('删除')}</button>
@@ -194,6 +203,7 @@
 						{if($admin['gid']==1)}
 						<div  class="layui-inline">
 						<span data-clipboard-action="copy" id="copy_{$v['field']}_text"  data-clipboard-target="#copy_{$v['field']}_text" title="{fun JZLANG('点击复制')}" class="layui-badge-rim copy">{!--$webconf['{$v['field']}']--}</span>
+						<button class="layui-btn layui-btn-xs" type="button" onclick="edit({$v['id']},'{$v['field']}',{$v['type']},'{$v['title']}','{$v['tips']}','{$v['typeid']}','{$v['config']}',{$v['orders']})">{fun JZLANG('修改')}</button>
 						</div>
 							{if($v['sys']!=1)}
 							<div class="layui-inline">
@@ -219,7 +229,11 @@
 							{/if}
 							{if($admin['gid']==1)}
 							<div  class="layui-inline">
+								<input name="orders[{$v['field']}]" type="text" class="layui-input" value="{$v['orders']}">
+							</div>
+							<div  class="layui-inline">
 							<span data-clipboard-action="copy" id="copy_{$v['field']}_text"  data-clipboard-target="#copy_{$v['field']}_text" title="{fun JZLANG('点击复制')}" class="layui-badge-rim copy">{!--$webconf['{$v['field']}']--}</span>
+							<button class="layui-btn layui-btn-xs" type="button" onclick="edit({$v['id']},'{$v['field']}',{$v['type']},'{$v['title']}','{$v['tips']}','{$v['typeid']}','{$v['config']}',{$v['orders']})">{fun JZLANG('修改')}</button>
 							</div>
 							{if($v['sys']!=1)}
 							<div class="layui-inline">
@@ -284,7 +298,11 @@
 							{/if}
 							{if($admin['gid']==1)}
 							<div  class="layui-inline">
+								<input name="orders[{$v['field']}]" type="text" class="layui-input" value="{$v['orders']}">
+							</div>
+							<div  class="layui-inline">
 							<span data-clipboard-action="copy" id="copy_{$v['field']}_text"  data-clipboard-target="#copy_{$v['field']}_text" title="{fun JZLANG('点击复制')}" class="layui-badge-rim copy">{!--$webconf['{$v['field']}']--}</span>
+							<button class="layui-btn layui-btn-xs" type="button" onclick="edit({$v['id']},'{$v['field']}',{$v['type']},'{$v['title']}','{$v['tips']}','{$v['typeid']}','{$v['config']}',{$v['orders']})">{fun JZLANG('修改')}</button>
 							</div>
 							{if($v['sys']!=1)}
 							<div class="layui-inline">
@@ -316,7 +334,11 @@
 							{/if}
 							{if($admin['gid']==1)}
 							<div  class="layui-inline">
+								<input name="orders[{$v['field']}]" type="text" class="layui-input" value="{$v['orders']}">
+							</div>
+							<div  class="layui-inline">
 							<span data-clipboard-action="copy" id="copy_{$v['field']}_text"  data-clipboard-target="#copy_{$v['field']}_text" title="{fun JZLANG('点击复制')}" class="layui-badge-rim copy">{!--$webconf['{$v['field']}']--}</span>
+							<button class="layui-btn layui-btn-xs" type="button" onclick="edit({$v['id']},'{$v['field']}',{$v['type']},'{$v['title']}','{$v['tips']}','{$v['typeid']}','{$v['config']}',{$v['orders']})">{fun JZLANG('修改')}</button>
 							</div>
 							{if($v['sys']!=1)}
 							<div class="layui-inline">
@@ -325,18 +347,24 @@
 							{/if}
 							{/if}
 						</div>
-						{else if($v['type']==8 || $v['type']==9)}
+						{else if($v['type']==8)}
 						<div class="layui-form-item layui-form-text">
                             <label  class="layui-form-label">
                                 {$v['title']}  <span class="x-red">{$v['tip']}</span>
 								{if($admin['gid']==1)}
 								<span data-clipboard-action="copy" id="copy_{$v['field']}_text"  data-clipboard-target="#copy_{$v['field']}_text" title="{fun JZLANG('点击复制')}" class="layui-badge-rim copy">{!--$webconf['{$v['field']}']--}</span>
+								<button class="layui-btn layui-btn-xs" type="button" onclick="edit({$v['id']},'{$v['field']}',{$v['type']},'{$v['title']}','{$v['tips']}','{$v['typeid']}','{$v['config']}',{$v['orders']})">{fun JZLANG('修改')}</button>
 								{/if}
                             </label>
                             <div class="layui-input-block">
                                 <textarea  name="{$v['field']}" class="layui-textarea">{$v['data']}</textarea>
 								
                             </div>
+							{if($admin['gid']==1)}
+							<div  class="layui-inline">
+								<input name="orders[{$v['field']}]" type="text" class="layui-input" value="{$v['orders']}">
+							</div>
+							{/if}
 							{if($v['sys']!=1 && $admin['gid']==1)}
 							<div class="layui-inline">
 							<button type="button" lay-filter="del" data="custom_{$v['field']}"  lay-submit=""  class="layui-btn layui-btn-danger layui-btn-sm">{fun JZLANG('删除')}</button>
@@ -361,7 +389,6 @@
                 </div>
                 
 				
-				{/foreach}
 				<div class="layui-tab-item ">
 				 {if($admin['gid']==1)}
 						
@@ -382,11 +409,8 @@
 									<option value="5">{fun JZLANG('文件上传')}</option>
 									<option value="6">{fun JZLANG('下拉选项')}</option>
 									<option value="7">{fun JZLANG('栏目选项')}</option>
-									<option value="8">{fun JZLANG('代码')}</option>
-									
+									<option value="8">{fun JZLANG('代码')}</option>							
 									</select>
-									
-									
 								</div>
 								
 								<div class="layui-inline">
@@ -407,9 +431,9 @@
 								</label>
 								<div class="layui-inline" >
 									<select class="layui-btn layui-btn-normal" name="custom_ctype" id="custom_ctype" >
-									{foreach $ctype as $v}
-									<option value="{$v['id']}">{$v['title']}</option>
-									{/foreach}
+									{loop table="ctype"  as="v"}
+									<option {if($ctypedata['id']==$v['id'])}selected{/if} value="{$v['id']}">{$v['title']}</option>
+									{/loop}
 									</select>
 								</div>
 								<div class="layui-inline">
@@ -424,26 +448,7 @@
 								</div>
 						  </div>
 						</fieldset>
-						<fieldset class="layui-elem-field">
-						    <legend>{fun JZLANG('自定义配置栏')}</legend>
-						    <div class="layui-field-box">
-							
-								<div class="layui-inline">
-									<input type="text" id="custom_new_title" name="custom_new_title" autocomplete="off" placeholder="{fun JZLANG('请填写配置栏名(中文)')}"
-									class="layui-input">
-								</div>
-								<div class="layui-inline">
-									<input type="text" id="custom_new_fields" name="custom_new_fields" autocomplete="off" placeholder="{fun JZLANG('配置标识(必须是字母)')}"
-									class="layui-input">
-								</div>
-								<div class="layui-inline">
-								 <button lay-filter="*" lay-submit="" class="layui-btn"><i class="iconfont">&#xe6b9;</i>{fun JZLANG('添加')}</button>
-								</div>
-								<i data-info="{fun JZLANG('配置标识用于权限控制，必填且不能与原系统配置栏重复')}" data-field="fcustomnew" class="layui-sys-icon layui-icon layui-icon-about fcustomnew"></i>
-							</div>	
-						</fieldset>
-						 
-                       
+						
                         {/if}
 				<div style="height:100px;"></div>
 				</div>
@@ -581,7 +586,65 @@
 					
 					layer.alert('{fun JZLANG('失败！')}');
 				});
-					 
+			function edit(id,field,type,title,tips,typeid,config,orders){
+				var html = '<div class="m-form"><form class="layui-form" lay-filter="newform"><input name="id" type="hidden" id="id" value=\"'+id+'\">{fun JZLANG('配置名称')}<input type=\"text\" autocomplete="off" name="title" id= \"title\" value=\"'+title+'\" class=\"layui-input\" placeholder=\"{fun JZLANG('配置名称')}\"/>'
+				+'{fun JZLANG('配置字段')}<input type=\"text\" name="field" value=\"'+field+'\" id= \"field\" autocomplete="off" class=\"layui-input\" placeholder=\"{fun JZLANG('配置字段')}\"/>'
+				+'{fun JZLANG('配置栏目')}<div class="layui-input-block" ><select class="layui-btn layui-btn-normal" name="typeid" id="typeid" >'
+									{loop table="ctype"  as="v"}
+									+'<option {if($ctypedata['id']==$v['id'])}selected{/if} value="{$v['id']}">{$v['title']}</option>'
+									{/loop}
+									+'</select></div>'
+				+'{fun JZLANG('配置类型')}<div class="layui-input-block" >'
+									+'<select class="layui-btn layui-btn-normal" name="type"  >'
+									+'<option value="0">{fun JZLANG('选择类型')}</option>'
+									+'<option value="1">{fun JZLANG('图片')}</option>'
+									+'<option value="2">{fun JZLANG('单行文本')}</option>'
+									+'<option value="3">{fun JZLANG('多行文本')}</option>'
+									+'<option value="4">{fun JZLANG('编辑器')}</option>'
+									+'<option value="5">{fun JZLANG('文件上传')}</option>'
+									+'<option value="6">{fun JZLANG('下拉选项')}</option>'
+									+'<option value="7">{fun JZLANG('栏目选项')}</option>'
+									+'<option value="8">{fun JZLANG('代码')}</option>'
+									+'</select></div>'
+				+'{fun JZLANG('提示信息')}<input type=\"text\" value=\"'+tips+'\" name="tip" id= \"tip\" autocomplete="off" class=\"layui-input\" placeholder=\"{fun JZLANG('提示信息')}\"/>'
+				+'{fun JZLANG('配置内容')}<textarea  name="config" placeholder="{fun JZLANG('下拉选项配置，如：开启=1,关闭=0')}" class="layui-textarea">'+config+'</textarea>'
+				+'{fun JZLANG('排序')}<input type=\"text\" value=\"'+orders+'\" name="orders" id= \"orders\" autocomplete="off" class=\"layui-input\" placeholder=\"{fun JZLANG('排序')}\"/>'
+				+'<button type="button" style="margin-left: 45%;" class="layui layui-btn layui-btn-sm" lay-submit lay-filter="update">{fun JZLANG('提交')}</button></form></div>';
+				layer.open({
+				  type: 1,
+				  title:'{fun JZLANG('修改信息')}',
+				  skin: 'layui-layer-rim', //加上边框
+				  area: ['650px', '80%'], //宽高
+				  content: html
+				});
+				layui.use(['form','layer'], function(){
+					var form = layui.form,layer = layui.layer;
+					form.val("newform", {"type":type,"typeid":typeid});
+					form.on('submit(update)', function(data){
+						$.post("{fun U('Sys/setfield')}",data.field,function(r){
+							var r = JSON.parse(r);
+							if(r.code==0){
+								layer.alert(r.msg, {icon: 6},function(){
+									 window.location.reload();
+								});
+								
+							}else{
+								 layer.alert(r.msg, {icon: 5});
+								 
+							}
+						
+						});
+						
+						return false;
+					   
+						
+					});
+				  
+				  })
+				  
+			  
+			  
+			  }		 
               
             </script>
             

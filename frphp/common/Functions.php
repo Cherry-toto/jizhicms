@@ -58,11 +58,7 @@ function format_param($value=null,$int=0,$default=false){
 		case 1://字符串
 			$value = SafeFilter($value);
 			$value=htmlspecialchars(trim($value), ENT_QUOTES);
-			if(version_compare(PHP_VERSION,'7.4','>=')){
-				$value = addslashes($value);
-			}else{
-				if(!get_magic_quotes_gpc())$value = addslashes($value);
-			}
+            $value = addslashes($value);
 			
 			return $value;
 		case 2://数组
@@ -72,11 +68,8 @@ function format_param($value=null,$int=0,$default=false){
 		case 3://浮点
 			return (float)$value;
 		case 4:
-			if(version_compare(PHP_VERSION,'7.4','>=')){
-				$value = addslashes($value);
-			}else{
-				if(!get_magic_quotes_gpc())$value = addslashes($value);
-			}
+            $value = addslashes($value);
+            $value = SafeFilter($value);
 			return trim($value);
 	}
 }
@@ -90,12 +83,9 @@ function SafeFilter($arr)
 function array_format(&$item, $key)
 {
 	$item=trim($item);
+    $item = SafeFilter($item);
 	$item=htmlspecialchars($item, ENT_QUOTES);
-	if(version_compare(PHP_VERSION,'7.4','>=')){
-		$item = addslashes($item);
-	}else{
-		if(!get_magic_quotes_gpc())$item = addslashes($item);
-	}
+    $item = addslashes($item);
 }
 
 function unicodeEncode($str){

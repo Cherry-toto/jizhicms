@@ -20,161 +20,172 @@ class SysController extends CommonController
 {
 
 
-	
-   public function index(){
-   
-		$web_config = $this->webconf;
-		$custom = M('sysconfig')->findAll('type!=0');
-		if($_POST){
-			$data = $this->frparam();
-			//删除自定义栏目
-			if($this->frparam('deltype')){
-				$ctype = $this->frparam('ctype');
-				$aid = $this->frparam('aid');
-				if($ctype){
-					$isok = M('sysconfig')->find(['typeid'=>$ctype]);
-					if($isok){
-						JsonReturn(['code'=>1,'msg'=>JZLANG('配置栏下有自定义配置，无法删除配置栏')]);
-					}
-					M('ctype')->delete(['id'=>$ctype]);
-					JsonReturn(['code'=>0,'msg'=>JZLANG('操作成功！')]);
-					
-				}
-				JsonReturn(['code'=>1,'msg'=>JZLANG('操作失败！')]);
-			}
-			$whereArr = [];
-			$valueArr = [];
-			$lists = M('sysconfig')->findAll();
-			foreach($lists as $k=>$v){
-				if (array_key_exists($v['field'],$data)) {
+
+    public function index(){
+
+        $web_config = $this->webconf;
+        $custom = M('sysconfig')->findAll('type!=0');
+        if($_POST){
+            $data = $this->frparam();
+            //删除自定义栏目
+            if($this->frparam('deltype')){
+                $ctype = $this->frparam('ctype');
+                $aid = $this->frparam('aid');
+                if($ctype){
+                    $isok = M('sysconfig')->find(['typeid'=>$ctype]);
+                    if($isok){
+                        JsonReturn(['code'=>1,'msg'=>JZLANG('配置栏下有自定义配置，无法删除配置栏')]);
+                    }
+                    $old = M('ctype')->find(['id'=>$ctype]);
+                    //删除相关权限
+                    M('ruler')->delete(['fc'=>'Sys/ctype/type/'.$old['action']]);
+                    M('ctype')->delete(['id'=>$ctype]);
+                    JsonReturn(['code'=>0,'msg'=>JZLANG('操作成功！')]);
+
+                }
+                JsonReturn(['code'=>1,'msg'=>JZLANG('操作失败！')]);
+            }
+            $whereArr = [];
+            $valueArr = [];
+            $lists = M('sysconfig')->findAll();
+            $orders = $this->frparam('orders',2);
+            foreach($lists as $k=>$v){
+                if (array_key_exists($v['field'],$data)) {
                     if($v['type']==9 || $v['type']==8){
-						$value = $_POST[$v['field']];
-						$value=htmlspecialchars(trim($value), ENT_QUOTES);
-						if(version_compare(PHP_VERSION,'7.4','>=')){
-							$value = addslashes($value);
-						}else{
-							if(!get_magic_quotes_gpc())$value = addslashes($value);
-						} 
-						$whereArr[]=['field'=>$v['field']];
-						$valueArr[]=['data'=>$value];
-						
-					}else if($v['type']==4){
-						$value = $this->frparam($v['field'],4);
-						$whereArr[]=['field'=>$v['field']];
-						$valueArr[]=['data'=>$value];
-						
-					}else{
-						
-						$whereArr[]=['field'=>$v['field']];
-						$valueArr[]=['data'=>$this->frparam($v['field'],1)];
-					}
-				}
-				
-				
-				
+                        $value = $_POST[$v['field']];
+                        $value=htmlspecialchars(trim($value), ENT_QUOTES);
+                        $value = addslashes($value);
 
-			}
-			if(count($whereArr) && count($valueArr)){
-				M('sysconfig')->updateMuti($whereArr,$valueArr);
-			}
-			
-		   
-		   //检测是否有新增
-		   if($this->frparam('custom_title',1) && $this->frparam('custom_type')){
-			   $new['title'] = $this->frparam('custom_title',1);
-			   $new['data'] = '';
-			   $new['tip'] = $this->frparam('custom_tips',1);
-			   $new['type'] = $this->frparam('custom_type');
-			   $new['typeid'] = $this->frparam('custom_ctype',0,1);
-			   $new['orders'] = 0;
-			   $new['sys'] = 0;
-			   $new['config'] = str_replace('，',',',$this->frparam('custom_config',1));
-			   if($this->frparam('custom_fields',1)){
-				   $new['field'] = $this->frparam('custom_fields',1);
-				   $n = M('sysconfig')->add($new);
-			   }else{
-				   $new['field'] = 'jizhi_demo';
-				   $n = M('sysconfig')->add($new);
-				   if($n){
-					   M('sysconfig')->update(['id'=>$n],['field'=>'jz_'.$n]);
-				   }
-			   } 
-		   }
-		   if($this->frparam('custom_new_title',1) && $this->frparam('custom_new_fields',1)){
-			   $ww['action'] = $this->frparam('custom_new_fields',1);
-			   if(M('ctype')->find($ww)){
-				   JsonReturn(['code'=>1,'msg'=>JZLANG('已存在配置标识，请重新设置！')]);
-			   }
-			   $ww['title'] = $this->frparam('custom_new_title',1);
-			   M('ctype')->add($ww);
-			   //新增系统配置权限
-			   $con['name'] = $ww['title'];
-			   $con['fc'] = 'Sys/'.$ww['action'];
-			   $con['pid'] = 39;
-			   $con['isdesktop'] = 0;
-			   $con['sys'] = 0;
-			   M('ruler')->add($con);
-			   
-		   }
-		   $config = include(APP_PATH.'conf/config.php');
-		   if(checkAction('Sys/high-level')){
-			   if($this->frparam('isdebug')){
-					$config['APP_DEBUG'] = true;
-			   }else{
-					$config['APP_DEBUG'] = false;
-			   }
-			   if($this->frparam('hideclasspath')){
-					$config['File_TXT_HIDE'] = true;
-			   }else{
-					$config['File_TXT_HIDE'] = false;
-			   }
-		   }
-		   
-		   
-		   $ress = file_put_contents(APP_PATH.'conf/config.php', '<?php return ' . var_export($config, true) . '; ?>');
+                    }else if($v['type']==4){
+                        $value = $this->frparam($v['field'],4);
+                    }else{
+                        $value = $this->frparam($v['field'],1);
+                    }
+                    $whereArr[]=['field'=>$v['field']];
+                    if($this->frparam('isorder')){
+                        $valueArr[]=['data'=>$value,'orders'=>intval($orders[$v['field']])];
+                    }else{
+                        $valueArr[]=['data'=>$value];
+                    }
+                }
 
-		   if($this->webconf['pc_html']!=$this->frparam('pc_html',1) || $this->webconf['mobile_html']!=$this->frparam('mobile_html',1)){
-			   setCache('classtype',null);
-			   setCache('mobileclasstype',null);
-			   setCache('classtypedatamobile',null);
-			   setCache('classtypedatapc',null);
-		   }
-		   setCache('webconfig',null);
-		   setCache('hometpl',null);
-		   setCache('wxhometpl',null);
-		   setCache('mobilehometpl',null);
 
-		   JsonReturn(['code'=>0,'msg'=>JZLANG('提交成功！')]);
-		   
-		}
-		//获取前台template
-		
-		$dir = APP_PATH.'static';
-		$fileArray=array();
-		if(is_dir($dir)){
 
-			if (false != ($handle = opendir ( $dir ))) {
-				$i=0;
-				while ( false !== ($file = readdir ( $handle )) ) {
-					//去掉"“.”、“..”以及带“.xxx”后缀的文件
-					if ($file != "." && $file != ".."&& strpos($file,".html")===false) {
-						$fileArray[]=$file;
-						$i++;
-					}
-				}
-				//关闭句柄
-				closedir ( $handle );
-			}
-		}
-		$this->templatelist = $fileArray;
-		$this->config = $web_config;
-		$this->custom =	$custom;
-		$this->admin = $_SESSION['admin'];
-		$this->display('sys');
-   
-   }
-   
-   function custom_del(){
+
+            }
+            if(count($whereArr) && count($valueArr)){
+                M('sysconfig')->updateMuti($whereArr,$valueArr);
+            }
+
+
+            //检测是否有新增
+            if($this->frparam('custom_title',1) && $this->frparam('custom_type')){
+                $new['title'] = $this->frparam('custom_title',1);
+                $new['data'] = '';
+                $new['tip'] = $this->frparam('custom_tips',1);
+                $new['type'] = $this->frparam('custom_type');
+                $new['typeid'] = $this->frparam('custom_ctype',0,1);
+                $new['orders'] = 0;
+                $new['sys'] = 0;
+                $new['config'] = str_replace('，',',',$this->frparam('custom_config',1));
+                if($this->frparam('custom_fields',1)){
+                    $new['field'] = $this->frparam('custom_fields',1);
+                    $n = M('sysconfig')->add($new);
+                }else{
+                    $new['field'] = 'jizhi_demo';
+                    $n = M('sysconfig')->add($new);
+                    if($n){
+                        M('sysconfig')->update(['id'=>$n],['field'=>'jz_'.$n]);
+                    }
+                }
+            }
+            if($this->frparam('custom_new_title',1) && $this->frparam('custom_new_fields',1)){
+                $ww['action'] = $this->frparam('custom_new_fields',1);
+                if(M('ctype')->find($ww)){
+                    JsonReturn(['code'=>1,'msg'=>JZLANG('已存在配置标识，请重新设置！')]);
+                }
+                $ww['title'] = $this->frparam('custom_new_title',1);
+                M('ctype')->add($ww);
+                //新增系统配置权限
+                $con['name'] = $ww['title'];
+                $con['fc'] = 'Sys/'.$ww['action'];
+                $con['pid'] = 39;
+                $con['isdesktop'] = 0;
+                $con['sys'] = 0;
+                M('ruler')->add($con);
+
+            }
+            $config = include(APP_PATH.'conf/config.php');
+            if(checkAction('Sys/ctype/type/high-level')){
+                if($this->frparam('isdebug')){
+                    $config['APP_DEBUG'] = true;
+                }else{
+                    $config['APP_DEBUG'] = false;
+                }
+                if($this->frparam('hideclasspath')){
+                    $config['File_TXT_HIDE'] = true;
+                }else{
+                    $config['File_TXT_HIDE'] = false;
+                }
+            }
+
+
+            $ress = file_put_contents(APP_PATH.'conf/config.php', '<?php return ' . var_export($config, true) . '; ?>');
+
+            if($this->webconf['pc_html']!=$this->frparam('pc_html',1) || $this->webconf['mobile_html']!=$this->frparam('mobile_html',1)){
+                setCache('classtype',null);
+                setCache('mobileclasstype',null);
+                setCache('classtypedatamobile',null);
+                setCache('classtypedatapc',null);
+            }
+            setCache('webconfig',null);
+            setCache('hometpl',null);
+            setCache('wxhometpl',null);
+            setCache('mobilehometpl',null);
+
+            JsonReturn(['code'=>0,'msg'=>JZLANG('提交成功！')]);
+
+        }
+        //获取前台template
+        $indexdata = file_get_contents(APP_PATH.'index.php');
+        $r = preg_match("/define\('HOME_VIEW',[\'|\"](.*?)[\'|\"]\)/",$indexdata,$matches);
+        if($r){
+            $template = $matches[1];
+        }else{
+            $template = 'template';
+        }
+        $rr = preg_match("/define\('TPL_PATH',[\'|\"](.*?)[\'|\"]\)/",$indexdata,$matches);
+        if($rr){
+            $tplpath = $matches[1];
+        }else{
+            $tplpath = 'Home';
+        }
+        $dir = APP_PATH.$tplpath.'/'.$template;
+        $fileArray=array();
+        if(is_dir($dir)){
+
+            if (false != ($handle = opendir ( $dir ))) {
+                $i=0;
+                while ( false !== ($file = readdir ( $handle )) ) {
+                    //去掉"“.”、“..”以及带“.xxx”后缀的文件
+                    if ($file != "." && $file != ".."&& strpos($file,".html")===false) {
+                        $fileArray[]=$file;
+                        $i++;
+                    }
+                }
+                //关闭句柄
+                closedir ( $handle );
+            }
+        }
+        $this->templatelist = $fileArray;
+        $this->config = $web_config;
+        $this->custom =	$custom;
+        $this->admin = $_SESSION['admin'];
+        $this->display('sys');
+
+    }
+
+    public function custom_del(){
 	   $field = $this->frparam('field',1);
 	   if($field){
 		    $r = M('sysconfig')->delete(" sys!=1 and field='".$field."'");
@@ -188,10 +199,9 @@ class SysController extends CommonController
 	   }
 	    JsonReturn(['code'=>1,'msg'=>JZLANG('删除失败！')]);
 	   
-   }
-
+    }
 	//登录日志
-	function loginlog(){
+	public function loginlog(){
 		
 		if($this->frparam('ajax')){
 			$res = show_log('login');
@@ -241,9 +251,8 @@ class SysController extends CommonController
 		$this->display('loginlog');
 		
 	}
-	
 	//图片库
-	function pictures(){
+	public function pictures(){
 		$page = new Page('pictures');
 		$sql = ' 1=1 ';
 		if($this->frparam('molds',1)){
@@ -277,9 +286,8 @@ class SysController extends CommonController
 		$this->display('pictures');
 		
 	}
-	
 	//删除图片
-	function deletePic(){
+	public function deletePic(){
 		$id = $this->frparam('id');
 		if($id){
 			
@@ -305,7 +313,7 @@ class SysController extends CommonController
 		
 	}
 	//批量删除
-	function deletePicAll(){
+	public function deletePicAll(){
 		$data = $this->frparam('data',1);
 		if($data!=''){
 			
@@ -333,9 +341,8 @@ class SysController extends CommonController
 		}
 		
 	}
-	
 	//上传证书
-	function uploadcert(){
+	public function uploadcert(){
 		if ($_FILES["file"]["error"] > 0){
 		  $data['error'] =  "Error: " . $_FILES["file"]["error"];
 		  $data['code'] = 1000;
@@ -540,6 +547,119 @@ class SysController extends CommonController
 		
 		
 	}
+
+    public function systype(){
+
+        $this->lists = M('ctype')->findAll(null,'id asc');
+        $this->display('systype');
+    }
+
+    public function systypestatus(){
+        $id = $this->frparam('id');
+        $x = M('ctype')->find(['id'=>$id]);
+        if($x['isopen']==1){
+            $x['isopen']=0;
+        }else{
+            $x['isopen']=1;
+        }
+        M('ctype')->update(array('id'=>$id),array('isopen'=>$x['isopen']));
+
+    }
+
+    public function editctype(){
+        $id = $this->frparam('id');
+        $title = $this->frparam('title',1);
+        $action = $this->frparam('action',1);
+        if(!$id){
+            JsonReturn(array('code'=>1,'msg'=>JZLANG('链接错误！')));
+        }
+        if(!$title || !$action){
+            JsonReturn(array('code'=>1,'msg'=>JZLANG('配置栏名称和配置标识不能为空！')));
+        }
+        $r = M('ctype')->find("id!=".$id." and title='".$title."'");
+        if($r){
+            JsonReturn(array('code'=>1,'msg'=>JZLANG('配置栏名称已存在！')));
+        }
+        $r = M('ctype')->find("id!=".$id." and action='".$action."'");
+        if($r){
+            JsonReturn(array('code'=>1,'msg'=>JZLANG('配置标识已存在！')));
+        }
+        $old = M('ctype')->find(['id'=>$id]);
+        //更新权限
+        M('Ruler')->update(['fc'=>'Sys/ctype/type/'.$old['action']],['fc'=>'Sys/ctype/type/'.$action,'name'=>$title]);
+        M('ctype')->update(['id'=>$id],['title'=>$title,'action'=>$action]);
+
+        JsonReturn(array('code'=>0,'msg'=>JZLANG('操作成功！')));
+
+
+
+    }
+
+    public function addctype(){
+
+        $title = $this->frparam('title',1);
+        $action = $this->frparam('action',1);
+
+        if(!$title || !$action){
+            JsonReturn(array('code'=>1,'msg'=>JZLANG('配置栏名称和配置标识不能为空！')));
+        }
+        $r = M('ctype')->find(['title'=>$title]);
+        if($r){
+            JsonReturn(array('code'=>1,'msg'=>JZLANG('配置栏名称已存在！')));
+        }
+        $r = M('ctype')->find(['action'=>$action]);
+        if($r){
+            JsonReturn(array('code'=>1,'msg'=>JZLANG('配置标识已存在！')));
+        }
+        $id = M('ctype')->add(['title'=>$title,'action'=>$action,'sys'=>0,'isopen'=>1]);
+        //增加配置权限
+        $ruler['name'] = $title;
+        $ruler['fc'] = 'Sys/ctype/type/'.$action;
+        $ruler['pid'] = 39;
+        $ruler['isdesktop'] = 1;
+        $m_id = M('Ruler')->add($ruler);
+        JsonReturn(array('code'=>0,'msg'=>JZLANG('新增成功！')));
+
+    }
+
+    public function ctype(){
+        $action = $this->frparam('type',1);
+        $ctype = M('ctype')->find(['action'=>$action]);
+        if(!$ctype){
+            JsonReturn(array('code'=>1,'msg'=>JZLANG('没有找打相关配置！')));
+        }
+
+        $this->ctypedata = $ctype;
+
+        $this->display('ctype');
+
+    }
+
+    public function setfield(){
+        $id = $this->frparam('id');
+        $field = $this->frparam('field',1);
+        $title = $this->frparam('title',1);
+        $type = $this->frparam('type',1);
+        $typeid = $this->frparam('typeid');
+        if(!$id || !$field || !$title || !$type || !$typeid){
+            JsonReturn(array('code'=>1,'msg'=>JZLANG('参数错误！')));
+        }
+        $r = M('sysconfig')->find("id!=".$id." and field='".$field."'");
+        if($r){
+            JsonReturn(array('code'=>1,'msg'=>JZLANG('配置字段已存在！')));
+        }
+
+        M('sysconfig')->update(['id'=>$id],['field'=>$field,'title'=>$title,'tip'=>$this->frparam('tip',1),'orders'=>$this->frparam('orders'),'type'=>$this->frparam('type'),'config'=>$this->frparam('config',1),'typeid'=>$typeid]);
+        setCache('webconfig',null);
+        setCache('hometpl',null);
+        setCache('wxhometpl',null);
+        setCache('mobilehometpl',null);
+
+        JsonReturn(array('code'=>0,'msg'=>JZLANG('操作成功！')));
+
+
+    }
+
 
 
 

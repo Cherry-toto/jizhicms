@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html>
+  
+  <head>
+    <meta charset="UTF-8">
+   {include="style"}
+	<style>
+		.m-form{
+		    padding: 25px;
+		}
+		.m-form input{
+			margin:5px 0px;
+		}
+	</style>
+  </head>
+  
+  <body>
+    <div class="x-nav">
+      <span class="layui-breadcrumb">
+        <a >{fun JZLANG('首页')}</a>
+        <a >{fun JZLANG('系统设置')}</a>
+        <a><cite>{fun JZLANG('配置分类')}</cite></a>
+      </span>
+      <a class="layui-btn layui-btn-small" style="line-height:1.6em;margin-top:3px;float:right" href="javascript:location.replace(location.href);" title="{fun JZLANG('刷新')}">
+        <i class="iconfont" style="line-height:30px">&#xe6aa;</i></a>
+    </div>
+    <div class="x-body">
+     	<div class="layui-card">
+			<div class="layui-card-body">
+			  <xblock>
+	  {if($admin['isadmin'])}
+		<a class="layui-btn layui-btn-sm"  onclick="add()" >{fun JZLANG('新增配置栏目')}</a>
+	  {/if}
+        <span class="x-right" style="line-height:40px"></span>
+      </xblock>
+	  <form class="layui-form">
+      <table class="layui-table layui-form">
+        <thead>
+          <tr>
+           
+            <th width="70">ID</th>
+            <th width="150">{fun JZLANG('配置栏名称')}</th>
+            <th width="150">{fun JZLANG('配置标识')}</th>
+            <th width="150">{fun JZLANG('系统配置')}</th>
+            <th width="150">{fun JZLANG('是否启用')}</th>
+            <th >{fun JZLANG('操作')}</th>
+        </thead>
+        <tbody class="x-cate">
+		{foreach $lists as $v}
+          <tr cate-id="{$v['id']}" fid="0" >
+			
+            <td>{$v['id']}</td>
+            <td>{$v['title']}</td>
+			<td>{$v['action']}</td>
+			<td>{if($v['sys'])}<span class="layui-badge">是</span>{else}<span class="layui-badge layui-bg-gray">否</span>{/if}</td>
+			<td><input type="checkbox" value="{$v['id']}" name="switch" lay-filter="isopen"   lay-text="{fun JZLANG('开启|关闭')}"  lay-skin="switch" {if($v['isopen']==1)}checked{/if}></td>
+			
+            <td class="td-manage">
+			{if($admin['isadmin'])}
+              <a class="layui-btn layui-btn layui-btn-xs"  onclick="edit({$v['id']},'{$v['title']}','{$v['action']}')" >{fun JZLANG('编辑')}</a>
+              <a class="layui-btn layui-btn layui-btn-xs"  onclick="x_admin_show('{fun JZLANG('查看')}','{fun U('Sys/ctype',['type'=>$v['action']])}')" >{fun JZLANG('查看')}</a>
+			{/if}
+			{if($admin['isadmin'])}
+              {if(!$v['sys'])}<a class="layui-btn-danger layui-btn layui-btn-xs"  onclick="sysdel(this,'{$v['id']}')" href="javascript:;" >{fun JZLANG('删除')}</a>
+			  {/if}
+			{/if}  
+            </td>
+          </tr>
+		 {/foreach}
+         
+        </tbody>
+      </table>
+	  </form>
+			</div>
+		</div>
+     
+    
+    </div>
+    
+	
+    <script>
+      layui.use(['form','layer'], function(){
+        var form = layui.form,layer=layui.layer;
+        form.on('switch(isopen)', function (data) {
+			$.post("{fun U('sys/systypestatus')}",{id:data.elem.value},function(r){
+				layer.msg('操作成功！',{icon:6});
+			});
+		});
+      });
+	
+      function sysdel(obj,id){
+          layer.confirm('{fun JZLANG('确认要删除吗？')}',function(index){
+			  $.post('{fun U('Sys/index')}',{ctype:id,deltype:1},function(r){
+					r = JSON.parse(r);
+					if(r.code==1){
+						layer.msg(r.msg,{icon: 5,time:1000});
+					}else{
+						layer.msg(r.msg, {
+						 time:1000,icon:6
+						},function(){
+							 $(obj).parents("tr").remove();
+								layer.msg('{fun JZLANG('已删除!')}',{icon:1,time:1000});
+						});
+						
+					}
+				
+			  });
+		
+			  
+			  
+              
+          });
+      }
+	  
+	  function edit(id,title,action){
+		var html = '<div class="m-form"><input type="hidden" id="id" value=\"'+id+'\">{fun JZLANG('配置栏名称')}<input type=\"text\" autocomplete="off" id= \"title\" value=\"'+title+'\" class=\"layui-input\" placeholder=\"{fun JZLANG('配置栏名称')}\"/>'
+		+'{fun JZLANG('配置标识')}<input type=\"text\" value=\"'+action+'\" id= \"action\" autocomplete="off" class=\"layui-input\" placeholder=\"{fun JZLANG('配置标识')}\"/>'
+		+'<button type="button" style="margin-left: 45%;" class="layui layui-btn layui-btn-sm" onclick="update()">{fun JZLANG('提交')}</button></div>';
+		layer.open({
+		  type: 1,
+		  title:'{fun JZLANG('修改配置栏目')}',
+		  skin: 'layui-layer-rim', //加上边框
+		  area: ['400px', '300px'], //宽高
+		  content: html
+		});
+	  
+	  }
+	 
+		function update(){
+			  var title = $("#title").val();
+			  var id = $("#id").val();
+			  var action = $("#action").val();
+			  if(title=='' || action==''){
+				layer.msg('{fun JZLANG('配置栏名称和配置标识不能为空！')}',{icon:5})
+				return false;
+			  }
+			  $.post("{fun U('Sys/editctype')}",{id:id,title:title,action:action},function(res){
+				if(res.code==0){
+					layer.msg('{fun JZLANG('修改成功！')}',{icon:6},function(){
+						layer.closeAll();
+						location.reload();
+					})
+				}else{
+					layer.msg(res.msg,{icon:5});
+				}
+			  },'json')
+		}
+		
+		function add(){
+			var html = '<div class="m-form">{fun JZLANG('配置栏名称')}<input type=\"text\" autocomplete="off" id= \"title\" value=\"\" class=\"layui-input\" placeholder=\"{fun JZLANG('配置栏名称')}\"/>'
+			+'{fun JZLANG('配置标识')}<input type=\"text\" value=\"\" id= \"action\" autocomplete="off" class=\"layui-input\" placeholder=\"{fun JZLANG('配置标识')}\"/>'
+			+'<button type="button" style="margin-left: 45%;" class="layui layui-btn layui-btn-sm" onclick="addaction()">{fun JZLANG('新增')}</button></div>';
+			layer.open({
+			  type: 1,
+			  title:'{fun JZLANG('新增配置栏目')}',
+			  skin: 'layui-layer-rim', //加上边框
+			  area: ['400px', '300px'], //宽高
+			  content: html
+			});
+		}
+		function addaction(){
+			  var title = $("#title").val();
+			  var action = $("#action").val();
+			  if(title=='' || action==''){
+				layer.msg('{fun JZLANG('配置栏名称和配置标识不能为空！')}',{icon:5})
+				return false;
+			  }
+			  $.post("{fun U('Sys/addctype')}",{title:title,action:action},function(res){
+				if(res.code==0){
+					layer.msg('{fun JZLANG('新增成功！')}',{icon:6},function(){
+						layer.closeAll();
+						location.reload();
+					})
+				}else{
+					layer.msg(res.msg,{icon:5});
+				}
+			  },'json')
+		}
+			
+    
+    </script>
+    
+  </body>
+
+</html>

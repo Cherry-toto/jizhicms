@@ -197,7 +197,7 @@
                         </div>
 						{else if($v['type']==4)}
 						{php
-						$edit = require_once(APP_PATH.APP_HOME.'/'.HOME_VIEW.'/'.Tpl_template.'/common/uediter.php');
+						$edit = require(APP_PATH.APP_HOME.'/'.HOME_VIEW.'/'.Tpl_template.'/common/uediter.php');
 						echo $edit;
 						/}
 						{if($admin['gid']==1)}
@@ -379,7 +379,7 @@
                         {/loop}
                         
                        
-                     {if($s['id']>7 && $admin['gid']==1)}
+                     {if($v['id']>7 && $admin['gid']==1)}
 					<div class="layui-inline">
 					<button type="button" lay-filter="delconfig" data="{$s['id']}"  lay-submit=""  class="layui-btn layui-btn-danger layui-btn-sm">{fun JZLANG('删除配置栏')}</button>
 					</div>

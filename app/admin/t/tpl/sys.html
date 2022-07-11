@@ -54,7 +54,7 @@
 			  $i = 0;
 			  /}
 			  {loop table="ctype" orderby="id asc" isopen="1" as="v"}
-			  {if(checkAction('Sys/'.$v['action']))}
+			  {if(checkAction('Sys/ctype/type/'.$v['action']))}
                 <li {if($i==0)}class="layui-this"{/if}>{fun JZLANG($v['title'])}</li>
 				{php
 				$ctype[]=$v;
@@ -188,7 +188,7 @@
                         </div>
 						{else if($v['type']==4)}
 						{php
-						$edit = require_once(APP_PATH.APP_HOME.'/'.HOME_VIEW.'/'.Tpl_template.'/common/uediter.php');
+						$edit = require(APP_PATH.APP_HOME.'/'.HOME_VIEW.'/'.Tpl_template.'/common/uediter.php');
 						echo $edit;
 						/}
 						{if($admin['gid']==1)}
@@ -325,7 +325,7 @@
 							{/if}
 							{/if}
 						</div>
-						{else if($v['type']==8 || $v['type']==9)}
+						{else if($v['type']==8)}
 						<div class="layui-form-item layui-form-text">
                             <label  class="layui-form-label">
                                 {$v['title']}  <span class="x-red">{$v['tip']}</span>

@@ -234,7 +234,7 @@ class View
 		}
   
 		$content = file_get_contents($includefile);
-		$content = $this->template_html($content);
+		//$content = $this->template_html($content);
 		return $content;
 	}
 	//检查模板标签是否错误！

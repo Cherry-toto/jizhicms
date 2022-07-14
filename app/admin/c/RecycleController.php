@@ -59,14 +59,14 @@ class RecycleController extends CommonController
 		if($id){
 			$recycle = M('recycle')->find(['id'=>$id]);
 			if($recycle){
-				$data = json_decode($recycle['data'],1);
+				$data = unserialize($recycle['data']);
 				$r = M($recycle['molds'])->add($data);
 				if($r){
 					M('recycle')->delete(['id'=>$id]);
 					$relative = M('recycle')->findAll(['aid'=>$id]);
 					$ids = [];
 					foreach($relative as $v){
-						$d = json_decode($v['data'],1);
+						$d = unserialize($v['data']);
 						$rr = M($v['molds'])->add($d);
 						if($rr){
 							M('recycle')->delete(['id'=>$v['id']]);
@@ -99,13 +99,13 @@ class RecycleController extends CommonController
 			$recycles = M('recycle')->findAll('id in('.$data.')');
 			$ids = [];
 			foreach($recycles as $v){
-				$data = json_decode($v['data'],1);
+				$data = unserialize($v['data']);
 				$r = M($v['molds'])->add($data);
 				if($r){
 					M('recycle')->delete(['id'=>$v['id']]);
 					$relative = M('recycle')->findAll(['aid'=>$v['id']]);
 					foreach($relative as $vv){
-						$d = json_decode($vv['data'],1);
+						$d = unserialize($vv['data']);
 						$rr = M($vv['molds'])->add($d);
 						if($rr){
 							M('recycle')->delete(['id'=>$vv['id']]);

@@ -103,7 +103,7 @@ class RulersController extends CommonController
 				$m = M('Ruler')->delete(array('id'=>$id));
 				if($m){
                     $w['molds'] = 'ruler';
-                    $w['data'] = json_encode($ruler,JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+                    $w['data'] = serialize($ruler);
                     $w['title'] = '['.$ruler['id'].']'.$ruler['name'];
                     $w['addtime'] = time();
                     $x = M('recycle')->add($w);

@@ -82,7 +82,7 @@ class MessageController extends CommonController
 			$w['title'] = $this->frparam('title',1);
 			//仅在存在手机号的情况进行检测手机号是否有效-可自由设置
 			if($w['tel']){
-				if(!preg_match("/^(13[0-9]|14[579]|15[0-3,5-9]|16[6]|17[0135678]|18[0-9]|19[89])\\d{8}$/",$w['tel'])){  
+				if(!preg_match("/^(13[0-9]|14[579]|15[0-3,5-9]|16[6]|17[0135678]|18[0-9]|19[1-9])\\d{8}$/",$w['tel'])){
 					//$this->error('您的手机号格式不正确！');
 					if($this->frparam('ajax')){
 						JsonReturn(['code'=>1,'msg'=>JZLANG('您的手机号格式不正确！')]);

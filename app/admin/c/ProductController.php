@@ -177,6 +177,10 @@ class ProductController extends CommonController
 			}else{
 				$data['isshow'] = 0;
 			}
+            //检查是否重复
+            if(M('product')->find(['title'=>$data['title']])){
+                JsonReturn(array('code'=>1,'msg'=>JZLANG('标题重复！')));
+            }
 			$data['addtime'] = time();
 			$r = M('product')->add($data);
 			if($r){
@@ -360,6 +364,11 @@ class ProductController extends CommonController
 				}else{
 					$data['isshow'] = 0;
 				}
+                //检查是否重复
+                $sql = "title='".$this->frparam('title',1)."' and id!=".$this->frparam('id');
+                if(M('product')->find($sql)){
+                    JsonReturn(array('code'=>1,'msg'=>JZLANG('标题重复！')));
+                }
                 $data['addtime'] = isset($data['addtime']) ? $data['addtime'] : time();
 				if(M('product')->update(array('id'=>$this->frparam('id')),$data)){
 					//tags处理
@@ -504,13 +513,13 @@ class ProductController extends CommonController
 				M('customurl')->delete(['molds'=>'product','aid'=>$id]);
 				$w['title'] = '['.$data['id'].']'.$data['title'];
 				$w['molds'] = 'product';
-				$w['data'] = json_encode($data,JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+				$w['data'] = serialize($data);
 				$w['addtime'] = time();
 				$r = M('recycle')->add($w);
 				if($customurl){
 					$w['molds'] = 'customurl';
 					$w['title'] = '['.$customurl['id'].']'.JZLANG('自定义链接');
-					$w['data'] = json_encode($customurl,JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+					$w['data'] = serialize($customurl);
 					$w['addtime'] = time();
 					$w['aid'] = $r;
 					M('recycle')->add($w);
@@ -561,14 +570,14 @@ class ProductController extends CommonController
 				
 				foreach($all as $v){
 					$w['molds'] = 'product';
-					$w['data'] = json_encode($v,JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+					$w['data'] = serialize($v);
 					$w['title'] = '['.$v['id'].']'.$v['title'];
 					$w['addtime'] = time();
 					$x = M('recycle')->add($w);
 					if($x && $newcustomurl[$v['id']]){
 						$w['molds'] = 'customurl';
 						$w['title'] = '['.$newcustomurl['id'].']'.JZLANG('自定义链接');
-						$w['data'] = json_encode($newcustomurl[$v['id']],JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+						$w['data'] = serialize($newcustomurl[$v['id']]);
 						$w['addtime'] = time();
 						$w['aid'] = $x;
 						M('recycle')->add($w);

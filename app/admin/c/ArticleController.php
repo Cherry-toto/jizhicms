@@ -167,6 +167,10 @@ class ArticleController extends CommonController
 				$data['isshow'] = 0;
 			}
 			$data['addtime'] =  time();
+			//检查是否重复
+            if(M('article')->find(['title'=>$data['title']])){
+                JsonReturn(array('code'=>1,'msg'=>JZLANG('标题重复！')));
+            }
 			$r = M('Article')->add($data);
 			if($r){
 				if($data['ownurl']){
@@ -352,6 +356,11 @@ class ArticleController extends CommonController
 				}else{
 					$data['isshow'] = 0;
 				}
+                //检查是否重复
+                $sql = "title='".$this->frparam('title',1)."' and id!=".$this->frparam('id');
+                if(M('article')->find($sql)){
+                    JsonReturn(array('code'=>1,'msg'=>JZLANG('标题重复！')));
+                }
                 $data['addtime'] = isset($data['addtime']) ? $data['addtime'] : time();
 				if(M('Article')->update(array('id'=>$this->frparam('id')),$data)){
 					if($old_tags!=$data['tags']){
@@ -502,12 +511,12 @@ class ArticleController extends CommonController
 				M('customurl')->delete(['molds'=>'article','aid'=>$id]);
 				$w['molds'] = 'article';
 				$w['title'] = '['.$data['id'].']'.$data['title'];
-				$w['data'] = json_encode($data,JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+				$w['data'] = serialize($data);
 				$w['addtime'] = time();
 				$r = M('recycle')->add($w);
 				if($customurl){
 					$w['molds'] = 'customurl';
-					$w['data'] = json_encode($customurl,JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+					$w['data'] = serialize($customurl);
                     $w['title'] = '['.$customurl['id'].']'.JZLANG('自定义链接');
 					$w['addtime'] = time();
 					$w['aid'] = $r;
@@ -553,13 +562,13 @@ class ArticleController extends CommonController
 				
 				foreach($all as $v){
 					$w['molds'] = 'article';
-					$w['data'] = json_encode($v,JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+					$w['data'] = serialize($v);
 					$w['addtime'] = time();
 					$w['title'] = '['.$v['id'].']'.$v['title'];
 					$x = M('recycle')->add($w);
 					if($x && $newcustomurl[$v['id']]){
 						$w['molds'] = 'customurl';
-						$w['data'] = json_encode($newcustomurl[$v['id']],JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+						$w['data'] = serialize($newcustomurl[$v['id']]);
 						$w['addtime'] = time();
 						$w['title'] = '['.$newcustomurl[$v['id']]['id'].']自定义链接';
 						$w['aid'] = $x;

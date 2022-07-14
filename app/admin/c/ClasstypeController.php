@@ -277,7 +277,7 @@ class ClasstypeController extends CommonController
 			$a = M('classtype')->delete(array('id'=>$id));
 			if($a){
 				$w['molds'] = 'classtype';
-				$w['data'] = json_encode($data,JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+				$w['data'] = serialize($data);
 				$w['addtime'] = time();
 				$w['title'] = '['.$data['id'].']'.$data['classname'];
 				M('recycle')->add($w);

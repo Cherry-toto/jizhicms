@@ -121,7 +121,7 @@ class CollectController extends CommonController
 			if(M('collect')->delete('id in('.$data.')')){
 				foreach($all as $v){
 					$w['molds'] = 'collect';
-					$w['data'] = json_encode($v,JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+					$w['data'] = serialize($v);
 					$w['title'] = '['.$v['id'].']'.$v['title'];
 					$w['addtime'] = time();
 					M('recycle')->add($w);
@@ -181,7 +181,7 @@ class CollectController extends CommonController
 			$data = M('collect')->find(['id'=>$id]);
 			if(M('collect')->delete(['id'=>$id])){
 				$w['molds'] = 'collect';
-				$w['data'] = json_encode($data,JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+				$w['data'] = serialize($data);
 				$w['title'] = '['.$data['id'].']'.$data['title'];
 				$w['addtime'] = time();
 				M('recycle')->add($w);
@@ -241,7 +241,7 @@ class CollectController extends CommonController
             $data = M('collect_type')->find(['id'=>$id]);
 			if(M('collect_type')->delete(['id'=>$id])){
                 $w['molds'] = 'collect_type';
-                $w['data'] = json_encode($data,JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+                $w['data'] = serialize($data);
                 $w['title'] = '['.$data['id'].']'.$data['title'];
                 $w['addtime'] = time();
                 M('recycle')->add($w);

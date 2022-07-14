@@ -259,7 +259,7 @@ class LinksController extends CommonController
 			if(M($molds)->delete('id in('.$data.')')){
 			    foreach ($list as $v){
                     $w['molds'] = 'links';
-                    $w['data'] = json_encode($v,JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+                    $w['data'] = serialize($v);
                     $w['title'] = '['.$v['id'].']'.$v['title'];
                     $w['addtime'] = time();
                     M('recycle')->add($w);
@@ -280,7 +280,7 @@ class LinksController extends CommonController
 		    $data = M($molds)->find(['id'=>$id]);
 			if(M($molds)->delete(['id'=>$id])){
                 $w['molds'] = 'links';
-                $w['data'] = json_encode($data,JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+                $w['data'] = serialize($data);
                 $w['title'] = '['.$data['id'].']'.$data['title'];
                 $w['addtime'] = time();
                 M('recycle')->add($w);

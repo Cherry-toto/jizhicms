@@ -233,7 +233,7 @@ class OrderController extends CommonController
 		    $data = M('orders')->find(['id'=>$id]);
 			if(M('orders')->delete(['id'=>$id])){
                 $w['molds'] = 'orders';
-                $w['data'] = json_encode($data,JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+                $w['data'] = serialize($data);
                 $w['title'] = '['.$data['id'].']'.$data['orderno'];
                 $w['addtime'] = time();
                 M('recycle')->add($w);
@@ -253,7 +253,7 @@ class OrderController extends CommonController
 			if(M('Orders')->delete('id in('.$data.')')){
                 foreach ($list as $v) {
                     $w['molds'] = 'orders';
-                    $w['data'] = json_encode($v,JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+                    $w['data'] = serialize($v);
                     $w['title'] = '['.$v['id'].']'.$v['orderno'];
                     $w['addtime'] = time();
                     M('recycle')->add($w);
@@ -403,7 +403,7 @@ class OrderController extends CommonController
 		    $data = M('buylog')->find('id='.$id);
 			if(M('buylog')->delete('id='.$id)){
                 $w['molds'] = 'buylog';
-                $w['data'] = json_encode($data,JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+                $w['data'] = serialize($data);
                 $w['title'] = '['.$data['id'].']'.$data['orderno'];
                 $w['addtime'] = time();
                 M('recycle')->add($w);
@@ -423,7 +423,7 @@ class OrderController extends CommonController
 			if(M('buylog')->delete('id in('.$data.')')){
 			    foreach ($list as $v){
                     $w['molds'] = 'buylog';
-                    $w['data'] = json_encode($v,JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+                    $w['data'] = serialize($v);
                     $w['title'] = '['.$v['id'].']'.$v['orderno'];
                     $w['addtime'] = time();
                     M('recycle')->add($w);

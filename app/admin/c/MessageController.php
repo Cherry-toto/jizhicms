@@ -27,7 +27,7 @@ class MessageController extends CommonController
 			if(M('message')->delete('id in('.$data.')')){
 				foreach($all as $v){
 					$w['molds'] = 'message';
-					$w['data'] = json_encode($v,JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+					$w['data'] = serialize($v);
 					$w['title'] = '['.$v['id'].']'.$v['title'];
 					$w['addtime'] = time();
 					M('recycle')->add($w);
@@ -118,7 +118,7 @@ class MessageController extends CommonController
 			$data = M('Message')->find(['id'=>$id]);
 			if(M('Message')->delete(['id'=>$id])){
 				$w['molds'] = 'message';
-				$w['data'] = json_encode($data,JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+				$w['data'] = serialize($data);
 				$w['title'] = '['.$data['id'].']'.$data['title'];
 				$w['addtime'] = time();
 				M('recycle')->add($w);

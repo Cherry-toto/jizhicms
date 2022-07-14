@@ -49,7 +49,7 @@ class AdminController extends CommonController
 			$data = M('level_group')->find(array('id'=>$id));
 			if(M('level_group')->delete(array('id'=>$id))){
 				$w['molds'] = 'level_group';
-				$w['data'] = json_encode($data,JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+				$w['data'] = serialize($data);
 				$w['title'] = '['.$data['id'].']'.$data['name'];
 				$w['addtime'] = time();
 				M('recycle')->add($w);
@@ -424,7 +424,7 @@ class AdminController extends CommonController
         $x = M('level')->delete(array('id'=>$id));
 		  if($x){
 			$w['molds'] = 'level';
-			$w['data'] = json_encode($data,JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+			$w['data'] = serialize($data);
 			$w['title'] = '['.$data['id'].']'.$data['name'];
 			$w['addtime'] = time();
 			M('recycle')->add($w);
@@ -450,7 +450,7 @@ class AdminController extends CommonController
 			if(M('level')->delete('id in('.$data.')')){
 				foreach($all as $v){
 					$w['molds'] = 'level';
-					$w['data'] = json_encode($v,JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+					$w['data'] = serialize($v);
 					$w['title'] = '['.$v['id'].']'.$v['name'];
 					$w['addtime'] = time();
 					M('recycle')->add($w);

@@ -62,7 +62,7 @@ class CommentController extends CommonController
 			if(M('comment')->delete('id in('.$data.')')){
 				foreach($all as $v){
 					$w['molds'] = 'comment';
-					$w['data'] = json_encode($v,JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+					$w['data'] = serialize($v);
 					$w['title'] = '['.$v['id'].']'.newstr($v['body'],40);
 					$w['addtime'] = time();
 					M('recycle')->add($w);
@@ -245,7 +245,7 @@ class CommentController extends CommonController
 			$data = M('Comment')->find(['id'=>$id]);
 			if(M('Comment')->delete(['id'=>$id])){
 				$w['molds'] = 'comment';
-				$w['data'] = json_encode($data,JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+				$w['data'] = serialize($data);
 				$w['title'] = '['.$data['id'].']'.newstr($data['body'],40);
 				$w['addtime'] = time();
 				M('recycle')->add($w);

@@ -121,7 +121,7 @@ class JzchainController extends CommonController
 		    $data = M('chain')->find(['id'=>$id]);
 			if(M('chain')->delete(['id'=>$id])){
                 $w['molds'] = 'chain';
-                $w['data'] = json_encode($data,JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+                $w['data'] = serialize($data);
                 $w['title'] = '['.$data['id'].']'.$data['title'];
                 $w['addtime'] = time();
                 M('recycle')->add($w);
@@ -151,7 +151,7 @@ class JzchainController extends CommonController
 			if(M('chain')->delete('id in('.$data.')')){
 			    foreach ($list as $v){
                     $w['molds'] = 'chain';
-                    $w['data'] = json_encode($v,JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+                    $w['data'] = serialize($v);
                     $w['title'] = '['.$v['id'].']'.$v['title'];
                     $w['addtime'] = time();
                     M('recycle')->add($w);

@@ -146,7 +146,7 @@ class MemberController extends CommonController
 			$data = M('member')->find(array('id'=>$id));
 			if(M('member')->delete(array('id'=>$id))){
 				$w['molds'] = 'member';
-				$w['data'] = json_encode($data,JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+				$w['data'] = serialize($data);
 				$w['title'] = '['.$data['id'].']'.$data['username'];
 				$w['addtime'] = time();
 				M('recycle')->add($w);
@@ -168,7 +168,7 @@ class MemberController extends CommonController
 			if(M('Member')->delete('id in('.$data.')')){
 				foreach($all as $v){
 					$w['molds'] = 'member';
-					$w['data'] = json_encode($v,JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+					$w['data'] = serialize($v);
                     $w['title'] = '['.$v['id'].']'.$v['username'];
 					$w['addtime'] = time();
 					M('recycle')->add($w);
@@ -325,7 +325,7 @@ class MemberController extends CommonController
 			$data = M('member_group')->find(array('id'=>$id));
 			if(M('member_group')->delete(array('id'=>$id))){
 				$w['molds'] = 'member_group';
-				$w['data'] = json_encode($data,JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+				$w['data'] = serialize($data);
 				$w['title'] = '['.$data['id'].']'.$data['name'];
 				$w['addtime'] = time();
 				M('recycle')->add($w);
@@ -417,7 +417,7 @@ class MemberController extends CommonController
 				$m = M('power')->delete(array('id'=>$id));
 				if($m){
                     $w['molds'] = 'power';
-                    $w['data'] = json_encode($ruler,JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+                    $w['data'] = serialize($ruler);
                     $w['title'] = '['.$ruler['id'].']'.$ruler['name'];
                     $w['addtime'] = time();
                     M('recycle')->add($w);

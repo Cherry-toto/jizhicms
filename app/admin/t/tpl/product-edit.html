@@ -50,8 +50,8 @@
 					   {if($admin['classcontrol']==0 || $admin['isadmin']==1 || strpos($tids,','.$v['id'].',')!==false || $molds['iscontrol']==0)}
 					   <option {if($data['tid']==$v['id'])} selected="selected" {/if}  value="{$v['id']}">{fun str_repeat('--', $v['level'])}{$v['classname']}</option>
 					   {/if}
-					   {/foreach}
 					   {/if}
+						{/foreach}
 					   
 					</select>
                     </div>

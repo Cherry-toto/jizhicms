@@ -652,7 +652,7 @@ class ProductController extends CommonController
 				if(strpos($v['jzattr'],','.$tj.',')!==false){
 					$attr = str_replace(','.$tj.',','',$v['jzattr']);
 					if(!$attr){
-						$w['jzattr'] = null;
+						$w['jzattr'] = '';
 					}else{
 						$w['jzattr'] = ','.trim($attr,',').',';
 					}

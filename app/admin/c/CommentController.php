@@ -190,6 +190,9 @@ class CommentController extends CommonController
 		if($this->frparam('go',1)==1){
 			
 			$data = $this->frparam();
+            foreach($data as $k=>$v){
+                $data[$k] = $this->frparam($k,1);
+            }
 			$data['addtime'] = strtotime($data['addtime']);
 			$data['body'] = $this->frparam('body',4);
 			$data['reply'] = $this->frparam('reply',4);

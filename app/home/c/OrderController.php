@@ -282,13 +282,18 @@ class OrderController extends CommonController
 						$outTradeNo = $order['orderno'];     //你自己的商品订单号
 						$payAmount = $order['price'];          //付款金额，单位:元
 						$orderName = JZLANG('支付订单').'-'.$order['orderno'];    //订单标题
-						$signType = 'RSA2';       //签名算法类型，支持RSA2和RSA，推荐使用RSA2
-						//商户私钥，填写对应签名算法类型的私钥，如何生成密钥参考：https://docs.open.alipay.com/291/105971和https://docs.open.alipay.com/200/105310
-						$saPrivateKey=$this->webconf['alipay_private_key'];
-						$aliPay = new \AlipayService($appid,$returnUrl,$notifyUrl,$saPrivateKey);
-						$payConfigs = $aliPay->doPay($payAmount,$outTradeNo,$orderName,$returnUrl,$notifyUrl);
-						$this->queryStr = http_build_query($payConfigs);
-						$this->display($this->template.'/paytpl/alipay_in_weixin');
+                        $rsaPrivateKey = $this->webconf['alipay_private_key'];
+                        $aliPay = new \AlipayService();
+                        $aliPay->setAppid($appid);
+                        $aliPay->setReturnUrl($returnUrl);
+                        $aliPay->setNotifyUrl($notifyUrl);
+                        $aliPay->setRsaPrivateKey($rsaPrivateKey);
+                        $aliPay->setTotalFee($payAmount);
+                        $aliPay->setOutTradeNo($outTradeNo);
+                        $aliPay->setOrderName($orderName);
+                        $payConfigs = $aliPay->wxPay();
+                        $this->queryStr = http_build_query($payConfigs);
+                        $this->display($this->template.'/paytpl/alipay_in_weixin');
 						exit;
 					}else{
 						//支付宝H5支付
@@ -313,7 +318,7 @@ class OrderController extends CommonController
 						$aliPay->setTotalFee($payAmount);
 						$aliPay->setOutTradeNo($outTradeNo);
 						$aliPay->setOrderName($orderName);
-						$sHtml = $aliPay->doPay();
+						$sHtml = $aliPay->mPay();
 						echo $sHtml;exit;
 					}
 					

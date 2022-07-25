@@ -112,7 +112,7 @@ class FieldsController extends CommonController
 		
 		if($this->frparam('go',1)==1){
 			
-			$data['field'] = $this->frparam('field',1);
+			$data['field'] = strtolower($this->frparam('field',1));
 			$data['molds'] = strtolower($this->frparam('molds',1));
 			$data['fieldname'] = $this->frparam('fieldname',1);
 			$data['tips'] = $this->frparam('tips',1);
@@ -292,7 +292,7 @@ class FieldsController extends CommonController
 		if($this->frparam('go',1)==1){
 
 			if($this->frparam('id')){
-				$data['field'] = $this->frparam('field',1);
+				$data['field'] = strtolower($this->frparam('field',1));
 				$data['molds'] = strtolower($this->frparam('molds',1));
 				$data['fieldname'] = $this->frparam('fieldname',1);
 				$data['tips'] = $this->frparam('tips',1);

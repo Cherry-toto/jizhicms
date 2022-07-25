@@ -72,7 +72,60 @@ class AlipayService
         $commonConfigs["sign"] = $this->generateSign($commonConfigs, $commonConfigs['sign_type']);
         return $this->buildRequestForm($commonConfigs);
     }
-	/**
+    //手机wap支付
+    public function mPay()
+    {
+        //请求参数
+        $requestConfigs = array(
+            'out_trade_no'=>$this->outTradeNo,
+            'product_code'=>'QUICK_WAP_WAY',
+            'total_amount'=>$this->totalFee, //单位 元
+            'subject'=>$this->orderName,  //订单标题
+        );
+        $commonConfigs = array(
+            //公共参数
+            'app_id' => $this->appId,
+            'method' => 'alipay.trade.wap.pay',             //接口名称
+            'format' => 'JSON',
+            'return_url' => $this->returnUrl,
+            'charset'=>$this->charset,
+            'sign_type'=>'RSA2',
+            'timestamp'=>date('Y-m-d H:i:s'),
+            'version'=>'1.0',
+            'notify_url' => $this->notifyUrl,
+            'biz_content'=>json_encode($requestConfigs),
+        );
+        $commonConfigs["sign"] = $this->generateSign($commonConfigs, $commonConfigs['sign_type']);
+        return $this->buildRequestForm($commonConfigs);
+    }
+    //微信
+    public function wxPay()
+    {
+        //请求参数
+        $requestConfigs = array(
+            'out_trade_no'=>$this->outTradeNo,
+            'product_code'=>'QUICK_WAP_WAY',
+            'total_amount'=>$this->totalFee, //单位 元
+            'subject'=>$this->orderName,  //订单标题
+        );
+        $commonConfigs = array(
+            //公共参数
+            'app_id' => $this->appId,
+            'method' => 'alipay.trade.wap.pay',             //接口名称
+            'format' => 'JSON',
+            'return_url' => $this->returnUrl,
+            'charset'=>$this->charset,
+            'sign_type'=>'RSA2',
+            'timestamp'=>date('Y-m-d H:i:s'),
+            'version'=>'1.0',
+            'notify_url' => $this->notifyUrl,
+            'biz_content'=>json_encode($requestConfigs),
+        );
+        $commonConfigs["sign"] = $this->generateSign($commonConfigs, $commonConfigs['sign_type']);
+        return $commonConfigs;
+    }
+
+    /**
      * 发起订单
      * @return array
      */

@@ -41,12 +41,10 @@
 		
 		
 		<script type="text/html" id="rightbar">
-		 <a class="layui-btn layui-btn-xs" lay-event="view">{fun JZLANG('预览')}</a>
+		 <a class="layui-btn layui-btn-xs layui-btn-normal" lay-event="view">{fun JZLANG('预览')}</a>
 		 {if(checkAction('Article/editarticle'))}
 			<a class="layui-btn layui-btn-xs layui-btn-primary" lay-event="edit">{fun JZLANG('编辑')}</a>
 		 {/if}
-		
-			
 		 {if(checkAction('Article/deletearticle'))}	
 			<a class="layui-btn layui-btn-xs layui-btn-danger" lay-event="delete">{fun JZLANG('删除')}</a>
 		 {/if}

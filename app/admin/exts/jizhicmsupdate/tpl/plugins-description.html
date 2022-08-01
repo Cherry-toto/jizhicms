@@ -28,20 +28,20 @@
 		  <legend>如何找回升级前的文件？</legend>
 		  <div class="layui-field-box">
 		    <blockquote class="layui-elem-quote">
-			v1.7+版本在线升级的文件都会被存储到更新插件文件备份目录（back）内。<br/>
+			v2.0+版本在线升级的文件都会被存储到更新插件文件备份目录（back）内。<br/>
 			文件对应目录如下：<br/>
-			mysql版本：A/exts/jizhiupdate/file/mysql/<br/>
-			sqlite版本：A/exts/jizhiupdate/file/sqlite/<br/>
+			mysql版本：app/admin/exts/jizhiupdate/file/mysql/<br/>
+			sqlite版本：app/admin/exts/jizhiupdate/file/sqlite/<br/>
 			系统文件目录：frphp<br/>
 			后台文件目录：admin<br/>
 			前台文件目录：home<br/>
-			系统配置文件目录：A/exts/jizhiupdate/file/conf/<br/>
-			系统公共资源文件目录：A/exts/jizhiupdate/file/static/<br/>
+			系统配置文件目录：app/admin/exts/jizhiupdate/file/conf/<br/>
+			系统公共资源文件目录：app/admin/exts/jizhiupdate/file/static/<br/>
 			<span style="color:#f00;">每次升级，系统将自动为您执行备份数据库操作</span><br/>
 			举个例子：<br/>
-			假设：A/t/tpl/article-add.html升级时被覆盖了<br/>
-			源文件备份路径[mysql版本]：A/exts/jizhiupdate/file/mysql/admin/tpl/back/article-add.html<br/>
-			源文件备份路径[sqlite版本]：A/exts/jizhiupdate/file/sqlite/admin/tpl/back/article-add.html
+			假设：app/admin/t/tpl/article-add.html升级时被覆盖了<br/>
+			源文件备份路径[mysql版本]：app/admin/exts/jizhiupdate/file/mysql/admin/tpl/back/article-add.html<br/>
+			源文件备份路径[sqlite版本]：app/admin/exts/jizhiupdate/file/sqlite/admin/tpl/back/article-add.html
 			</blockquote>
 		  </div>
 		</fieldset>

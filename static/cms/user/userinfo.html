@@ -19,6 +19,7 @@
       <div class="user-content">
         <h2>资料与账号</h2>
         <form action="" method="POST" onsubmit="return checkform()" id="jizhiform" class="user-form">
+          <input type="hidden" name="csrfkey" value="{$csrfkey}">
           <span id="fields_ext"></span>
           <div class="form-control">
             <label for="password">新密码：</label>

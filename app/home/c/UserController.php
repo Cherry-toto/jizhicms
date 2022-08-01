@@ -62,6 +62,12 @@ class UserController extends CommonController
 		$this->checklogin();
 		if($_POST){
 			$w = $this->frparam();
+            if(!isset($w['csrfkey']) || $w['csrfkey']!=$_SESSION['csrfkey']){
+                if($this->frparam('ajax')){
+                    JsonReturn(['code'=>1,'msg'=>JZLANG('非法操作！')]);
+                }
+                Error(JZLANG('非法操作！'));
+            }
 			$w = get_fields_data($w,'member',0);
 			unset($w['jifen']);
 			unset($w['money']);
@@ -167,7 +173,8 @@ class UserController extends CommonController
 			Error(JZLANG('修改成功！'));
 			
 		}
-		
+        $_SESSION['csrfkey'] = getRandChar(32);
+        $this->csrfkey = $_SESSION['csrfkey'];
 		$this->display($this->template.'/user/userinfo');
        
     }

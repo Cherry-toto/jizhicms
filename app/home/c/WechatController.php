@@ -208,12 +208,12 @@ class WechatController extends CommonController
 						$url = 'https://api.weixin.qq.com/cgi-bin/user/info?access_token='.$access_token.'&openid='.$openid.'&lang=zh_CN';
 						$user = file_get_contents($url);
 						$user = json_decode($user,true);
-					 
-						$n = M('member')->add(['username'=>$user['nickname'],'openid'=>$openid,'litpic'=>$user['headimgurl'],'sex'=>$user['sex'],'regtime'=>$time]);
+
+                        $n = M('member')->add(['username'=>'微信用户'.date('YmdHis'),'openid'=>$openid,'regtime'=>$time]);
 						
 						if($n){
 							if($this->webconf['huanying']!=''){
-								$contentStr = $this->webconf['huanying'];
+								$contentStr = htmlspecialchars_decode($this->webconf['huanying']);
 								$msgType = "text";
 								$resultStr = sprintf($textTpl, $fromUsername, $toUsername, $time, $msgType, $contentStr);
 								echo $resultStr;

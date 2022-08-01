@@ -181,7 +181,7 @@ class ProductController extends CommonController
             if(M('product')->find(['title'=>$data['title']])){
                 JsonReturn(array('code'=>1,'msg'=>JZLANG('标题重复！')));
             }
-			$data['addtime'] = time();
+            $data['addtime'] =  isset($data['addtime']) ? $data['addtime'] : time();
 			$r = M('product')->add($data);
 			if($r){
 				if($data['ownurl']){

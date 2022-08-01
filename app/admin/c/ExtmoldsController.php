@@ -188,7 +188,7 @@ class ExtmoldsController extends Controller
 			}else{
 				$data['isshow'] = 0;
 			}
-			$data['addtime'] = time();
+            $data['addtime'] =  isset($data['addtime']) ? $data['addtime'] : time();
             //检查是否重复
             if(M($molds)->find(['title'=>$data['title']])){
                 JsonReturn(array('code'=>1,'msg'=>JZLANG('标题重复！')));

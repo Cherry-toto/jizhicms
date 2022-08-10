@@ -374,7 +374,12 @@ class CommonController extends Controller
 		}
 		$id = $this->frparam('id');
 		if($id){
-			$data = M($molds)->find(array('id'=>$id));
+		    if($molds=='member'){
+                $data = M($molds)->find(array('id'=>$this->member['id']));
+            }else{
+                $data = M($molds)->find(array('id'=>$id));
+            }
+			
 		}else{
 			$data = array();
 		}
@@ -458,7 +463,7 @@ class CommonController extends Controller
 				       url: "'.U('common/uploads').'",//处理图片的文件路径
 				       type: "POST",//传输方式
 				       data: data,
-				       dataType:"json",   //返回格式为json
+				       dataType:"json",//返回格式为json
 				       processData: false,  // 告诉jQuery不要去处理发送的数据
 				       contentType: false,   // 告诉jQuery不要去设置Content-Type请求头
 				       success: function(response){

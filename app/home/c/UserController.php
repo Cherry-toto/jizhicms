@@ -1218,7 +1218,7 @@ class UserController extends CommonController
 			
 			if($this->frparam('id')){
 				$w['id'] = $this->frparam('id',1);
-				$a = M($w['molds'])->update(['id'=>$this->frparam('id')],$w);
+				$a = M($w['molds'])->update(['id'=>$this->frparam('id'),'member_id'=>$this->member['id']],$w);
 				if(!$a){ 
 					if($this->frparam('ajax')){
 						JsonReturn(['code'=>1,'msg'=>JZLANG('未修改内容，不能提交！')]);
@@ -1770,7 +1770,8 @@ class UserController extends CommonController
 			break;
 			case 5:
                 $model = new Page('shouchang');
-                $data = $model->where(['userid'=>$this->member['id']])->orderby('addtime desc')->limit($this->frparam('limit',0,15))->page($this->frparam('page',0,1))->go();
+                $member_id = $this->user['id'];
+                $data = $model->where(['userid'=>$member_id])->orderby('addtime desc')->limit($this->frparam('limit',0,15))->page($this->frparam('page',0,1))->go();
                 $model->file_ext = '';
                 $pages = $model->pageList(5,'?page=');
                 $this->pages = $pages;

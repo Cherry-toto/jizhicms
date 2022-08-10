@@ -14,3 +14,9 @@ This is a private mailing list where only members of the JiZhiCMS internal secur
 
 我们强烈建议您向我们的私人安全邮件列表报告安全漏洞：`ttuuffuu@163.com` 或 `2581047041@qq.com`，在任何公开论坛上披露之前。
 这是一个私人邮件列表，只有 `JiZhiCMS` 内部安全团队的成员才能订阅，并被视为最高优先级。
+
+# Reporting a Vulnerability
+
+If you discover a security vulnerability in jizhicms please disclose it via [our huntr page](https://huntr.dev/repos/cherry-toto/jizhicms/). Bounty eligibility, CVE assignment, response times and past reports are all there.
+
+Thank you for improving the security of jizhicms.

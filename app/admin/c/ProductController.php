@@ -99,7 +99,7 @@ class ProductController extends CommonController
 			}
 			if(!$this->frparam('litpic',1) && $this->frparam('config_litpic')==1){
 				$pattern='/<img.*?src="(.*?)".*?>/is';
-				if(!$this->frparam('body',1)){
+				if($this->frparam('body',1)){
 					$r = preg_match($pattern,$_POST['body'],$matchContent);
 					if($r){
 						$data['litpic'] = $matchContent[1];
@@ -119,22 +119,6 @@ class ProductController extends CommonController
 			}
 			
 			$data['userid'] = $_SESSION['admin']['id'];
-			
-			if($this->frparam('litpic',1)==''){
-				$pattern='/<img.*?src="(.*?)".*?>/is';
-				if($this->frparam('body',1)!=''){
-					$r = preg_match($pattern,$_POST['body'],$matchContent);
-					if($r){
-						$data['litpic'] = $matchContent[1];
-					}else{
-						$data['litpic'] = '';
-					}
-					
-				}else{
-					$data['litpic'] = '';
-				}
-			}
-			
 			$data['htmlurl'] = $data['tid'] ? $this->classtypedata[$data['tid']]['htmlurl'] : null;
 			
 			//违禁词检测
@@ -266,7 +250,7 @@ class ProductController extends CommonController
 			}
 			if(!$this->frparam('litpic',1) && $this->frparam('config_litpic')==1){
 				$pattern='/<img.*?src="(.*?)".*?>/is';
-				if(!$this->frparam('body',1)){
+				if($this->frparam('body',1)){
 					$r = preg_match($pattern,$_POST['body'],$matchContent);
 					if($r){
 						$data['litpic'] = $matchContent[1];
@@ -286,22 +270,6 @@ class ProductController extends CommonController
 			}
 			
 			$data['userid'] = $_SESSION['admin']['id'];
-			
-			if($this->frparam('litpic',1)==''){
-				$pattern='/<img.*?src="(.*?)".*?>/is';
-				if($this->frparam('body',1)!=''){
-					$r = preg_match($pattern,$_POST['body'],$matchContent);
-					if($r){
-						$data['litpic'] = $matchContent[1];
-					}else{
-						$data['litpic'] = '';
-					}
-					
-				}else{
-					$data['litpic'] = '';
-				}
-			}
-			
 			$data['htmlurl'] = $data['tid'] ? $this->classtypedata[$data['tid']]['htmlurl'] : null;
 			
 			//违禁词检测

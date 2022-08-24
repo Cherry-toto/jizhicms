@@ -526,13 +526,10 @@ class View
 				}
 				
 			}else if($k=='istop'){
-				$v = (int)$v;
 				$w.=" and jzattr like \'%,1,%\' ";
 			}else if($k=='ishot'){
-				$v = (int)$v;
 				$w.=" and jzattr like \'%,2,%\' ";
 			}else if($k=='istuijian'){
-				$v = (int)$v;
 				$w.=" and jzattr like \'%,3,%\' ";
 			}else if($k=='jzattr'){
 				if(strpos($v,',')!==false){

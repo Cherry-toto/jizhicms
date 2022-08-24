@@ -319,7 +319,7 @@ class TemplateController extends CommonController
 				$remote_url  = urldecode($this->frparam('download_url',1));
 				$remote_url = strpos($remote_url,'?')!==false ? $remote_url.'&version='.$this->webconf['web_version'] : $remote_url.'?version='.$this->webconf['web_version'];
 				$file_size   = $this->frparam('filesize',1);
-				$tmp_path    = Cache_Path."/update_".$filepath.".zip";//临时下载文件路径
+				$tmp_path    = Cache_Path."/update_".$template.".zip";//临时下载文件路径
 				switch ($action) {
 				    case 'prepare-download':
 				    	$code = 0;
@@ -379,6 +379,7 @@ class TemplateController extends CommonController
 						}
 						//$msg = $this->upzip($tmp_path,$dir);
 						$msg = $this->get_zip_originalsize($tmp_path,$dir.'/');
+                        setCache('templatelist',null);
 						JsonReturn(['code'=>0,'msg'=>$msg,'isinstall'=>true]);
 				    	break;
 				    case 'template-install':
@@ -412,6 +413,7 @@ class TemplateController extends CommonController
                         setCache('hometpl',null);
                         setCache('wxhometpl',null);
                         setCache('mobilehometpl',null);
+                        setCache('templatelist',null);
 						JsonReturn(array('code'=>0,'msg'=>JZLANG('安装成功！')));
 				    	break;
 					case 'backup':
@@ -448,7 +450,7 @@ class TemplateController extends CommonController
 				$count=preg_match($regex,$head,$matches); 
 				$filesize = isset($matches[1])&&is_numeric($matches[1])?$matches[1]:0; 
 				$this->filesize = $filesize;
-				$this->filepath = $filepath;
+				$this->filepath = $template;
 				$this->display('template-update');exit;
 			}else{
 				exit(JZLANG('该插件暂无更新！'));

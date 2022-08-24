@@ -203,8 +203,16 @@ class HomeController extends CommonController
 			}
 			$sql = ' isshow=1 ';
 			$molds = $res['molds'];
-			$sql .= " and tid in (".implode(',',$child).") or tids like '%,".$this->type['id'].",%' ";
-			$page = new Page($molds);
+            $sql .= " and (tid in (".implode(',',$child).") or tids like '%,".$this->type['id'].",%' )";
+            $page = new Page($molds);
+            $jzattr = $this->frparam('attr',1);
+            if($jzattr){
+                $jzattr_arr = explode('-',$jzattr);
+                foreach ($jzattr_arr as $s){
+                    $sql.=" and jzattr like '%,".$s.",%' ";
+                }
+                
+            }
 			
 			//手动设置分页条数
 			$limit = $res['lists_num'];

@@ -27,8 +27,8 @@
 	  <div class="layui-progress-bar" lay-percent="0%"></div>
 	</div>
 	</div>
-	<input type="hidden" name="filepath" id="filepath" value="{$filepath}">
-	<input type="hidden" name="download_url" id="download_url" value="{$data['url']}">
+	<input type="hidden" name="template" id="filepath" value="{$filepath}">
+	<input type="hidden" name="download_url" id="download_url" value="{$data['downurl']}">
 	<input type="hidden" name="filesize" id="filesize" value="{$filesize}">
 	<input type="hidden" name="action" id="action" value="start-download">
 		<div class="layui-form-item" >
@@ -74,12 +74,12 @@
 			          clearInterval(timer);
 			          othis.removeClass(DISABLED);
 			          element.progress('demo-progress', n+'%');
-			           $.post("{fun U('template/update')}",{filepath:$("#filepath").val(),download_url:$("#download_url").val(),'filesize':$("#filesize").val(),'action':'file-upzip'},function(res){
+			           $.post("{fun U('template/update')}",{template:$("#filepath").val(),download_url:$("#download_url").val(),'filesize':$("#filesize").val(),'action':'file-upzip'},function(res){
 				        	if(res.code==0){
 				        		if(res.isinstall){
 				        			$("#down-text").html('{fun JZLANG('文件解压完成！正在进行安装~')}');
 					        		//element.progress('demo-progress', '80%');
-					        		$.post("{fun U('template/update')}",{filepath:$("#filepath").val(),download_url:$("#download_url").val(),'filesize':$("#filesize").val(),'action':'template-install'},function(res){
+					        		$.post("{fun U('template/update')}",{template:$("#filepath").val(),download_url:$("#download_url").val(),'filesize':$("#filesize").val(),'action':'template-install'},function(res){
 							        	if(res.code==0){
 							        		$("#down-text").html('{fun JZLANG('模板升级成功！')}');
 							        		element.progress('demo-progress', '100%');

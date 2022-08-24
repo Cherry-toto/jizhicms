@@ -336,9 +336,9 @@ dd.img img{
 		  <li>
 		   
 			<p>
-			<a href="{$v['url']}" target="_blank" class="title">{$v['title']}</a>
+			<a href="{$v['url']}" target="_blank" class="title">{$v['details']['title']}</a>
 			<span class="btn-table btn-light">{$v['classname']}</span>
-			<a {if($v['member_id']!=0)}href="{fun U('user/active',['uid'=>$v['member_id']])}"{/if} target="_blank" class="title">{if($v['member_id']!=0)}{fun memberInfo($v['member_id'],'username')}{else}[官方]{/if}</a>
+			<a {if($v['details']['member_id']!=0)}href="{fun U('user/active',['uid'=>$v['details']['member_id']])}"{/if} target="_blank" class="title">{if($v['details']['member_id']!=0)}{fun memberInfo($v['details']['member_id'],'username')}{else}[官方]{/if}</a>
 			</p>
 			
 		  </li>

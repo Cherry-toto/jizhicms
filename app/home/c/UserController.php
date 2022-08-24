@@ -1629,19 +1629,9 @@ class UserController extends CommonController
 		//统计评论数
 		$this->comment_num = M('comment')->getCount(['userid'=>$this->user['id'],'isshow'=>1]);
 		//统计点赞数
-		if($this->user['likes']!=''){
-			//,1,2,3,4,
-			$this->likes_num = substr_count($this->user['likes'],'||')-1;
-		}else{
-			$this->likes_num = 0;
-		}
-		//统计收藏
-		if($this->user['collection']!=''){
-			//,1,2,3,4,
-		$this->collect_num = substr_count($this->user['collection'],'||')-1;
-		}else{
-			$this->collect_num = 0;
-		}
+        $this->likes_num = M('likes')->getCount(['userid'=>$this->user['id']]);
+        //统计收藏
+        $this->collect_num = M('shouchang')->getCount(['userid'=>$this->user['id']]);
 		//发布文章统计
 		$this->article_num = M('article')->getCount(['member_id'=>$this->user['id']]);
 		$this->product_num = M('product')->getCount(['member_id'=>$this->user['id']]);
@@ -1793,8 +1783,8 @@ class UserController extends CommonController
 
 
                 }
-
-
+                
+                $this->sum = $model->sum;
 				$this->lists = $data;
 				$this->listpage = $model->listpage;//分页数组-自定义分页可用
 				$this->prevpage = $model->prevpage;//上一页
@@ -1811,7 +1801,6 @@ class UserController extends CommonController
 				$data = $page->where($sql)->orderby('addtime desc')->limit(5)->page($this->frparam('page',0,1))->go();
 				$page->file_ext = '';
 				$pages = $page->pageList(5,'?page=');
-				$pages = $page->pageList();
 				$this->pages = $pages;
 				
 				$this->sum = $page->sum;

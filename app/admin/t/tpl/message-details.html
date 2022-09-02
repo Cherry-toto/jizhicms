@@ -31,7 +31,36 @@
 			  </ul>
 			  <div class="layui-tab-content">
 				<div class="layui-tab-item layui-show">
-				
+					{if($molds['isclasstype']==1)}
+					<div class="layui-form-item">
+						<label for="tid" class="layui-form-label">
+							<span class="x-red">*</span>{fun JZLANG('栏目')}
+						</label>
+						<div class="layui-input-inline">
+							<select name="tid" lay-search="" lay-filter="tid" {if($molds['ismust']==1)}lay-verify="required"{/if} id="tid" >
+							{if($molds['ismust']==1)}
+							<option value="">{fun JZLANG('选择栏目')}</option>
+							{else}
+							<option value="0">{fun JZLANG('不限栏目')}</option>
+							{/if}
+							{foreach $classtypes as $v}
+							{if($v['molds']=='message')}
+							{if($admin['classcontrol']==0 || $admin['isadmin']==1 || strpos($tids,','.$v['id'].',')!==false || $molds['iscontrol']==0)}
+							<option {if($data['tid']==$v['id'])} selected="selected" {/if}  value="{$v['id']}">{fun str_repeat('--', $v['level'])}{$v['classname']}</option>
+							{/if}
+							{/if}
+							{/foreach}
+
+							</select>
+						</div>
+						<div class="layui-input-inline">
+							<span class="x-red">{fun JZLANG('填写内容时，请先选择栏目，否则切换栏目后，数据会丢失！')}</span>
+						</div>
+
+					</div>
+					{else}
+					<input type="hidden" name="tid" value="{$data['tid']}" />
+					{/if}
 				<span id="content_fields"></span>
 				
 				</div>

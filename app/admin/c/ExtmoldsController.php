@@ -190,9 +190,9 @@ class ExtmoldsController extends Controller
 			}
             $data['addtime'] =  isset($data['addtime']) ? $data['addtime'] : time();
             //检查是否重复
-            if(M($molds)->find(['title'=>$data['title']])){
-                JsonReturn(array('code'=>1,'msg'=>JZLANG('标题重复！')));
-            }
+//            if(M($molds)->find(['title'=>$data['title']])){
+//                JsonReturn(array('code'=>1,'msg'=>JZLANG('标题重复！')));
+//            }
 			$r = M($molds)->add($data);
 			if($r){
 				if(isset($data['ownurl'])){
@@ -291,10 +291,10 @@ class ExtmoldsController extends Controller
 					$data['isshow'] = 0;
 				}
                 //检查是否重复
-                $sql = "title='".$this->frparam('title',1)."' and id!=".$this->frparam('id');
-                if(M($molds)->find($sql)){
-                    JsonReturn(array('code'=>1,'msg'=>JZLANG('标题重复！')));
-                }
+//                $sql = "title='".$this->frparam('title',1)."' and id!=".$this->frparam('id');
+//                if(M($molds)->find($sql)){
+//                    JsonReturn(array('code'=>1,'msg'=>JZLANG('标题重复！')));
+//                }
                 $data['addtime'] = isset($data['addtime']) ? $data['addtime'] : time();
 				if(M($molds)->update(array('id'=>$this->frparam('id')),$data)){
 					

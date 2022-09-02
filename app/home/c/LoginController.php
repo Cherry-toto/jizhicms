@@ -188,7 +188,7 @@ class LoginController extends CommonController
 					Error(JZLANG('验证码错误！'));
 				}
 		  }
-		 
+          $_SESSION['reg_vercode'] = getRandChar(32);
 		  $w['email'] = $this->frparam('email',1,'');
 		  $w['password'] = $this->frparam('password',1);
 		  $w['repassword'] = $this->frparam('repassword',1);

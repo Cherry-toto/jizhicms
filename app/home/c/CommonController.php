@@ -443,6 +443,11 @@ class CommonController extends Controller
 				break;
 				case 5:
 				$rd = rand(1000,9999);
+                if($molds=='member'){
+                    $uploadurl = U('user/uploads');
+                }else{
+                    $uploadurl = U('common/uploads');
+                }
 				$l .= '<div class="form-control">
 		              <label for="'.$v['field'].'">'.$v['fieldname'].'：</label>
 		              <span class="view_img_'.$v['field'].'">';
@@ -460,7 +465,7 @@ class CommonController extends Controller
 				    var data =new FormData(form);
 				    data.append("filename",$(this).attr("name"));
 				    $.ajax({
-				       url: "'.U('common/uploads').'",//处理图片的文件路径
+				       url: "'.$uploadurl.'",//处理图片的文件路径
 				       type: "POST",//传输方式
 				       data: data,
 				       dataType:"json",//返回格式为json

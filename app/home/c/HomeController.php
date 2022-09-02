@@ -275,7 +275,7 @@ class HomeController extends CommonController
 					exit;
 				}
 				$sql = [];
-				$sql[] = " tids like '%,".$res['id'].",%' "; 
+				//$sql[] = " tids like '%,".$res['id'].",%' "; 
 				$sql[] = " molds = '".$res['molds']."' and isshow=1 ";
 				$sql[] = " isajax=0 ";//查询出不允许访问的字段，进行限制
 				$sql = implode(' and ',$sql);
@@ -512,7 +512,7 @@ class HomeController extends CommonController
 				}
 				
 				$sql = [];
-				$sql[] = " tids like '%,".$res['id'].",%' "; 
+				//$sql[] = " tids like '%,".$res['id'].",%' "; 
 				$sql[] = " molds = '".$res['molds']."' and isshow=1 ";
 				$sql[] = " isajax=0 ";//查询出不允许访问的字段，进行限制
 				$sql = implode(' and ',$sql);

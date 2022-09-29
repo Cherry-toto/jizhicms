@@ -81,7 +81,7 @@
         <div class="user-content">
         <h2>会员注册</h2>
         <form method="POST" onsubmit="return checkreg()" class="user-form">
-         
+          <input type="hidden" name="pid" value="{$invite}">
           <div class="form-control">
             <label for="">手机号：</label>
             <input type="text" name="tel" id="tel" value="" placeholder="请输入手机号">

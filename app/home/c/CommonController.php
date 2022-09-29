@@ -412,14 +412,14 @@ class CommonController extends Controller
 				$l .= '<div class="form-control">
 		            <label for="'.$v['field'].'">'.$v['fieldname'].'：</label>
 		            <input type="text" id="'.$v['field'].'" autocomplete="off" value="'.$data[$v['field']].'" name="'.$v['field'].'">
-		            <label>'.$must.$v['tips'].'</label>
+		            <label  class="fields_tips">'.$must.$v['tips'].'</label>
 		        </div>';
 				break;
 				case 2:
 				$l .= '<div class="form-control">
 		            <label for="'.$v['field'].'">'.$v['fieldname'].'：</label>
 		            <textarea id="'.$v['field'].'"  name="'.$v['field'].'" >'.$data[$v['field']].'</textarea>
-		            <label>'.$must.$v['tips'].'</label>
+		            <label  class="fields_tips">'.$must.$v['tips'].'</label>
 		        </div>';
 				break;
 				case 3:
@@ -430,7 +430,7 @@ class CommonController extends Controller
 				$l .= '<div class="form-control">
 		            <label for="'.$v['field'].'">'.$v['fieldname'].'：</label>
 		            <input type="number" id="'.$v['field'].'" autocomplete="off" value="'.$data[$v['field']].'" name="'.$v['field'].'">
-		            <label>'.$must.$v['tips'].'</label>
+		            <label  class="fields_tips">'.$must.$v['tips'].'</label>
 		        </div>';
 				break;
 				case 11:
@@ -438,7 +438,7 @@ class CommonController extends Controller
 				$l .= '<div class="form-control">
 		            <label for="'.$v['field'].'">'.$v['fieldname'].'：</label>
 		            <input type="date" id="'.$v['field'].'" autocomplete="off" value="'.date('Y-m-d',$laydate).'" name="'.$v['field'].'">
-		            <label>'.$must.$v['tips'].'</label>
+		            <label  class="fields_tips">'.$must.$v['tips'].'</label>
 		        </div>';
 				break;
 				case 5:
@@ -455,8 +455,9 @@ class CommonController extends Controller
 		            $l .= '<img src="'.$data[$v['field']].'" height="100"  />';
 		            }
 		            $l .= '</span><br/>
-		              <input name="'.$v['field'].'" type="hidden" id="file_url_'.$v['field'].'" value="'.$data[$v['field']].'" /><br/>
+		              <input name="'.$v['field'].'" type="text" id="file_url_'.$v['field'].'" value="'.$data[$v['field']].'" /><br/>
 		              <input type="file" class="upload_input_'.$v['field'].'" name="file_'.$v['field'].'" id="upload_input_'.$v['field'].$rd.'">
+		              <label  class="fields_tips">'.$must.$v['tips'].'</label>
 		        </div>
 				<script type="text/javascript">
 					
@@ -495,12 +496,8 @@ class CommonController extends Controller
 		            if($data[$v['field']]){
 		            	foreach(explode('||',$data[$v['field']]) as $s){
 		            		if($s!=''){
-								if($this->webconf['ispicsdes']==1){
-									$pic = explode('|',$s);
-									$l .= '<span><img src="'.$pic[0].'" height="100"  /><input name="'.$v['field'].'_urls[]" type="text" value="'.$pic[0].'"><input name="'.$v['field'].'_des[]" type="text" placeholder="'.JZLANG('文字描述').'"  value="'.$pic[1].'" ><button type="button" onclick="deleteImage_auto(this)">'.JZLANG('删除').'</button></span>';
-								}else{
-									$l .= '<span><img src="'.$s.'" height="100"  /><input name="'.$v['field'].'_urls[]" type="text" value="'.$s.'"><button type="button" onclick="deleteImage_auto(this)">'.JZLANG('删除').'</button></span>';
-								}
+                                $pic = explode('|',$s);
+                                $l .= '<span><img src="'.$pic[0].'" height="100"  /><input name="'.$v['field'].'_urls[]" type="text" value="'.$pic[0].'"><input name="'.$v['field'].'_des[]" type="text" placeholder="'.JZLANG('文字描述').'"  value="'.$pic[1].'" ><button type="button" onclick="deleteImage_auto(this)">'.JZLANG('删除').'</button></span>';
 		            			 
 		            		}
 		            	}
@@ -511,6 +508,7 @@ class CommonController extends Controller
 				<div class="form-control">
 				<label ></label>
 				<input type="file" class="upload_input_'.$v['field'].'" file-name="file_'.$v['field'].'" name="file_'.$v['field'].'[]" multiple="multiple" id="upload_input_'.$v['field'].$rd.'">
+				<label  class="fields_tips">'.$must.$v['tips'].'</label>
 		        </div>
 				<script type="text/javascript">
 					$(document).on("change","#upload_input_'.$v['field'].$rd.'",function(){
@@ -521,22 +519,16 @@ class CommonController extends Controller
 					       url: "'.U('common/multiuploads').'",//处理图片的文件路径
 					       type: "POST",//传输方式
 					       data: data,
-					       dataType:"json",   //返回格式为json
+					       dataType:"json",//返回格式为json
 					       processData: false,  // 告诉jQuery不要去处理发送的数据
 					       contentType: false,   // 告诉jQuery不要去设置Content-Type请求头
 					       success: function(response){
 					        if(response.code==0){
 					          var result = "";
-					          for(var i=0;i<response["urls"].length;i++){';
-							  
-					 if($this->webconf['ispicsdes']==1){
-						  $l.=' result +=\'<span><img src="\' + response["urls"][i] + \'" height="100"  /><input name="'.$v['field'].'_urls[]" type="text" value="\' + response["urls"][i] + \'" ><input name="'.$v['field'].'_des[]" type="text" placeholder="'.JZLANG('文字描述').'"  value="" ><button type="button" onclick="deleteImage_auto(this)">'.JZLANG('删除').'</button></span>\';';
-					  }else{
-						  $l.=' result +=\'<span><img src="\' + response["urls"][i] + \'" height="100"  /><input name="'.$v['field'].'_urls[]" type="text" value="\' + response["urls"][i] + \'" ><button type="button" onclick="deleteImage_auto(this)">'.JZLANG('删除').'</button></span>\';';
-					  }
-						$l.='}
-					          $(".view_img_'.$v['field'].'").append(result);	
-					         
+					          for(var i=0;i<response["urls"].length;i++){
+					          	result +=\'<span><img src="\' + response["urls"][i] + \'" height="100"  /><input name="'.$v['field'].'_urls[]" type="text" value="\' + response["urls"][i] + \'" ><input name="'.$v['field'].'_des[]" type="text" placeholder="'.JZLANG('文字描述').'"  value="" ><button type="button" onclick="deleteImage_auto(this)">'.JZLANG('删除').'</button></span>\';
+					          }}
+					          $(".view_img_'.$v['field'].'").append(result);
 					        }else{
 					          alert(response.error);
 					        }
@@ -559,7 +551,7 @@ class CommonController extends Controller
 						$l.='>'.$s[0].'</option>';
 					}
 						$l.=  '</select>
-						<label>'.$must.$v['tips'].'</label>
+						<label  class="fields_tips">'.$must.$v['tips'].'</label>
 	                </div>';
 				break;
 				case 12:
@@ -575,7 +567,7 @@ class CommonController extends Controller
 					$l.=' >'.$s[0];
 				}
 					$l.='</div>
-					<label>'.$must.$v['tips'].'</label>
+					<label  class="fields_tips">'.$must.$v['tips'].'</label>
 					</div>';
 				break;
 				case 8:
@@ -590,7 +582,7 @@ class CommonController extends Controller
 					$l.='>'.$s[0];
 				}
 				$l 	.= '</div>
-					<label>'.$must.$v['tips'].'</label>
+					<label  class="fields_tips">'.$must.$v['tips'].'</label>
 					</div>';
 				break;
 				case 9:
@@ -599,8 +591,9 @@ class CommonController extends Controller
 		              <label for="'.$v['field'].'">'.$v['fieldname'].'：</label>
 		              <span class="view_img_'.$v['field'].'">';
 		            $l .= '</span><br/>
-		              <input name="'.$v['field'].'" type="hidden" id="file_url_'.$v['field'].'" value="'.$data[$v['field']].'" /><br/>
+		              <input name="'.$v['field'].'" type="text" id="file_url_'.$v['field'].'" value="'.$data[$v['field']].'" /><br/>
 		              <input type="file" class="upload_input_'.$v['field'].'" name="file_'.$v['field'].'" id="upload_input_'.$v['field'].$rd.'">
+		              <label  class="fields_tips">'.$must.$v['tips'].'</label>
 		        </div>
 				<script type="text/javascript">
 					$(document).on("change","#upload_input_'.$v['field'].$rd.'",function(){
@@ -611,7 +604,7 @@ class CommonController extends Controller
 					       url: "'.U('common/uploads').'",//处理图片的文件路径
 					       type: "POST",//传输方式
 					       data: data,
-					       dataType:"json",   //返回格式为json
+					       dataType:"json",//返回格式为json
 					       processData: false,  // 告诉jQuery不要去处理发送的数据
 					       contentType: false,   // 告诉jQuery不要去设置Content-Type请求头
 					       success: function(response){
@@ -634,12 +627,8 @@ class CommonController extends Controller
 		            if($data[$v['field']]){
 		            	foreach(explode('||',$data[$v['field']]) as $s){
 		            		if($s!=''){
-								if($this->webconf['ispicsdes']==1){
-									$pic = explode('|',$s);
-									$l .= '<span><input name="'.$v['field'].'_urls[]" type="text" value="'.$pic[0].'"><input name="'.$v['field'].'_des[]" type="text" placeholder="'.JZLANG('文字描述').'"  value="'.$pic[1].'" ><button type="button" onclick="deleteImage_auto(this)">'.JZLANG('删除').'</button></span>';
-								}else{
-									$l .= '<span><input name="'.$v['field'].'_urls[]" type="text" value="'.$s.'"><button type="button" onclick="deleteImage_auto(this)">'.JZLANG('删除').'</button></span>';
-								}
+                                $pic = explode('|',$s);
+                                $l .= '<span><input name="'.$v['field'].'_urls[]" type="text" value="'.$pic[0].'"><input name="'.$v['field'].'_des[]" type="text" placeholder="'.JZLANG('文字描述').'"  value="'.$pic[1].'" ><button type="button" onclick="deleteImage_auto(this)">'.JZLANG('删除').'</button></span>';
 		            			 
 		            		}
 		            	}
@@ -650,6 +639,7 @@ class CommonController extends Controller
 				<div class="form-control">
 		            <label ></label>
 					<input type="file" class="upload_input_'.$v['field'].'" file-name="file_'.$v['field'].'" name="file_'.$v['field'].'[]" multiple="multiple" id="upload_input_'.$v['field'].$rd.'">
+					<label  class="fields_tips">'.$must.$v['tips'].'</label>
 		        </div>
 				<script type="text/javascript">
 					$(document).on("change","#upload_input_'.$v['field'].$rd.'",function(){
@@ -660,23 +650,16 @@ class CommonController extends Controller
 					       url: "'.U('common/multiuploads').'",//处理图片的文件路径
 					       type: "POST",//传输方式
 					       data: data,
-					       dataType:"json",   //返回格式为json
+					       dataType:"json",//返回格式为json
 					       processData: false,  // 告诉jQuery不要去处理发送的数据
 					       contentType: false,   // 告诉jQuery不要去设置Content-Type请求头
 					       success: function(response){
 					        if(response.code==0){
 					          var result = "";
-					          for(var i=0;i<response["urls"].length;i++){';
-							  if($this->webconf['ispicsdes']==1){
-								$l.=' result +=\'<span><input name="'.$v['field'].'_urls[]" type="text" value="\' + response["urls"][i] + \'" ><input name="'.$v['field'].'_des[]" type="text" placeholder="'.JZLANG('文字描述').'"  value="" ><button type="button" onclick="deleteImage_auto(this)">'.JZLANG('删除').'</button></span>\';';
-							  }else{
-								 $l.=' result +=\'<span><input name="'.$v['field'].'_urls[]" type="text" value="\' + response["urls"][i] + \'" ><button type="button" onclick="deleteImage_auto(this)">'.JZLANG('删除').'</button></span>\';';
-							  }
-							  
-					        $l.='}
+					          for(var i=0;i<response["urls"].length;i++){
+                                 result +=\'<span><input name="'.$v['field'].'_urls[]" type="text" value="\' + response["urls"][i] + \'" ><input name="'.$v['field'].'_des[]" type="text" placeholder="'.JZLANG('文字描述').'"  value="" ><button type="button" onclick="deleteImage_auto(this)">'.JZLANG('删除').'</button></span>\';
+					        }
 					          $(".view_img_'.$v['field'].'").append(result);
-					          
-					         
 					        }else{
 					          alert(response.error);
 					        }
@@ -703,7 +686,7 @@ class CommonController extends Controller
 					$l.='>'.$vv[$body[1]].'</option>';
 				}
 					$l.=  '</select>
-                    <label>'.$must.$v['tips'].'</label>
+                    <label  class="fields_tips">'.$must.$v['tips'].'</label>
                 </div>';
 				break;
 				case 15:
@@ -724,7 +707,7 @@ class CommonController extends Controller
 				<div class="form-control">
 		            <label ></label>
 					<button type="button" class="layui-btn" id="'.$v['field'].'_add">'.JZLANG('新增').'</button>
-					<label>'.$v['tips'].'</label>
+					<label  class="fields_tips">'.$must.$v['tips'].'</label>
 		        </div>
 				<script>
 				$(document).ready(function(){
@@ -762,7 +745,7 @@ class CommonController extends Controller
                         $l.='>'.$vv[$body[1]];
                     }
                     $l 	.= '</div>
-					<label>'.$must.$v['tips'].'</label>
+					<label  class="fields_tips">'.$must.$v['tips'].'</label>
 					</div>';
                     break;
 			}

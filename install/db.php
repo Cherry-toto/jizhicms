@@ -879,6 +879,7 @@ INSERT INTO `jz_fields` (`id`,`field`,`molds`,`fieldname`,`tips`,`fieldtype`,`ti
 INSERT INTO `jz_fields` (`id`,`field`,`molds`,`fieldname`,`tips`,`fieldtype`,`tids`,`fieldlong`,`body`,`orders`,`ismust`,`isshow`,`isadmin`,`issearch`,`islist`,`format`,`vdata`,`isajax`,`listorders`,`isext`,`width`,`ishome`) VALUES (117, 'body', 'message', '留言内容', NULL, 3, ',4,', NULL, NULL, 2, 0, 1, 1, 0, 0, NULL, NULL, 1, 0, 0, NULL, 1);
 INSERT INTO `jz_fields` (`id`,`field`,`molds`,`fieldname`,`tips`,`fieldtype`,`tids`,`fieldlong`,`body`,`orders`,`ismust`,`isshow`,`isadmin`,`issearch`,`islist`,`format`,`vdata`,`isajax`,`listorders`,`isext`,`width`,`ishome`) VALUES (118, 'isshow', 'message', '是否审核', NULL, 7, ',4,', '1', '未审核=0,已审核=1', 2, 0, 1, 1, 1, 1, NULL, '0', 1, 0, 0, NULL, 1);
 INSERT INTO `jz_fields` (`id`,`field`,`molds`,`fieldname`,`tips`,`fieldtype`,`tids`,`fieldlong`,`body`,`orders`,`ismust`,`isshow`,`isadmin`,`issearch`,`islist`,`format`,`vdata`,`isajax`,`listorders`,`isext`,`width`,`ishome`) VALUES (119, 'addtime', 'message', '提交时间', NULL, 11, ',4,', '11', NULL, 2, 0, 1, 1, 1, 1, NULL, NULL, 1, 0, 0, NULL, 1);
+INSERT INTO `jz_fields` (`id`,`field`,`molds`,`fieldname`,`tips`,`fieldtype`,`tids`,`fieldlong`,`body`,`orders`,`ismust`,`isshow`,`isadmin`,`issearch`,`islist`,`format`,`vdata`,`isajax`,`listorders`,`isext`,`width`,`ishome`) VALUES (120, 'reply', 'message', '回复留言', NULL, 3, ',4,', NULL, NULL, 2, 0, 1, 1, 0, 0, NULL, NULL, 1, 0, 0, NULL, 1);
 -- ----------------------------
 -- Records of jz_hook
 -- ----------------------------
@@ -1283,7 +1284,7 @@ INSERT INTO `jz_ruler` (`id`,`name`,`fc`,`pid`,`isdesktop`,`sys`) VALUES ('245',
 -- ----------------------------
 -- Records of jz_sysconfig
 -- ----------------------------
-INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`,`typeid`,`config`,`orders`,`sys`) VALUES ('1','web_version','系统版号','版本号是系统自带，请勿改动','0','2.3.8','0', NULL,'0','1');
+INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`,`typeid`,`config`,`orders`,`sys`) VALUES ('1','web_version','系统版号','版本号是系统自带，请勿改动','0','2.3.9','0', NULL,'0','1');
 INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`,`typeid`,`config`,`orders`,`sys`) VALUES ('2','web_name','网站SEO名称','控制在25个字、50个字节以内','2','极致CMS建站系统','1', NULL,'0','1');
 INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`,`typeid`,`config`,`orders`,`sys`) VALUES ('3','web_keyword','网站SEO关键词','5个左右，8汉字以内，用英文逗号隔开','2','极致建站,cms,开源cms,免费cms,cms系统,phpcms,免费企业建站,建站系统,企业cms,jizhicms,极致cms,建站cms,建站系统,极致博客,极致blog,内容管理系统','1', NULL,'0','1');
 INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`,`typeid`,`config`,`orders`,`sys`) VALUES ('4','web_desc','网站SEO描述','控制在80个汉字，160个字符以内','3','极致CMS是开源免费的PHPCMS网站内容管理系统，无商业授权，简单易用，提供丰富的插件，帮您实现零基础搭建不同类型网站（企业站，门户站，个人博客站等），是您建站的好帮手。极速建站，就选极致CMS。','1', NULL,'0','1');
@@ -1318,10 +1319,6 @@ INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`,`typeid`,`c
 INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`,`typeid`,`config`,`orders`,`sys`) VALUES ('33','send_msg','订单出货通知','发货的时候发送给客户的通知','3','尊敬的{xxx}，我们已确认了您的订单，请于3日内汇款，逾期恕不保留，不便请见谅。汇款完成后，烦请告知客服人员您的交易账号后五位，即完成下单手续，谢谢您。','4', NULL,'0','1');
 INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`,`typeid`,`config`,`orders`,`sys`) VALUES ('34','yunfei','订单运费','购物下单时会加上这个运费','2','0.00','4', NULL,'0','1');
 INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`,`typeid`,`config`,`orders`,`sys`) VALUES ('35','paytype','在线支付','0关闭支付，1自主平台支付','6','0','5','关闭=0,开启=1','0','1');
-INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`,`typeid`,`config`,`orders`,`sys`) VALUES ('36','jizhi_pay_url','极致平台接口','已废弃','0', NULL,'0', NULL,'0','1');
-INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`,`typeid`,`config`,`orders`,`sys`) VALUES ('37','jizhi_mchid','极致平台商户','已废弃','0', NULL,'0', NULL,'0','1');
-INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`,`typeid`,`config`,`orders`,`sys`) VALUES ('38','jizhi_appid','极致平台应用appid','已废弃','0', NULL,'0', NULL,'0','1');
-INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`,`typeid`,`config`,`orders`,`sys`) VALUES ('39','jizhi_key','极致平台应用秘钥','已废弃','0', NULL,'0', NULL,'0','1');
 INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`,`typeid`,`config`,`orders`,`sys`) VALUES ('40','alipay_partner','支付宝APPID','账户中心->密钥管理->开放平台密钥，填写添加了电脑网站支付的应用的APPID','2', NULL,'5', NULL,'0','1');
 INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`,`typeid`,`config`,`orders`,`sys`) VALUES ('41','alipay_key','支付宝key','MD5密钥，安全检验码，由数字和字母组成的32位字符串','2', NULL,'5', NULL,'0','1');
 INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`,`typeid`,`config`,`orders`,`sys`) VALUES ('42','alipay_private_key','支付宝私钥', NULL,'3', NULL,'5', NULL,'0','1');
@@ -1339,9 +1336,7 @@ INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`,`typeid`,`c
 INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`,`typeid`,`config`,`orders`,`sys`) VALUES ('54','wx_token','公众号token','支付相关','2', NULL,'5', NULL,'0','1');
 INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`,`typeid`,`config`,`orders`,`sys`) VALUES ('55','web_logo','网站LOGO', NULL,'1','/static/cms/static/images/logo.png','1', NULL,'0','1');
 INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`,`typeid`,`config`,`orders`,`sys`) VALUES ('56','admintpl','后台模板风格','内页弹窗：点击新增/修改等操作，页面是一个弹出层，更美观。内嵌页面：点击新增/修改等操作，页面直接进入新页面，不会弹出层。','6','default','2','内页弹窗=default,内嵌页面=tpl','0','1');
-INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`,`typeid`,`config`,`orders`,`sys`) VALUES ('58','isopenwebsite','是否绑定多域名','开启绑定多域名后，需要到插件中配置','0','1','0', NULL,'0','1');
 INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`,`typeid`,`config`,`orders`,`sys`) VALUES ('59','domain','网站SEO网址','一般不填，全局网址，最后不带/,如：http://www.xxx.com','2', NULL,'1', NULL,'0','1');
-INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`,`typeid`,`config`,`orders`,`sys`) VALUES ('60','isrelative','基本信息下扩展','新增字段是否显示在【基本信息】底部，默认在【扩展信息】下','0','0','0', NULL,'0','1');
 INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`,`typeid`,`config`,`orders`,`sys`) VALUES ('61','overtime','订单超时','按小时计算，超过该小时订单过期，仅限于开启支付后，0代表不限制','2','4','4', NULL,'0','1');
 INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`,`typeid`,`config`,`orders`,`sys`) VALUES ('62','islevelurl','开启层级URL','默认关闭层级URL，开启后URL会按照父类层级展现','6','0','2','开启=1,关闭=0','0','1');
 INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`,`typeid`,`config`,`orders`,`sys`) VALUES ('63','iscachepage','缓存完整页面','前台完整页面缓存，结合缓存时间，可以提高访问速度','6','1','2','开启=1,关闭=0','0','1');
@@ -1383,14 +1378,12 @@ INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`,`typeid`,`c
 INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`,`typeid`,`config`,`orders`,`sys`) VALUES ('99','closetip','关站提示', NULL,'3','抱歉！该站点已经被管理员停止运行，请联系管理员了解详情！','1', NULL,'0','1');
 INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`,`typeid`,`config`,`orders`,`sys`) VALUES ('100','admin_save_path','后台文件存储路径','默认static/upload/{yyyy}/{mm}/{dd}，存储路径相对于根目录，最后不能带斜杠[ / ]','2','static/upload/{yyyy}/{mm}/{dd}','2', NULL,'0','1');
 INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`,`typeid`,`config`,`orders`,`sys`) VALUES ('101','home_save_path','前台文件存储路径','默认static/upload/{yyyy}/{mm}/{dd}，存储路径相对于根目录，最后不能带斜杠[ / ]','2','static/upload/{yyyy}/{mm}/{dd}','2', NULL,'0','1');
-INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`,`typeid`,`config`,`orders`,`sys`) VALUES ('102','isajax','是否开启前台AJAX','开启后AJAX，前台可以通过栏目链接+ajax=1获取JSON数据','0','1','0', NULL,'0','1');
-INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`,`typeid`,`config`,`orders`,`sys`) VALUES ('103','isautositemap','自动生成sitemap','开启后，前台访问每天会自动生成1次sitemap','0','1','0', NULL,'0','1');
-INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`,`typeid`,`config`,`orders`,`sys`) VALUES ('104','invite_award_open','是否开启邀请奖励','开启邀请后则会奖励','0','0','0', NULL,'0','1');
-INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`,`typeid`,`config`,`orders`,`sys`) VALUES ('105','invite_type','邀请奖励类型', NULL,'0','jifen','0', NULL,'0','1');
-INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`,`typeid`,`config`,`orders`,`sys`) VALUES ('106','invite_award','邀请奖励数量', NULL,'0','0','0', NULL,'0','1');
+INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`,`typeid`,`config`,`orders`,`sys`) VALUES ('102','isajax','是否开启前台AJAX','开启后AJAX，前台可以通过栏目链接+ajax=1获取JSON数据','6','0','2', '开启=1,关闭=0','0','1');
+INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`,`typeid`,`config`,`orders`,`sys`) VALUES ('104','invite_award_open','是否开启邀请奖励','开启邀请后则会奖励','6','0','7', '开启=1,关闭=0','0','1');
+INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`,`typeid`,`config`,`orders`,`sys`) VALUES ('105','invite_type','邀请奖励类型', NULL,'6','jifen','7', '积分=jifen,金币=money','0','1');
+INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`,`typeid`,`config`,`orders`,`sys`) VALUES ('106','invite_award','邀请奖励数量', NULL,'2','0','7', NULL,'0','1');
 INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`,`typeid`,`config`,`orders`,`sys`) VALUES ('107','web_phone','网站手机', NULL,'2','0','1', NULL,'0','1');
 INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`,`typeid`,`config`,`orders`,`sys`) VALUES ('108','web_weixin','站长微信', NULL,'1', NULL,'1', NULL,'0','1');
-INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`,`typeid`,`config`,`orders`,`sys`) VALUES ('109','ispicsdes','开启多图描述','开启后图集每张图可以添加描述，注意模板输出需要更改输出方式！(附件同理)','0','1','0', NULL,'0','1');
 INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`,`typeid`,`config`,`orders`,`sys`) VALUES ('110','isregister','前台用户注册','关闭前台注册后，前台无法进入注册页面','6','1','2','开启=1,关闭=0','0','1');
 INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`,`typeid`,`config`,`orders`,`sys`) VALUES ('111','onlyinvite','仅邀请码注册','开启后，必须通过邀请链接才能注册！','6','0','2','开启=1,关闭=0','0','1');
 INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`,`typeid`,`config`,`orders`,`sys`) VALUES ('112','release_table','允许前台发布模块','防止数据泄露,填写允许发布模块标识,留空表示不允许发布,多个表可用|分割','2','article|product','2', NULL,'0','1');
@@ -1398,7 +1391,6 @@ INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`,`typeid`,`c
 INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`,`typeid`,`config`,`orders`,`sys`) VALUES ('114','closehomevercode','前台验证码','关闭后，登录注册不需要验证码','6','0','2','关闭=1,开启=0','0','1');
 INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`,`typeid`,`config`,`orders`,`sys`) VALUES ('115','closeadminvercode','后台验证码','关闭后，后台管理员登录不需要验证码','6','0','2','关闭=1,开启=0','0','1');
 INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`,`typeid`,`config`,`orders`,`sys`) VALUES ('116','tag_table','TAG包含模型','在tag列表上查询的相关模型,多个模型标识可用|分割,如：article|product','2','article|product','2', NULL,'0','1');
-INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`,`typeid`,`config`,`orders`,`sys`) VALUES ('117','paydata','支付配置', NULL,'0', NULL,'0', NULL,'0','1');
 INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`,`typeid`,`config`,`orders`,`sys`) VALUES ('118','isopendmf','支付宝当面付', NULL,'6','1','5','开启=1,关闭=0','0','1');
 INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`,`typeid`,`config`,`orders`,`sys`) VALUES ('119','search_words_muti','前台多模块搜索的字段','多个模块直接必须都有相同的字段，否则会报错','3','title','3', NULL,'0','1');
 INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`,`typeid`,`config`,`orders`,`sys`) VALUES ('120','search_table_muti','多模块允许搜索的表','防止数据泄露,填写允许搜索的表名,留空表示不允许搜索,多个表可用|分割,如：article|product','2','article|product','3', NULL,'0','1');

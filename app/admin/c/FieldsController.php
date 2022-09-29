@@ -673,12 +673,8 @@ class FieldsController extends CommonController
 					  <span class="preview_'.$v['field'].'" >';
 					if($data[$v['field']]!=''){
 						foreach(explode('||',$data[$v['field']]) as $vv){
-							if($this->webconf['ispicsdes']==1){
-								$pic = explode('|',$vv);
-								$l.='<div class="upload-icon-img layui-input-inline" ><div class="upload-pre-item"><img src="'.$pic[0].'" class="img" width="200px" height="200px" ><input name="'.$v['field'].'_urls[]" type="text" class="layui-input"  value="'.$pic[0].'" /><input name="'.$v['field'].'_des[]" type="text" class="layui-input" placeholder="'.JZLANG('文字描述').'"  value="'.$pic[1].'" /><a class="layui-btn layui-btn-sm layui-btn-radius layui-btn-danger delete_file">'.JZLANG('删除').'</a><a class="layui-btn layui-btn-sm layui-btn-radius imgorder " onclick="goleft(this)">'.JZLANG('左移').'</a><a class="layui-btn layui-btn-sm layui-btn-radius imgorder " onclick="goright(this)">'.JZLANG('右移').'</a></div></div>';
-							}else{
-								$l.='<div class="upload-icon-img layui-input-inline" ><div class="upload-pre-item"><img src="'.$vv.'" class="img" width="200px" height="200px" ><input name="'.$v['field'].'_urls[]" type="text" class="layui-input"  value="'.$vv.'" /><a class="layui-btn layui-btn-sm layui-btn-radius layui-btn-danger delete_file">'.JZLANG('删除').'</a><a class="layui-btn layui-btn-sm layui-btn-radius imgorder " onclick="goleft(this)">'.JZLANG('左移').'</a><a class="layui-btn layui-btn-sm layui-btn-radius imgorder " onclick="goright(this)">'.JZLANG('右移').'</a></div></div>';
-							}
+                            $pic = explode('|',$vv);
+                            $l.='<div class="upload-icon-img layui-input-inline" ><div class="upload-pre-item"><img src="'.$pic[0].'" class="img" width="200px" height="200px" ><input name="'.$v['field'].'_urls[]" type="text" class="layui-input"  value="'.$pic[0].'" /><input name="'.$v['field'].'_des[]" type="text" class="layui-input" placeholder="'.JZLANG('文字描述').'"  value="'.$pic[1].'" /><a class="layui-btn layui-btn-sm layui-btn-radius layui-btn-danger delete_file">'.JZLANG('删除').'</a><a class="layui-btn layui-btn-sm layui-btn-radius imgorder " onclick="goleft(this)">'.JZLANG('左移').'</a><a class="layui-btn layui-btn-sm layui-btn-radius imgorder " onclick="goright(this)">'.JZLANG('右移').'</a></div></div>';
 							
 						}
 					}	 
@@ -704,15 +700,8 @@ class FieldsController extends CommonController
 						  }
 						,done: function(res){
 							layer.closeAll("loading"); //关闭loading
-							if(res.code==0){';
-							if($this->webconf['ispicsdes']==1){
-								$l.='$(".preview_'.$v['field'].'").append(\'<div class="upload-icon-img layui-input-inline" ><div class="upload-pre-item"><img src="\' + res.url + \'" class="img" width="200px" height="200px" ><input name="'.$v['field'].'_urls[]" type="text" class="layui-input"  value="\' + res.url + \'" /><input name="'.$v['field'].'_des[]" type="text" class="layui-input"  placeholder="'.JZLANG('文字描述').'" value="" /><a class="layui-btn layui-btn-sm layui-btn-radius layui-btn-danger delete_file">'.JZLANG('删除').'</a><a class="layui-btn layui-btn-sm layui-btn-radius imgorder " onclick="goleft(this)">'.JZLANG('左移').'</a><a class="layui-btn layui-btn-sm layui-btn-radius imgorder " onclick="goright(this)">'.JZLANG('右移').'</a></div></div>\');';
-							}else{
-								$l.='$(".preview_'.$v['field'].'").append(\'<div class="upload-icon-img layui-input-inline" ><div class="upload-pre-item"><img src="\' + res.url + \'" class="img" width="200px" height="200px" ><input name="'.$v['field'].'_urls[]" type="text" class="layui-input"  value="\' + res.url + \'" /><a class="layui-btn layui-btn-sm layui-btn-radius layui-btn-danger delete_file">'.JZLANG('删除').'</a><a class="layui-btn layui-btn-sm layui-btn-radius imgorder " onclick="goleft(this)">'.JZLANG('左移').'</a><a class="layui-btn layui-btn-sm layui-btn-radius imgorder " onclick="goright(this)">'.JZLANG('右移').'</a></div></div>\');';
-							}
-							
-							
-							$l.='	
+							if(res.code==0){
+                                $(".preview_'.$v['field'].'").append(\'<div class="upload-icon-img layui-input-inline" ><div class="upload-pre-item"><img src="\' + res.url + \'" class="img" width="200px" height="200px" ><input name="'.$v['field'].'_urls[]" type="text" class="layui-input"  value="\' + res.url + \'" /><input name="'.$v['field'].'_des[]" type="text" class="layui-input"  placeholder="'.JZLANG('文字描述').'" value="" /><a class="layui-btn layui-btn-sm layui-btn-radius layui-btn-danger delete_file">'.JZLANG('删除').'</a><a class="layui-btn layui-btn-sm layui-btn-radius imgorder " onclick="goleft(this)">'.JZLANG('左移').'</a><a class="layui-btn layui-btn-sm layui-btn-radius imgorder " onclick="goright(this)">'.JZLANG('右移').'</a></div></div>\');
 								
 							}else{
 								 layer.alert(res.error, {icon: 5});
@@ -868,12 +857,8 @@ class FieldsController extends CommonController
 					  <span class="preview_'.$v['field'].'" >';
 					if($data[$v['field']]!=''){
 						foreach(explode('||',$data[$v['field']]) as $vv){
-							if($this->webconf['ispicsdes']==1){
-								$pic = explode('|',$vv);
-								$l.='<div class="upload-icon-img layui-input-inline" ><div class="upload-pre-item"><input name="'.$v['field'].'_urls[]" type="text" class="layui-input"  value="'.$pic[0].'" /><input name="'.$v['field'].'_des[]" type="text" class="layui-input" placeholder="'.JZLANG('文字描述').'"  value="'.$pic[1].'" /><a class="layui-btn layui-btn-sm layui-btn-radius layui-btn-danger delete_file">'.JZLANG('删除').'</a><a class="layui-btn layui-btn-sm layui-btn-radius imgorder " onclick="goleft(this)">'.JZLANG('左移').'</a><a class="layui-btn layui-btn-sm layui-btn-radius imgorder " onclick="goright(this)">'.JZLANG('右移').'</a></div></div>';
-							}else{
-								$l.='<div class="upload-icon-img layui-input-inline" ><div class="upload-pre-item"><input name="'.$v['field'].'_urls[]" type="text" class="layui-input"  value="'.$vv.'" /><a class="layui-btn layui-btn-sm layui-btn-radius layui-btn-danger delete_file">'.JZLANG('删除').'</a><a class="layui-btn layui-btn-sm layui-btn-radius imgorder " onclick="goleft(this)">'.JZLANG('左移').'</a><a class="layui-btn layui-btn-sm layui-btn-radius imgorder " onclick="goright(this)">'.JZLANG('右移').'</a></div></div>';
-							}
+                            $pic = explode('|',$vv);
+                            $l.='<div class="upload-icon-img layui-input-inline" ><div class="upload-pre-item"><input name="'.$v['field'].'_urls[]" type="text" class="layui-input"  value="'.$pic[0].'" /><input name="'.$v['field'].'_des[]" type="text" class="layui-input" placeholder="'.JZLANG('文字描述').'"  value="'.$pic[1].'" /><a class="layui-btn layui-btn-sm layui-btn-radius layui-btn-danger delete_file">'.JZLANG('删除').'</a><a class="layui-btn layui-btn-sm layui-btn-radius imgorder " onclick="goleft(this)">'.JZLANG('左移').'</a><a class="layui-btn layui-btn-sm layui-btn-radius imgorder " onclick="goright(this)">'.JZLANG('右移').'</a></div></div>';
 							
 						}
 					}	 
@@ -899,14 +884,8 @@ class FieldsController extends CommonController
 						  }
 						,done: function(res){
 							layer.closeAll("loading"); //关闭loading
-							if(res.code==0){';
-							if($this->webconf['ispicsdes']==1){
-								$l.='$(".preview_'.$v['field'].'").append(\'<div class="upload-icon-img layui-input-inline" ><div class="upload-pre-item"><input name="'.$v['field'].'_urls[]" type="text" class="layui-input"  value="\' + res.url + \'" /><input name="'.$v['field'].'_des[]" type="text" class="layui-input" placeholder="'.JZLANG('文字描述').'"  value="" /><a class="layui-btn layui-btn-sm layui-btn-radius layui-btn-danger delete_file">'.JZLANG('删除').'</a><a class="layui-btn layui-btn-sm layui-btn-radius imgorder " onclick="goleft(this)">'.JZLANG('左移').'</a><a class="layui-btn layui-btn-sm layui-btn-radius imgorder " onclick="goright(this)">'.JZLANG('右移').'</a></div></div>\');';
-							}else{
-								$l.='$(".preview_'.$v['field'].'").append(\'<div class="upload-icon-img layui-input-inline" ><div class="upload-pre-item"><input name="'.$v['field'].'_urls[]" type="text" class="layui-input"  value="\' + res.url + \'" /><a class="layui-btn layui-btn-sm layui-btn-radius layui-btn-danger delete_file">'.JZLANG('删除').'</a><a class="layui-btn layui-btn-sm layui-btn-radius imgorder " onclick="goleft(this)">'.JZLANG('左移').'</a><a class="layui-btn layui-btn-sm layui-btn-radius imgorder " onclick="goright(this)">'.JZLANG('右移').'</a></div></div>\');';
-							}
-							
-							$l.='
+							if(res.code==0){
+                                $(".preview_'.$v['field'].'").append(\'<div class="upload-icon-img layui-input-inline" ><div class="upload-pre-item"><input name="'.$v['field'].'_urls[]" type="text" class="layui-input"  value="\' + res.url + \'" /><input name="'.$v['field'].'_des[]" type="text" class="layui-input" placeholder="'.JZLANG('文字描述').'"  value="" /><a class="layui-btn layui-btn-sm layui-btn-radius layui-btn-danger delete_file">'.JZLANG('删除').'</a><a class="layui-btn layui-btn-sm layui-btn-radius imgorder " onclick="goleft(this)">'.JZLANG('左移').'</a><a class="layui-btn layui-btn-sm layui-btn-radius imgorder " onclick="goright(this)">'.JZLANG('右移').'</a></div></div>\');
 							
 							}else{
 								 layer.alert(res.error, {icon: 5});

@@ -44,7 +44,7 @@
 								<tbody>
 									<tr>
 									  <td>网站网址:</td>
-									  <td>http://<?php echo $_SERVER['HTTP_HOST'];?></td>
+									  <td><?php echo get_domain();?></td>
 									</tr>
 									
 									<tr>

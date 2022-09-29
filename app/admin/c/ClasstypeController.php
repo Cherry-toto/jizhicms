@@ -106,15 +106,22 @@ class ClasstypeController extends CommonController
 			$w = array_merge($data,$w);
 			$a = M('classtype')->add($w);
 			if($a){
-				$fields=M('fields')->findAll(" tids like '%,".$w['pid'].",%' or (molds='".$w['molds']."' and field='addtime') ");
-				foreach ($fields as $v){
-					if($v['tids']){
-						M('fields')->update(array('id'=>$v['id']),array('tids'=>$v['tids'].$a.','));
-					}else{
-						M('fields')->update(array('id'=>$v['id']),array('tids'=>','.$a.','));
-					}
-					
-				}
+			    if($w['pid']){
+                    $sql = " tids like '%,".$w['pid'].",%' or (molds='".$w['molds']."' and (tids is null or tids='')) ";
+                }else{
+			        $sql = "molds='".$w['molds']."'";
+                }
+                $fields=M('fields')->findAll($sql);
+                foreach ($fields as $v){
+                    if($v['tids']){
+                        M('fields')->update(array('id'=>$v['id']),array('tids'=>$v['tids'].$a.','));
+                    }else{
+                        M('fields')->update(array('id'=>$v['id']),array('tids'=>','.$a.','));
+                    }
+
+                }
+
+
 				//这里
 				setCache('classtypetree',null);
 				setCache('classtype',null);

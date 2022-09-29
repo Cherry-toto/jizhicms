@@ -43,7 +43,7 @@ if(isset($model)){
 		            <div class="layui-input-block" style="width:100%;">
 					<script id="'.$v['field'].$rd.'" name="'.$v['field'].'" type="text/plain" style="width:100%;height:400px;">'.$data[$v['field']].'</script>	
 					</div>
-		            <label>'.$must.$v['tips'].'</label>
+		            <label  class="fields_tips">'.$must.$v['tips'].'</label>
 		        </div><script>
 						$(document).ready(function(){
 						var ue_'.$v['field'].$rd.' = UE.getEditor("'.$v['field'].$rd.'",{

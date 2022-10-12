@@ -277,7 +277,7 @@ class CommentController extends CommonController
 			$data[$k]['article'] = !$v['aid'] ? [] : M($this->classtypedata[$v['tid']]['molds'])->find(['id'=>$v['aid'],'isshow'=>1]);
 			$data[$k]['user'] = !$v['userid'] ? [] : M('member')->find(['id'=>$v['userid']],null,'id,username,litpic');
 			$data[$k]['addtime'] = formatTime($v['addtime']);
-			$children = M('comment')->findAll(['pid'=>$v['id'],'isshow'=>1]);
+			$children = M('comment')->findAll(['zid'=>$v['id'],'isshow'=>1]);
 			if($children){
 				foreach($children as $kk=>$vv){
 					$children[$kk]['classname'] = $vv['tid'] ? $vv['tid'] : $this->classtypedata[$vv['tid']];

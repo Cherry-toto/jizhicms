@@ -178,7 +178,8 @@ function sendmsg(){
 	
 }
 
-function reply(pid,username){
+function reply(pid,username,zid){
+	$("#zid").val(zid);
 	$("#pid").val(pid);
 	$("#content").val('[@'+username+']');
 	$("#content").focus();
@@ -217,7 +218,7 @@ function getmessagelist(tid,aid,page){
 										  '<span class="time">'+rdata.addtime+'</span>'+
 										'</div>'+
 									  '</div>'+
-									  '<a class="comment-reply-link" onclick="reply('+rdata.id+',\''+rdata.user.username+'\')"><i class="icofont-reply"></i> 回复</a>'+
+									  '<a class="comment-reply-link" onclick="reply('+rdata.id+',\''+rdata.user.username+'\','+rdata.id+')"><i class="icofont-reply"></i> 回复</a>'+
 									'</div>'+
 								  '</div>'+
 								'</div>'+
@@ -245,7 +246,7 @@ function getmessagelist(tid,aid,page){
 										  '<span class="time">'+rrdata.addtime+'</span>'+
 										'</div>'+
 									  '</div>'+
-									  '<a class="comment-reply-link" onclick="reply('+rrdata.id+',\''+rrdata.user.username+'\')"><i class="icofont-reply"></i> 回复</a>'+
+									  '<a class="comment-reply-link" onclick="reply('+rrdata.id+',\''+rrdata.user.username+'\','+rdata.id+')"><i class="icofont-reply"></i> 回复</a>'+
 									'</div>'+
 								  '</div>'+
 								'</div>'+

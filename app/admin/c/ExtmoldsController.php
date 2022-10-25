@@ -190,9 +190,22 @@ class ExtmoldsController extends Controller
 			}
             $data['addtime'] =  isset($data['addtime']) ? $data['addtime'] : time();
             //检查是否重复
-//            if(M($molds)->find(['title'=>$data['title']])){
-//                JsonReturn(array('code'=>1,'msg'=>JZLANG('标题重复！')));
-//            }
+            if($this->webconf['hidetitleonliy']){
+                $hidetitleonly = explode('|',$this->webconf['hidetitleonliy']);
+                $onliyfield = '';
+                foreach ($hidetitleonly as $s){
+                    $d = explode('-',$s);
+                    if(strtolower($d[0])==$molds){
+                        $onliyfield = strtolower($d[1]);
+                        break;
+                    }
+                }
+                if($onliyfield){
+                    if(M($molds)->find([$onliyfield=>$data[$onliyfield]])){
+                        JsonReturn(array('code'=>1,'msg'=>$onliyfield.JZLANG('重复！')));
+                    }
+                }
+            }
 			$r = M($molds)->add($data);
 			if($r){
 				if(isset($data['ownurl'])){
@@ -291,10 +304,23 @@ class ExtmoldsController extends Controller
 					$data['isshow'] = 0;
 				}
                 //检查是否重复
-//                $sql = "title='".$this->frparam('title',1)."' and id!=".$this->frparam('id');
-//                if(M($molds)->find($sql)){
-//                    JsonReturn(array('code'=>1,'msg'=>JZLANG('标题重复！')));
-//                }
+                if($this->webconf['hidetitleonliy']){
+                    $hidetitleonly = explode('|',$this->webconf['hidetitleonliy']);
+                    $onliyfield = '';
+                    foreach ($hidetitleonly as $s){
+                        $d = explode('-',$s);
+                        if(strtolower($d[0])==$molds){
+                            $onliyfield = strtolower($d[1]);
+                            break;
+                        }
+                    }
+                    if($onliyfield){
+                        $sql = $onliyfield."='".$this->frparam($onliyfield,1)."' and id!=".$this->frparam('id');
+                        if(M($molds)->find($sql)){
+                            JsonReturn(array('code'=>1,'msg'=>$onliyfield.JZLANG('重复！')));
+                        }
+                    }
+                }
                 $data['addtime'] = isset($data['addtime']) ? $data['addtime'] : time();
 				if(M($molds)->update(array('id'=>$this->frparam('id')),$data)){
 					

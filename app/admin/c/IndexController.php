@@ -566,7 +566,7 @@ class IndexController extends CommonController
 									}
 								}
 							}
-							$time = $v['times']*60+time();
+							$time = $v['times']*60;
 							setCache('jzcache_'.$v['field'],$result,$time);
 						}
 					}

@@ -141,7 +141,7 @@ class FieldsController extends CommonController
 				JsonReturn(array('code'=>1,'msg'=>JZLANG('字段标识已存在！')));
 			}
 			//取消保护字段，可以继续创建
-			if(in_array($data['field'],['sql','jzcache','jzcachetime','table','orderby','limit','ispage','notin','in','empty','notempty','fields','like','day','as'])){
+			if(in_array($data['field'],['sql','jzcache','jzcachetime','table','orderby','limit','ispage','notin','in','empty','notempty','fields','like','day','as','file'])){
 				JsonReturn(array('code'=>1,'msg'=>JZLANG('系统保护字段，不允许创建！')));
 			}
 			// $sql = "select count(*) as n from information_schema.columns where table_name = '".DB_PREFIX.$data['molds']."' and TABLE_SCHEMA='".DB_PREFIX.$data['molds']."' and column_name = '".$data['field']."'";
@@ -171,7 +171,7 @@ class FieldsController extends CommonController
 				case 18:
 				case 19:
 				$sql .= "VARCHAR(".$data['fieldlong'].") CHARACTER SET utf8 default ";
-				if($data['vdata']){
+				if($data['vdata'] || $data['vdata']==0){
 					$sql .=  "'".$data['vdata']."'";
 				}else{
 					$sql .= ' NULL ';
@@ -211,7 +211,7 @@ class FieldsController extends CommonController
 				case 5:
 				case 9:
 				$sql .= "VARCHAR(".$data['fieldlong'].") CHARACTER SET utf8 default ";
-				if($data['vdata']){
+				if($data['vdata'] || $data['vdata']==0){
 					$sql .=  "'".$data['vdata']."'";
 				}else{
 					$sql .= " NULL ";
@@ -223,7 +223,7 @@ class FieldsController extends CommonController
 				case 12:
 				$data['body'] = $this->frparam('body_'.$data['fieldtype'],1);
 				$sql .= "VARCHAR(".$data['fieldlong'].") CHARACTER SET utf8 default ";
-				if($data['vdata']){
+				if($data['vdata'] || $data['vdata']==0){
 					$sql .= "'".$data['vdata']."'";
 				}else{
 					$sql .= " NULL ";
@@ -246,7 +246,7 @@ class FieldsController extends CommonController
 					JsonReturn(array('code'=>1,'msg'=>JZLANG('字段长度不对,decimal字段长度格式[整数位数,小数位数]')));
 				}
 				$sql .= "DECIMAL(".$data['fieldlong'].") DEFAULT ";
-				if($data['vdata']){
+				if($data['vdata'] || $data['vdata']==0){
 					$sql .=  "'".$data['vdata']."'";
 				}else{
 					$sql .= " '".$this->frparam('body_14',1)."' NOT NULL ";
@@ -254,7 +254,7 @@ class FieldsController extends CommonController
 				break;
 				case 16:
 				$sql .= "VARCHAR(".$data['fieldlong'].") DEFAULT ";
-				if($data['vdata']){
+				if($data['vdata'] || $data['vdata']==0){
 					$sql .=  "'".$data['vdata']."'";
 				}else{
 					$sql .= " NULL ";
@@ -375,7 +375,7 @@ class FieldsController extends CommonController
 					}
 					
 				}else{
-					if(in_array($data['field'],['id','sql','jzcache','jzcachetime','table','orderby','limit','ispage','notin','in','empty','notempty','fields','like','tids','day','as','istop','istuijian','ishot','isall'])){
+					if(in_array($data['field'],['id','sql','jzcache','jzcachetime','table','orderby','limit','ispage','notin','in','empty','notempty','fields','like','tids','day','as','istop','istuijian','ishot','isall','file'])){
 						JsonReturn(array('code'=>1,'msg'=>JZLANG('系统保护字段，不允许创建！')));
 					}
 				}
@@ -392,7 +392,7 @@ class FieldsController extends CommonController
                     case 19:
 
 					$sql .= "VARCHAR(".$data['fieldlong'].") CHARACTER SET utf8 default ";
-					if($data['vdata']){
+					if($data['vdata'] || $data['vdata']==0){
 						$sql .=  "'".$data['vdata']."'";
 					}else{
 						$sql .= ' NULL ';
@@ -434,7 +434,7 @@ class FieldsController extends CommonController
 						JsonReturn(array('code'=>1,'msg'=>JZLANG('字段长度不对,decimal字段长度格式[整数位数,小数位数]')));
 					}
 					$sql .= "DECIMAL(".$data['fieldlong'].") DEFAULT ";
-					if($data['vdata']){
+					if($data['vdata'] || $data['vdata']==0){
 						$sql .=  "'".$data['vdata']."'";
 					}else{
 						$sql .= " '".$this->frparam('body_14',1)."' NOT NULL ";
@@ -446,7 +446,7 @@ class FieldsController extends CommonController
 					case 8:
 					case 12:
 					$sql .= "VARCHAR(".$data['fieldlong'].") CHARACTER SET utf8 default ";
-					if($data['vdata']){
+					if($data['vdata'] || $data['vdata']==0){
 						$sql .=  "'".$data['vdata']."'";
 					}else{
 						$sql .= ' NULL ';

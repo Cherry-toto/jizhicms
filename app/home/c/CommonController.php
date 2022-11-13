@@ -527,7 +527,7 @@ class CommonController extends Controller
 					          var result = "";
 					          for(var i=0;i<response["urls"].length;i++){
 					          	result +=\'<span><img src="\' + response["urls"][i] + \'" height="100"  /><input name="'.$v['field'].'_urls[]" type="text" value="\' + response["urls"][i] + \'" ><input name="'.$v['field'].'_des[]" type="text" placeholder="'.JZLANG('文字描述').'"  value="" ><button type="button" onclick="deleteImage_auto(this)">'.JZLANG('删除').'</button></span>\';
-					          }}
+					          }
 					          $(".view_img_'.$v['field'].'").append(result);
 					        }else{
 					          alert(response.error);

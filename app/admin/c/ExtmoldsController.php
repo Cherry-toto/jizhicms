@@ -158,7 +158,7 @@ class ExtmoldsController extends Controller
 	}
 	
 	public function addmolds(){
-		$molds = $this->frparam('molds',1);
+		$molds = $this->frparam('molds',5);
 		$this->fields_biaoshi = $molds;
 		if($this->frparam('go',1)==1){
 			
@@ -259,7 +259,7 @@ class ExtmoldsController extends Controller
 	}
 	
 	public function editmolds(){
-		$molds = $this->frparam('molds',1);
+		$molds = $this->frparam('molds',5);
 		$this->fields_biaoshi = $molds;
 		if($this->frparam('go',1)==1){
 			

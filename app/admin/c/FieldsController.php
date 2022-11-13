@@ -246,7 +246,7 @@ class FieldsController extends CommonController
 					JsonReturn(array('code'=>1,'msg'=>JZLANG('字段长度不对,decimal字段长度格式[整数位数,小数位数]')));
 				}
 				$sql .= "DECIMAL(".$data['fieldlong'].") DEFAULT ";
-				if($data['vdata'] || $data['vdata']==0){
+				if($data['vdata']){
 					$sql .=  "'".$data['vdata']."'";
 				}else{
 					$sql .= " '".$this->frparam('body_14',1)."' NOT NULL ";
@@ -434,7 +434,7 @@ class FieldsController extends CommonController
 						JsonReturn(array('code'=>1,'msg'=>JZLANG('字段长度不对,decimal字段长度格式[整数位数,小数位数]')));
 					}
 					$sql .= "DECIMAL(".$data['fieldlong'].") DEFAULT ";
-					if($data['vdata'] || $data['vdata']==0){
+					if($data['vdata']){
 						$sql .=  "'".$data['vdata']."'";
 					}else{
 						$sql .= " '".$this->frparam('body_14',1)."' NOT NULL ";
@@ -495,7 +495,7 @@ class FieldsController extends CommonController
 		$tid = $this->frparam('tid',0,0);
 		$isext = $this->frparam('isext',0,0);
 		$sql = array();
-		$molds = strtolower($this->frparam('molds',1));
+		$molds = strtolower($this->frparam('molds',5));
 		$moldsdata = M('molds')->find(['biaoshi'=>$molds]);
 		if($tid){
 			$sql[] = " (tids like '%,".$tid.",%' or tids is null) ";
@@ -1258,12 +1258,12 @@ layui.use("laydate", function(){
 
 	function fieldsList(){
 		
-		if($this->frparam('molds',1)==''){
+		if(!$this->frparam('molds',1)){
 			Error(JZLANG('请选择模块！'));
 		}
 		if($this->frparam('ajax')){
 
-			$data = M('fields')->findAll(array('molds'=>$this->frparam('molds',1)),'islist desc,listorders desc');
+			$data = M('fields')->findAll(array('molds'=>$this->frparam('molds',5)),'islist desc,listorders desc');
 			foreach($data as &$v){
 				$v['isadmin'] = $v['isadmin']==1 ? JZLANG('显示') : JZLANG('隐藏');
 				$v['isshow'] = $v['isshow']==1 ? JZLANG('显示') : JZLANG('隐藏');
@@ -1340,7 +1340,7 @@ layui.use("laydate", function(){
 			
 			
 		}
-		$this->molds = M('Molds')->find(array('biaoshi'=>$this->frparam('molds',1)));
+		$this->molds = M('Molds')->find(array('biaoshi'=>$this->frparam('molds',5)));
 		
 		$this->display('fields-list-show');
 	}

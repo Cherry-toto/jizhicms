@@ -323,8 +323,8 @@ class FieldsController extends CommonController
 				if($old['field']==$data['field']){
 					
 					//判断长度是否不同
-					if($data['fieldlong']!=$old['fieldlong'] && $data['fieldtype']!=3){
-						$sql =  "ALTER TABLE ".DB_PREFIX.$old['molds']." modify column ".$old['field']." ";
+					if($data['fieldlong']!=$old['fieldlong'] || $data['vdata']!=$old['vdata']){
+						$sql =  "ALTER TABLE ".DB_PREFIX.$old['molds']." modify column ".$old['field']."  ";
 						switch($data['fieldtype']){
 							case 1:
 							case 2:
@@ -336,7 +336,12 @@ class FieldsController extends CommonController
 							case 16:
 							case 18:
 							case 19:
-							$sql.=" varchar(".$data['fieldlong'].") ";
+							$sql.=" varchar(".$data['fieldlong'].") default";
+							if($data['vdata'] || $data['vdata']==0){
+								$sql .=  "'".$data['vdata']."'";
+							}else{
+								$sql .= ' NULL ';
+							}
 							break;
 							case 3:
 							case 15:
@@ -349,10 +354,20 @@ class FieldsController extends CommonController
 							case 11:
 							case 13:
 							case 17:
-							$sql.=" int(".$data['fieldlong'].") ";
+							$sql.=" int(".$data['fieldlong'].") default ";
+							if($data['vdata']){
+								$sql .=  "'".$data['vdata']."'";
+							}else{
+								$sql .= ' 0 ';
+							}
 							break;
 							case 14:
-							$sql.=" decimal(".$data['fieldlong'].") ";
+							$sql.=" decimal(".$data['fieldlong'].") default ";
+							if($data['vdata']){
+								$sql .=  "'".$data['vdata']."'";
+							}else{
+								$sql .= " '".$this->frparam('body_14',1)."' NOT NULL ";
+							}
 							break;
 							
 						}

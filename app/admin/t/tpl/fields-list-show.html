@@ -173,7 +173,7 @@
 					var id = $(this).attr('data-id');
 					$.get("{fun U('changeListOrders')}",{id:id,orders:orders},function(r){
 							if(r.code==0){
-								window.location.reload();
+								//window.location.reload();
 							}else{
 								
 								layer.msg(r.msg,{icon: 5,time:1000});

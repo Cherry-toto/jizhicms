@@ -675,123 +675,278 @@ class IndexController extends CommonController
 	}
 	
 	//网站地图XML
-	function sitemap(){
-		if($_POST){
-			$model = $this->frparam('model',2);
-			$isshow = $this->frparam('isshow',2);
-			$freq = $this->frparam('freq',2);
-			$priority = $this->frparam('priority',2);
-			$www = ($this->webconf['domain']=='') ? get_domain() : $this->webconf['domain'];
-			$l = '<?xml version="1.0" encoding="UTF-8"?>
+    function sitemap(){
+        $cachedata = getCache('sitemapdata');
+        if($_POST || $cachedata){
+            $model = !$cachedata ? $this->frparam('model',2) : $cachedata['model'];
+            $isshow = !$cachedata ? $this->frparam('isshow',2) : $cachedata['isshow'];
+            $freq = !$cachedata ? $this->frparam('freq',2) : $cachedata['frep'];
+            $priority = !$cachedata ? $this->frparam('priority',2) : $cachedata['priority'];
+            $www = ($this->webconf['domain']=='') ? get_domain() : $this->webconf['domain'];
+            $l_pre = '<?xml version="1.0" encoding="UTF-8"?>
 <urlset
-      xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
-      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-      xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9
-            http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">';
-			//首页
-			$l.='<url>
-  <loc>'.$www.'/</loc>
-  <lastmod>'.date('Y-m-d').'T08:00:00+00:00</lastmod>
-  <changefreq>always</changefreq>
-  <priority>1.00</priority>
+  xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9
+		http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">';
+            //首页
+            $l_pre.='<url>
+<loc>'.$www.'/</loc>
+<lastmod>'.date('Y-m-d').'T08:00:00+00:00</lastmod>
+<changefreq>always</changefreq>
+<priority>1.00</priority>
 </url>';
-			$mobile_xml = $l;
-			$pc_html = (trim($this->webconf['pc_html'])=='' || $this->webconf['pc_html']=='/') ? '/' : '/'.$this->webconf['pc_html'].'/';
-			$pc_html = trim($pc_html);
-			$mobile_html = (trim($this->webconf['mobile_html'])=='' || $this->webconf['mobile_html']=='/') ? '/' : '/'.$this->webconf['mobile_html'].'/';;
-			$mobile_html = trim($mobile_html);
-			
-			 $classtypedataMobile = classTypeDataMobile();
-			 $classtypedataMobile = getclasstypedata($classtypedataMobile,1);
-			 
-			foreach($model as $k=>$v){
-				if($isshow[$k]==1){
-					$list = M($v)->findAll(['isshow'=>1]);
-				}else{
-					$list = M($v)->findAll();
-				}
-				//栏目
-				if($v=='classtype' && $list){
-					foreach($list as $s){
-						if($this->classtypedata[$s['id']]['url']){
-							$l.='<url>
+            $l_next = '</urlset>';
+            $l_pc = getCache('l_pc') ? getCache('l_pc') : '';
+            $l_mobile = getCache('l_mobile') ? getCache('l_mobile') : '';
+            $classtypedataMobile = classTypeDataMobile();
+            $classtypedataMobile = getclasstypedata($classtypedataMobile,1);
+            $num = 0;//统计数量
+            $page = !$cachedata ? 1 : $cachedata['page'];
+            $pre = ($page-1)*1000;
+            $limit = $pre.',1000';//每页sitemap最大条数为1000
+            $isover = 1;//是否结束
+            $sitemap_page = !$cachedata ? 1 : $cachedata['sitemap_page'];
+            $sitemap_xml = !$cachedata ? [] : $cachedata['sitemap_xml'];
+            if($cachedata){
+                echo JZLANG('正在创建sitemap，请勿关闭浏览器！').'<br>';
+            }
+            $urls = [];
+            foreach($model as $k=>$v){
+                if($v=='classtype'){
+                    if($isshow[$k]==1){
+                        $list = M($v)->findAll(['isshow'=>1],null,'id',$limit);
+                    }else{
+                        $list = M($v)->findAll(null,null,'id',$limit);
+                    }
+                }else{
+                    if($isshow[$k]==1){
+                        $list = M($v)->findAll(['isshow'=>1],null,'id,molds,htmlurl,ownurl,target,addtime',$limit);
+                    }else{
+                        $list = M($v)->findAll(null,null,'id,molds,htmlurl,gourl,target,addtime',$limit);
+                    }
+                }
+                if(!$list){
+
+                    continue;
+                }
+                if($v=='classtype'){
+                    foreach($list as $s){
+                        if($this->classtypedata[$s['id']]['url']){
+                            if($cachedata){
+                                echo $this->classtypedata[$s['id']]['url'].'<br>';
+                            }
+                            $l_pc.='<url>
 								  <loc>'.$this->classtypedata[$s['id']]['url'].'</loc>
 								  <lastmod>'.date('Y-m-d').'T08:00:00+00:00</lastmod>
 								  <changefreq>'.$freq[$k].'</changefreq>
 								  <priority>'.$priority[$k].'</priority>
 								</url>';
-							if($this->webconf['iswap']==1){
-								if($classtypedataMobile[$s['id']]['url']){
-									$mobile_xml.='<url>
-									  <loc>'.$classtypedataMobile[$s['id']]['url'].'</loc>
-									  <lastmod>'.date('Y-m-d').'T08:00:00+00:00</lastmod>
-									  <changefreq>'.$freq[$k].'</changefreq>
-									  <priority>'.$priority[$k].'</priority>
-									</url>';
-								}
-								
-							}	
-						}
-						
-					}
-				}else if($list){
-					foreach($list as $s){
-						$s['addtime'] = isset($s['addtime']) ? $s['addtime'] : time();
-						//文章-商品
-						$url = gourl($s,$s['htmlurl']);
-						if($url){
-							$l.='<url>
+                            if($this->webconf['iswap']==1){
+                                $l_mobile.='<url>
+								  <loc>'.$classtypedataMobile[$s['id']]['url'].'</loc>
+								  <lastmod>'.date('Y-m-d').'T08:00:00+00:00</lastmod>
+								  <changefreq>'.$freq[$k].'</changefreq>
+								  <priority>'.$priority[$k].'</priority>
+								</url>';
+                                if($cachedata){
+                                    echo $classtypedataMobile[$s['id']]['url'].'<br>';
+                                }
+                            }
+
+                            $num+=1;
+                            if($num>=1000){
+                                $l = $l_pre.$l_pc.$l_next;
+                                $l_m = $l_pre.$l_mobile.$l_next;
+                                $name = $sitemap_page==1 ? 'sitemap.xml' : 'sitemap'.$sitemap_page.'.xml';
+                                $name_m = $sitemap_page==1 ? 'mobile_sitemap.xml' : 'mobile_sitemap'.$sitemap_page.'.xml';
+                                $n = file_put_contents(APP_PATH.$name,$l);
+                                if(!$n){
+                                    JsonReturn(['code'=>1,'msg'=>JZLANG('网站地图创建失败，请检查根目录权限！'.$name)]);
+                                }
+                                if($cachedata){
+                                    echo $name.JZLANG('创建成功！').'<br>';
+                                }
+                                $_pc = '';
+                                if($this->webconf['iswap']==1){
+                                    $m = file_put_contents(APP_PATH.$name_m,$l_m);
+                                    if(!$m){
+                                        JsonReturn(['code'=>1,'msg'=>JZLANG('网站地图创建失败，请检查根目录权限！'.$name_m)]);
+                                    }
+                                    $sitemap_xml[]=$name_m;//记录生成的xml页面
+                                    if($cachedata){
+                                        echo $name_m.JZLANG('创建成功！').'<br>';
+                                    }
+                                    $l_mobile = '';
+                                }
+
+                                $sitemap_page+=1;//分页+1
+                                $num=0;//重置数量
+                                $sitemap_xml[]=$name;
+
+                                $isover = 0;//只要有一个模块大于1500，说明就需要再次执行生成sitemap程序
+
+                            }
+
+
+                        }
+                    }
+
+                }else{
+
+                    foreach($list as $s){
+                        $s['addtime'] = (isset($s['addtime']) && $s['addtime']!=0) ? $s['addtime'] : time();
+                        $url = gourl($s);
+                        if($url){
+                            $l_pc.='<url>
 							  <loc>'.$url.'</loc>
 							  <lastmod>'.date('Y-m-d',$s['addtime']).'T08:00:00+00:00</lastmod>
 							  <changefreq>'.$freq[$k].'</changefreq>
 							  <priority>'.$priority[$k].'</priority>
 							</url>';
-						}
-						
-						if($this->webconf['iswap']==1){
-							$murl = $this->murl($s,$s['htmlurl']);
-							if($murl){
-								$mobile_xml.='<url>
-								  <loc>'.$murl.'</loc>
-								  <lastmod>'.date('Y-m-d',$s['addtime']).'T08:00:00+00:00</lastmod>
-								  <changefreq>'.$freq[$k].'</changefreq>
-								  <priority>'.$priority[$k].'</priority>
-								</url>';
-							}
-							
-						}	
-					
-					}
-				}
-				
-				
-			}
-			
-			$l.='</urlset>';
-			$mobile_xml.='</urlset>';
-			
-			//$f = @fopen(APP_PATH.'sitemap.xml','w');
-			//$n = @fwrite($f,$l);
-			//@fclose($f);
-			$n = file_put_contents(APP_PATH.'sitemap.xml',$l);
-			
-			if($this->webconf['iswap']==1){
-				$m = file_put_contents(APP_PATH.'mobile_sitemap.xml',$mobile_xml);
-			}
-			if($n){
-				JsonReturn(['code'=>0,'msg'=>JZLANG('网站地图创建成功！')]);
-				
-			}
-			
-			JsonReturn(['code'=>1,'msg'=>JZLANG('网站地图创建失败，请检查根目录权限！')]);
-			
-			
-		}
-		
-		$this->display('sitemap');
-	}
-	
-	function murl($id,$htmlurl=null,$molds='article'){
+                            if($cachedata){
+                                echo $url.'<br>';
+                            }
+                            if($this->webconf['iswap']==1){
+                                $murl = $this->murl($s);
+                                if($murl){
+                                    $l_mobile.='<url>
+									  <loc>'.$murl.'</loc>
+									  <lastmod>'.date('Y-m-d',$s['addtime']).'T08:00:00+00:00</lastmod>
+									  <changefreq>'.$freq[$k].'</changefreq>
+									  <priority>'.$priority[$k].'</priority>
+									</url>';
+                                    if($cachedata){
+                                        echo $murl.'<br>';
+                                    }
+                                }
+
+                            }
+                            $num+=1;
+                            if($num>=1000){
+                                $l = $l_pre.$l_pc.$l_next;
+                                $l_m = $l_pre.$l_mobile.$l_next;
+                                $name = $sitemap_page==1 ? 'sitemap.xml' : 'sitemap'.$sitemap_page.'.xml';
+                                $name_m = $sitemap_page==1 ? 'mobile_sitemap.xml' : 'mobile_sitemap'.$sitemap_page.'.xml';
+                                $n = file_put_contents(APP_PATH.$name,$l);
+                                if(!$n){
+                                    JsonReturn(['code'=>1,'msg'=>JZLANG('网站地图创建失败，请检查根目录权限！'.$name)]);
+                                }
+                                if($cachedata){
+                                    echo $name.JZLANG('创建成功！').'<br>';
+                                }
+                                $l_pc = '';
+                                if($this->webconf['iswap']==1){
+                                    $m = file_put_contents(APP_PATH.$name_m,$l_m);
+                                    if(!$m){
+                                        JsonReturn(['code'=>1,'msg'=>JZLANG('网站地图创建失败，请检查根目录权限！'.$name_m)]);
+                                    }
+                                    $sitemap_xml[]=$name_m;//记录生成的xml页面
+                                    if($cachedata){
+                                        echo $name_m.JZLANG('创建成功！').'<br>';
+                                    }
+                                    $l_mobile = '';
+                                }
+
+                                $sitemap_page+=1;//分页+1
+                                $num=0;//重置数量
+                                $sitemap_xml[]=$name;
+
+                                $isover = 0;//只要有一个模块大于1500，说明就需要再次执行生成sitemap程序
+
+                            }
+
+
+                        }
+
+
+
+                    }
+
+                }
+
+
+            }
+
+
+            if(!$isover){
+
+                //记录相关数据
+                $cdata['model'] = $model;
+                $cdata['isshow'] = $isshow;
+                $cdata['freq'] = $freq;
+                $cdata['priority'] = $priority;
+                $cdata['page'] = $page+1;
+                $cdata['sitemap_page'] = $sitemap_page;
+                $cdata['sitemap_xml'] = $sitemap_xml;
+                setCache('sitemapdata',$cdata);
+                setCache('l_pc',$l_pc);
+                setCache('l_mobile',$l_mobile);
+                if(!$cachedata){
+                    JsonReturn(['code'=>2,'msg'=>JZLANG('网站地图正在创建，请勿关闭浏览器！')]);
+                }else{
+                    Redirect(U('index/sitemap'),JZLANG('网站地图正在创建，请勿关闭浏览器！'),2);
+                }
+
+            }else{
+                //已更新完毕
+                if($l_pc){
+                    $l = $l_pre.$l_pc.$l_next;
+                    $name = $sitemap_page==1 ? 'sitemap.xml' : 'sitemap'.$sitemap_page.'.xml';
+                    $n = file_put_contents(APP_PATH.$name,$l);
+                    if(!$n){
+                        JsonReturn(['code'=>1,'msg'=>JZLANG('网站地图创建失败，请检查根目录权限！'.$name)]);
+                    }
+
+                    $sitemap_xml[]=$name;
+                    if($cachedata){
+                        echo $name.JZLANG('创建成功！').'<br>';
+                    }
+                    $l_pc = '';
+                }
+                if($l_mobile){
+                    $l_m = $l_pre.$l_mobile.$l_next;
+                    $name_m = $sitemap_page==1 ? 'mobile_sitemap.xml' : 'mobile_sitemap'.$sitemap_page.'.xml';
+
+                    if($this->webconf['iswap']==1){
+                        $m = file_put_contents(APP_PATH.$name_m,$l_m);
+                        if(!$m){
+                            JsonReturn(['code'=>1,'msg'=>JZLANG('网站地图创建失败，请检查根目录权限！'.$name_m)]);
+                        }
+                        $sitemap_xml[]=$name_m;//记录生成的xml页面
+                        if($cachedata){
+                            echo $name_m.JZLANG('创建成功！').'<br>';
+                        }
+                    }
+                    $l_mobile = '';
+
+                }
+
+                setCache('l_pc',null);
+                setCache('l_mobile',null);
+                setCache('sitemapdata',null);
+                if($cachedata){
+                    echo JZLANG('已生成的网站xml文件如下：').'<br>';
+                    foreach($sitemap_xml as $v){
+                        echo get_domain().'/'.$v.'<br>';
+                    }
+                    exit;
+                }
+            }
+
+            if(!$cachedata){
+                JsonReturn(['code'=>0,'msg'=>JZLANG('网站地图创建成功！')]);
+            }
+
+
+
+
+        }
+
+        $this->display('sitemap');
+    }
+
+    function murl($id,$htmlurl=null,$molds='article'){
 		if(is_array($id)){
 			$value = $id;
 			if($value['target']){

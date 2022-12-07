@@ -368,7 +368,17 @@ class ClasstypeController extends CommonController
 					$w['details_html'] = $this->frparam('details_html',1);
 					$w['isshow'] =$this->frparam('isshow',0,1);
 					$w['ishome'] =$this->frparam('ishome',0,1);
-					M('classtype')->add($w);
+					$r = M('classtype')->add($w);
+					$sql = "molds='".$w['molds']."'";
+					$fields=M('fields')->findAll($sql);
+					foreach ($fields as $s){
+						if($s['tids']){
+							M('fields')->update(array('id'=>$s['id']),array('tids'=>$s['tids'].$r.','));
+						}else{
+							M('fields')->update(array('id'=>$s['id']),array('tids'=>','.$r.','));
+						}
+
+					}
 					$w = [];
 				}
 				

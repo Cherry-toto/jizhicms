@@ -562,6 +562,9 @@ function get_fields_data($data,$molds,$isadmin=1){
 		$data[$v['field']] = '';      
 		 
 	 }
+     if(isset($data['id'])){
+         $data['id'] = format_param($data['id']);
+     }
 	 
  }
  

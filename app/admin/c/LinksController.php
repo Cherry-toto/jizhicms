@@ -55,7 +55,7 @@ class LinksController extends CommonController
 			$get_sql = ($res['fields_search_check']!='') ? (' and '.$res['fields_search_check']) : '';
 			$sql .= $get_sql;
 			if($this->frparam('tid')){
-				$sql .= ' and tid in('.implode(",",$classtypedata[$this->frparam('tid')]["children"]["ids"]).')';
+                $sql .= ' and tid in('.$this->frparam('tid').')';
 				
 			}
 			

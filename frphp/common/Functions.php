@@ -71,6 +71,12 @@ function format_param($value=null,$int=0,$default=false){
             $value = addslashes($value);
             $value = SafeFilter($value);
 			return trim($value);
+        case 5:
+            $value = SafeFilter($value);
+            $value=htmlspecialchars(trim($value), ENT_QUOTES);
+            $value = addslashes($value);
+            $ra=Array('select','insert','update','delete');
+            return str_ireplace($ra,'',$value);
 	}
 }
 //过滤XSS攻击

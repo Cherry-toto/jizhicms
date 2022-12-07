@@ -147,7 +147,7 @@
 			$.post("{fun U('Index/sitemap')}",data.field,function(r){
 				//console.log(r);return false;
 				var r = JSON.parse(r);
-				if(r.code==0){
+				if(r.code!=1){
 
 					layer.msg(r.msg,{icon:6},function(){
 						window.location.reload();

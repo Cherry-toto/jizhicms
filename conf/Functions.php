@@ -318,7 +318,7 @@ function classTypeData(){
 	if(!$res || !$cache_time){
 		$classtypedata = get_classtype_tree();
 		$d = array();
-		
+        $www = webConf('domain') ? webConf('domain') : get_domain();
 		$htmlpath = webConf('pc_html');
 		$htmlpath = ($htmlpath=='' || $htmlpath=='/') ? '' : '/'.$htmlpath; 
 		foreach($classtypedata as $k=>$v){
@@ -330,7 +330,7 @@ function classTypeData(){
 				if($file_txt==''){
 					$file_txt = CLASS_HIDE_SLASH ? $file_txt : $file_txt.'/';
 				}
-				$d[$v['id']]['url'] = get_domain().$htmlpath.'/'.$v['htmlurl'].$file_txt;
+				$d[$v['id']]['url'] = $www.$htmlpath.'/'.$v['htmlurl'].$file_txt;
 			}
 			
 		}
@@ -349,7 +349,7 @@ function classTypeDataMobile(){
 	if(!$res || !$cache_time){
 		$classtypedata = get_classtype_tree();
 		$d = array();
-		
+        $www = webConf('domain') ? webConf('domain') : get_domain();
 		$htmlpath = webConf('mobile_html');
 		$htmlpath = ($htmlpath=='' || $htmlpath=='/') ? '' : '/'.$htmlpath; 
 		foreach($classtypedata as $k=>$v){
@@ -361,7 +361,7 @@ function classTypeDataMobile(){
 				if($file_txt==''){
 					$file_txt = CLASS_HIDE_SLASH ? $file_txt : $file_txt.'/';
 				}
-				$d[$v['id']]['url'] = get_domain().$htmlpath.'/'.$v['htmlurl'].$file_txt;
+				$d[$v['id']]['url'] = $www.$htmlpath.'/'.$v['htmlurl'].$file_txt;
 			}
 			
 		}
@@ -1048,6 +1048,7 @@ function isWeixin(){
 } 
 //内容url
 function gourl($id,$htmlurl=null,$molds='article'){
+        $www = webConf('domain') ? webConf('domain') : get_domain();
 		if(is_array($id)){
 			/**
 			ownurl target id 
@@ -1057,7 +1058,7 @@ function gourl($id,$htmlurl=null,$molds='article'){
 				return $value['target'];
 			}else{
 				if($value['ownurl']){
-					return get_domain().'/'.$value['ownurl'];
+					return $www.'/'.$value['ownurl'];
 					
 				}
 			}
@@ -1068,15 +1069,16 @@ function gourl($id,$htmlurl=null,$molds='article'){
 		$htmlpath = (isMobile() && webConf('iswap')==1)?webConf('mobile_html'):webConf('pc_html');
 		$htmlpath = ($htmlpath=='' || $htmlpath=='/') ? '' : '/'.$htmlpath; 
 		if($htmlurl!=null){
-			return get_domain().$htmlpath.'/'.$htmlurl.'/'.$id.'.html';
+			return $www.$htmlpath.'/'.$htmlurl.'/'.$id.'.html';
 		}
 		
 		$tid = M($molds)->getField(array('id'=>$id),'tid');
 		$htmlurl = M('classtype')->getField(array('id'=>$tid),'htmlurl');
-		return get_domain().$htmlpath.'/'.$htmlurl.'/'.$id.'.html';
+		return $www.$htmlpath.'/'.$htmlurl.'/'.$id.'.html';
 }
 //输出任何模块的内容URL
 function all_url($id,$molds='article',$htmlurl=null){
+    $www = webConf('domain') ? webConf('domain') : get_domain();
 	if(is_array($id)){
 		/**
 		ownurl target id 
@@ -1086,7 +1088,7 @@ function all_url($id,$molds='article',$htmlurl=null){
 			return $value['target'];
 		}else{
 			if($value['ownurl']){
-				return get_domain().'/'.$value['ownurl'];
+				return $www.'/'.$value['ownurl'];
 			}
 		}
 		$id = $value['id'];
@@ -1096,12 +1098,12 @@ function all_url($id,$molds='article',$htmlurl=null){
 		$htmlpath = ($htmlpath=='' || $htmlpath=='/') ? '' : '/'.$htmlpath; 
 		if($htmlurl!=null){
 			$file_txt = File_TXT_HIDE ? '' : '.html';
-			return get_domain().$htmlpath.'/'.$htmlurl.'/'.$id.$file_txt;
+			return $www.$htmlpath.'/'.$htmlurl.'/'.$id.$file_txt;
 		}
 		$tid = M($molds)->getField(array('id'=>$id),'tid');
 		$htmlurl = M('classtype')->getField(array('id'=>$tid),'htmlurl');
 		$file_txt = File_TXT_HIDE ? '' : '.html';
-		return get_domain().$htmlpath.'/'.$htmlurl.'/'.$id.$file_txt;
+		return $www.$htmlpath.'/'.$htmlurl.'/'.$id.$file_txt;
 }
 //递增
 function incrData($table=null,$id=0,$field='hits',$num=1){

@@ -16,7 +16,8 @@ class DatabaseTool
         'password' => 'root',
         'database' => 'test',
         'charset' => 'utf-8',
-        'target' => ''
+        'target' => '',
+        'prefix' => '',
     );
     private $tables = array();
     private $limit = 10000;//每条最大插入条数
@@ -117,7 +118,9 @@ class DatabaseTool
         $tables = array();
         foreach ($list as $value)
         {
-            $tables[] = $value[0];
+            if(strpos($value[0],$this->config['prefix'])!==false){
+                $tables[] = $value[0];
+            }
         }
         return $tables;
     }

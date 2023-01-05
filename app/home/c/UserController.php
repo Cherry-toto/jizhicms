@@ -363,22 +363,6 @@ class UserController extends CommonController
 		}
 		
 	}
-	function changeimg(){
-		$this->checklogin();
-		$url = $this->frparam('url',1);
-		if($url!=''){
-			$r = M('member')->update(['id'=>$this->member['id']],['litpic'=>$url]);
-			if($r){
-				$_SESSION['member']['litpic'] = $url;
-				JsonReturn(['code'=>0,'msg'=>'success']);
-			}else{
-				JsonReturn(['code'=>1,'msg'=>JZLANG('网络错误，请刷新后重试！')]);
-			}
-		}else{
-			JsonReturn(['code'=>1,'msg'=>JZLANG('上传错误！')]);
-		}
-		
-	}
 	function comment(){
 		$this->checklogin();
 		$page = new Page('Comment');

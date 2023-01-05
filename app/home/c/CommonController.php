@@ -141,6 +141,29 @@ class CommonController extends Controller
 		   $data['code'] = 1004;
 		   JsonReturn($data);
 	    }
+        if($this->webconf['onlyuserupload'] && !$this->islogin){
+            $data['error'] =  "Error: 仅会员才可以上传！";
+            $data['code'] = 1005;
+            JsonReturn($data);
+        }
+
+        if($this->webconf['onlyuserupload'] && $this->islogin){
+
+            $all = M('pictures')->findAll(['userid'=>$this->member['id']],null,'size');
+            $allsize = 0;
+            foreach ($all as $v){
+                $allsize+=$v['size'];
+            }
+            $limisize = $this->member['uploadsize'] * 1024;
+            if($limisize<=$allsize){
+                $data['error'] =  "Error: 超出会员上传文件大小！";
+                $data['code'] = 1006;
+                JsonReturn($data);
+
+            }
+
+
+        }
 		foreach($_FILES[$file]['name'] as $k=>$v){
 			$pix = explode('.',$v);
 		    $pix = end($pix);
@@ -253,7 +276,29 @@ class CommonController extends Controller
 			  $data['code'] = 1004;
 			  JsonReturn($data);
 		  }
-		 
+            if($this->webconf['onlyuserupload'] && !$this->islogin){
+                $data['error'] =  "Error: 仅会员才可以上传！";
+                $data['code'] = 1005;
+                JsonReturn($data);
+            }
+
+            if($this->webconf['onlyuserupload'] && $this->islogin){
+
+                $all = M('pictures')->findAll(['userid'=>$this->member['id']],null,'size');
+                $allsize = 0;
+                foreach ($all as $v){
+                    $allsize+=$v['size'];
+                }
+                $limisize = $this->member['uploadsize'] * 1024;
+                if($limisize<=$allsize){
+                    $data['error'] =  "Error: 超出会员上传文件大小！";
+                    $data['code'] = 1006;
+                    JsonReturn($data);
+
+                }
+
+
+            }
 			$fileType = webConf('fileType');
 			if(strpos($fileType,strtolower($pix))===false  || stripos($pix,'php')!==false){
 				$data['error'] =  "Error: ".JZLANG("文件类型不允许上传！");

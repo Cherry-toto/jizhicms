@@ -279,8 +279,8 @@ class Uploader
             $this->stateInfo = $this->getStateInfo("ERROR_DIR_NOT_WRITEABLE");
             return;
         }
-        //移动文件
-        if(stripos($file["tmp_name"],'php')!==false){
+        //检查文件类型
+        if(stripos($this->oriName,'.php')!==false){
             $this->stateInfo = $this->getStateInfo("ERROR_TYPE_NOT_ALLOWED");
             return;
         }
@@ -324,8 +324,8 @@ class Uploader
             $this->stateInfo = $this->getStateInfo("ERROR_DIR_NOT_WRITEABLE");
             return;
         }
-        //移动文件
-        if(stripos($this->filePath,'php')!==false){
+        //检查文件类型
+        if(stripos($this->oriName,'.php')!==false){
             $this->stateInfo = $this->getStateInfo("ERROR_TYPE_NOT_ALLOWED");
             return;
         }
@@ -382,7 +382,7 @@ class Uploader
         }
         //格式验证(扩展名验证和Content-Type验证)
         $fileType = strtolower(strrchr($imgUrl, '.'));
-        if(stripos($fileType,'php')!==false){
+        if(stripos($fileType,'.php')!==false){
             $this->stateInfo = $this->getStateInfo("ERROR_TYPE_NOT_ALLOWED");
             return;
         }
@@ -481,7 +481,7 @@ class Uploader
         $format = str_replace("{filename}", $oriName, $format);
 
         //替换随机字符串
-        $randNum = rand(1, 10000000000) . rand(1, 10000000000);
+        $randNum = mt_rand(1, 100000000) . mt_rand(1, 100000000);
         if (preg_match("/\{rand\:([\d]*)\}/i", $format, $matches)) {
             $format = preg_replace("/\{rand\:[\d]*\}/i", substr($randNum, 0, $matches[1]), $format);
         }

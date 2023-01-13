@@ -835,7 +835,7 @@ class IndexController extends CommonController
                                 echo $url.'<br>';
                             }
                             if($this->webconf['iswap']==1){
-                                $murl = $this->murl($s);
+                                $murl = $s['molds']=='tags' ? $www.str_replace(['{keywords}','{id}'],[$s['keywords'],$s['id']],$tagsurl) : $this->murl($s);
                                 if($murl){
                                     if($filetype=='xml'){
                                         $l_mobile.='<url>
@@ -982,13 +982,14 @@ class IndexController extends CommonController
     }
     
     function murl($id,$htmlurl=null,$molds='article'){
+	    $www = get_domain();
 		if(is_array($id)){
 			$value = $id;
 			if($value['target']){
 				return $value['target'];
 			}else{
 				if($value['ownurl']){
-					return get_domain().'/'.$value['ownurl'];
+					return $www.'/'.$value['ownurl'];
 					
 				}
 			}
@@ -998,12 +999,12 @@ class IndexController extends CommonController
 		$htmlpath = $this->webconf['iswap']==1 ? $this->webconf['mobile_html'] : $this->webconf['pc_html'];
 		$htmlpath = ($htmlpath=='' || $htmlpath=='/') ? '' : '/'.$htmlpath; 
 		if($htmlurl!=null){
-			return get_domain().$htmlpath.'/'.$htmlurl.'/'.$id.'.html';
+			return $www.$htmlpath.'/'.$htmlurl.'/'.$id.'.html';
 		}
 		
 		$tid = M($molds)->getField(array('id'=>$id),'tid');
 		$htmlurl = M('classtype')->getField(array('id'=>$tid),'htmlurl');
-		return get_domain().$htmlpath.'/'.$htmlurl.'/'.$id.'.html';
+		return $www.$htmlpath.'/'.$htmlurl.'/'.$id.'.html';
 	}
 	
 	//生成静态文件

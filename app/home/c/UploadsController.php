@@ -11,15 +11,15 @@ class UploadsController extends CommonController
         if(!isset($_SESSION['admin'])){
             //检测是否允许前台上传文件
             if(!$this->webconf['isopenhomeupload']){
-        
+
                 JsonReturn(['state'=> '已关闭前台上传文件功能！']);
             }
             if($this->webconf['onlyuserupload'] && !$this->islogin){
-        
+
                 JsonReturn(['state'=> '仅会员才可以上传！']);
             }
             if($this->webconf['onlyuserupload'] && $this->islogin){
-        
+
                 $all = M('pictures')->findAll(['userid'=>$this->member['id']],null,'size');
                 $allsize = 0;
                 foreach ($all as $v){
@@ -29,12 +29,20 @@ class UploadsController extends CommonController
                 if($limisize<=$allsize){
                     JsonReturn(['state'=> '超出会员上传文件大小！']);
                 }
-        
-        
+
+
             }
         }
-    
+
         $filepath = isset($_SESSION['admin']) ? $this->webconf['admin_save_path'] : $this->webconf['home_save_path'];
+        $paths = explode('/',$filepath);
+        $allowpath = (count($paths)>=2 && strpos($paths[1],'{')===false) ? '/'.$paths[0].'/'.$paths[1].'/' : '/'.$paths[0].'/';
+        if(strpos($filepath,'{')===false){
+            $filepath.='/{yyyy}/{mm}/{dd}';
+        }
+        if(strpos($filepath,'rand')===false){
+            $filepath.='/{rand:8}';
+        }
         //$CONFIG = json_decode(preg_replace("/\/\*[\s\S]+?\*\//", "", file_get_contents("config.json")), true);
         $CONFIG = [
             /* 上传图片配置项 */
@@ -109,7 +117,7 @@ class UploadsController extends CommonController
 
             /* 列出指定目录下的图片 */
             "imageManagerActionName"=>"listimage", /* 执行图片管理的action名称 */
-            "imageManagerListPath"=>"/static/upload/", /* 指定要列出图片的目录 */
+            "imageManagerListPath"=>$allowpath, /* 指定要列出图片的目录 */
             "imageManagerListSize"=>20, /* 每次列出文件数量 */
             "imageManagerUrlPrefix"=>"", /* 图片访问路径前缀 */
             "imageManagerInsertAlign"=>"none", /* 插入的图片浮动方式 */
@@ -117,7 +125,7 @@ class UploadsController extends CommonController
 
             /* 列出指定目录下的文件 */
             "fileManagerActionName"=>"listfile", /* 执行文件管理的action名称 */
-            "fileManagerListPath"=>"/static/upload/", /* 指定要列出文件的目录 */
+            "fileManagerListPath"=>$allowpath, /* 指定要列出文件的目录 */
             "fileManagerUrlPrefix"=>"", /* 文件访问路径前缀 */
             "fileManagerListSize"=>20, /* 每次列出文件数量 */
             "fileManagerAllowFiles"=>[

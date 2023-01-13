@@ -77,7 +77,17 @@
 				elem: '#fieldtable'
 				,height: 500
 				,url: '{fun U('Jzchain/index')}?ajax=1' //数据接口
-				,page: false //开启分页
+				,page: {
+				layout: ['limit', 'count', 'prev', 'page', 'next', 'skip']
+						,groups: 5
+						,first: true
+						,last: true
+						,count:500
+						,limit:10
+						,first: '首页'
+						,last: '尾页'
+
+				}
 				,cols: [[ //表头
 				  {field: 'id', title: 'ID', width:100}
 				   ,{type:'checkbox'}

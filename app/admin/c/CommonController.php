@@ -64,7 +64,7 @@ class CommonController extends Controller
 	  
 
 	  if($_SESSION['admin']['isadmin']!=1){
-			$tids = $_SESSION['admin']['tids'];
+			$tids = $_SESSION['admin']['tids'] ?: '000';
 			foreach ($this->classtypetree as $k => $v) {
 				if($v['pid']==0){
 					if(strpos($_SESSION['admin']['tids'],','.$v['id'].',')!==false){
@@ -80,7 +80,7 @@ class CommonController extends Controller
 			}
 			
 		}else{
-			$tids = '0';
+			$tids = '000';
 		}
 		$this->tids = $tids;
     

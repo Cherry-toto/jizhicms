@@ -311,7 +311,7 @@ switch($act){
 		$count=100;
 		$sql = substr($sql,14);
 		$sql.="UPDATE `jz_level` SET `name`='".$_POST['admin_name']."',`pass`='".md5(md5($_POST['admin_pass']).'YF')."' , `regtime` = '".time()."' , `logintime` = ".time()."   WHERE id=1";
-		$db->query("set names utf8");
+		$db->query("set names utf8mb4");
 		$db->exec($sql);
 		echo json_encode(array('count'=>$count,"start"=>0,"to"=>$count));
 		exit;
@@ -328,14 +328,14 @@ switch($act){
 			$count=100;
 			$db = new PDO("mysql:host=".$config['db']['host'].";port=".$config['db']['port'].";dbname=".$config['db']['dbname'],$config['db']['username'], $config['db']['password']);
 			
-			$db->query("set names utf8");	
+			$db->query("set names utf8mb4");
 			$r = $db->exec($sql);
 			echo json_encode(array('count'=>$count,"start"=>0,"to"=>$count,'code'=>0));
 			exit;
 		}else{
 			$db = new PDO("mysql:host=".$config['db']['host'].";port=".$config['db']['port'].";dbname=".$config['db']['dbname'],$config['db']['username'], $config['db']['password']);
 			
-			$db->query("set names utf8");
+			$db->query("set names utf8mb4");
 			//$sql = file_get_contents('../backup/'.$_GET['db']);
 			$path = $_GET['db'];
 			$filename_arr = explode('.php',$path);
@@ -385,9 +385,9 @@ switch($act){
 		//$_opts_values = array(PDO::ATTR_PERSISTENT=>true,PDO::ATTR_ERRMODE=>2,PDO::MYSQL_ATTR_INIT_COMMAND=>'SET NAMES utf8');
 		//$db = new PDO("mysql:host=".$_POST['host'].";port=".$_POST['port'].";dbname=".$_POST['name'],$_POST['user'], $_POST['password'],$_opts_values); 
 		$db = new PDO("mysql:host=".$_POST['host'].";port=".$_POST['port'],$_POST['user'], $_POST['password']);
-		$newtable = "CREATE DATABASE IF NOT EXISTS `" . $_POST['name'] . "` DEFAULT CHARACTER SET utf8;";
+		$newtable = "CREATE DATABASE IF NOT EXISTS `" . $_POST['name'] . "` DEFAULT CHARACTER SET utf8mb4;";
 		if($db->exec($newtable)){
-			$db->query("set names utf8");
+			$db->query("set names utf8mb4");
 			echo json_encode(['code'=>0,'msg'=>'success']);
 			exit;
 		}else{

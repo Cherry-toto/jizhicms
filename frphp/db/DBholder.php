@@ -35,7 +35,7 @@ class DBholder{
 		
 
 		ini_set("memory_limit","800M");
-		$this->pdo->exec("SET NAMES UTF8");
+		$this->pdo->exec("SET NAMES utf8mb4");
 	}
 	
 	public static function getInstance(){

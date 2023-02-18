@@ -37,7 +37,7 @@ CREATE TABLE `jz_article` (
   `tids` varchar(255) DEFAULT NULL COMMENT '副栏目',
   `zan` int(11) DEFAULT '0' COMMENT '点赞数',
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='文章表';
+) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COMMENT='文章表';
 -- ----------------------------
 -- Table structure for jz_attr
 -- ----------------------------
@@ -47,7 +47,7 @@ CREATE TABLE `jz_attr` (
   `name` varchar(50) DEFAULT NULL COMMENT '属性名',
   `isshow` tinyint(1) NOT NULL DEFAULT '1' COMMENT '是否显示',
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='推荐属性';
+) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COMMENT='推荐属性';
 -- ----------------------------
 -- Table structure for jz_buylog
 -- ----------------------------
@@ -65,7 +65,7 @@ CREATE TABLE `jz_buylog` (
   `money` decimal(10,2) NOT NULL DEFAULT '0.00' COMMENT '金额',
   `addtime` int(11) DEFAULT '0' COMMENT '添加时间',
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='购买记录表';
+) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COMMENT='购买记录表';
 -- ----------------------------
 -- Table structure for jz_cachedata
 -- ----------------------------
@@ -82,7 +82,7 @@ CREATE TABLE `jz_cachedata` (
   `limits` int(11) NOT NULL DEFAULT '10' COMMENT '输出条数',
   `times` int(11) NOT NULL DEFAULT '0' COMMENT '更新周期',
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='数据缓存表';
+) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COMMENT='数据缓存表';
 -- ----------------------------
 -- Table structure for jz_chain
 -- ----------------------------
@@ -95,7 +95,7 @@ CREATE TABLE `jz_chain` (
   `num` int(11) NOT NULL DEFAULT '-1' COMMENT '替换次数',
   `isshow` tinyint(1) NOT NULL DEFAULT '1' COMMENT '是否显示',
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='内链';
+) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COMMENT='内链';
 -- ----------------------------
 -- Table structure for jz_classtype
 -- ----------------------------
@@ -125,7 +125,7 @@ CREATE TABLE `jz_classtype` (
   `isclose` tinyint(1) NOT NULL DEFAULT '0' COMMENT '关闭栏目',
   `gids` varchar(255) DEFAULT NULL COMMENT '允许访问角色',
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='栏目表';
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8mb4 COMMENT='栏目表';
 -- ----------------------------
 -- Table structure for jz_collect
 -- ----------------------------
@@ -143,7 +143,7 @@ CREATE TABLE `jz_collect` (
   `isshow` tinyint(1) NOT NULL DEFAULT '1' COMMENT '是否显示：1显示0隐藏',
   `url` varchar(255) DEFAULT NULL COMMENT '链接',
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='轮播图';
+) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COMMENT='轮播图';
 -- ----------------------------
 -- Table structure for jz_collect_type
 -- ----------------------------
@@ -153,7 +153,7 @@ CREATE TABLE `jz_collect_type` (
   `name` varchar(50) DEFAULT NULL COMMENT '分类名',
   `addtime` int(11) NOT NULL DEFAULT '0' COMMENT '添加时间',
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='轮播图分类';
+) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COMMENT='轮播图分类';
 -- ----------------------------
 -- Table structure for jz_comment
 -- ----------------------------
@@ -176,7 +176,7 @@ CREATE TABLE `jz_comment` (
   KEY `aid` (`aid`),
   KEY `pid` (`pid`),
   KEY `zid` (`zid`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='评论表';
+) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COMMENT='评论表';
 -- ----------------------------
 -- Table structure for jz_ctype
 -- ----------------------------
@@ -188,7 +188,7 @@ CREATE TABLE `jz_ctype` (
   `sys` tinyint(1) DEFAULT 0 COMMENT '系统配置，1是0否',
   `isopen` tinyint(1) DEFAULT 1 COMMENT '是否启用，1启用0关闭',
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='系统设置栏目名';
+) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COMMENT='系统设置栏目名';
 -- ----------------------------
 -- Table structure for jz_customurl
 -- ----------------------------
@@ -201,7 +201,7 @@ CREATE TABLE `jz_customurl` (
   `aid` int(11) NOT NULL DEFAULT '0' COMMENT '内容ID',
   `addtime` int(11) NOT NULL DEFAULT '0' COMMENT '添加时间',
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='自定义链接表';
+) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COMMENT='自定义链接表';
 -- ----------------------------
 -- Table structure for jz_fields
 -- ----------------------------
@@ -230,7 +230,7 @@ CREATE TABLE `jz_fields` (
   `width` varchar(50) DEFAULT NULL COMMENT '列表中显示宽度',
   `ishome` tinyint(1) NOT NULL DEFAULT '1' COMMENT '前台表单录入',
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4;
 -- ----------------------------
 -- Table structure for jz_hook
 -- ----------------------------
@@ -250,7 +250,7 @@ CREATE TABLE `jz_hook` (
   `plugins_name` varchar(50) DEFAULT NULL COMMENT '关联插件名',
   `addtime` int(11) NOT NULL DEFAULT '0' COMMENT '添加时间',
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='插件钩子';
+) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COMMENT='插件钩子';
 -- ----------------------------
 -- Table structure for jz_layout
 -- ----------------------------
@@ -265,7 +265,7 @@ CREATE TABLE `jz_layout` (
   `sys` tinyint(1) NOT NULL DEFAULT '0' COMMENT '是否系统配置：1是0否',
   `isdefault` tinyint(1) NOT NULL DEFAULT '0' COMMENT '默认配置：1是0否',
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='桌面设置';
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8mb4 COMMENT='桌面设置';
 -- ----------------------------
 -- Table structure for jz_level
 -- ----------------------------
@@ -281,7 +281,7 @@ CREATE TABLE `jz_level` (
   `logintime` int(11) NOT NULL DEFAULT '0' COMMENT '登录时间',
   `status` tinyint(1) NOT NULL DEFAULT '1' COMMENT '状态：1正常0冻结',
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='管理员表';
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8mb4 COMMENT='管理员表';
 -- ----------------------------
 -- Table structure for jz_level_group
 -- ----------------------------
@@ -297,7 +297,7 @@ CREATE TABLE `jz_level_group` (
   `isagree` tinyint(1) NOT NULL DEFAULT '1' COMMENT '状态：1正常0冻结',
   `description` varchar(500) DEFAULT NULL COMMENT '描述',
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='角色表';
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8mb4 COMMENT='角色表';
 -- ----------------------------
 -- Table structure for jz_likes
 -- ----------------------------
@@ -310,7 +310,7 @@ CREATE TABLE `jz_likes` (
   `addtime` int(11) NOT NULL DEFAULT '0' COMMENT '添加时间',
   PRIMARY KEY (`id`),
   KEY `tid` (`tid`,`aid`,`userid`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='点赞表';
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8mb4 COMMENT='点赞表';
 -- ----------------------------
 -- Table structure for jz_link_type
 -- ----------------------------
@@ -320,7 +320,7 @@ CREATE TABLE `jz_link_type` (
   `name` varchar(50) DEFAULT NULL COMMENT '友链分类名',
   `addtime` int(11) NOT NULL DEFAULT '0' COMMENT '添加时间',
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='友情链接分类表';
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8mb4 COMMENT='友情链接分类表';
 -- ----------------------------
 -- Table structure for jz_links
 -- ----------------------------
@@ -340,7 +340,7 @@ CREATE TABLE `jz_links` (
   `ownurl` varchar(255) DEFAULT NULL COMMENT '自定义链接',
   `addtime` int(11) NOT NULL DEFAULT '0' COMMENT '发布时间',
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='友情链接表';
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8mb4 COMMENT='友情链接表';
 -- ----------------------------
 -- Table structure for jz_member
 -- ----------------------------
@@ -379,7 +379,7 @@ CREATE TABLE `jz_member` (
   `pid` int(11) NOT NULL DEFAULT '0' COMMENT '推荐用户ID',
   `uploadsize` int(11) NOT NULL DEFAULT '50' COMMENT '上传大小限制',
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='会员表';
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8mb4 COMMENT='会员表';
 -- ----------------------------
 -- Table structure for jz_member_group
 -- ----------------------------
@@ -398,7 +398,7 @@ CREATE TABLE `jz_member_group` (
   `discount` decimal(10,2) NOT NULL DEFAULT '0.00' COMMENT '折扣价：现金折扣或者百分比折扣',
   `discount_type` tinyint(1) NOT NULL DEFAULT '0' COMMENT '折扣类型：0无折扣1现金折扣,1百分比折扣',
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='会员分组';
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8mb4 COMMENT='会员分组';
 -- ----------------------------
 -- Table structure for jz_menu
 -- ----------------------------
@@ -409,7 +409,7 @@ CREATE TABLE `jz_menu` (
   `nav` text COMMENT '导航配置',
   `isshow` tinyint(1) NOT NULL DEFAULT '1' COMMENT '是否显示：1显示0不显示',
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='导航表';
+) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COMMENT='导航表';
 -- ----------------------------
 -- Table structure for jz_message
 -- ----------------------------
@@ -432,7 +432,7 @@ CREATE TABLE `jz_message` (
   `hits` int(11) NOT NULL DEFAULT '0' COMMENT '点击量',
   `tids` varchar(255) DEFAULT NULL COMMENT '副栏目',
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='留言表';
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8mb4 COMMENT='留言表';
 -- ----------------------------
 -- Table structure for jz_molds
 -- ----------------------------
@@ -454,7 +454,7 @@ CREATE TABLE `jz_molds` (
   `ishome` tinyint(1) DEFAULT '0' COMMENT '前台发布',
   PRIMARY KEY (`id`),
   KEY `biaoshi` (`biaoshi`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='模型表';
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8mb4 COMMENT='模型表';
 -- ----------------------------
 -- Table structure for jz_orders
 -- ----------------------------
@@ -484,7 +484,7 @@ CREATE TABLE `jz_orders` (
   `discount` decimal(10,2) NOT NULL DEFAULT '0.00' COMMENT '折扣',
   `yunfei` decimal(10,2) NOT NULL DEFAULT '0.00' COMMENT '运费',
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='订单表';
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8mb4 COMMENT='订单表';
 -- ----------------------------
 -- Table structure for jz_page
 -- ----------------------------
@@ -501,7 +501,7 @@ CREATE TABLE `jz_page` (
   `addtime` int(11) NOT NULL DEFAULT '0' COMMENT '发布时间',
   `tids` varchar(255) NOT NULL COMMENT '副栏目',
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='单页模型';
+) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COMMENT='单页模型';
 -- ----------------------------
 -- Table structure for jz_pictures
 -- ----------------------------
@@ -518,7 +518,7 @@ CREATE TABLE `jz_pictures` (
   `addtime` int(11) NOT NULL DEFAULT '0' COMMENT '添加时间',
   `userid` int(11) NOT NULL DEFAULT '0' COMMENT '管理员ID/发布会员ID',
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='图片集';
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8mb4 COMMENT='图片集';
 -- ----------------------------
 -- Table structure for jz_pingjia
 -- ----------------------------
@@ -548,7 +548,7 @@ CREATE TABLE `jz_pingjia` (
   `addtime` int(11) DEFAULT '0' COMMENT '发布时间',
   `zhiye` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8mb4;
 -- ----------------------------
 -- Table structure for jz_plugins
 -- ----------------------------
@@ -566,7 +566,7 @@ CREATE TABLE `jz_plugins` (
   `addtime` int(11) NOT NULL DEFAULT '0' COMMENT '发布时间',
   `config` text COMMENT '配置',
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='插件表';
+) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COMMENT='插件表';
 -- ----------------------------
 -- Table structure for jz_power
 -- ----------------------------
@@ -578,7 +578,7 @@ CREATE TABLE `jz_power` (
   `pid` int(11) NOT NULL DEFAULT '0' COMMENT '父类权限ID',
   `isagree` tinyint(1) NOT NULL DEFAULT '1' COMMENT '是否开放',
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='用户权限表';
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8mb4 COMMENT='用户权限表';
 -- ----------------------------
 -- Table structure for jz_product
 -- ----------------------------
@@ -617,7 +617,7 @@ CREATE TABLE `jz_product` (
   `color` varchar(2) DEFAULT NULL,
   `hy` varchar(500) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='商品表';
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8mb4 COMMENT='商品表';
 -- ----------------------------
 -- Table structure for jz_recycle
 -- ----------------------------
@@ -630,7 +630,7 @@ CREATE TABLE `jz_recycle` (
   `addtime` int(11) NOT NULL DEFAULT '0' COMMENT '删除时间',
   `aid` int(11) NOT NULL DEFAULT '0' COMMENT '关联删除',
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='回收站';
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8mb4 COMMENT='回收站';
 -- ----------------------------
 -- Table structure for jz_ruler
 -- ----------------------------
@@ -643,7 +643,7 @@ CREATE TABLE `jz_ruler` (
   `isdesktop` tinyint(1) NOT NULL DEFAULT '0' COMMENT '是否桌面配置显示（已废弃）',
   `sys` tinyint(1) NOT NULL DEFAULT '0' COMMENT '系统：1是0否',
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='角色权限表';
+) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COMMENT='角色权限表';
 -- ----------------------------
 -- Table structure for jz_shouchang
 -- ----------------------------
@@ -655,7 +655,7 @@ CREATE TABLE `jz_shouchang` (
   `userid` int(11) NOT NULL DEFAULT '0' COMMENT '会员ID',
   `addtime` int(11) NOT NULL DEFAULT '0' COMMENT '添加时间',
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='用户收藏表';
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8mb4 COMMENT='用户收藏表';
 -- ----------------------------
 -- Table structure for jz_sysconfig
 -- ----------------------------
@@ -672,7 +672,7 @@ CREATE TABLE `jz_sysconfig` (
   `orders` int(11) NOT NULL DEFAULT '0' COMMENT '排序',
   `sys` tinyint(1) NOT NULL DEFAULT '1' COMMENT '是否系统字段',
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='系统配置';
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8mb4 COMMENT='系统配置';
 -- ----------------------------
 -- Table structure for jz_tags
 -- ----------------------------
@@ -696,7 +696,7 @@ CREATE TABLE `jz_tags` (
   `tags` varchar(255) DEFAULT NULL COMMENT 'TAG标签',
   `addtime` int(11) NOT NULL DEFAULT '0' COMMENT '添加时间',
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='TAGS表';
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8mb4 COMMENT='TAGS表';
 -- ----------------------------
 -- Table structure for jz_task
 -- ----------------------------
@@ -716,7 +716,7 @@ CREATE TABLE `jz_task` (
   `readtime` int(11) DEFAULT '0' COMMENT '阅读时间',
   `addtime` int(11) DEFAULT '0' COMMENT '发布时间',
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='会员消息表';
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8mb4 COMMENT='会员消息表';
 -- ----------------------------
 -- Records of jz_article
 -- ----------------------------

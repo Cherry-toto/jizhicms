@@ -28,7 +28,7 @@ class HomeController extends CommonController
 		}
 		$url = current_url();
 		$this->ishome = true;
-		$cache_file = APP_PATH.'cache/data/'.md5('index.php');
+		$cache_file = APP_PATH.'cache/data/'.md5(REQUEST_URI);
 		$this->cache_file = $cache_file;
 		$this->start_cache($cache_file);
 		$this->display($this->template.'/index');
@@ -55,7 +55,7 @@ class HomeController extends CommonController
 			$url = (strripos($url,'/')+1 == strlen($url)) ? substr($url,0,strripos($url,'/')) : $url; 
 		}
 		//检查缓存
-		$cache_file = APP_PATH.'cache/data/'.md5($url);
+		$cache_file = APP_PATH.'cache/data/'.md5(REQUEST_URI);
 		$this->cache_file = $cache_file;
 		if(!$this->frparam('ajax')){
 			$this->start_cache($cache_file);
@@ -1010,6 +1010,24 @@ class HomeController extends CommonController
 	//开启检查缓存
 	function start_cache($cache_file){
 		$cache_file = $cache_file.'_'.$this->template.'.php';
+        $cache_num = (int)$this->webconf['cachefilenum'];
+        if($cache_num){
+            $cache_file_list = getCache('cache_list');
+            $cache_file_list = $cache_file_list ?: [];
+            $n = count($cache_file_list);
+            $cache_num = $cache_num<=500 ?: 500;
+            if($n && $n>$cache_num ){
+                $del = array_slice($cache_file_list,0,$n-$cache_num);
+                
+                $cache_file_list = array_slice($cache_file_list,$n-$cache_num);
+                foreach($del as $v){
+                    unlink($v);
+                }
+                
+            }
+            $cache_file_list[] = $cache_file;
+            setCache('cache_list',$cache_file_list);
+        }
 		if($this->webconf['iscachepage']==1){
 			if(file_exists($cache_file)){
 				

@@ -716,13 +716,12 @@ class CommonController extends Controller
 				</script>';
 				break;
 				case 13:
-				//tid,field
 				$l .= '<div class="form-control">
                     <label for="'.$v['field'].'">'.$v['fieldname'].'：</label>
 					<select name="'.$v['field'].'" id="'.$v['field'].'" >';
 						$body = explode(',',$v['body']);
 				$biaoshi = M('molds')->getField(['id'=>$body[0]],'biaoshi');
-				$datalist = M($biaoshi)->findAll();
+				$datalist = M($biaoshi)->findAll(['isshow'=>1],null,null,50);
 				foreach($datalist as $vv){
 					$l.='<option value="'.$vv['id'].'" ';
 					if($data[$v['field']]==$vv['id']){
@@ -734,6 +733,25 @@ class CommonController extends Controller
                     <label  class="fields_tips">'.$must.$v['tips'].'</label>
                 </div>';
 				break;
+                case 21:
+                    $body = explode(',',$v['body']);
+                    $tid = (int)$body[0];
+                    $biaoshi = $this->classtypedata[$tid]['molds'];
+                    $l .= '<div class="form-control">
+                    <label for="'.$v['field'].'">'.$v['fieldname'].'：</label>
+					<select name="'.$v['field'].'" id="'.$v['field'].'" >';
+                    $datalist = M($biaoshi)->findAll(['isshow'=>1],null,null,50);
+                    foreach($datalist as $vv){
+                        $l.='<option value="'.$vv['id'].'" ';
+                        if($data[$v['field']]==$vv['id']){
+                            $l.='selected="selected"';
+                        }
+                        $l.='>'.$vv[$body[1]].'</option>';
+                    }
+                    $l.=  '</select>
+                    <label  class="fields_tips">'.$must.$v['tips'].'</label>
+                    </div>';
+                    break;
 				case 15:
 				$l .= '<div class="form-control">
 		            <label for="'.$v['field'].'">'.$v['fieldname'].'：</label>
@@ -784,6 +802,27 @@ class CommonController extends Controller
 
                     foreach($datalist as $vv){
 
+                        $l.='<input type="checkbox" title="'.$vv[$body[1]].'" name="'.$v['field'].'[]" value="'.$vv['id'].'" ';
+                        if(strpos($data[$v['field']],','.$vv['id'].',')!==false){
+                            $l.='checked="checked"';};
+                        $l.='>'.$vv[$body[1]];
+                    }
+                    $l 	.= '</div>
+					<label  class="fields_tips">'.$must.$v['tips'].'</label>
+					</div>';
+                    break;
+                case 20:
+                    $body = explode(',',$v['body']);
+                    $tid = (int)$body[0];
+                    $biaoshi = $this->classtypedata[$tid]['molds'];
+                    $l .= ' <div class="form-control">
+					<label for="'.$v['field'].'">'.$v['fieldname'].'：</label>
+					<div class="check-box">';
+                    if(!$biaoshi){
+                        echo $v['field'].JZLANG('字段关联绑定失败，请重新绑定！');exit;
+                    }
+                    $datalist = M($biaoshi)->findAll(['isshow'=>1],null,null,50);
+                    foreach($datalist as $vv){
                         $l.='<input type="checkbox" title="'.$vv[$body[1]].'" name="'.$v['field'].'[]" value="'.$vv['id'].'" ';
                         if(strpos($data[$v['field']],','.$vv['id'].',')!==false){
                             $l.='checked="checked"';};

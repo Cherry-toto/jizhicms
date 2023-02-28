@@ -30,7 +30,7 @@ return array(
 	'HOME_VIEW'     	=>   'View',//默认模板文件目录
 	'Tpl_template'		=>	 '',//默认模板目录-二级目录-多端口配置
 	'File_TXT'    		=>	 '.html',//默认模板后缀名
-	'SessionTime'		=>	 3600,//默认缓存时间
+	'SessionTime'		=>	 86400*7,//默认缓存时间
 	'APP_DEBUG'			=>	 false,//关闭调试
 	'StopLog'			=>	 false,//关闭事件日志
 	'DefaultController'	=>	 'Home',//默认控制器

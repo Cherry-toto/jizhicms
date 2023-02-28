@@ -95,7 +95,10 @@ class LoginController extends CommonController
 
 				$group = M('member_group')->find(array('id'=>$res['gid']));
 				if(!$group){
-					JsonReturn(['code'=>1,'msg'=>JZLANG('未找到您所在分组，请联系管理员处理！'),'url'=>$_SESSION['return_url']]);
+                    if($this->frparam('ajax')) {
+                        JsonReturn(['code' => 1, 'msg' => JZLANG('未找到您所在分组，请联系管理员处理！'), 'url' => $_SESSION['return_url']]);
+                    }
+                    Error(JZLANG('未找到您所在分组，请联系管理员处理！'));
 				}
 				unset($group['id']);
 				//检测分组权限

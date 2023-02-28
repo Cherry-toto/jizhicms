@@ -1,4 +1,4 @@
-[![极致CMS建站系统](http://down.jizhicms.cn/header_1920x700.png)](http://down.jizhicms.cn/jizhicms.zip)
+[![极致CMS建站系统](https://www.jizhicms.cn/header_1920x700.png)](http://down.jizhicms.cn/jizhicms.zip)
 
 <h1 align="center">极致CMS建站系统</h1>
 
@@ -72,10 +72,10 @@ QQ交流群：774764507 , 869094463 , 651403450 [【加群】](https://jq.qq.com
 7. 安装完毕，为了安全，请删除根目录intall安装文件夹   
 
 ## 版权声明
-![极致CMS 2.0版权证明](http://down.jizhicms.cn/copyright.png)
+![极致CMS 2.0版权证明](https://www.jizhicms.cn/copyright.png)
 
 ## 支持协议  
 [MIT](https://gitee.com/Cherry_toto/jizhicms/blob/2.0/LICENSE)
 
-![极致CMS建站系统](http://down.jizhicms.cn/footer_1920x273.png)
+![极致CMS建站系统](https://www.jizhicms.cn/footer_1920x273.png)
 

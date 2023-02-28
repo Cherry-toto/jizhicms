@@ -168,6 +168,17 @@
 							</select><input type="text"  placeholder="{fun JZLANG('列表显示字段')}" class="layui-input" name="molds_list_field" id="molds_list_field" value=""></td>
 							<td>{fun JZLANG('单选关联，可以直接调用关联模块内容列表，列表显示对应字段内容')}</td>
 						   </tr>
+						  <tr>
+							  <td><input type="radio" name="fieldtype" value="21" /></td>
+							  <td><input type="text" class="layui-input" name="fieldlong_21" value="11"></td>
+							  <td><select name="molds_select_tid" lay-search id="molds_select_tid">
+								  <option  value="">{fun JZLANG('请选择关联栏目')}</option>
+								  {foreach $classtypetree as $vs}
+								  <option  value="{$vs['id']}">{fun str_repeat('&nbsp;&nbsp;',$vs['level'])}{if($vs['haschild'])}|——{else}{if($vs['level'])}|——{/if}{/if}{$vs['classname']}</option>
+								  {/foreach}
+							  </select><input type="text"  placeholder="{fun JZLANG('列表显示字段')}" class="layui-input" name="molds_list_field_tid" id="molds_list_field_tid" value=""></td>
+							  <td>{fun JZLANG('栏目关联单选，可以直接绑定某个栏目下的内容，包括子栏目')}</td>
+						  </tr>
 						   <tr>
 							<td><input type="radio" name="fieldtype" value="15" /></td>
 							<td>{fun JZLANG('不限')}</td>
@@ -185,6 +196,17 @@
 							</select><input type="text"  placeholder="{fun JZLANG('列表显示字段')}" class="layui-input" name="molds_list_field_muti" id="molds_list_field_muti" value=""></td>
 							<td>{fun JZLANG('多选关联，可以直接调用关联模块内容列表，列表显示对应字段内容')}</td>
 						   </tr>
+							  <tr>
+								  <td><input type="radio" name="fieldtype" value="20" /></td>
+								  <td><input type="text" class="layui-input" name="fieldlong_20" value="255"></td>
+								  <td><select name="molds_select_tid_muti" lay-search id="molds_select_tid_muti">
+									  <option  value="">{fun JZLANG('请选择关联栏目')}</option>
+									  {foreach $classtypetree as $vs}
+									  <option  value="{$vs['id']}">{fun str_repeat('&nbsp;&nbsp;',$vs['level'])}{if($vs['haschild'])}|——{else}{if($vs['level'])}|——{/if}{/if}{$vs['classname']}</option>
+									  {/foreach}
+								  </select><input type="text"  placeholder="{fun JZLANG('列表显示字段')}" class="layui-input" name="molds_list_field_tid_muti" id="molds_list_field_tid_muti" value=""></td>
+								  <td>{fun JZLANG('栏目关联多选，可以直接绑定某个栏目下的多个内容，包括子栏目')}</td>
+							  </tr>
 							  <tr>
 								  <td><input type="radio" name="fieldtype"  value="17" /></td>
 								  <td><input type="hidden"  class="layui-input" name="fieldlong_17" value="11">11</td>

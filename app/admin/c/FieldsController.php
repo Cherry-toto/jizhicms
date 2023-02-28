@@ -93,6 +93,12 @@ class FieldsController extends CommonController
 					case 19:
                     $v['fieldtypename'] = JZLANG('系统TAG');
                     break;
+                    case 20:
+                        $v['fieldtypename'] = JZLANG('绑定栏目单选');
+                        break;
+                    case 21:
+                        $v['fieldtypename'] = JZLANG('绑定栏目多选');
+                        break;
 				}
 				$v['edit_url'] = U('editFields',['id'=>$v['id']]);
 
@@ -261,6 +267,27 @@ class FieldsController extends CommonController
 				}
 				$data['body'] = $this->frparam('molds_select_muti',1).','.$this->frparam('molds_list_field_muti',1);
 				break;
+                case 20:
+                    $sql .= "VARCHAR(".$data['fieldlong'].") DEFAULT ";
+                    if($data['vdata'] || $data['vdata']==0){
+                        $sql .=  "'".$data['vdata']."'";
+                    }else{
+                        $sql .= " NULL ";
+                    }
+                    $data['body'] = $this->frparam('molds_select_tid_muti',1).','.$this->frparam('molds_list_field_tid_muti',1);
+                    break;
+                case 21:
+                    if($data['fieldlong']>11 || $data['fieldlong']<=0){
+                        JsonReturn(array('code'=>1,'msg'=>JZLANG('字段长度不对！')));
+                    }
+                    $sql .= "INT(".$data['fieldlong'].") DEFAULT ";
+                    if($data['vdata']){
+                        $sql .=  "'".$data['vdata']."'";
+                    }else{
+                        $sql .= " '0' NOT NULL ";
+                    }
+                    $data['body'] = $this->frparam('molds_select_tid',1).','.$this->frparam('molds_list_field_tid',1);
+                    break;
 				
 			}
 			//由于已经存在，所以不需要再执行一遍SQL
@@ -336,6 +363,7 @@ class FieldsController extends CommonController
 							case 16:
 							case 18:
 							case 19:
+							case 20:
 							$sql.=" varchar(".$data['fieldlong'].") default";
 							if($data['vdata'] || $data['vdata']==0){
 								$sql .=  "'".$data['vdata']."'";
@@ -354,6 +382,7 @@ class FieldsController extends CommonController
 							case 11:
 							case 13:
 							case 17:
+							case 21:
 							$sql.=" int(".$data['fieldlong'].") default ";
 							if($data['vdata']){
 								$sql .=  "'".$data['vdata']."'";
@@ -383,6 +412,12 @@ class FieldsController extends CommonController
 					if($data['fieldtype']==16){
 						$data['body'] = $this->frparam('molds_select_muti',1).','.$this->frparam('molds_list_field_muti',1);
 					}
+                    if($data['fieldtype']==20){
+                        $data['body'] = $this->frparam('molds_select_tid_muti',1).','.$this->frparam('molds_list_field_tid_muti',1);
+                    }
+                    if($data['fieldtype']==21){
+                        $data['body'] = $this->frparam('molds_select_tid',1).','.$this->frparam('molds_list_field_tid',1);
+                    }
 					if(M('Fields')->update(array('id'=>$this->frparam('id')),$data)){
 						JsonReturn(array('code'=>0,'msg'=>JZLANG('字段修改成功！')));
 					}else{
@@ -402,7 +437,6 @@ class FieldsController extends CommonController
 					case 2:
                     case 5:
                     case 9:
-                    case 16:
                     case 18:
                     case 19:
 
@@ -481,6 +515,45 @@ class FieldsController extends CommonController
 					}
 					$data['body'] = $this->frparam('molds_select',1).','.$this->frparam('molds_list_field',1);
 					break;
+                    case 16:
+                        if($data['fieldlong']>11 || $data['fieldlong']<=0){
+
+                            JsonReturn(array('code'=>1,'msg'=>JZLANG('字段长度不对！')));
+                        }
+                        $sql .= "VARCHAR(".$data['fieldlong'].") CHARACTER SET utf8 default ";
+                        if($data['vdata'] || $data['vdata']==0){
+                            $sql .=  "'".$data['vdata']."'";
+                        }else{
+                            $sql .= ' NULL ';
+                        }
+                        $data['body'] = $this->frparam('molds_select_muti',1).','.$this->frparam('molds_list_field_muti',1);
+                        break;
+                    case 21:
+                        if($data['fieldlong']>11 || $data['fieldlong']<=0){
+
+                            JsonReturn(array('code'=>1,'msg'=>JZLANG('字段长度不对！')));
+                        }
+                        $sql .= "INT(".$data['fieldlong'].") DEFAULT ";
+                        if($data['vdata']){
+                            $sql .=  "'".$data['vdata']."'";
+                        }else{
+                            $sql .= " '0' NOT NULL ";
+                        }
+                        $data['body'] = $this->frparam('molds_select_tid',1).','.$this->frparam('molds_list_field_tid',1);
+                        break;
+                    case 20:
+                        if($data['fieldlong']>11 || $data['fieldlong']<=0){
+
+                            JsonReturn(array('code'=>1,'msg'=>JZLANG('字段长度不对！')));
+                        }
+                        $sql .= "VARCHAR(".$data['fieldlong'].") CHARACTER SET utf8 default ";
+                        if($data['vdata'] || $data['vdata']==0){
+                            $sql .=  "'".$data['vdata']."'";
+                        }else{
+                            $sql .= ' NULL ';
+                        }
+                        $data['body'] = $this->frparam('molds_select_tid_muti',1).','.$this->frparam('molds_list_field_tid_muti',1);
+                        break;
 					
 				}
 				$x = M()->runSql($sql);
@@ -974,40 +1047,73 @@ layui.use("laydate", function(){
 							 
 						</script>';
 				break;
-				
-				case 13:
-				//tid,field
-				$l .= '<div class="layui-form-item">
+
+                case 13:
+                case 21:
+                    //tid,field
+
+                    $l .= '<div class="layui-form-item">
                     <label for="'.$v['field'].'" class="layui-form-label">';
-				if($v['ismust']==1){
-				$l .= '<span class="x-red">*</span>';	
-				}
-                $l .= $v['fieldname'].'  
+                    if($v['ismust']==1){
+                        $l .= '<span class="x-red">*</span>';
+                    }
+                    $l .= $v['fieldname'].'  
                     </label>
-                    <div class="layui-input-inline">
-						<select name="'.$v['field'].'" lay-search="" id="'.$v['field'].'" >';
-						$body = explode(',',$v['body']);
-				$biaoshi = M('molds')->getField(['id'=>$body[0]],'biaoshi');
-				if(!$biaoshi){
-					echo $v['field'].JZLANG('字段关联绑定失败，请重新绑定！');exit;
-				}
-				$datalist = M($biaoshi)->findAll();
-				$l.='<option value="0">'.JZLANG('请选择关联项').'</option>';
-				foreach($datalist as $vv){
-					$l.='<option value="'.$vv['id'].'" ';
-					if($data[$v['field']]==$vv['id']){
-						$l.='selected="selected"';
-					}
-					$l.='>'.$vv[$body[1]].'</option>';
-				}
-					$l.=  '</select>
-                    </div>';
-				if($v['tips']){
-					$l.='<div class="layui-form-mid layui-word-aux">
+					<div class="layui-input-inline">
+					<input type="hidden" id="'.$v['field'].'" name="'.$v['field'].'" value="">
+					<div id="'.$v['field'].'_xmselect"></div>
+					<script>
+					var '.$v['field'].'_xmselect = xmSelect.render({
+							el: "#'.$v['field'].'_xmselect", 
+							autoRow: true,
+							toolbar: { show: false },
+							filterable: true,
+							radio:true,
+							remoteSearch: true,
+							remoteMethod: function(val, cb, show){
+//								if(!val){
+//									return cb([]);
+//								}
+								$.get("'.U('Fields/getSelect').'",{id:"'.$v['id'].'",key:val},function(res){
+									if(res.code==0){
+										cb(res.data)
+									}else{
+										layer.alert(res.msg)
+										
+									}
+									
+								},"json")
+								
+							},
+							on:function(r){
+								if(r["arr"].length>0){
+									$("#'.$v['field'].'").val(r["arr"][0].value)
+								}else{
+									$("#'.$v['field'].'").val("")
+								}
+							}
+						})
+						$.get("'.U('Fields/getSelect').'",{id:"'.$v['id'].'",value:"'.$data[$v['field']].'",check:1},function(res){
+									if(res.code==0){
+										'.$v['field'].'_xmselect.setValue(res.data);
+										$("#'.$v['field'].'").val("'.$data[$v['field']].'");
+									}else{
+										//layer.alert(res.msg)
+										
+									}
+									
+								},"json")
+						 
+						</script>
+					</div>
+					';
+
+                    if($v['tips']){
+                        $l.='<div class="layui-form-mid layui-word-aux">
 					  <i data-info="'.$v['tips'].'" data-field="f'.$v['id'].'" class="layui-sys-icon layui-icon layui-icon-about f'.$v['id'].'"></i>
 					</div>';
-				}	
-                $l.='</div>
+                    }
+                    $l.='</div>
 				<script>
 							layui.use("form", function () {
 								var form_'.$v['field'].' = layui.form;
@@ -1015,7 +1121,7 @@ layui.use("laydate", function(){
 							});
 							 
 						</script>';
-				break;
+                    break;
 				case 14:
 				$l .= '<div class="layui-form-item">
                     <label for="'.$v['field'].'" class="layui-form-label">';
@@ -1076,35 +1182,71 @@ layui.use("laydate", function(){
 				})
 				</script>';
 				break;
-				case 16:
-				$l .= '<div class="layui-form-item">
+                case 16:
+                case 20:
+
+                    $l .= '<div class="layui-form-item">
                     <label for="'.$v['field'].'" class="layui-form-label">';
-				if($v['ismust']==1){
-				$l .= '<span class="x-red">*</span>';	
-				}
-                $l .= $v['fieldname'].'  
+                    if($v['ismust']==1){
+                        $l .= '<span class="x-red">*</span>';
+                    }
+                    $l .= $v['fieldname'].'  
                     </label>
-					<div class="layui-input-block">';
-					$body = explode(',',$v['body']);
-					$biaoshi = M('molds')->getField(['id'=>$body[0]],'biaoshi');
-					if(!$biaoshi){
-						echo $v['field'].JZLANG('字段关联绑定失败，请重新绑定！');exit;
-					}
-					$datalist = M($biaoshi)->findAll(['isshow'=>1]);
-				foreach($datalist as $vv){
-					
-					$l.='<input type="checkbox" title="'.$vv[$body[1]].'" name="'.$v['field'].'[]" value="'.$vv['id'].'" ';
-					if(strpos($data[$v['field']],','.$vv['id'].',')!==false){
-						$l.='checked="checked"';};
-					$l.='>';
-				}
-				$l 	.= '</div>';
-				if($v['tips']){
-					$l.='<div class="layui-form-mid layui-word-aux">
+					<div class="layui-input-inline">
+					<input type="hidden" id="'.$v['field'].'" name="'.$v['field'].'" value="">
+					<div id="'.$v['field'].'_xmselect"></div>
+					<script>
+					var '.$v['field'].'_xmselect = xmSelect.render({
+							el: "#'.$v['field'].'_xmselect", 
+							autoRow: true,
+							toolbar: { show: true },
+							filterable: true,
+							remoteSearch: true,
+							remoteMethod: function(val, cb, show){
+//								if(!val){
+//									return cb([]);
+//								}
+								$.get("'.U('Fields/getSelect').'",{id:"'.$v['id'].'",key:val},function(res){
+									if(res.code==0){
+										cb(res.data)
+									}else{
+										layer.alert(res.msg)
+										
+									}
+									
+								},"json")
+								
+							},
+							on:function(r){
+								var s = [];
+								for(var i=0;i<r["arr"].length;i++){
+									s.push(r["arr"][i].value)
+								}
+								$("#'.$v['field'].'").val(s.join(","))
+							}
+						})
+						
+						$.get("'.U('Fields/getSelect').'",{id:"'.$v['id'].'",value:"'.trim($data[$v['field']],',').'",check:1},function(res){
+									if(res.code==0){
+										'.$v['field'].'_xmselect.setValue(res.data);
+										$("#'.$v['field'].'").val("'.trim($data[$v['field']],',').'");
+									}else{
+										//layer.alert(res.msg)
+										
+									}
+									
+								},"json")
+						
+						</script>
+					</div>
+					';
+
+                    if($v['tips']){
+                        $l.='<div class="layui-form-mid layui-word-aux">
 					  <i data-info="'.$v['tips'].'" data-field="f'.$v['id'].'" class="layui-sys-icon layui-icon layui-icon-about f'.$v['id'].'"></i>
 					</div>';
-				}	
-                $l.='</div>
+                    }
+                    $l.='</div>
 				<script>
 							layui.use("form", function () {
 								var form_'.$v['field'].' = layui.form;
@@ -1112,7 +1254,7 @@ layui.use("laydate", function(){
 							});
 							 
 						</script>';
-				break;
+                    break;
 				
 				case 18:
 					$l.='<div class="layui-form-item">
@@ -1204,7 +1346,136 @@ layui.use("laydate", function(){
 		}
 		echo $l;
 	}
-	
+
+    function getSelect(){
+        $id = $this->frparam('id');
+        if(!$id){
+            JsonReturn(['code'=>1,'msg'=>'ID错误！']);
+        }
+        $fields = M('fields')->find(['id'=>$id]);
+        if(!$fields){
+            JsonReturn(['code'=>1,'msg'=>'未找到字段！']);
+        }
+
+        $body = explode(',',$fields['body']);
+        $field = strtolower($body[1]);
+
+        $value = $this->frparam('value',1);
+        if($this->frparam('check')){
+
+            switch($fields['fieldtype']){
+                case 13:
+                    $molds = M('molds')->getField(['id'=>$body[0]],'biaoshi');
+                    if(!$molds){
+                        JsonReturn(['code'=>1,'msg'=>$field.JZLANG('字段关联绑定失败，请重新绑定！')]);
+                    }
+                    if($value){
+                        $lists = M($molds)->findAll(['id'=>$value],null,'id ,'.$field);
+                    }else{
+                        $lists = [];
+                    }
+
+                    foreach($lists as $k=>$v){
+                        $lists[$k]['value'] = $v['id'];
+                        $lists[$k]['name'] = $v[$field];
+                        $lists[$k]['selected'] = true;
+                    }
+                    JsonReturn(['code'=>0,'data'=>$lists]);
+
+                    break;
+
+                case 16:
+                    $molds = M('molds')->getField(['id'=>$body[0]],'biaoshi');
+                    if(!$molds){
+                        JsonReturn(['code'=>1,'msg'=>$field.JZLANG('字段关联绑定失败，请重新绑定！')]);
+                    }
+                    if($value){
+                        $ids = $value;
+                        $sql=" id in(".$ids.") ";
+                        $lists = M($molds)->findAll($sql,null,'id ,'.$field);
+                    }else{
+                        $lists = [];
+                    }
+                    break;
+                case 20:
+                    $tid = (int)$body[0];
+                    $molds = $this->classtypedata[$tid]['molds'];
+                    if(!$molds){
+                        JsonReturn(['code'=>1,'msg'=>$field.JZLANG('字段关联绑定失败，请重新绑定！')]);
+                    }
+                    if($value){
+                        $ids = $value;
+                        $sql=" id in(".$ids.") ";
+                        $lists = M($molds)->findAll($sql,null,'id ,'.$field);
+                    }else{
+                        $lists = [];
+                    }
+                    break;
+                case 21:
+
+                    $tid = (int)$body[0];
+                    $molds = $this->classtypedata[$tid]['molds'];
+                    if(!$molds){
+                        JsonReturn(['code'=>1,'msg'=>$field.JZLANG('字段关联绑定失败，请重新绑定！')]);
+                    }
+                    if($value){
+                        $tids = array_column($this->classtypedata[$tid]['children']['lists'],'id');
+                        $tids[]=$tid;
+                        $sql = " id=".$value." and tid in(".implode(',',$tids).")";
+                        $lists = M($molds)->findAll(['id'=>$value],null,'id ,'.$field);
+                    }else{
+                        $lists = [];
+                    }
+
+                    break;
+
+            }
+            foreach($lists as $k=>$v){
+                $lists[$k]['value'] = $v['id'];
+                $lists[$k]['name'] = $v[$field];
+                $lists[$k]['selected'] = true;
+            }
+            JsonReturn(['code'=>0,'data'=>$lists]);
+
+
+
+        }
+
+        $key = $this->frparam('key',1);
+        if(!$key){
+           // JsonReturn(['code'=>1,'msg'=>'关键词错误！']);
+        }
+        switch($fields['fieldtype']){
+            case 13:
+            case 16:
+                $molds = M('molds')->getField(['id'=>$body[0]],'biaoshi');
+                if(!$molds){
+                    JsonReturn(['code'=>1,'msg'=>'关联绑定配置错误！']);
+                }
+                $sql = $key ? $field." like '%".$key."%'" : null;
+                break;
+            case 20:
+            case 21:
+                $tid = (int)$body[0];
+                $molds = $this->classtypedata[$tid]['molds'];
+                $tids = array_column($this->classtypedata[$tid]['children']['lists'],'id');
+                $tids[]=$tid;
+                $sql = $key ? $field." like '%".$key."%' and tid in(".implode(',',$tids).")" : "tid in(".implode(',',$tids).")";
+
+                break;
+        }
+        $limit = $key ? null : 10;
+        $lists = M($molds)->findAll($sql,null,'id ,'.$field,$limit);
+
+        foreach($lists as $k=>$v){
+            $lists[$k]['value'] = $v['id'];
+            $lists[$k]['name'] = $v[$field];
+
+        }
+
+        JsonReturn(['code'=>0,'data'=>$lists]);
+    }
+
 	function deleteFields(){
 		$id = $this->frparam('id');
 		if($id){
@@ -1344,6 +1615,12 @@ layui.use("laydate", function(){
 					case 19:
                     $v['fieldtypename'] = JZLANG('系统TAG');
                     break;
+                    case 20:
+                        $v['fieldtypename'] = JZLANG('绑定栏目多选');
+                        break;
+                    case 21:
+                        $v['fieldtypename'] = JZLANG('绑定栏目单选');
+                        break;
 					
 				}
 				

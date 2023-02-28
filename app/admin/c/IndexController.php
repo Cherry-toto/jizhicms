@@ -463,9 +463,8 @@ class IndexController extends CommonController
 	
 	 //更新session的过期时间
     function update_session_maxlifetime(){
-	  $cache_time = (int)webConf('cache_time');
-	  $cache_time = $cache_time==0 ? 7200 : $cache_time;
-	  setcookie('PHPSESSID', $_COOKIE['PHPSESSID'], time() + $cache_time);
+	  $cache_time = SessionTime;
+	  setcookie('PHPSESSID', $_COOKIE['PHPSESSID'], time() + $cache_time,'/',null,null,null,true);
 	  
     }
 	//清空缓存

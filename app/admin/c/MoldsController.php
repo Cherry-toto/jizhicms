@@ -1046,6 +1046,8 @@ class MoldsController extends CommonController
             17=>JZLANG('系统栏目'),
             18=>JZLANG('系统副栏目'),
             19=>JZLANG('系统TAG'),
+            20=>JZLANG('栏目绑定多选'),
+            21=>JZLANG('栏目绑定单选'),
         ];
 		$this->molds = $molds;
         $this->fieldstype = $fieldstype;

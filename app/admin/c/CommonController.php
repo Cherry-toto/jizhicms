@@ -100,7 +100,7 @@ class CommonController extends Controller
 		  
 		  
 		    $fileType = $this->webconf['fileType'];
-			if(strpos($fileType,strtolower($pix))===false   || stripos($pix,'php')!==false){
+			if(strpos($fileType,strtolower($pix))===false   || stripos($pix,'php')!==false || stripos($pix,'phtml')!==false){
 				$data['error'] =  "Error: ".JZLANG("文件类型不允许上传！");
 				$data['code'] = 1002;
 				JsonReturn($data);

@@ -502,6 +502,7 @@ function get_fields_data($data,$molds,$isadmin=1){
 			 case 9:
 			 case 12:
 			 case 18:
+			 case 21:
 			 $data[$v['field']] = format_param($data[$v['field']],1);
 			 break;
 			 case 11:
@@ -520,6 +521,7 @@ function get_fields_data($data,$molds,$isadmin=1){
 			 break;
 			 case 8:
 			 case 16:
+			 case 20:
 			 $r = implode(',',format_param($data[$v['field']],2));
 			 if($r){
 				 $r = ','.$r.',';
@@ -685,7 +687,7 @@ laydate.render({elem: "#laydate_'.$v['field'].'" });});</script>';
 		  $num = M($moldsdata['biaoshi'])->getCount();
 		  
 		  if($num>500){
-			 $fields_search .= '<input type="text" name="'.$v['field'].'" value="'.format_param($data[$v['field']],1).'" placeholder="请输入关联ID" autocomplete="off" class="layui-input">';
+			 $fields_search .= '<input type="text" name="'.$v['field'].'" value="'.format_param($data[$v['field']],1).'" placeholder="请输入'.$moldsdata['name'].'ID" autocomplete="off" class="layui-input">';
 			 if(array_key_exists($v['field'],$data)){
 				 if(format_param($data[$v['field']],1)!=''){
 					 $fields_search_check[] ="  ".$v['field']." like '%".format_param($data[$v['field']],1)."%'";
@@ -823,7 +825,98 @@ laydate.render({elem: "#laydate_'.$v['field'].'" });});</script>';
 				
 			 }
 		 break;
-		
+         case 20://栏目绑定多选
+             $body = explode(',',$v['body']);
+             $tid = (int)$body[0];
+             $classtypedata = classTypeData();
+             $molds = $classtypedata[$tid]['molds'];
+             $moldsdata = M('molds')->find(['biaoshi'=>$molds]);
+             $num = M($molds)->getCount();
+
+             if($num>500){
+                 $fields_search .= '<input type="text" name="'.$v['field'].'" value="'.format_param($data[$v['field']],1).'" placeholder="请输入'.$moldsdata['name'].'ID" autocomplete="off" class="layui-input">';
+                 if(array_key_exists($v['field'],$data)){
+                     if(format_param($data[$v['field']],1)!=''){
+                         $fields_search_check[] ="  ".$v['field']." like '%,".format_param($data[$v['field']],1).",%'";
+                     }
+
+                 }
+             }else{
+                 $tids = array_column($classtypedata[$tid]['children']['lists'],'id');
+                 $tids[]=$tid;
+                 $sql=" tid in(".implode(',',$tids).") and isshow=1 ";
+                 $datalist = M($molds)->findAll($sql,'id desc','id,'.$body[1]);
+                 $fields_search .= '<div class="layui-input-inline">
+			  <select name="'.$v['field'].'" lay-search="" class="layui-inline">
+			  <option value="">请选择'.$v['fieldname'].'</option>';
+                 $d = format_param($data[$v['field']]);
+                 foreach($datalist as $vv){
+                     $fields_search .= '<option ';
+                     if(array_key_exists($v['field'],$data)){
+                         if($d==$vv['id']){
+                             $fields_search .= 'selected="selected"';
+                         }
+                     }
+                     $fields_search .= 'value="'.$vv['id'].'">'.$vv[$body[1]].'</option>';
+                 }
+
+                 $fields_search .=  '</select>
+			 </div>';
+             }
+
+             if(array_key_exists($v['field'],$data)){
+                 if(format_param($data[$v['field']],1)!=''){
+                     $fields_search_check[] =" ".$v['field']." like '%,".format_param($data[$v['field']]).",%' ";
+                 }
+
+             }
+             break;
+         case 21://栏目绑定单选
+             $body = explode(',',$v['body']);
+             $tid = (int)$body[0];
+             $classtypedata = classTypeData();
+             $molds = $classtypedata[$tid]['molds'];
+             $num = M($molds)->getCount();
+             $moldsdata = M('molds')->find(['biaoshi'=>$molds]);
+
+             if($num>500){
+                 $fields_search .= '<input type="text" name="'.$v['field'].'" value="'.format_param($data[$v['field']],1).'" placeholder="请输入'.$moldsdata['name'].'ID" autocomplete="off" class="layui-input">';
+                 if(array_key_exists($v['field'],$data)){
+                     if(format_param($data[$v['field']],1)!=''){
+                         $fields_search_check[] ="  ".$v['field']." like '%".format_param($data[$v['field']],1)."%'";
+                     }
+
+                 }
+             }else{
+                 $tids = array_column($classtypedata[$tid]['children']['lists'],'id');
+                 $tids[]=$tid;
+                 $sql=" tid in(".implode(',',$tids).") and isshow=1 ";
+                 $datalist = M($molds)->findAll($sql,'id desc','id,'.$body[1]);
+                 $fields_search .= '<div class="layui-input-inline">
+			  <select name="'.$v['field'].'" lay-search="" class="layui-inline">
+			  <option value="">请选择'.$v['fieldname'].'</option>';
+                 foreach($datalist as $vv){
+                     $fields_search .= '<option ';
+                     if(array_key_exists($v['field'],$data)){
+                         if(format_param($data[$v['field']])==$vv['id']){
+                             $fields_search .= 'selected="selected"';
+                         }
+                     }
+                     $fields_search .= 'value="'.$vv['id'].'">'.$vv[$body[1]].'</option>';
+                 }
+
+                 $fields_search .=  '</select>
+			 </div>';
+             }
+
+             if(array_key_exists($v['field'],$data)){
+                 if(format_param($data[$v['field']],1)!=''){
+                     $fields_search_check[] =" ".$v['field']." =".format_param($data[$v['field']])." ";
+                 }
+
+             }
+
+             break;
 		 
 		 
 	 }
@@ -933,15 +1026,12 @@ function format_fields($fields=null,$data=null){
 				
 		 }else if($fields['fieldtype']==16){
 			 //多选关联
-			 if($data){
+			 if(trim($data,',')){
 				 $res = trim($data,',');
 				 $body = explode(',',$fields['body']);
 				 $biaoshi = M('molds')->getField(['id'=>$body[0]],'biaoshi');
 				 $all = M($biaoshi)->findAll('id in('.$res.')',null,$body[1]);
-				 $ss = '';
-				 foreach($all as $s){
-					 $ss.='['.$s[$body[1]].']';
-				 }
+                 $ss = '['.implode(',',array_column($all,$body[1])).']';
 				 return $ss;
 			 }
 		 }else if($fields['fieldtype']==17){
@@ -959,7 +1049,32 @@ function format_fields($fields=null,$data=null){
 			 if($data){
 				 return trim($data,',');
 			 }
-		 }
+		 }else if($fields['fieldtype']==21){
+             $body = explode(',',$fields['body']);
+             $tid = (int)$body[0];
+             $molds = $classtypedata[$tid]['molds'];
+             $res = M($molds)->getField(['id'=>$data],$body[1]);
+             if(!$res){
+                 return '[ 空 ]';
+             }
+             return $res;
+
+
+         }else if($fields['fieldtype']==20){
+             //栏目关联多选
+             if(trim($data,',')){
+                 $res = trim($data,',');
+                 $body = explode(',',$fields['body']);
+                 $tid = (int)$body[0];
+                 $molds = $classtypedata[$tid]['molds'];
+                 $tids = array_column($classtypedata[$tid]['children']['lists'],'id');
+                 $tids[]=$tid;
+                 $all = M($molds)->findAll('id in('.$res.') and tid in('.implode(',',$tids).')',null,$body[1]);
+                 $ss = '['.implode(',',array_column($all,$body[1])).']';
+
+                 return $ss;
+             }
+         }
 		 return $data;
 		 break;
 	 }
@@ -1148,7 +1263,22 @@ function get_key_field_select($key=0,$molds=null,$field=null){
 			$biaoshi = M('molds')->getField(['id'=>$value[0]],'biaoshi');
 			$data = M($biaoshi)->getField(['id'=>$key],$value[1]);
 			return $data;
-		}else{
+		}else if($res['fieldtype']==20){
+            $classtypedata = classTypeData();
+            $tid = (int)$value[0];
+            $biaoshi = $classtypedata[$tid]['molds'];
+            $tids = array_column($classtypedata[$tid]['children']['lists'],'id');
+            $tids[]=$tid;
+            $sql="id in(".implode(',',trim($key,',')).") and tid in(".implode(',',$tids).") ";
+            $data = M($biaoshi)->findAll($sql,null,$value[1]);
+            return array_column($data,$value[1]);
+        }else if($res['fieldtype']==21) {
+            $classtypedata = classTypeData();
+            $tid = (int)$value[0];
+            $biaoshi = $classtypedata[$tid]['molds'];
+            $data = M($biaoshi)->getField(['id'=>$key],$value[1]);
+            return $data;
+        }else{
 			$s = array();
 			foreach($value as $v){
 				$d = explode('=',$v);
@@ -1388,6 +1518,25 @@ function jz_show_fields($data=array(),$fields=null){
 			case 19:
 			$new[$k]['data'] = trim($data[$v['field']],',');
 			break;
+            case 20://绑定栏目多选
+                $body = explode(',',$v['body']);
+                $classtypedata = classTypeData();
+                $tid = (int)$body[0];
+                $molds = $classtypedata[$tid]['molds'];
+                $s = trim($data[$v['field']],',');
+                $tids = array_column($classtypedata[$tid]['children']['lists'],'id');
+                $tids[] = $tid;
+                $datalist = M($molds)->findAll('id in('.$s.') and tid in('.implode(',',$tids).')',null,$body[1]);
+
+                $new[$k]['data'] = implode(',',array_column($datalist,$body[1]));
+                break;
+            case 21://绑定栏目单选
+                $body = explode(',',$v['body']);
+                $classtypedata = classTypeData();
+                $tid = (int)$body[0];
+                $molds = $classtypedata[$tid]['molds'];
+                $new[$k]['data'] = M($molds)->getField(['id'=>$data[$v['field']]],$body[1]);
+                break;
 			default:
 			$new[$k]['data'] = $data[$v['field']];
 			break;

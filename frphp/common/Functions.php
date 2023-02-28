@@ -375,7 +375,7 @@ function start_session($expire = 0)  {
 		session_start();
 	} else {
 		session_start();
-		setcookie('PHPSESSID', $_COOKIE['PHPSESSID'], time() + $expire,'/');
+		setcookie('PHPSESSID', $_COOKIE['PHPSESSID'], time() + $expire,'/',null,null,true);
 	}
 
 } 

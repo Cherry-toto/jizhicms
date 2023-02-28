@@ -111,7 +111,7 @@ class frphp
 					if(!session_id()){ session_start();}
 				} else {
 					if(!session_id()){ session_start();}
-					setcookie('PHPSESSID', $_COOKIE['PHPSESSID'], time() + $this->config['redis']['EXPIRE'],'/');
+					setcookie('PHPSESSID', $_COOKIE['PHPSESSID'], time() + $this->config['redis']['EXPIRE'],'/',null,null,true);
 				}
 			}else{
 				
@@ -124,7 +124,7 @@ class frphp
 					if(!session_id()){ session_start();}
 				} else {
 					if(!session_id()){ session_start();}
-					setcookie('PHPSESSID', $_COOKIE['PHPSESSID'], time() + SessionTime,'/');
+					setcookie('PHPSESSID', $_COOKIE['PHPSESSID'], time() + SessionTime,'/',null,null,true);
 				}
 				
 				

@@ -161,7 +161,7 @@
 						   </tr>
 						    <tr>
 							<td><input type="radio" name="fieldtype" {if($data['fieldtype']==13)} checked {/if} value="13" /></td>
-							<td><input type="text" class="layui-input" name="fieldlong_13" value="{if($data['fieldtype']==13)}{$data['fieldlong']}{else}2{/if}"></td>
+							<td><input type="text" class="layui-input" name="fieldlong_13" value="{if($data['fieldtype']==13)}{$data['fieldlong']}{else}11{/if}"></td>
 							<td>
 							{if($data['fieldtype']==13)}
 							{php $vdata = explode(',',$data['body']) /}
@@ -183,6 +183,30 @@
 							</td>
 							<td>{fun JZLANG('关联模块内容ID')}</td>
 						   </tr>
+							<tr>
+								<td><input type="radio" name="fieldtype" {if($data['fieldtype']==21)} checked {/if} value="21" /></td>
+								<td><input type="text" class="layui-input" name="fieldlong_21" value="{if($data['fieldtype']==21)}{$data['fieldlong']}{else}11{/if}"></td>
+								<td>
+									{if($data['fieldtype']==21)}
+									{php $vdata = explode(',',$data['body']) /}
+									<select name="molds_select_tid">
+										{foreach $classtypetree as $vs}
+										<option {if($vdata[0]==$vs['id'])}selected{/if}  value="{$vs['id']}">{fun str_repeat('&nbsp;&nbsp;',$vs['level'])}{if($vs['haschild'])}|——{else}{if($vs['level'])}|——{/if}{/if}{$vs['classname']}</option>
+										{/foreach}
+									</select>
+									<input type="text" placeholder="{fun JZLANG('列表显示字段')}" class="layui-input" name="molds_list_field_tid" value="{$vdata[1]}">
+									{else}
+									<select name="molds_select_tid">
+										{foreach $classtypetree as $vs}
+										<option  value="{$vs['id']}">{fun str_repeat('&nbsp;&nbsp;',$vs['level'])}{if($vs['haschild'])}|——{else}{if($vs['level'])}|——{/if}{/if}{$vs['classname']}</option>
+										{/foreach}
+									</select>
+									<input type="text" placeholder="{fun JZLANG('列表显示字段')}" class="layui-input" name="molds_list_field_tid" value="">
+									{/if}
+
+								</td>
+								<td>{fun JZLANG('栏目关联单选，关联模块内容ID')}</td>
+							</tr>
 						    <tr>
 							<td><input type="radio" name="fieldtype" {if($data['fieldtype']==15)} checked {/if} value="15" /></td>
 							<td>{fun JZLANG('多行录入')}<br/>txt</td>
@@ -210,6 +234,30 @@
 								{/if}
 							</td>
 							<td>{fun JZLANG('多选关联，可以直接调用关联模块内容列表，列表显示对应字段内容')}</td>
+							</tr>
+							<tr>
+								<td><input type="radio" name="fieldtype" {if($data['fieldtype']==20)} checked {/if} value="20" /></td>
+								<td><input type="text" class="layui-input" name="fieldlong_20" value="{if($data['fieldtype']==20)}{$data['fieldlong']}{else}255{/if}"></td>
+								<td>
+									{if($data['fieldtype']==20)}
+									{php $vdata = explode(',',$data['body']) /}
+									<select name="molds_select_tid_muti">
+										{foreach $classtypetree as $vs}
+										<option {if($vdata[0]==$vs['id'])}selected{/if}  value="{$vs['id']}">{fun str_repeat('&nbsp;&nbsp;',$vs['level'])}{if($vs['haschild'])}|——{else}{if($vs['level'])}|——{/if}{/if}{$vs['classname']}</option>
+										{/foreach}
+									</select>
+									<input type="text" placeholder="{fun JZLANG('列表显示字段')}" class="layui-input" name="molds_list_field_tid_muti" value="{$vdata[1]}">
+									{else}
+									<select name="molds_select_tid_muti">
+										{foreach $classtypetree as $vs}
+										<option  value="{$vs['id']}">{fun str_repeat('&nbsp;&nbsp;',$vs['level'])}{if($vs['haschild'])}|——{else}{if($vs['level'])}|——{/if}{/if}{$vs['classname']}</option>
+										{/foreach}
+									</select>
+									<input type="text" placeholder="{fun JZLANG('列表显示字段')}" class="layui-input" name="molds_list_field_tid_muti" value="">
+									{/if}
+
+								</td>
+								<td>{fun JZLANG('栏目关联多选，关联多个模块内容ID')}</td>
 							</tr>
 							<tr>
 								<td><input type="radio" name="fieldtype" {if($data['fieldtype']==17)} checked {/if} value="17" /></td>

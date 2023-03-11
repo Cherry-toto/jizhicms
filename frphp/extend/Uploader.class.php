@@ -279,12 +279,7 @@ class Uploader
             $this->stateInfo = $this->getStateInfo("ERROR_DIR_NOT_WRITEABLE");
             return;
         }
-        //检查文件类型
-        if(stripos($this->oriName,'.php')!==false){
-            $this->stateInfo = $this->getStateInfo("ERROR_TYPE_NOT_ALLOWED");
-            return;
-        }
-        //移动文件
+
         if (!(move_uploaded_file($file["tmp_name"], $this->filePath) && file_exists($this->filePath))) { //移动失败
             $this->stateInfo = $this->getStateInfo("ERROR_FILE_MOVE");
         } else { //移动成功
@@ -324,11 +319,13 @@ class Uploader
             $this->stateInfo = $this->getStateInfo("ERROR_DIR_NOT_WRITEABLE");
             return;
         }
-        //检查文件类型
-        if(stripos($this->oriName,'.php')!==false){
+
+        //检查是否不允许的文件格式
+        if (!$this->checkType()) {
             $this->stateInfo = $this->getStateInfo("ERROR_TYPE_NOT_ALLOWED");
             return;
         }
+
         //移动文件
         if (!(file_put_contents($this->filePath, $img) && file_exists($this->filePath))) { //移动失败
             $this->stateInfo = $this->getStateInfo("ERROR_WRITE_CONTENT");
@@ -373,6 +370,13 @@ class Uploader
             $this->stateInfo = $this->getStateInfo("INVALID_IP");
             return;
         }
+        $fix = strtolower(strrchr($imgUrl, '.'));
+        $fix = $fix ?: '.png';
+        //检查是否不允许的文件格式
+        if (!in_array($fix, $this->config["allowFiles"])) {
+            $this->stateInfo = $this->getStateInfo("ERROR_TYPE_NOT_ALLOWED");
+            return;
+        }
 
         //获取请求头并检测死链
         $heads = get_headers($imgUrl, 1);
@@ -380,12 +384,7 @@ class Uploader
             $this->stateInfo = $this->getStateInfo("ERROR_DEAD_LINK");
             return;
         }
-        //格式验证(扩展名验证和Content-Type验证)
-        $fileType = strtolower(strrchr($imgUrl, '.'));
-        if(stripos($fileType,'.php')!==false){
-            $this->stateInfo = $this->getStateInfo("ERROR_TYPE_NOT_ALLOWED");
-            return;
-        }
+
         if (!isset($heads['Content-Type']) || !stristr($heads['Content-Type'], "image")) {
             $this->stateInfo = $this->getStateInfo("ERROR_HTTP_CONTENTTYPE");
             return;
@@ -481,7 +480,7 @@ class Uploader
         $format = str_replace("{filename}", $oriName, $format);
 
         //替换随机字符串
-        $randNum = mt_rand(1, 100000000) . mt_rand(1, 100000000);
+        $randNum = mt_rand(1, 100000) . mt_rand(1, 100000);
         if (preg_match("/\{rand\:([\d]*)\}/i", $format, $matches)) {
             $format = preg_replace("/\{rand\:[\d]*\}/i", substr($randNum, 0, $matches[1]), $format);
         }

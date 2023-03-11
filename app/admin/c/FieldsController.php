@@ -1421,7 +1421,12 @@ layui.use("laydate", function(){
                     if($value){
                         $tids = array_column($this->classtypedata[$tid]['children']['lists'],'id');
                         $tids[]=$tid;
-                        $sql = " id=".$value." and tid in(".implode(',',$tids).")";
+                        if(in_array($molds,['orders','attr','page','member','member_group','level','level_group','message','comment'])){
+                            $sql = " id=".$value." ";
+                        }else{
+                            $sql = " id=".$value." and tid in(".implode(',',$tids).")";
+                        }
+                        
                         $lists = M($molds)->findAll(['id'=>$value],null,'id ,'.$field);
                     }else{
                         $lists = [];
@@ -1452,7 +1457,7 @@ layui.use("laydate", function(){
                 if(!$molds){
                     JsonReturn(['code'=>1,'msg'=>'关联绑定配置错误！']);
                 }
-                $sql = $key ? $field." like '%".$key."%'" : null;
+                $sql = $key ? $field." like '%".$key."%' and isshow=1" : "isshow=1";
                 break;
             case 20:
             case 21:
@@ -1460,7 +1465,12 @@ layui.use("laydate", function(){
                 $molds = $this->classtypedata[$tid]['molds'];
                 $tids = array_column($this->classtypedata[$tid]['children']['lists'],'id');
                 $tids[]=$tid;
-                $sql = $key ? $field." like '%".$key."%' and tid in(".implode(',',$tids).")" : "tid in(".implode(',',$tids).")";
+                
+                if(in_array($molds,['orders','attr','page','member','member_group','level','level_group','message','comment'])){
+                    $sql = $key ? $field." like '%".$key."%'  and isshow=1" : " isshow=1";
+                }else{
+                    $sql = $key ? $field." like '%".$key."%' and tid in(".implode(',',$tids).") and isshow=1" : "tid in(".implode(',',$tids).") and isshow=1";
+                }
 
                 break;
         }

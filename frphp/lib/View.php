@@ -467,6 +467,7 @@ class View
 		unset($a['table']);unset($a['orderby']);unset($a['limit']);unset($a['as']);unset($a['like']);unset($a['notlike']);unset($a['fields']);unset($a['isall']);unset($a['notin']);unset($a['notempty']);unset($a['empty']);unset($a['day']);unset($a['in']);unset($a['sql']);unset($a['jzpage']);unset($a['jzcache']);unset($a['jzcachetime']);
 		$pages='';
 		$w = ' 1=1 ';
+        $fu = '';
 		$ispage=false;
 		if($jzpage!='page'){
 			if(stripos($jzpage,'$')!==false){
@@ -493,10 +494,16 @@ class View
 						$a['tid'] = trim($a['tid'],"'");
 						$tids=explode(',',$a['tid']);
 						$ss = [];
+                        $fu = " \$fu = [];\$f = [];";
 						foreach($tids as $s){
 							$ss[] = '  tid in(\'.implode(",",$classtypedata['.$s.']["children"]["ids"]).\') ';
+                            $fu .= " \$fu = array_merge(\$fu,\$classtypedata[".$s."][\"children\"][\"ids\"]);";
 						}
-						$w.=' and ('.implode(' or ',$ss).' ) ';
+                        $fu .= "foreach(\$fu as \$fv){
+							\$f[] = 'tids like \'%,'.\$fv.',%\'';
+							
+						}";
+						$w.=' and ('.implode(' or ',$ss).' or \'.implode(\' or \',$f).\' )';
 					}else{
 						$w.=' and tid in('.trim($a['tid'],"'").') ';
 					}
@@ -506,8 +513,12 @@ class View
 					
 					if(strpos($a['tid'],'$')!==false){
 						if($isall){
-							
-							$w.= ' and  tid in(\'.implode(",",$classtypedata['.trim($v,"'").']["children"]["ids"]).\') ';
+                            $fu = " \$f = []; \$fu = \$classtypedata[".trim($v,"'")."]['children']['ids'];";
+                            $fu .= "foreach(\$fu as \$fv){
+								\$f[] = 'tids like \'%,'.\$fv.',%\'  ';
+								
+							}";
+							$w.= ' and ( tid in(\'.implode(",",$classtypedata['.trim($v,"'").']["children"]["ids"]).\') or \'.implode(\' or \',$f).\' ) ';
 						}else{
 							$w.="and tid='.".trim($v,"'").".' ";
 						}
@@ -516,7 +527,11 @@ class View
 					}else{
 						
 						if($isall){
-							$w.= ' and  tid in(\'.implode(",",$classtypedata['.trim($v,"'").']["children"]["ids"]).\') ';
+                            $fu = " \$f = []; \$fu = \$classtypedata[".trim($v,"'")."]['children']['ids'];";
+                            $fu .= "foreach(\$fu as \$fv){
+								\$f[] = 'tids like \'%,'.\$fv.',%\'  ';
+							}";
+							$w.= ' and  (tid in(\'.implode(",",$classtypedata['.trim($v,"'").']["children"]["ids"]).\')  or  \'.implode(\' or \',$f).\') ';
 						}else{
 							$w.="and tid=".$v." ";
 						}
@@ -600,6 +615,7 @@ class View
 		$as = trim($as,"'");
 		$txt="<?php
 		\$".$as."_table =$db;
+		$fu
 		\$".$as."_w='".$w."';
 		\$".$as."_order=$order;
 		\$".$as."_fields=$fields;

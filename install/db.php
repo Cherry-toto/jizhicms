@@ -44,6 +44,7 @@ CREATE TABLE `jz_article` (
 DROP TABLE IF EXISTS `jz_attr`;
 CREATE TABLE `jz_attr` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
+  `molds` varchar(50) DEFAULT 'attr' COMMENT '模型标识',
   `name` varchar(50) DEFAULT NULL COMMENT '属性名',
   `isshow` tinyint(1) NOT NULL DEFAULT '1' COMMENT '是否显示',
   PRIMARY KEY (`id`)
@@ -160,6 +161,7 @@ CREATE TABLE `jz_collect_type` (
 DROP TABLE IF EXISTS `jz_comment`;
 CREATE TABLE `jz_comment` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
+  `molds` varchar(50) DEFAULT 'comment' COMMENT '模型标识',
   `tid` int(4) NOT NULL DEFAULT '0' COMMENT '栏目tid',
   `aid` int(11) NOT NULL DEFAULT '0' COMMENT '文章id',
   `pid` int(11) NOT NULL DEFAULT '0' COMMENT '回复帖子id',
@@ -272,6 +274,7 @@ CREATE TABLE `jz_layout` (
 DROP TABLE IF EXISTS `jz_level`;
 CREATE TABLE `jz_level` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
+  `molds` varchar(50) DEFAULT 'level' COMMENT '模型标识',
   `name` varchar(20) DEFAULT NULL COMMENT '管理员名称',
   `pass` varchar(100) DEFAULT NULL COMMENT '密码',
   `tel` varchar(20) DEFAULT NULL COMMENT '电话号码',
@@ -280,6 +283,7 @@ CREATE TABLE `jz_level` (
   `regtime` int(11) NOT NULL DEFAULT '0' COMMENT '注册时间',
   `logintime` int(11) NOT NULL DEFAULT '0' COMMENT '登录时间',
   `status` tinyint(1) NOT NULL DEFAULT '1' COMMENT '状态：1正常0冻结',
+  `isshow` tinyint(1) NOT NULL DEFAULT '1' COMMENT '是否显示',
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COMMENT='管理员表';
 -- ----------------------------
@@ -288,7 +292,9 @@ CREATE TABLE `jz_level` (
 DROP TABLE IF EXISTS `jz_level_group`;
 CREATE TABLE `jz_level_group` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
+  `molds` varchar(50) DEFAULT 'level_group' COMMENT '模型标识',
   `name` varchar(50) DEFAULT NULL COMMENT '角色名称',
+  `isshow` tinyint(1) NOT NULL DEFAULT '1' COMMENT '是否显示',
   `isadmin` tinyint(1) NOT NULL DEFAULT '0' COMMENT '超管：1是0否',
   `ischeck` tinyint(1) NOT NULL DEFAULT '0' COMMENT '发布审核：1需要审核0不需要',
   `classcontrol` tinyint(1) NOT NULL DEFAULT '0' COMMENT '是否配置栏目权限：1是0否',
@@ -347,6 +353,7 @@ CREATE TABLE `jz_links` (
 DROP TABLE IF EXISTS `jz_member`;
 CREATE TABLE `jz_member` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
+  `molds` varchar(50) DEFAULT 'member' COMMENT '模型标识',
   `username` varchar(50) DEFAULT NULL COMMENT '用户昵称',
   `openid` varchar(255) DEFAULT NULL COMMENT '微信OPENID',
   `pass` varchar(255) DEFAULT NULL COMMENT '密码',
@@ -387,9 +394,11 @@ DROP TABLE IF EXISTS `jz_member_group`;
 CREATE TABLE `jz_member_group` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(50) DEFAULT NULL COMMENT '分组名',
+  `molds` varchar(50) DEFAULT 'member_group' COMMENT '模型标识',
   `description` varchar(255) DEFAULT NULL COMMENT '分组简介',
   `paction` text COMMENT '权限',
   `pid` int(11) NOT NULL DEFAULT '0' COMMENT '分组上级',
+  `isshow` tinyint(1) NOT NULL DEFAULT '1' COMMENT '是否显示',
   `isagree` tinyint(1) NOT NULL DEFAULT '1' COMMENT '是否允许登录',
   `iscomment` tinyint(1) NOT NULL DEFAULT '1' COMMENT '是否允许评论',
   `ischeckmsg` tinyint(1) NOT NULL DEFAULT '1' COMMENT '是否需要审核评论',
@@ -417,6 +426,7 @@ DROP TABLE IF EXISTS `jz_message`;
 CREATE TABLE `jz_message` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `title` varchar(255) DEFAULT NULL COMMENT '标题',
+  `molds` varchar(50) DEFAULT 'message' COMMENT '模型标识',
   `userid` int(11) NOT NULL DEFAULT '0' COMMENT '发布会员',
   `tid` int(4) NOT NULL DEFAULT '0' COMMENT '栏目ID',
   `aid` int(11) NOT NULL DEFAULT '0' COMMENT '文章ID',
@@ -462,6 +472,7 @@ DROP TABLE IF EXISTS `jz_orders`;
 CREATE TABLE `jz_orders` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `orderno` varchar(255) DEFAULT NULL COMMENT '订单号',
+  `molds` varchar(50) DEFAULT 'orders' COMMENT '模型标识',
   `userid` int(11) NOT NULL DEFAULT '0' COMMENT '下单会员',
   `paytype` varchar(20) DEFAULT NULL COMMENT '支付方式',
   `ptype` tinyint(1) DEFAULT '1' COMMENT '交易类型：1商品购买2充值金额3充值积分',
@@ -492,6 +503,7 @@ DROP TABLE IF EXISTS `jz_page`;
 CREATE TABLE `jz_page` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `tid` int(11) NOT NULL DEFAULT '0' COMMENT '栏目ID',
+  `molds` varchar(50) DEFAULT 'page' COMMENT '模型标识',
   `htmlurl` varchar(50) DEFAULT NULL COMMENT '链接',
   `orders` int(11) NOT NULL DEFAULT '0' COMMENT '排序',
   `member_id` int(11) NOT NULL DEFAULT '0' COMMENT '用户ID',
@@ -1287,7 +1299,7 @@ INSERT INTO `jz_ruler` (`id`,`name`,`fc`,`pid`,`isdesktop`,`sys`) VALUES ('246',
 -- ----------------------------
 -- Records of jz_sysconfig
 -- ----------------------------
-INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`,`typeid`,`config`,`orders`,`sys`) VALUES ('1','web_version','系统版号','版本号是系统自带，请勿改动','0','2.4.6','0', NULL,'0','1');
+INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`,`typeid`,`config`,`orders`,`sys`) VALUES ('1','web_version','系统版号','版本号是系统自带，请勿改动','0','2.4.7','0', NULL,'0','1');
 INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`,`typeid`,`config`,`orders`,`sys`) VALUES ('2','web_name','网站SEO名称','控制在25个字、50个字节以内','2','极致CMS建站系统','1', NULL,'0','1');
 INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`,`typeid`,`config`,`orders`,`sys`) VALUES ('3','web_keyword','网站SEO关键词','5个左右，8汉字以内，用英文逗号隔开','2','极致建站,cms,开源cms,免费cms,cms系统,phpcms,免费企业建站,建站系统,企业cms,jizhicms,极致cms,建站cms,建站系统,极致博客,极致blog,内容管理系统','1', NULL,'0','1');
 INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`,`typeid`,`config`,`orders`,`sys`) VALUES ('4','web_desc','网站SEO描述','控制在80个汉字，160个字符以内','3','极致CMS是开源免费的PHPCMS网站内容管理系统，无商业授权，简单易用，提供丰富的插件，帮您实现零基础搭建不同类型网站（企业站，门户站，个人博客站等），是您建站的好帮手。极速建站，就选极致CMS。','1', NULL,'0','1');

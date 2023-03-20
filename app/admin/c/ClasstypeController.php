@@ -329,76 +329,130 @@ class ClasstypeController extends CommonController
 		}
 		
 	}
-	
-	function addmany(){
-		if($_POST){
-			
-			$molds = $this->frparam('molds',1);
-			$pid = $this->frparam('pid',0,0);
-			$classname = $this->frparam('classname',1);
-			if(!trim($classname)){
-				JsonReturn(['code'=>1,'msg'=>JZLANG('栏目不能为空！')]);
-			}
-			$classname = explode("\n",trim($classname));
-			$classtypetree = classTypeData();
-			foreach($classname as $k=>$v){
-				if($v){
-					if(strpos($v,'|')!==false){
-						$d = explode('|',$v);
-					}else{
-						$d = [$v,pinyin($v,'first')];
-					}
-					$w['molds'] = $molds;
-					$w['classname'] = $d[0];
-					$w['seo_classname'] = $d[0];
-					$w['pid'] = $pid;
-					$d[1] = str_replace(' ','-',$d[1]);
-					if($this->webconf['islevelurl'] && $w['pid']!=0){
-						//层级
-						$html = $classtypetree[$w['pid']]['htmlurl'].'/'.$d[1];
-					}else{
-						$html = $d[1];
-					}
-					if(stripos($html,'.php')!==false){
-						JsonReturn(array('code'=>1,'info'=>'非法URL'));
-					}
-					$w['htmlurl'] = str_replace(' ','-',$html);
-					$w['lists_num'] = $this->frparam('lists_num',0,10);
-					$w['lists_html'] = $this->frparam('lists_html',1);
-					$w['details_html'] = $this->frparam('details_html',1);
-					$w['isshow'] =$this->frparam('isshow',0,1);
-					$w['ishome'] =$this->frparam('ishome',0,1);
-					$r = M('classtype')->add($w);
-					$sql = "molds='".$w['molds']."'";
-					$fields=M('fields')->findAll($sql);
-					foreach ($fields as $s){
-						if($s['tids']){
-							M('fields')->update(array('id'=>$s['id']),array('tids'=>$s['tids'].$r.','));
-						}else{
-							M('fields')->update(array('id'=>$s['id']),array('tids'=>','.$r.','));
-						}
-
-					}
-					$w = [];
-				}
-				
-				
-			}
-			setCache('classtypetree',null);
-			setCache('classtype',null);
-			setCache('mobileclasstype',null);
-			setCache('classtypedatamobile',null);
-			setCache('classtypedatapc',null);
-			JsonReturn(['code'=>0,'msg'=>'success']);
-		}
-		$this->molds = M('molds')->find(['biaoshi'=>'classtype']);
-		$this->moldslist = M('molds')->findAll(['isopen'=>1]);
-		$this->classtypes = $this->classtypetree;;
-		
-		$this->display('classtype-addmany');
-		
-		
-	}
+    
+    function addmany(){
+        if($_POST){
+            $type = $this->frparam('type',0,1);
+            if($type==1){
+                $molds = $this->frparam('molds',1);
+                $pid = $this->frparam('pid',0,0);
+                $classname = $this->frparam('classname',1);
+                if(!trim($classname)){
+                    JsonReturn(['code'=>1,'msg'=>JZLANG('栏目不能为空！')]);
+                }
+                $classname = explode("\n",trim($classname));
+                $classtypetree = classTypeData();
+                foreach($classname as $k=>$v){
+                    if($v){
+                        if(strpos($v,'|')!==false){
+                            $d = explode('|',$v);
+                        }else{
+                            $d = [$v,pinyin($v,'first')];
+                        }
+                        $w['molds'] = $molds;
+                        $w['classname'] = $d[0];
+                        $w['seo_classname'] = $d[0];
+                        $w['pid'] = $pid;
+                        $d[1] = str_replace(' ','-',$d[1]);
+                        if($this->webconf['islevelurl'] && $w['pid']!=0){
+                            //层级
+                            $html = $classtypetree[$w['pid']]['htmlurl'].'/'.$d[1];
+                        }else{
+                            $html = $d[1];
+                        }
+                        if(stripos($html,'.php')!==false){
+                            JsonReturn(array('code'=>1,'info'=>'非法URL'));
+                        }
+                        $w['htmlurl'] = str_replace(' ','-',$html);
+                        $w['lists_num'] = $this->frparam('lists_num',0,10);
+                        $w['lists_html'] = $this->frparam('lists_html',1);
+                        $w['details_html'] = $this->frparam('details_html',1);
+                        $w['isshow'] =$this->frparam('isshow',0,1);
+                        $w['ishome'] =$this->frparam('ishome',0,1);
+                        $r = M('classtype')->add($w);
+                        $sql = "molds='".$w['molds']."'";
+                        $fields=M('fields')->findAll($sql);
+                        foreach ($fields as $s){
+                            if($s['tids']){
+                                M('fields')->update(array('id'=>$s['id']),array('tids'=>$s['tids'].$r.','));
+                            }else{
+                                M('fields')->update(array('id'=>$s['id']),array('tids'=>','.$r.','));
+                            }
+                            
+                        }
+                        $w = [];
+                    }
+                    
+                    
+                }
+            }else{
+                
+                $data_0 = $this->frparam('data_0',2);
+                $data_1 = $this->frparam('data_1',2);
+                $data_2 = $this->frparam('data_2',2);
+                $data_3 = $this->frparam('data_3',2);
+                $data_4 = $this->frparam('data_4',2);
+                $data_5 = $this->frparam('data_5',2);
+                $data_6 = $this->frparam('data_6',2);
+                $data_7 = $this->frparam('data_7',2);
+                $data_8 = $this->frparam('data_8',2);
+                $classtypetree = classTypeData();
+                foreach($data_1 as $k=>$v){
+                    if($v && $v!=''){
+                        
+                        $w['molds'] = $data_0[$k];
+                        $w['classname'] = $v;
+                        $w['pid'] = $data_2[$k];
+                        $data_3[$k] = $data_3[$k] ? : pinyin($data_3[$k],'first');
+                        if($this->webconf['islevelurl'] && $w['pid']!=0){
+                            //层级
+                            $html = $classtypetree[$w['pid']]['htmlurl'].'/'.$data_3[$k];
+                        }else{
+                            $html = $data_3[$k];
+                        }
+                        
+                        $w['htmlurl'] = $html;
+                        $w['lists_num'] = $data_4[$k];
+                        $w['lists_html'] = $data_5[$k];
+                        $w['details_html'] = $data_6[$k];
+                        $w['isshow'] = $data_7[$k];
+                        $w['orders'] = $data_8[$k];
+                        $r = M('classtype')->add($w);
+                        
+                        $sql = "molds='".$w['molds']."'";
+                        $fields=M('fields')->findAll($sql);
+                        foreach ($fields as $s){
+                            if($s['tids']){
+                                M('fields')->update(array('id'=>$s['id']),array('tids'=>$s['tids'].$r.','));
+                            }else{
+                                M('fields')->update(array('id'=>$s['id']),array('tids'=>','.$r.','));
+                            }
+                            
+                        }
+                        
+                        $w = [];
+                    }
+                    
+                    
+                }
+                
+            }
+            
+            setCache('classtypetree',null);
+            setCache('classtype',null);
+            setCache('mobileclasstype',null);
+            setCache('classtypedatamobile',null);
+            setCache('classtypedatapc',null);
+            JsonReturn(['code'=>0,'msg'=>'success']);
+        }
+        $this->molds = M('molds')->find(['biaoshi'=>'classtype']);
+        $this->moldslist = M('molds')->findAll(['isopen'=>1]);
+        $this->classtypes = $this->classtypetree;;
+        
+        $this->display('classtype-addmany');
+        
+        
+    }
     
     public function get_html(){
         $molds = $this->frparam('molds',1,'article');

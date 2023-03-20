@@ -687,7 +687,7 @@ class IndexController extends CommonController
             $filetype = !$cachedata ? $this->frparam('filetype',1,'xml') : $cachedata['filetype'];
             $tagsurl = !$cachedata ? $this->frparam('tagsurl',1) : $cachedata['tagsurl'];
             if($filetype=='xml'){
-                $l_pre = '<?xml version="1.0" encoding="UTF-8"?><urlset>';
+                $l_pre = '<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">';
                 //首页
                 $l_pre.='<url>
 <loc>'.$www.'/</loc>

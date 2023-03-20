@@ -25,7 +25,7 @@
 		 {if(is_array($top_layout))}
 		 {foreach $top_layout as $v}
 			<li class="layui-nav-item">
-				<a href="javascript:;"><i class="iconfont">{fun htmlspecialchars_decode($v['icon'])}</i><cite>{fun JZLANG($v['name'])}</cite></a>
+				<a href="javascript:;"><i class="iconfont">{fun htmlspecialchars_decode($v['icon'])}</i>{fun JZLANG($v['name'])}</a>
 				<dl class="layui-nav-child">
 
 					{foreach $v['nav'] as $vv}
@@ -94,7 +94,7 @@
             <li>
                 <a href="javascript:;">
                     <i class="iconfont">{fun htmlspecialchars_decode($v['icon'])}</i>
-                    <cite>{fun JZLANG($v['name'])}</cite>
+                    {fun JZLANG($v['name'])}
                     <i class="iconfont nav_right">&#xe6a7;</i>
                 </a>
                 <ul class="sub-menu">
@@ -102,18 +102,18 @@
 				{if(!is_array($vv) && $vv)}
                     <li>
 						{if(strpos($vv,'class')!==false)}
-						<a _href="{$classnav[$vv]['act']}" ><cite>{$classnav[$vv]['classname']}</cite></a>
+						<a _href="{$classnav[$vv]['act']}" >{$classnav[$vv]['classname']}</a>
 						{else}
-                        <a _href="{fun U($actions[$vv]['fc'])}"><cite>{fun JZLANG($actions[$vv]['name'])}</cite></a>
+                        <a _href="{fun U($actions[$vv]['fc'])}">{fun JZLANG($actions[$vv]['name'])}</a>
 						{/if}
                     </li >
 				{else if(is_array($vv))}
 					
 					<li>
 						{if(strpos($vv['value'],'class')!==false)}
-						<a _href="{$classnav[$vv['value']]['act']}" >{if($vv['icon'])}<i class="iconfont">{fun htmlspecialchars_decode($vv['icon'])}</i>{/if}<cite>{fun JZLANG($vv['title'])}</cite></a>
+						<a _href="{$classnav[$vv['value']]['act']}" >{if($vv['icon'])}<i class="iconfont">{fun htmlspecialchars_decode($vv['icon'])}</i>{/if}{fun JZLANG($vv['title'])}</a>
 						{else}
-                        <a _href="{fun U($actions[$vv['value']]['fc'])}">{if($vv['icon'])}<i class="iconfont">{fun htmlspecialchars_decode($vv['icon'])}</i>{/if}<cite>{fun JZLANG($vv['title'])}</cite></a>
+                        <a _href="{fun U($actions[$vv['value']]['fc'])}">{if($vv['icon'])}<i class="iconfont">{fun htmlspecialchars_decode($vv['icon'])}</i>{/if}{fun JZLANG($vv['title'])}</a>
 						{/if}
                     </li >
 					

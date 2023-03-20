@@ -149,7 +149,7 @@ $(function () {
         }else{
 
             var url = $(this).children('a').attr('_href');
-            var title = $(this).find('cite').html();
+            var title = $(this).find('a').html();
             var index  = $('.left-nav #nav li').index($(this));
             if($(this).parents().hasClass('sub-menu')){
                 $("ul.sub-menu li").removeClass('current');
@@ -177,7 +177,7 @@ $(function () {
    
    $('a.top_nav').click(function (event) {
      	    var url = $(this).attr('x_href');
-            var title =$(this).text();
+            var title =$(this).html();
             var left_index  = $('.left-nav #nav li').length;
 			var top_index = $('a.top_nav').length;
 			var right_index = $('a.top_nav_right').length;

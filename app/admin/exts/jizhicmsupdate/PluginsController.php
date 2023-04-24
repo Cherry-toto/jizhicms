@@ -77,29 +77,7 @@ class PluginsController extends Controller {
 	//执行SQL语句在此处处理,或者移动文件也可以在此处理
 	public  function install(){
 		//下面是新增test表的SQL操作
-		//检测版本号
-		if(version_compare($this->webconf['web_version'],'2.2.1','>')){
-			JsonReturn(['code'=>1,'msg'=>'您的软件系统版本为'.$this->webconf['web_version'].'，该插件仅支持2.2.1版本以下修复！']);
-		}
-        if(M('plugins')->find(['filepath'=>'mutisite']) || M('plugins')->find(['filepath'=>'mutisite-pro'])){
-            JsonReturn(['code'=>1,'msg'=>'请先卸载多语言插件才能升级！']);
-        }
-		//检查源码版本
-		if(defined('DB_TYPE')){
-			//sqlite
-			//$this->JZ_sqlite();
-			JsonReturn(['code'=>1,'msg'=>'不支持sqlite版本升级！']);
-		}else{
-			//mysql
-			$this->JZ_mysql();
-		}
 		
-		M('sysconfig')->update(['field'=>'web_version'],['data'=>'2.2.1']);
-		
-		//更新配置
-		setCache('webconfig',null);
-		setCache('customconfig',null);
-
 	
 		return true;
 		

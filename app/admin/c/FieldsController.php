@@ -176,7 +176,7 @@ class FieldsController extends CommonController
 				case 2:
 				case 18:
 				case 19:
-				$sql .= "VARCHAR(".$data['fieldlong'].") CHARACTER SET utf8 default ";
+				$sql .= "VARCHAR(".$data['fieldlong'].") default ";
 				if($data['vdata'] || $data['vdata']==0){
 					$sql .=  "'".$data['vdata']."'";
 				}else{
@@ -187,7 +187,7 @@ class FieldsController extends CommonController
 				case 15:
 				case 6:
 				case 10:
-				$sql .= "TEXT CHARACTER SET utf8 default ";
+				$sql .= "TEXT  default ";
 				$sql .= ' NULL ';
 				
 				break;
@@ -216,7 +216,7 @@ class FieldsController extends CommonController
 				break;
 				case 5:
 				case 9:
-				$sql .= "VARCHAR(".$data['fieldlong'].") CHARACTER SET utf8 default ";
+				$sql .= "VARCHAR(".$data['fieldlong'].")  default ";
 				if($data['vdata'] || $data['vdata']==0){
 					$sql .=  "'".$data['vdata']."'";
 				}else{
@@ -228,7 +228,7 @@ class FieldsController extends CommonController
 				case 8:
 				case 12:
 				$data['body'] = $this->frparam('body_'.$data['fieldtype'],1);
-				$sql .= "VARCHAR(".$data['fieldlong'].") CHARACTER SET utf8 default ";
+				$sql .= "VARCHAR(".$data['fieldlong'].")  default ";
 				if($data['vdata'] || $data['vdata']==0){
 					$sql .= "'".$data['vdata']."'";
 				}else{
@@ -375,7 +375,7 @@ class FieldsController extends CommonController
 							case 15:
 							case 6:
 							case 10:
-							$sql .= "TEXT CHARACTER SET utf8 default ";
+							$sql .= "TEXT  default ";
 							$sql .= ' NULL ';
 							break;
 							case 4:
@@ -440,7 +440,7 @@ class FieldsController extends CommonController
                     case 18:
                     case 19:
 
-					$sql .= "VARCHAR(".$data['fieldlong'].") CHARACTER SET utf8 default ";
+					$sql .= "VARCHAR(".$data['fieldlong'].") default ";
 					if($data['vdata'] || $data['vdata']==0){
 						$sql .=  "'".$data['vdata']."'";
 					}else{
@@ -451,7 +451,7 @@ class FieldsController extends CommonController
 					case 15:
 					case 6:
 					case 10:
-					$sql .= "TEXT CHARACTER SET utf8 default ";
+					$sql .= "TEXT  default ";
 					$sql .= ' NULL ';
 					
 					break;
@@ -494,7 +494,7 @@ class FieldsController extends CommonController
 					case 7:
 					case 8:
 					case 12:
-					$sql .= "VARCHAR(".$data['fieldlong'].") CHARACTER SET utf8 default ";
+					$sql .= "VARCHAR(".$data['fieldlong'].")  default ";
 					if($data['vdata'] || $data['vdata']==0){
 						$sql .=  "'".$data['vdata']."'";
 					}else{
@@ -520,7 +520,7 @@ class FieldsController extends CommonController
 
                             JsonReturn(array('code'=>1,'msg'=>JZLANG('字段长度不对！')));
                         }
-                        $sql .= "VARCHAR(".$data['fieldlong'].") CHARACTER SET utf8 default ";
+                        $sql .= "VARCHAR(".$data['fieldlong'].")  default ";
                         if($data['vdata'] || $data['vdata']==0){
                             $sql .=  "'".$data['vdata']."'";
                         }else{
@@ -546,7 +546,7 @@ class FieldsController extends CommonController
 
                             JsonReturn(array('code'=>1,'msg'=>JZLANG('字段长度不对！')));
                         }
-                        $sql .= "VARCHAR(".$data['fieldlong'].") CHARACTER SET utf8 default ";
+                        $sql .= "VARCHAR(".$data['fieldlong'].")  default ";
                         if($data['vdata'] || $data['vdata']==0){
                             $sql .=  "'".$data['vdata']."'";
                         }else{

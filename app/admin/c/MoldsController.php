@@ -106,7 +106,7 @@ class MoldsController extends CommonController
 				`addtime` int(11) DEFAULT 0 COMMENT '".JZLANG("发布时间")."',
 				PRIMARY 
 				KEY  (`id`)
-				) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1";
+				) ENGINE=MyISAM  DEFAULT CHARSET=utf8mb4 AUTO_INCREMENT=1";
 				
 				$x = M()->runSql($sql);
 				$w['field'] = 'title';

@@ -30,8 +30,8 @@ class Controller
         $this->_action = APP_ACTION;
 		$this->_data = $param;
 		//对语言包获取优先处理
-		if(!empty($_GET) && isset($_GET[APP_LANG_REQUREST])){
-			$_SESSION['lang'] = $_GET[APP_LANG_REQUREST];
+		if(!empty($_REQUEST) && isset($_REQUEST[APP_LANG_REQUREST])){
+			$_SESSION['lang'] = $_REQUEST[APP_LANG_REQUREST];
             define('LANG',$_SESSION['lang']);
 		}else if(isset($_SESSION['lang'])){
             define('LANG',$_SESSION['lang']);

@@ -560,7 +560,12 @@ if(!function_exists('get_fields_data')) {
                         $data[$v['field']] = strtotime(format_param($data[$v['field']], 1));
                         break;
                     case 3:
-                        $data[$v['field']] = format_param($data[$v['field']], 4);
+                        if ($isadmin) {
+                            $data[$v['field']] = format_param($data[$v['field']], 4);
+                        }else{
+                            $data[$v['field']] = format_param($data[$v['field']], 6);
+                        }
+                        
                         break;
                     case 4:
                     case 13:

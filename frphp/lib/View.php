@@ -487,7 +487,7 @@ class View
 			if($k=='ispage'){
 				$ispage=true;
 			}else if($k=='tid'){
-				
+                $classtypedata = classTypeData();
 				if(strpos($a['tid'],',')!==false){
 					
 					if($isall){
@@ -496,14 +496,20 @@ class View
 						$ss = [];
                         $fu = " \$fu = [];\$f = [];";
 						foreach($tids as $s){
-							$ss[] = '  tid in(\'.implode(",",$classtypedata['.$s.']["children"]["ids"]).\') ';
-                            $fu .= " \$fu = array_merge(\$fu,\$classtypedata[".$s."][\"children\"][\"ids\"]);";
+							if($classtypedata[$s]){
+                                $ss[] = '  tid in(\'.implode(",",$classtypedata['.$s.']["children"]["ids"]).\') ';
+                                $fu .= " \$fu = array_merge(\$fu,\$classtypedata[".$s."][\"children\"][\"ids\"]);";
+                            }
+
 						}
                         $fu .= "foreach(\$fu as \$fv){
 							\$f[] = 'tids like \'%,'.\$fv.',%\'';
 							
 						}";
-						$w.=' and ('.implode(' or ',$ss).' or \'.implode(\' or \',$f).\' )';
+						if(count($ss)){
+                            $w.=' and ('.implode(' or ',$ss).' or \'.implode(\' or \',$f).\' )';
+                        }
+
 					}else{
 						$w.=' and tid in('.trim($a['tid'],"'").') ';
 					}
@@ -531,7 +537,9 @@ class View
                             $fu .= "foreach(\$fu as \$fv){
 								\$f[] = 'tids like \'%,'.\$fv.',%\'  ';
 							}";
-							$w.= ' and  (tid in(\'.implode(",",$classtypedata['.trim($v,"'").']["children"]["ids"]).\')  or  \'.implode(\' or \',$f).\') ';
+                            if($classtypedata[$v]) {
+                                $w .= ' and  (tid in(\'.implode(",",$classtypedata[' . trim($v, "'") . ']["children"]["ids"]).\')  or  \'.implode(\' or \',$f).\') ';
+                            }
 						}else{
 							$w.="and tid=".$v." ";
 						}

@@ -43,16 +43,14 @@ class TagsController extends CommonController
 			
 			$tables = isset($this->webconf['tag_table']) ? ($this->webconf['tag_table'] ? explode('|',$this->webconf['tag_table']) : ['article','product']) : ['article','product'];
 			$sqlx = [];
-			$sqln = [];
 			foreach($tables as $v){
 				$sqlx[] = " select id,tid,litpic,title,hits,tags,keywords,molds,htmlurl,ownurl,description,addtime,userid,member_id from ".DB_PREFIX.$v." where tags like '%,".$keywords.",%' and isshow=1 ";
-				$sqln[] = " select id from ".DB_PREFIX.$v." where tags like '%,".$keywords.",%' and isshow=1 ";
 			}
 			$sql = implode(' union all ',$sqlx);
-			$sqln = implode(' union all ',$sqln);
 			$page = new Page();
 			$this->currentpage = $this->frpage;
-			$data = $page->where($sql)->limit($this->frparam('limit',0,15))->page($this->frpage)->goCount($sqln)->goSql();
+            $sql=" select SQL_CALC_FOUND_ROWS * from (".$sql.") a ";
+			$data = $page->where($sql)->limit($this->frparam('limit',0,15))->page($this->frpage)->goSql();
 			foreach($data as $k=>$v){
 				$data[$k]['url'] = gourl($v,$v['htmlurl']);
 				$data[$k]['classname'] = $this->classtypedata[$v['tid']]['classname'];

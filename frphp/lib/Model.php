@@ -227,6 +227,49 @@ class Model {
 
     }
 
+    //分页查询
+    public function findPage($conditions=null,$order=null,$fields=null,$limit=null)
+    {
+        $where = '';
+        if(is_array($conditions)){
+            $conditions = $this->__prepera_format($conditions);
+            $join = array();
+            foreach( $conditions as $key => $value ){
+                $value =  '\''.$value.'\'';
+                $join[] = "{$key} = {$value}";
+            }
+            if(count($join)){
+                $where = "WHERE ".join(" AND ",$join);
+            }
+        }else{
+            if(null != $conditions)$where = "WHERE ".$conditions;
+        }
+        if(is_array($order)){
+            $where .= ' ORDER BY ';
+            $where .= implode(',', $order);
+        }else{
+            if($order!=null)$where .= " ORDER BY  ".$order;
+        }
+
+        if(!empty($limit)){
+            if(strpos($limit,',')===false){
+                $limit = ($limit<=0) ? 1 : $limit;
+            }
+            $where .= " LIMIT {$limit}";
+        }
+        $fields = empty($fields) ? "*" : $fields;
+        $table = self::$table;
+        $sql = "SELECT SQL_CALC_FOUND_ROWS {$fields} FROM {$table} {$where}";
+
+        $data = $this->db->getArray($sql);
+        $sql = 'SELECT FOUND_ROWS()';
+        $result = $this->db->getArray($sql);
+
+
+        return ['lists'=>$data,'sum'=>$result[0]['FOUND_ROWS()']];
+
+    }
+
     // 查询一条
     public function find($where=null,$order=null,$fields=null,$limit=1)
     {
@@ -263,6 +306,13 @@ class Model {
 	{
 		return $this->db->getArray($sql);
 	}
+	//执行SQL获取分页
+	public function findSqlPage($sql){
+        $data = $this->db->getArray($sql);
+        $sql = 'SELECT FOUND_ROWS()';
+        $result = $this->db->getArray($sql);
+        return ['lists'=>$data,'sum'=>$result[0]['FOUND_ROWS()']];
+    }
 	
     // 根据条件 (conditions) 删除
     public function delete($conditions)

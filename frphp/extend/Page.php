@@ -331,11 +331,10 @@ namespace frphp\extend;
 				}
 				
 			}
-			
-			$this->datalist = M($this->table)->findAll($this->sql,$this->order,$this->fields,$limitsql);
-			
-			$this->sum = M($this->table)->getCount($this->sql);
-			$this->limit = $this->limit;
+
+            $data = M($this->table)->findPage($this->sql,$this->order,$this->fields,$limitsql);
+            $this->datalist = $data['lists'];
+            $this->sum = $data['sum'];
 
 			$allpage = ceil($this->sum/$this->limit);
 			if($allpage==0){$allpage=1;}
@@ -367,9 +366,10 @@ namespace frphp\extend;
 				}
 				
 			}
-			
-			$this->datalist = M($this->table)->findAll($this->sql,$this->order,$this->fields,$limitsql);
-			$this->sum = M($this->table)->getCount($sql);
+
+            $data = M($this->table)->findPage($this->sql,$this->order,$this->fields,$limitsql);
+            $this->datalist = $data['lists'];
+            $this->sum = $data['sum'];
 			$this->limit = $limit;
 			$this->allpage = ceil($this->sum/$this->limit);
 			return $this->datalist;
@@ -388,14 +388,14 @@ namespace frphp\extend;
 				}
 				
 			}
-			$sum = M()->findSql($this->sql);
-			$this->sum = count($sum);
+
 			$orderby = $this->order ? ' order by '.$this->order : '';
 			$limit = ' limit '.$limitsql;
 			$sql = $this->sql.' '.$orderby.' '.$limit;
-			$this->datalist = M()->findSql($sql);
-			$this->limit = $this->limit;
-			
+			$data = M()->findSqlPage($sql);
+            $this->datalist = $data['lists'];
+            $this->sum = $data['sum'];
+
 			$allpage = ceil($this->sum/$this->limit);
 			if($allpage==0){$allpage=1;}
 			$this->allpage = $allpage;

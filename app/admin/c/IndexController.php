@@ -133,7 +133,7 @@ class IndexController extends CommonController
         $this->groups = M('level_group')->findAll();
 		$token = getRandChar(10);
 		$_SESSION['token'] = $token;
-		setCache('admin_'.$this->admin['id'].'_token',$token,60);
+		setCache('admin_'.$this->admin['id'].'_token',$token);
 		$this->token = $token;
 		$this->display('admin');
 	}

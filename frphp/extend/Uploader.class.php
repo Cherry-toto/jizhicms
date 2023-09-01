@@ -52,6 +52,7 @@ class Uploader
      */
     public function __construct($fileField, $config, $type = "upload")
     {
+        $this->webconf = webConf();
         $this->fileField = $fileField;
         $this->config = $config;
         $this->type = $type;
@@ -63,10 +64,7 @@ class Uploader
             $this->upFile();
         }
 
-        //$this->stateMap['ERROR_TYPE_NOT_ALLOWED'] = iconv('unicode', 'utf-8', $this->stateMap['ERROR_TYPE_NOT_ALLOWED']);
-        $this->stateMap['ERROR_TYPE_NOT_ALLOWED'];
     }
-
     /**
      * 图片加水印
      * $source  string  图片资源
@@ -77,16 +75,16 @@ class Uploader
      * $w_font  int     字体大小
      * $w_color string  字体颜色
      */
-    public function watermark($source, $target = '', $w_pos = '', $w_img = '', $w_text = '',$w_font = 10, $w_color = '#CC0000') {
+    public function watermarkImg($source, $target = '', $w_pos = '', $w_img = '', $w_text = '',$w_font = 10, $w_color = '#CC0000') {
         $this->w_img = '../watermark.png';//水印图片
         $this->w_pos = 8;
         $this->w_minwidth = 400;//最少宽度
         $this->w_minheight = 200;//最少高度
         $this->w_quality = 80;//图像质量
         $this->w_pct = 60;//透明度
-
+        
         $w_pos = $w_pos ? $w_pos : $this->w_pos;
-        $w_img = $w_img ? $w_img : $this->w_img;
+        $w_img = $w_img ? APP_PATH.$w_img : APP_PATH.$this->w_img;
         if(!$this->check($source)) return false;
         if(!$target) $target = $source;
         $source_info = getimagesize($source);//图片信息
@@ -135,7 +133,7 @@ class Uploader
             $height = $temp[3] - $temp[7];
             unset($temp);
         }
-
+        
         switch($w_pos) {
             case 1:
                 $wx = 5;
@@ -182,7 +180,7 @@ class Uploader
                 $wy = rand(0,($source_h - $height));
                 break;
         }
-
+        
         if($ifwaterimage) {
             if($water_info[2] == 3) {
                 imagecopy($source_img, $water_img, $wx, $wy, 0, 0, $width, $height);
@@ -199,7 +197,7 @@ class Uploader
             }
             imagestring($source_img,$w_font,$wx,$wy,$w_text,imagecolorallocate($source_img,$r,$g,$b));
         }
-
+        
         switch($source_info[2]) {
             case 1 :
                 imagegif($source_img, $target);
@@ -214,7 +212,7 @@ class Uploader
             default :
                 return;
         }
-
+        
         if(isset($water_info)){
             unset($water_info);
         }
@@ -224,6 +222,187 @@ class Uploader
         unset($source_info);
         imagedestroy($source_img);
         return true;
+    }
+    public function watermark($title,$path){
+        
+        // 图片路径
+        $imagePath = $path;
+        // 文字水印内容
+        $text = $title;
+        // 每行文字数
+        $charsPerLine = $this->webconf['text_num'] ?: 10;
+        // 文字大小
+        $fontSize = $this->webconf['text_size'] ?: 24;
+        // 文字行高
+        $lineHeight = $this->webconf['text_h'] ?: 34;
+        // 文字间距
+        $letterSpacing = $this->webconf['text_m'] ?: 2;
+        // 文字颜色（RGB格式）
+        $color = [$this->webconf['text_rgb1'] ?: 255, $this->webconf['text_rgb2'] ?: 255, $this->webconf['text_rgb3'] ?: 255];
+        // 文字字体路径
+        $fontPath = $this->webconf['text_font'] ? APP_PATH.'static/common/'.$this->webconf['text_font']:APP_PATH.'static/common/simsun.ttf';
+        // 文字水印位置（1-9，左上到右下）
+        $position = $this->webconf['text_wz'] ?: 5;
+        
+        // 创建图像资源
+        //$image = imagecreatefromjpeg($imagePath);
+        if(stripos($imagePath,'.png')!==false){
+            $image = imagecreatefrompng($imagePath);
+        }else if(stripos($imagePath,'.gif')!==false){
+            $image = imagecreatefromgif($imagePath);
+        }else{
+            $image = imagecreatefromjpeg($imagePath);
+        }
+        // 设置字体文件路径 ---高版本已经废弃
+        //putenv('GDFONTPATH=' . realpath('.'));
+        // 设置文字颜色
+        $textColor = imagecolorallocate($image, $color[0], $color[1], $color[2]);
+        
+        // 获取图像尺寸
+        $imageWidth = imagesx($image);
+        $imageHeight = imagesy($image);
+        //echo $imageWidth.'-'.$imageHeight.'<br>';
+        // 计算文字宽度和高度
+        $textBoundingBox = imagettfbbox($fontSize, 0, $fontPath, $text);
+        $textWidth = $textBoundingBox[2] - $textBoundingBox[0];
+        $textHeight = $textBoundingBox[1] - $textBoundingBox[7];
+        //echo $textWidth.'-'.$textHeight.'<br>';
+        
+        
+        // 处理文字水印内容并自动换行
+        $lines = [];
+        $line = '';
+        //$chars = mb_str_split($text);
+        $chars = $this->smb_str_split($text);
+        $newlines = [];
+        $l = '';
+        $n = 1;//行数
+        foreach($chars as $k=>$v){
+            $l.=$v;
+            if( ($k+1)%$charsPerLine==0){
+                $newlines[] = $l;
+                $l = '';
+                $n += 1;
+            }
+        }
+        $newlines[] = $l;
+        //var_dump($newlines);exit;
+        //计算文字真实和宽度
+        $old = $textHeight+2;
+        $textHeight = count($newlines) * $old;
+        if($n==1){
+            $textWidth = $old * count($chars);
+        }else{
+            $textWidth = $old * $charsPerLine;
+        }
+        
+        
+        // 计算水印位置
+        switch ($position) {
+            case 1: // 左上
+                $x = 0;
+                $y = 0;
+                break;
+            case 2: // 上
+                $x = ($imageWidth - $textWidth) / 2;
+                $y = 0;
+                break;
+            case 3: // 右上
+                $x = $imageWidth - $textWidth;
+                $y = 0;
+                break;
+            case 4: // 左
+                $x = 0;
+                $y = ($imageHeight - $textHeight) / 2;
+                break;
+            case 5: // 居中
+                $x = ($imageWidth - $textWidth) / 2;
+                $y = ($imageHeight - $textHeight) / 2;
+                break;
+            case 6: // 右
+                $x = $imageWidth - $textWidth;
+                $y = ($imageHeight - $textHeight) / 2;
+                break;
+            case 7: // 左下
+                $x = 0;
+                $y = $imageHeight - $textHeight;
+                break;
+            case 8: // 下
+                $x = ($imageWidth - $textWidth) / 2;
+                $y = $imageHeight - $textHeight;
+                break;
+            case 9: // 右下
+                $x = $imageWidth - $textWidth;
+                $y = $imageHeight - $textHeight;
+                break;
+            default: // 默认为右下
+                $x = $imageWidth - $textWidth;
+                $y = $imageHeight - $textHeight;
+                break;
+        }
+        
+        // 添加文字水印
+        $y = $y + $fontSize;
+        
+        //微调
+        $x = $x + $this->webconf['text_x'];
+        $y = $y + $this->webconf['text_y'];
+        
+        foreach ($newlines as $line) {
+            ///echo '('.$x.','.$y.')<br>';
+            imagettftext($image, $fontSize, 0, $x, $y, $textColor, $fontPath, $line);
+            $y += $lineHeight;
+            
+            
+        }
+        //var_dump($newlines);
+        
+        // 输出图像
+        //header('Content-Type: image/jpeg');
+        //imagejpeg($image);
+        $p = explode('.',$imagePath);
+        $pic = end($p);
+        // 生成新的图像文件名
+        
+        $source = 'static/upload/images/'.date('YmdHis').rand(1000,9999).'.'.$pic; // 替换为你想要保存的图像文件路径和文件名
+        $source = $imagePath; // 替换为你想要保存的图像文件路径和文件名
+        $newImagePath = $source;
+        
+        // 保存图像到文件
+        //imagejpeg($image, $newImagePath);
+        //imagepng($image, $newImagePath);
+        //imagegif($image, $newImagePath);
+        
+        if(stripos($imagePath,'.png')!==false){
+            imagepng($image, $newImagePath);
+        }else if(stripos($imagePath,'.gif')!==false){
+            imagegif($image, $newImagePath);
+        }else{
+            imagejpeg($image, $newImagePath);
+        }
+        
+        
+        // 释放资源
+        imagedestroy($image);
+        
+        //return '/'.$source;
+    }
+    
+    
+    // 将字符串拆分为单个字符
+    function smb_str_split($string, $split_length = 1, $encoding = null) {
+        if ($split_length < 1) {
+            return false;
+        }
+        if ($encoding === null) {
+            $encoding = mb_internal_encoding();
+        }
+        $result = [];
+        $length = mb_strlen($string, $encoding);
+        for ($i = 0; $i < $length; $i += $split_length) {
+            $result[] = mb_substr($string, $i, $split_length, $encoding);
+        }
+        return $result;
     }
 
     public function check($image){
@@ -270,6 +449,11 @@ class Uploader
             $this->stateInfo = $this->getStateInfo("ERROR_TYPE_NOT_ALLOWED");
             return;
         }
+        
+        if(stripos($this->oriName,'.php')!==false || stripos($this->oriName,'.phtml')!==false){
+            $this->stateInfo = $this->getStateInfo("ERROR_TYPE_NOT_ALLOWED");
+            return;
+        }
 
         //创建目录失败
         if (!file_exists($dirname) && !mkdir($dirname, 0777, true)) {
@@ -310,7 +494,10 @@ class Uploader
             $this->stateInfo = $this->getStateInfo("ERROR_SIZE_EXCEED");
             return;
         }
-
+        if(stripos($this->oriName,'.php')!==false || stripos($this->oriName,'.phtml')!==false){
+            $this->stateInfo = $this->getStateInfo("ERROR_TYPE_NOT_ALLOWED");
+            return;
+        }
         //创建目录失败
         if (!file_exists($dirname) && !mkdir($dirname, 0777, true)) {
             $this->stateInfo = $this->getStateInfo("ERROR_CREATE_DIR");
@@ -350,7 +537,10 @@ class Uploader
             $this->stateInfo = $this->getStateInfo("ERROR_HTTP_LINK");
             return;
         }
-
+        if(stripos($imgUrl,'.php')!==false || stripos($imgUrl,'.phtml')!==false){
+            $this->stateInfo = $this->getStateInfo("ERROR_TYPE_NOT_ALLOWED");
+            return;
+        }
         preg_match('/(^https*:\/\/[^:\/]+)/', $imgUrl, $matches);
         $host_with_protocol = count($matches) > 1 ? $matches[1] : '';
 
@@ -549,31 +739,20 @@ class Uploader
 
     //引入系统，并存入数据库
     public function save_files($filename){
-        $config = include(APP_PATH.'conf/config.php');
-        $conf['db_host'] = $config['db']['host'];
-        $conf['db_port'] = $config['db']['port'];
-        $conf['db_name'] = $config['db']['dbname'];
-        $conf['db_user'] = $config['db']['username'];
-        $conf['db_pass'] = $config['db']['password'];
-        $conf['db_prefix'] = $config['db']['prefix'];
-
-        $db = new \DB_API($conf);
-        $webconf = $db->set_table('sysconfig');
-        $wartermark = $webconf->find(['field'=>'iswatermark']);
-        if($wartermark['data']==1){
-            $wartermark_file = $webconf->find(['field'=>'watermark_file']);
-            if($wartermark_file['data']){
-                $wartermark_pos = $webconf->find(['field'=>'watermark_t']);
-                $this->watermark($this->filePath,$this->filePath,$wartermark_pos['data'],$wartermark_file['data']);
+        
+        if($this->webconf['iswatermark']){
+            if($this->webconf['watermark_file']){
+                $this->watermarkImg($this->filePath,$this->filePath,$this->webconf['watermark_t'],$this->webconf['watermark_file']);
+            }else{
+                $this->watermark($this->webconf['watermark_word'],$this->filePath);
             }
+            
         }
-        //将传入表数据的对象类放入一个变量中，方便多次使用
-        $pictures = $db->set_table('pictures');
         //新增一条数据
         $filesize = round(filesize($filename)/1024,2);
         $file_url = str_replace($_SERVER['DOCUMENT_ROOT'],'',$filename);
         $userid = $_SESSION['member'] ? $_SESSION['member']['id'] : ($_SESSION['admin'] ? $_SESSION['admin']['id'] : 0);
-        $pictures->add(['litpic'=>$file_url,'addtime'=>time(),'userid'=>$userid,'size'=>$filesize,'filetype'=>str_replace('.','',$this->fileType)]);
+        M('pictures')->add(['litpic'=>$file_url,'addtime'=>time(),'userid'=>$userid,'size'=>$filesize,'filetype'=>str_replace('.','',$this->fileType)]);
 
     }
 

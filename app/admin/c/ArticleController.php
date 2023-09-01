@@ -86,7 +86,21 @@ class ArticleController extends CommonController
 			if(!$this->frparam('description',1) && $this->frparam('config_description')==1){
 				$data['description'] = newstr(strip_tags($data['body']),200);
 			}
-			if(!$this->frparam('litpic',1) && $this->frparam('config_litpic')==1){
+			$water_models = explode(',',$this->webconf['text_molds']);
+			if(in_array('article',$water_models)){
+                if(!$this->frparam('litpic',1) && $this->webconf['text_waterlitpic'] && $this->webconf['text_litpic']){
+                    $data['litpic'] = waterwordmark($data['title'],APP_PATH.$this->webconf['text_litpic']);
+                    //存储
+                    $filesize = round(filesize(APP_PATH.$data['litpic'])/1024,2);
+                    $pix_arr = explode('.',$data['litpic']);
+                    $pix = end($pix_arr);
+                    M('pictures')->add(['litpic'=>$data['litpic'],'addtime'=>time(),'userid'=>$_SESSION['admin']['id'],'size'=>$filesize,'filetype'=>strtolower($pix),'tid'=>$this->frparam('tid'),'molds'=>'article']);
+                }else if($this->frparam('litpic',1) && $this->webconf['text_waterlitpic']){
+                    $data['litpic'] = waterwordmark($data['title'],APP_PATH.$this->frparam('litpic',1),0);
+                }
+            }
+			
+			if(!$data['litpic'] && $this->frparam('config_litpic')==1){
 				$pattern='/<img.*?src="(.*?)".*?>/is';
 				if($this->frparam('body',1)){
 					$r = preg_match($pattern,$_POST['body'],$matchContent);
@@ -256,7 +270,18 @@ class ArticleController extends CommonController
 			if(!$this->frparam('description',1) && $this->frparam('config_description')==1){
 				$data['description'] = newstr(strip_tags($data['body']),200);
 			}
-			if(!$this->frparam('litpic',1) && $this->frparam('config_litpic')==1){
+            $water_models = explode(',',$this->webconf['text_molds']);
+            if(in_array('article',$water_models)){
+                if(!$this->frparam('litpic',1) && $this->webconf['text_waterlitpic'] && $this->webconf['text_litpic']){
+                    $data['litpic'] = waterwordmark($data['title'],APP_PATH.$this->webconf['text_litpic']);
+                    //存储
+                    $filesize = round(filesize(APP_PATH.$data['litpic'])/1024,2);
+                    $pix_arr = explode('.',$data['litpic']);
+                    $pix = end($pix_arr);
+                    M('pictures')->add(['litpic'=>$data['litpic'],'addtime'=>time(),'userid'=>$_SESSION['admin']['id'],'size'=>$filesize,'filetype'=>strtolower($pix),'tid'=>$this->frparam('tid'),'molds'=>'article']);
+                }
+            }
+			if(!$data['litpic'] && $this->frparam('config_litpic')==1){
 				$pattern='/<img.*?src="(.*?)".*?>/is';
 				if($this->frparam('body',1)){
 					$r = preg_match($pattern,$_POST['body'],$matchContent);

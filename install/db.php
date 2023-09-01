@@ -769,6 +769,7 @@ INSERT INTO `jz_ctype` (`id`,`title`,`action`,`sys`,`isopen`) VALUES ('4','邮�
 INSERT INTO `jz_ctype` (`id`,`title`,`action`,`sys`,`isopen`) VALUES ('5','支付配置','payconfig',1,1);
 INSERT INTO `jz_ctype` (`id`,`title`,`action`,`sys`,`isopen`) VALUES ('6','公众号配置','wechatbind',1,1);
 INSERT INTO `jz_ctype` (`id`,`title`,`action`,`sys`,`isopen`) VALUES ('7','积分配置','jifenset',1,1);
+INSERT INTO `jz_ctype` (`id`,`title`,`action`,`sys`,`isopen`) VALUES ('8','图片水印','imagewatermark',1,1);
 -- ----------------------------
 -- Records of jz_customurl
 -- ----------------------------
@@ -1299,7 +1300,7 @@ INSERT INTO `jz_ruler` (`id`,`name`,`fc`,`pid`,`isdesktop`,`sys`) VALUES ('246',
 -- ----------------------------
 -- Records of jz_sysconfig
 -- ----------------------------
-INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`,`typeid`,`config`,`orders`,`sys`) VALUES ('1','web_version','系统版号','版本号是系统自带，请勿改动','0','2.4.8','0', NULL,'0','1');
+INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`,`typeid`,`config`,`orders`,`sys`) VALUES ('1','web_version','系统版号','版本号是系统自带，请勿改动','0','2.4.9','0', NULL,'0','1');
 INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`,`typeid`,`config`,`orders`,`sys`) VALUES ('2','web_name','网站SEO名称','控制在25个字、50个字节以内','2','极致CMS建站系统','1', NULL,'0','1');
 INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`,`typeid`,`config`,`orders`,`sys`) VALUES ('3','web_keyword','网站SEO关键词','5个左右，8汉字以内，用英文逗号隔开','2','极致建站,cms,开源cms,免费cms,cms系统,phpcms,免费企业建站,建站系统,企业cms,jizhicms,极致cms,建站cms,建站系统,极致博客,极致blog,内容管理系统','1', NULL,'0','1');
 INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`,`typeid`,`config`,`orders`,`sys`) VALUES ('4','web_desc','网站SEO描述','控制在80个汉字，160个字符以内','3','极致CMS是开源免费的PHPCMS网站内容管理系统，无商业授权，简单易用，提供丰富的插件，帮您实现零基础搭建不同类型网站（企业站，门户站，个人博客站等），是您建站的好帮手。极速建站，就选极致CMS。','1', NULL,'0','1');
@@ -1361,10 +1362,10 @@ INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`,`typeid`,`c
 INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`,`typeid`,`config`,`orders`,`sys`) VALUES ('67','autocheckmessage','是否留言自动审核','开启后，留言自动审核（显示）','6','0','2','开启=1,关闭=0','0','1');
 INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`,`typeid`,`config`,`orders`,`sys`) VALUES ('68','autocheckcomment','是否评论自动审核','开启后评论自动审核（显示）','6','1','2','开启=1,关闭=0','0','1');
 INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`,`typeid`,`config`,`orders`,`sys`) VALUES ('69','mingan','网站敏感词过滤','将敏感词放到里面，用“,”分隔，用{xxx}代替通配内容','3', NULL,'1', NULL,'0','1');
-INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`,`typeid`,`config`,`orders`,`sys`) VALUES ('70','iswatermark','是否开启水印','开启水印需要上传水印图片','6','0','2','开启=1,关闭=0','0','1');
-INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`,`typeid`,`config`,`orders`,`sys`) VALUES ('71','watermark_file','水印图片','水印图片在250px以内','1', NULL,'2', NULL,'0','1');
-INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`,`typeid`,`config`,`orders`,`sys`) VALUES ('72','watermark_t','水印位置','参考键盘九宫格1-9','2','9','2', NULL,'0','1');
-INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`,`typeid`,`config`,`orders`,`sys`) VALUES ('73','watermark_tm','水印透明度','透明度越大，越难看清楚水印','6','0','2','不显示=0,10%=10,20%=20,30%=30,40%=40,50%=50,60%=60,70%=70,80%=80,90%=90','0','1');
+INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`,`typeid`,`config`,`orders`,`sys`) VALUES ('70','iswatermark','是否开启水印','开启水印后水印图片优先，如果没有图片则使用水印文字','6','0','8','开启=1,关闭=0','100','1');
+INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`,`typeid`,`config`,`orders`,`sys`) VALUES ('71','watermark_file','水印图片','水印图片在250px以内','1', NULL,'8', NULL,'99','1');
+INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`,`typeid`,`config`,`orders`,`sys`) VALUES ('72','watermark_t','水印位置','参考键盘九宫格1-9','2','9','8', NULL,'98','1');
+INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`,`typeid`,`config`,`orders`,`sys`) VALUES ('73','watermark_tm','水印透明度','透明度越大，越难看清楚水印','6','0','8','不显示=0,10%=10,20%=20,30%=30,40%=40,50%=50,60%=60,70%=70,80%=80,90%=90','97','1');
 INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`,`typeid`,`config`,`orders`,`sys`) VALUES ('74','money_exchange','钱包兑换率','站内钱包与RMB的兑换率，即1元=多少金币','2','1','5', NULL,'0','1');
 INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`,`typeid`,`config`,`orders`,`sys`) VALUES ('75','jifen_exchange','积分兑换率','站内积分与RMB的兑换率，即1元=多少积分','2','100','5', NULL,'0','1');
 INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`,`typeid`,`config`,`orders`,`sys`) VALUES ('76','isopenjifen','积分支付','开启积分支付后，商品可以用积分支付','6','1','5','开启=1,关闭=0','0','1');
@@ -1424,6 +1425,24 @@ INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`,`typeid`,`c
 INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`,`typeid`,`config`,`orders`,`sys`) VALUES ('133','hidetitleonliy','字段重复检测', '将【模块标识-检测字段】填写进去，用|进行分割，将会进行标题重复检测。如：article-title|product-title','2','article-title|product-title','2', NULL,'0','1');
 INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`,`typeid`,`config`,`orders`,`sys`) VALUES ('134','onlyuserupload','会员上传限制','开启后，仅会员才可以上传！受会员上传大小限制！','6','1','2','开启=1,关闭=0','1','1');
 INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`,`typeid`,`config`,`orders`,`sys`) VALUES ('135','cachefilenum','缓存文件数','0表示不限制，最大不超过500','2','100','2',null,0,'1');
+INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`,`typeid`,`config`,`orders`,`sys`) VALUES ('136','watermark_word','水印文字','只有没有水印图片的时候才生效','2','这个是水印文字','8',null,96,'1');
+INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`,`typeid`,`config`,`orders`,`sys`) VALUES ('137','watermark_font','水印字体','默认simsun.ttf，存放在static/common','2','simsun.ttf','8',null,95,'1');
+INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`,`typeid`,`config`,`orders`,`sys`) VALUES ('138','watermark_size','水印大小','默认24','2','24','8',null,94,'1');
+INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`,`typeid`,`config`,`orders`,`sys`) VALUES ('139','watermark_h','水印行高','默认34','2','34','8',null,93,'1');
+INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`,`typeid`,`config`,`orders`,`sys`) VALUES ('140','watermark_rgb','水印颜色','默认白色：#FFFFFF','2','#FFFFFF','8',null,92,'1');
+INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`,`typeid`,`config`,`orders`,`sys`) VALUES ('141','watermark_x','水印微调X','相对水印位置再进行X轴微调，默认0','2','0','8',null,91,'1');
+INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`,`typeid`,`config`,`orders`,`sys`) VALUES ('142','watermark_y','水印微调Y','相对水印位置再进行Y轴微调，默认0','2','10','8',null,90,'1');
+INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`,`typeid`,`config`,`orders`,`sys`) VALUES ('143','text_waterlitpic','缩略图标题水印','文章缩略图进行水印文章标题，开启后生效','6','1','8','开启=1,关闭=0',89,'1');
+INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`,`typeid`,`config`,`orders`,`sys`) VALUES ('144','text_litpic','默认缩略图','当文章没有缩略图的时候生效','1',null,'8',null,88,'1');
+INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`,`typeid`,`config`,`orders`,`sys`) VALUES ('145','text_molds','支持模型','填写模型标识，如：article,product','2','article,product','8',null,87,'1');
+INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`,`typeid`,`config`,`orders`,`sys`) VALUES ('146','text_num','每行文字数','默认10个字','2','10','8',null,86,'1');
+INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`,`typeid`,`config`,`orders`,`sys`) VALUES ('147','text_size','文字大小','默认24','2','24','8',null,85,'1');
+INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`,`typeid`,`config`,`orders`,`sys`) VALUES ('148','text_h','文字行高','默认34','2','34','8',null,84,'1');
+INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`,`typeid`,`config`,`orders`,`sys`) VALUES ('149','text_rgb','文字颜色','默认白色：#FFFFFF','2','#FFFFFF','8',null,83,'1');
+INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`,`typeid`,`config`,`orders`,`sys`) VALUES ('150','text_font','文字字体','默认simsun.ttf，存放在static/common','2','simsun.ttf','8',null,82,'1');
+INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`,`typeid`,`config`,`orders`,`sys`) VALUES ('151','text_wz','水印位置','九宫格1-9，默认5中间','2','5','8',null,81,'1');
+INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`,`typeid`,`config`,`orders`,`sys`) VALUES ('152','text_x','微调X','相对于水印位置再进行X轴微调，默认0','2','0','8',null,80,'1');
+INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`,`typeid`,`config`,`orders`,`sys`) VALUES ('153','text_y','微调Y','相对于水印位置再进行Y轴微调，默认0','2','0','8',null,79,'1');
 -- ----------------------------
 -- Records of jz_tags
 -- ----------------------------

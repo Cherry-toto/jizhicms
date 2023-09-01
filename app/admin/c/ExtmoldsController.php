@@ -206,6 +206,21 @@ class ExtmoldsController extends Controller
                     }
                 }
             }
+            
+            $water_models = explode(',',$this->webconf['text_molds']);
+            if(in_array($molds,$water_models)){
+                if(!$this->frparam('litpic',1) && $this->webconf['text_waterlitpic'] && $this->webconf['text_litpic']){
+                    $data['litpic'] = waterwordmark($data['title'],APP_PATH.$this->webconf['text_litpic']);
+                    //存储
+                    $filesize = round(filesize(APP_PATH.$data['litpic'])/1024,2);
+                    $pix_arr = explode('.',$data['litpic']);
+                    $pix = end($pix_arr);
+                    M('pictures')->add(['litpic'=>$data['litpic'],'addtime'=>time(),'userid'=>$_SESSION['admin']['id'],'size'=>$filesize,'filetype'=>strtolower($pix),'tid'=>$this->frparam('tid'),'molds'=>$molds]);
+                }else if($this->frparam('litpic',1) && $this->webconf['text_waterlitpic']){
+                    $data['litpic'] = waterwordmark($data['title'],APP_PATH.$this->frparam('litpic',1),0);
+                }
+            }
+            
 			$r = M($molds)->add($data);
 			if($r){
 				if(isset($data['ownurl'])){
@@ -319,6 +334,17 @@ class ExtmoldsController extends Controller
                         if(M($molds)->find($sql)){
                             JsonReturn(array('code'=>1,'msg'=>$onliyfield.JZLANG('重复！')));
                         }
+                    }
+                }
+                $water_models = explode(',',$this->webconf['text_molds']);
+                if(in_array($molds,$water_models)){
+                    if(!$this->frparam('litpic',1) && $this->webconf['text_waterlitpic'] && $this->webconf['text_litpic']){
+                        $data['litpic'] = waterwordmark($data['title'],APP_PATH.$this->webconf['text_litpic']);
+                        //存储
+                        $filesize = round(filesize(APP_PATH.$data['litpic'])/1024,2);
+                        $pix_arr = explode('.',$data['litpic']);
+                        $pix = end($pix_arr);
+                        M('pictures')->add(['litpic'=>$data['litpic'],'addtime'=>time(),'userid'=>$_SESSION['admin']['id'],'size'=>$filesize,'filetype'=>strtolower($pix),'tid'=>$this->frparam('tid'),'molds'=>$molds]);
                     }
                 }
                 $data['addtime'] = isset($data['addtime']) ? $data['addtime'] : time();

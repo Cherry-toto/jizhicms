@@ -44,7 +44,7 @@ class TagsController extends CommonController
 			$tables = isset($this->webconf['tag_table']) ? ($this->webconf['tag_table'] ? explode('|',$this->webconf['tag_table']) : ['article','product']) : ['article','product'];
 			$sqlx = [];
 			foreach($tables as $v){
-				$sqlx[] = " select id,tid,litpic,title,hits,tags,keywords,molds,htmlurl,ownurl,description,addtime,userid,member_id from ".DB_PREFIX.$v." where tags like '%,".$keywords.",%' and isshow=1 ";
+				$sqlx[] = " select id,tid,litpic,title,hits,tags,keywords,molds,htmlurl,ownurl,description,body,addtime,userid,member_id from ".DB_PREFIX.$v." where tags like '%,".$keywords.",%' and isshow=1 ";
 			}
 			$sql = implode(' union all ',$sqlx);
 			$page = new Page();
@@ -53,7 +53,10 @@ class TagsController extends CommonController
 			$data = $page->where($sql)->limit($this->frparam('limit',0,15))->page($this->frpage)->goSql();
 			foreach($data as $k=>$v){
 				$data[$k]['url'] = gourl($v,$v['htmlurl']);
-				$data[$k]['classname'] = $this->classtypedata[$v['tid']]['classname'];
+                $data[$k]['class_name'] = isset($this->classtypedata[$v['tid']]) ? $this->classtypedata[$v['tid']]['classname'] : '';
+                $data[$k]['class_url'] = isset($this->classtypedata[$v['tid']]) ? $this->classtypedata[$v['tid']]['url'] : '';
+                $data[$k]['class_litpic'] = isset($this->classtypedata[$v['tid']]) ? $this->classtypedata[$v['tid']]['litpic'] : '';
+                $data[$k]['format_addtime'] = isset($v['addtime']) ? date('Y-m-d H:i:s',$v['addtime']) : '';
 			}
 			$pages = $page->pageList(5,'/page/');
 			$this->pages = $pages;//组合分页

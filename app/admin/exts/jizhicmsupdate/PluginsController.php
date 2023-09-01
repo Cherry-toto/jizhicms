@@ -93,53 +93,6 @@ class PluginsController extends Controller {
 		**/
 		
 		
-		$dir = APP_PATH.APP_HOME.'/exts/jizhicmsupdate/file/mysql/admin/tpl';
-		$to = APP_PATH.APP_HOME.'/t/tpl';
-		$this->removeFile($dir,$to);
-        $dir = APP_PATH.APP_HOME.'/exts/jizhicmsupdate/file/mysql/frphp/common';
-        $to = APP_PATH.'frphp/common';
-        $this->removeFile($dir,$to);
-        $dir = APP_PATH.APP_HOME.'/exts/jizhicmsupdate/file/mysql/frphp/extend';
-        $to = APP_PATH.'frphp/extend';
-        $this->removeFile($dir,$to);
-        $dir = APP_PATH.APP_HOME.'/exts/jizhicmsupdate/file/conf';
-        $to = APP_PATH.'conf';
-        $this->removeFile($dir,$to);
-        $dir = APP_PATH.APP_HOME.'/exts/jizhicmsupdate/file/mysql/admin/c';
-        $to = APP_PATH.APP_HOME.'/c';
-        $this->removeFile($dir,$to);
-        
-        $dir = APP_PATH.APP_HOME.'/exts/jizhicmsupdate/file/mysql/frphp';
-        $to = APP_PATH.'frphp';
-        $this->removeFile($dir,$to);
-        $dir = APP_PATH.APP_HOME.'/exts/jizhicmsupdate/file/mysql/frphp/lib';
-        $to = APP_PATH.'frphp/lib';
-        $this->removeFile($dir,$to);
-        $dir = APP_PATH.APP_HOME.'/exts/jizhicmsupdate/file/mysql/home';
-        $to = APP_PATH.'app/home/c';
-        $this->removeFile($dir,$to);
-        $dir = APP_PATH.APP_HOME.'/exts/jizhicmsupdate/file/mysql/static';
-        $to = APP_PATH.'static/common/user/uedit';
-        $this->removeFile($dir,$to);
-    
-        /**
-         * 数据库处理
-         */
-        if(!M('sysconfig')->find(['field'=>'classtypemaxlevel'])){
-            M('sysconfig')->add(['field'=>'classtypemaxlevel','title'=>'栏目全局递归','tip'=>'默认开启，栏目超过20个，请关闭此选项，有一定程度提升访问速度！','type'=>6,'data'=>0,'typeid'=>2,'config'=>'开启=1,关闭=0','orders'=>1,'sys'=>1]);
-        }
-        $sql = '';
-        $fields = $this->getTableFields('recycle');
-        if(!in_array('title',$fields)){
-            $sql.= "ALTER TABLE ".DB_PREFIX."recycle ADD title varchar(255) default NULL COMMENT '标记'; ";
-        }
-        $fields = $this->getTableFields('tags');
-        if(!in_array('tids',$fields)){
-            $sql.= "ALTER TABLE ".DB_PREFIX."tags ADD tids varchar(500) default NULL COMMENT '相关栏目'; ";
-        }
-        if($sql){
-            M()->runSql($sql);
-        }
         
 	}
 	

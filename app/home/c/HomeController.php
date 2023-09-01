@@ -255,6 +255,10 @@ class HomeController extends CommonController
 				if(!isset($v['url'])){
 					$data[$k]['url'] = gourl($v,$v['htmlurl']);
 				}
+				$data[$k]['class_name'] = $this->type['classname'];
+				$data[$k]['class_url'] = $this->type['url'];
+				$data[$k]['class_litpic'] = $this->type['litpic'];
+				$data[$k]['format_addtime'] = $v['addtime'] ? date('Y-m-d H:i:s',$v['addtime']) : '';
 				
 			}
 			$this->lists = $data;//列表数据
@@ -490,7 +494,10 @@ class HomeController extends CommonController
 				if(isset($v['htmlurl']) && !isset($v['url'])){
 					$data[$k]['url'] = gourl($v,$v['htmlurl']);
 				}
-				
+                $data[$k]['class_name'] = $this->type['classname'];
+                $data[$k]['class_url'] = $this->type['url'];
+                $data[$k]['class_litpic'] = $this->type['litpic'];
+                $data[$k]['format_addtime'] = $v['addtime'] ? date('Y-m-d H:i:s',$v['addtime']) : '';
 			}
 			$this->lists = $data;//列表数据
 			$this->sum = $page->sum;//总数据
@@ -655,8 +662,11 @@ class HomeController extends CommonController
 			$details['body'] = $con;
 			
 		}
-		
-		
+        
+        $details['class_name'] = $this->type['classname'];
+        $details['class_url'] = $this->type['url'];
+        $details['class_litpic'] = $this->type['litpic'];
+        $details['format_addtime'] = $details['addtime'] ? date('Y-m-d H:i:s',$details['addtime']) : '';
 		$this->jz = $details;
 		
 		$aprev_sql = ' id<'.$id.' and tid in ('.implode(',',$this->classtypedata[$this->type['id']]['children']['ids']).') ';
@@ -806,7 +816,10 @@ class HomeController extends CommonController
 					$data[$k]['url'] = gourl($v,$v['htmlurl']);
 				}
 				
-				$data[$k]['title'] = str_replace($word,'<b style="color:#f00">'.$word.'</b>',$v['title']);
+                $data[$k]['class_name'] = isset($this->classtypedata[$v['tid']]) ? $this->classtypedata[$v['tid']]['classname'] : '';
+                $data[$k]['class_url'] = isset($this->classtypedata[$v['tid']]) ? $this->classtypedata[$v['tid']]['url'] : '';
+                $data[$k]['class_litpic'] = isset($this->classtypedata[$v['tid']]) ? $this->classtypedata[$v['tid']]['litpic'] : '';
+                $data[$k]['format_addtime'] = isset($v['addtime']) ? date('Y-m-d H:i:s',$v['addtime']) : '';
 			}
 			
 			$this->lists = $data;//列表数据
@@ -928,23 +941,21 @@ class HomeController extends CommonController
 				$sql.=' and tid in('.$tid.') ';
 			}
 			$sqlx = [];
-			$sqln = [];
 			foreach($allow_table as $v){
-				$list_a = M($v)->findAll($sql);
 				$sqlx[] = ' select '.$this->webconf['search_fields_muti'].' from '.DB_PREFIX.$v." where ".$sql;
-				$sqln[] = ' select id from '.DB_PREFIX.$v." where ".$sql;
 			}
 			
 			$sql = implode(' union all ',$sqlx);
-			$sqln = implode(' union all ',$sqln);
 			$page = new Page();
 			$page->typeurl = 'search';
 			$this->currentpage = $this->frpage;
 			$data = $page->where($sql)->setPage(['limit'=>$this->frparam('limit',0,15)])->page($this->frpage)->goSql();
 			foreach($data as $k=>$v){
 				$data[$k]['url'] = gourl($v,$v['htmlurl']);
-				$data[$k]['classname'] = $this->classtypedata[$v['tid']]['classname'];
-				$data[$k]['title'] = str_replace($word,'<span style="color:#f00;">'.$word.'</span>',$v['title']);
+                $data[$k]['class_name'] = isset($this->classtypedata[$v['tid']]) ? $this->classtypedata[$v['tid']]['classname'] : '';
+                $data[$k]['class_url'] = isset($this->classtypedata[$v['tid']]) ? $this->classtypedata[$v['tid']]['url'] : '';
+                $data[$k]['class_litpic'] = isset($this->classtypedata[$v['tid']]) ? $this->classtypedata[$v['tid']]['litpic'] : '';
+                $data[$k]['format_addtime'] = isset($v['addtime']) ? date('Y-m-d H:i:s',$v['addtime']) : '';
 			}
 			$pages = $page->pageList(5,'&page=');
 			$this->pages = $pages;//组合分页

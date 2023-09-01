@@ -1963,69 +1963,225 @@ if(!function_exists('memberInfo')) {
 }
 //图片水印
 if(!function_exists('watermark')) {
-    function watermark($img, $water, $pos = 9, $tm = 100)
+    function watermark($img, $water, $pos = 9, $tm = 100, $word = '')
     {
-
-        $info = getImageInfo($img);
-
-        $logo = getImageInfo($water);
-
-        $dst = openImg($img, $info['type']);
-        $src = openImg($water, $logo['type']);
-
-
-        switch ($pos) {
-            case 1:
-                $x = 0;
-                $y = 0;
-                break;
-            case 2:
-                $x = ceil(($info['width'] - $logo['width']) / 2);
-                $y = 0;
-                break;
-            case 3:
-                $x = $info['width'] - $logo['width'];
-                $y = 0;
-                break;
-            case 4:
-                $x = 0;
-                $y = ceil(($info['height'] - $logo['height']) / 2);
-                break;
-            case 5:
-                $x = ceil(($info['width'] - $logo['width']) / 2);
-                $y = ceil(($info['height'] - $logo['height']) / 2);
-                break;
-            case 6:
-                $x = $info['width'] - $logo['width'];
-                $y = ceil(($info['height'] - $logo['height']) / 2);
-                break;
-
-            case 7:
-                $x = 0;
-                $y = $info['height'] - $logo['height'];
-                break;
-            case 8:
-                $x = ceil(($info['width'] - $logo['width']) / 2);
-                $y = $info['height'] - $logo['height'];
-                break;
-            case 9:
-                $x = $info['width'] - $logo['width'];
-                $y = $info['height'] - $logo['height'];
-                break;
-            case 0:
-            default:
-                $x = mt_rand(0, $info['width'] - $logo['width']);
-                $y = mt_rand(0, $y = $info['height'] - $logo['height']);
-                break;
-
+        if(file_exists($water)){
+            $info = getImageInfo($img);
+    
+            $logo = getImageInfo($water);
+    
+            $dst = openImg($img, $info['type']);
+            $src = openImg($water, $logo['type']);
+    
+    
+            switch ($pos) {
+                case 1:
+                    $x = 0;
+                    $y = 0;
+                    break;
+                case 2:
+                    $x = ceil(($info['width'] - $logo['width']) / 2);
+                    $y = 0;
+                    break;
+                case 3:
+                    $x = $info['width'] - $logo['width'];
+                    $y = 0;
+                    break;
+                case 4:
+                    $x = 0;
+                    $y = ceil(($info['height'] - $logo['height']) / 2);
+                    break;
+                case 5:
+                    $x = ceil(($info['width'] - $logo['width']) / 2);
+                    $y = ceil(($info['height'] - $logo['height']) / 2);
+                    break;
+                case 6:
+                    $x = $info['width'] - $logo['width'];
+                    $y = ceil(($info['height'] - $logo['height']) / 2);
+                    break;
+        
+                case 7:
+                    $x = 0;
+                    $y = $info['height'] - $logo['height'];
+                    break;
+                case 8:
+                    $x = ceil(($info['width'] - $logo['width']) / 2);
+                    $y = $info['height'] - $logo['height'];
+                    break;
+                case 9:
+                    $x = $info['width'] - $logo['width'];
+                    $y = $info['height'] - $logo['height'];
+                    break;
+                case 0:
+                default:
+                    $x = mt_rand(0, $info['width'] - $logo['width']);
+                    $y = mt_rand(0, $y = $info['height'] - $logo['height']);
+                    break;
+        
+            }
+            imagecopymerge($dst, $src, $x, $y, 0, 0, $logo['width'], $logo['height'], $tm);
+    
+    
+            imagejpeg($dst, $img);
+    
+            imagedestroy($dst);
+            imagedestroy($src);
+            return $img;
+        }else if($word){
+    
+            $webconf = webConf();
+            // 图片路径
+            $imagePath = $img;
+            // 文字水印内容
+            $text = $word;
+            // 每行文字数
+            $charsPerLine = 10;
+            // 文字大小
+            $fontSize = 24;
+            // 文字行高
+            $lineHeight = 34;
+            // 文字颜色（RGB格式）
+            if(!empty($webconf['watermark_rgb']) && (strlen($webconf['watermark_rgb'])==7)) {
+                $r = hexdec(substr($webconf['watermark_rgb'],1,2));
+                $g = hexdec(substr($webconf['watermark_rgb'],3,2));
+                $b = hexdec(substr($webconf['watermark_rgb'],5));
+            }else{
+                $r = $g = $b = 255;
+            }
+            $color = [$r, $g, $b];
+            // 文字字体路径
+            $fontPath = $webconf['watermark_font'] ? APP_PATH.'static/common/'.$webconf['watermark_font']:APP_PATH.'static/common/simsun.ttf';
+            // 文字水印位置（1-9，左上到右下）
+            $position = $webconf['watermark_wz'] ?: 5;
+    
+            // 创建图像资源
+            if(stripos($imagePath,'.png')!==false){
+                $image = imagecreatefrompng($imagePath);
+            }else if(stripos($imagePath,'.gif')!==false){
+                $image = imagecreatefromgif($imagePath);
+            }else{
+                $image = imagecreatefromjpeg($imagePath);
+            }
+            // 设置字体文件路径 ---高版本已经废弃
+            //putenv('GDFONTPATH=' . realpath('.'));
+            // 设置文字颜色
+            $textColor = imagecolorallocate($image, $color[0], $color[1], $color[2]);
+    
+            // 获取图像尺寸
+            $imageWidth = imagesx($image);
+            $imageHeight = imagesy($image);
+            // 计算文字宽度和高度
+            $textBoundingBox = imagettfbbox($fontSize, 0, $fontPath, $text);
+            $textWidth = $textBoundingBox[2] - $textBoundingBox[0];
+            $textHeight = $textBoundingBox[1] - $textBoundingBox[7];
+    
+            // 处理文字水印内容并自动换行
+            $lines = [];
+            $line = '';
+            //$chars = mb_str_split($text);
+            $chars = smb_str_split($text);
+            $newlines = [];
+            $l = '';
+            $n = 1;//行数
+            foreach($chars as $k=>$v){
+                $l.=$v;
+                if( ($k+1)%$charsPerLine==0){
+                    $newlines[] = $l;
+                    $l = '';
+                    $n += 1;
+                }
+            }
+            $newlines[] = $l;
+            //var_dump($newlines);exit;
+            //计算文字真实和宽度
+            $old = $textHeight+2;
+            $textHeight = count($newlines) * $old;
+            if($n==1){
+                $textWidth = $old * count($chars);
+            }else{
+                $textWidth = $old * $charsPerLine;
+            }
+    
+    
+            // 计算水印位置
+            switch ($position) {
+                case 1: // 左上
+                    $x = 0;
+                    $y = 0;
+                    break;
+                case 2: // 上
+                    $x = ($imageWidth - $textWidth) / 2;
+                    $y = 0;
+                    break;
+                case 3: // 右上
+                    $x = $imageWidth - $textWidth;
+                    $y = 0;
+                    break;
+                case 4: // 左
+                    $x = 0;
+                    $y = ($imageHeight - $textHeight) / 2;
+                    break;
+                case 5: // 居中
+                    $x = ($imageWidth - $textWidth) / 2;
+                    $y = ($imageHeight - $textHeight) / 2;
+                    break;
+                case 6: // 右
+                    $x = $imageWidth - $textWidth;
+                    $y = ($imageHeight - $textHeight) / 2;
+                    break;
+                case 7: // 左下
+                    $x = 0;
+                    $y = $imageHeight - $textHeight;
+                    break;
+                case 8: // 下
+                    $x = ($imageWidth - $textWidth) / 2;
+                    $y = $imageHeight - $textHeight;
+                    break;
+                case 9: // 右下
+                    $x = $imageWidth - $textWidth;
+                    $y = $imageHeight - $textHeight;
+                    break;
+                default: // 默认为右下
+                    $x = $imageWidth - $textWidth;
+                    $y = $imageHeight - $textHeight;
+                    break;
+            }
+    
+            // 添加文字水印
+            $y = $y + $fontSize;
+    
+            //微调
+            $x = $x + $webconf['watermark_x'];
+            $y = $y + $webconf['watermark_y'];
+    
+            foreach ($newlines as $line) {
+                imagettftext($image, $fontSize, 0, $x, $y, $textColor, $fontPath, $line);
+                $y += $lineHeight;
+        
+        
+            }
+    
+            // 生成新的图像文件名
+    
+            $source = $imagePath; // 替换为你想要保存的图像文件路径和文件名
+            $newImagePath = $source;
+    
+            // 保存图像到文件
+            if(stripos($imagePath,'.png')!==false){
+                imagepng($image, $newImagePath);
+            }else if(stripos($imagePath,'.gif')!==false){
+                imagegif($image, $newImagePath);
+            }else{
+                imagejpeg($image, $newImagePath);
+            }
+    
+    
+            // 释放资源
+            imagedestroy($image);
+            return str_replace(APP_PATH,'',$source);
+        
         }
-        imagecopymerge($dst, $src, $x, $y, 0, 0, $logo['width'], $logo['height'], $tm);
-
-
-        imagejpeg($dst, $img);
-
-        imagedestroy($dst);
-        imagedestroy($src);
+        
         return $img;
 
     }
@@ -2482,5 +2638,232 @@ if(!function_exists('jztpldatafield')) {
             $tpldata = getCache('tpldata2');
         }
         return $tpldata;
+    }
+}
+if(!function_exists('waterwordmark')) {
+    function waterwordmark($title,$path,$isnew = 1){
+        $webconf = webConf();
+        // 图片路径
+        $imagePath = $path;
+        // 文字水印内容
+        $text = $title;
+        // 每行文字数
+        $charsPerLine = $webconf['text_num'] ?: 10;
+        // 文字大小
+        $fontSize = $webconf['text_size'] ?: 24;
+        // 文字行高
+        $lineHeight = $webconf['text_h'] ?: 34;
+        // 文字间距
+        $letterSpacing = $webconf['text_m'] ?: 2;
+        // 文字颜色（RGB格式）
+        if(!empty($webconf['text_rgb']) && (strlen($webconf['text_rgb'])==7)) {
+            $r = hexdec(substr($webconf['text_rgb'],1,2));
+            $g = hexdec(substr($webconf['text_rgb'],3,2));
+            $b = hexdec(substr($webconf['text_rgb'],5));
+        }else{
+            $r = $g = $b = 255;
+        }
+        $color = [$r, $g, $b];
+        // 文字字体路径
+        $fontPath = $webconf['text_font'] ? APP_PATH.'static/common/'.$webconf['text_font']:APP_PATH.'static/common/simsun.ttf';
+        // 文字水印位置（1-9，左上到右下）
+        $position = $webconf['text_wz'] ?: 5;
+    
+        // 创建图像资源
+        if(stripos($imagePath,'.png')!==false){
+            $image = imagecreatefrompng($imagePath);
+        }else if(stripos($imagePath,'.gif')!==false){
+            $image = imagecreatefromgif($imagePath);
+        }else{
+            $image = imagecreatefromjpeg($imagePath);
+        }
+        // 设置字体文件路径 ---高版本已经废弃
+        //putenv('GDFONTPATH=' . realpath('.'));
+        // 设置文字颜色
+        $textColor = imagecolorallocate($image, $color[0], $color[1], $color[2]);
+    
+        // 获取图像尺寸
+        $imageWidth = imagesx($image);
+        $imageHeight = imagesy($image);
+        // 计算文字宽度和高度
+        $textBoundingBox = imagettfbbox($fontSize, 0, $fontPath, $text);
+        $textWidth = $textBoundingBox[2] - $textBoundingBox[0];
+        $textHeight = $textBoundingBox[1] - $textBoundingBox[7];
+        
+        // 处理文字水印内容并自动换行
+        $lines = [];
+        $line = '';
+        //$chars = mb_str_split($text);
+        $chars = smb_str_split($text);
+        $newlines = [];
+        $l = '';
+        $n = 1;//行数
+        foreach($chars as $k=>$v){
+            $l.=$v;
+            if( ($k+1)%$charsPerLine==0){
+                $newlines[] = $l;
+                $l = '';
+                $n += 1;
+            }
+        }
+        $newlines[] = $l;
+        //var_dump($newlines);exit;
+        //计算文字真实和宽度
+        $old = $textHeight+2;
+        $textHeight = count($newlines) * $old;
+        if($n==1){
+            $textWidth = $old * count($chars);
+        }else{
+            $textWidth = $old * $charsPerLine;
+        }
+    
+    
+        // 计算水印位置
+        switch ($position) {
+            case 1: // 左上
+                $x = 0;
+                $y = 0;
+                break;
+            case 2: // 上
+                $x = ($imageWidth - $textWidth) / 2;
+                $y = 0;
+                break;
+            case 3: // 右上
+                $x = $imageWidth - $textWidth;
+                $y = 0;
+                break;
+            case 4: // 左
+                $x = 0;
+                $y = ($imageHeight - $textHeight) / 2;
+                break;
+            case 5: // 居中
+                $x = ($imageWidth - $textWidth) / 2;
+                $y = ($imageHeight - $textHeight) / 2;
+                break;
+            case 6: // 右
+                $x = $imageWidth - $textWidth;
+                $y = ($imageHeight - $textHeight) / 2;
+                break;
+            case 7: // 左下
+                $x = 0;
+                $y = $imageHeight - $textHeight;
+                break;
+            case 8: // 下
+                $x = ($imageWidth - $textWidth) / 2;
+                $y = $imageHeight - $textHeight;
+                break;
+            case 9: // 右下
+                $x = $imageWidth - $textWidth;
+                $y = $imageHeight - $textHeight;
+                break;
+            default: // 默认为右下
+                $x = $imageWidth - $textWidth;
+                $y = $imageHeight - $textHeight;
+                break;
+        }
+    
+        // 添加文字水印
+        $y = $y + $fontSize;
+    
+        //微调
+        $x = $x + $webconf['text_x'];
+        $y = $y + $webconf['text_y'];
+    
+        foreach ($newlines as $line) {
+            imagettftext($image, $fontSize, 0, $x, $y, $textColor, $fontPath, $line);
+            $y += $lineHeight;
+        
+        
+        }
+        
+        // 生成新的图像文件名
+        if($isnew){
+            $pic_arr = explode('.',$imagePath);
+            $pix = end($pic_arr);
+            //$source = $imagePath; // 替换为你想要保存的图像文件路径和文件名
+            if(isset($webconf['admin_save_path'])){
+                //替换日期事件
+                $t = time();
+                $d = explode('-', date("Y-y-m-d-H-i-s"));
+                $format = $webconf['admin_save_path'];
+                $format = str_replace("{yyyy}", $d[0], $format);
+                $format = str_replace("{yy}", $d[1], $format);
+                $format = str_replace("{mm}", $d[2], $format);
+                $format = str_replace("{dd}", $d[3], $format);
+                $format = str_replace("{hh}", $d[4], $format);
+                $format = str_replace("{ii}", $d[5], $format);
+                $format = str_replace("{ss}", $d[6], $format);
+                $format = str_replace("{time}", $t, $format);
+                if($format!=''){
+                    //检查文件是否存在
+                    if(strpos($format,'/')!==false && !file_exists(APP_PATH.$format)){
+                        $path = explode('/',$format);
+                        $path1 = APP_PATH;
+                        foreach($path as $v){
+                            if($path1==APP_PATH){
+                                if(!file_exists($path1.$v)){
+                                    mkdir($path1.$v,0777);
+                                }
+                                $path1.=$v;
+                            }else{
+                                if(!file_exists($path1.'/'.$v)){
+                                    mkdir($path1.'/'.$v,0777);
+                                }
+                                $path1.='/'.$v;
+                            }
+                        }
+                    }else if(!file_exists(APP_PATH.$format)){
+                        mkdir(APP_PATH.$format,0777);
+                    }
+                    $admin_save_path = $format;
+            
+                }else{
+                    $admin_save_path = 'static/upload';
+                }
+        
+        
+            }else{
+                $admin_save_path = 'static/upload';
+            }
+            $source =  APP_PATH.'/'.$admin_save_path.'/'.date('Ymd').rand(1000,9999).'.'.$pix;
+            
+        }else{
+            $source = $imagePath; // 替换为你想要保存的图像文件路径和文件名
+        }
+        
+        $newImagePath = $source;
+    
+        // 保存图像到文件
+        if(stripos($imagePath,'.png')!==false){
+            imagepng($image, $newImagePath);
+        }else if(stripos($imagePath,'.gif')!==false){
+            imagegif($image, $newImagePath);
+        }else{
+            imagejpeg($image, $newImagePath);
+        }
+    
+    
+        // 释放资源
+        imagedestroy($image);
+    
+        return str_replace(APP_PATH,'',$newImagePath);
+    }
+    
+}
+if(!function_exists('smb_str_split')) {
+    // 将字符串拆分为单个字符
+    function smb_str_split($string, $split_length = 1, $encoding = null) {
+        if ($split_length < 1) {
+            return false;
+        }
+        if ($encoding === null) {
+            $encoding = mb_internal_encoding();
+        }
+        $result = [];
+        $length = mb_strlen($string, $encoding);
+        for ($i = 0; $i < $length; $i += $split_length) {
+            $result[] = mb_substr($string, $i, $split_length, $encoding);
+        }
+        return $result;
     }
 }

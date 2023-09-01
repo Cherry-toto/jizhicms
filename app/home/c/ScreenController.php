@@ -215,6 +215,10 @@ class ScreenController extends CommonController
 		
 		foreach($data as $k=>$v){
 			$data[$k]['url'] = gourl($v,$v['htmlurl']);
+            $data[$k]['class_name'] = isset($this->classtypedata[$v['tid']]) ? $this->classtypedata[$v['tid']]['classname'] : '';
+            $data[$k]['class_url'] = isset($this->classtypedata[$v['tid']]) ? $this->classtypedata[$v['tid']]['url'] : '';
+            $data[$k]['class_litpic'] = isset($this->classtypedata[$v['tid']]) ? $this->classtypedata[$v['tid']]['litpic'] : '';
+            $data[$k]['format_addtime'] = isset($v['addtime']) ? date('Y-m-d H:i:s',$v['addtime']) : '';
 		}
 		$this->type = $res;
 		$this->lists = $data;//列表数据

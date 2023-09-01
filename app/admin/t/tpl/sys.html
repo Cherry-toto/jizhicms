@@ -358,7 +358,7 @@
 					{/foreach}
 
 
-					{if($s['id']>7 && $admin['gid']==1)}
+					{if($s['sys']!=1 && $admin['gid']==1)}
 					<div class="layui-inline">
 						<button type="button" lay-filter="delconfig" data="{$s['id']}"  lay-submit=""  class="layui-btn layui-btn-danger layui-btn-sm">{fun JZLANG('删除配置栏')}</button>
 					</div>

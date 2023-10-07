@@ -630,35 +630,16 @@ class MypayController extends CommonController
 				exit;
 			}
 			
-			$r = M('orders')->update(['orderno'=>$orderno],['ispay'=>1,'isshow'=>2,'paytime'=>$paytime]);
-			
-			//检查是否金币或积分充值
-			if($order['ptype']==2){
-					//金币充值
-					M('member')->goInc(['id'=>$order['userid']],'money',$order['jifen']);
-					$ww['userid'] = $order['userid'];
-					$ww['amount'] = $order['jifen'];
-					$ww['money'] = $order['money'];
-					$ww['type'] = 1;
-					$ww['msg'] = JZLANG('在线充值');
-					$ww['orderno'] = $order['orderno'];
-					$ww['buytype'] = 'money';
-					$ww['addtime'] = time();
-					M('buylog')->add($ww);
-				}else if($order['ptype']==3){
-					//积分
-					M('member')->goInc(['id'=>$order['userid']],'jifen',$order['jifen']);
-					$ww['userid'] = $order['userid'];
-					$ww['amount'] = $order['jifen'];
-					$ww['money'] = $order['money'];
-					$ww['type'] = 1;
-					$ww['msg'] = JZLANG('在线充值');
-					$ww['orderno'] = $order['orderno'];
-					$ww['buytype'] = 'jifen';
-					$ww['addtime'] = time();
-					M('buylog')->add($ww);
-				}
-
+			$r = M('orders')->update(['orderno'=>$orderno,'ispay'=>0],['ispay'=>1,'isshow'=>2,'paytime'=>$paytime]);
+            
+            if($r && $order['ptype']==2){
+                //金币充值
+                $this->updatemoney($order);
+                
+            }else if($r && $order['ptype']==3){
+                //积分
+                $this->updatejifen($order);
+            }
 			//支付成功后处理...
 			$this->overpay($order['orderno']);
 			exit;
@@ -697,34 +678,16 @@ class MypayController extends CommonController
 				exit;
 			}
 			
-			$r = M('orders')->update(['orderno'=>$orderno],['ispay'=>1,'isshow'=>2,'paytime'=>$paytime]);
+			$r = M('orders')->update(['orderno'=>$orderno,'ispay'=>0],['ispay'=>1,'isshow'=>2,'paytime'=>$paytime]);
 			//检查是否金币或积分充值
-			if($order['ptype']==2){
-					//金币充值
-					M('member')->goInc(['id'=>$order['userid']],'money',$order['jifen']);
-					$ww['userid'] = $order['userid'];
-					$ww['amount'] = $order['jifen'];
-					$ww['money'] = $order['money'];
-					$ww['type'] = 1;
-					$ww['msg'] = JZLANG('在线充值');
-					$ww['orderno'] = $order['orderno'];
-					$ww['buytype'] = 'money';
-					$ww['addtime'] = time();
-					M('buylog')->add($ww);
-				}else if($order['ptype']==3){
-					//积分
-					M('member')->goInc(['id'=>$order['userid']],'jifen',$order['jifen']);
-					$ww['userid'] = $order['userid'];
-					$ww['amount'] = $order['jifen'];
-					$ww['money'] = $order['money'];
-					$ww['type'] = 1;
-					$ww['msg'] = JZLANG('在线充值');
-					$ww['orderno'] = $order['orderno'];
-					$ww['buytype'] = 'jifen';
-					$ww['addtime'] = time();
-					M('buylog')->add($ww);
-				}
-
+            if($r && $order['ptype']==2){
+                //金币充值
+                $this->updatemoney($order);
+                
+            }else if($r && $order['ptype']==3){
+                //积分
+                $this->updatejifen($order);
+            }
 
 			//支付成功后处理...
 			//$this->overpay($order['orderno']);
@@ -793,35 +756,16 @@ class MypayController extends CommonController
 						JsonReturn(['code'=>$code,'msg'=>$msg]);
 					}
 					
-					$r = M('orders')->update(['orderno'=>$orderno],['ispay'=>1,'isshow'=>2,'paytime'=>$paytime]);
-					
-					//检查是否金币或积分充值
-					if($order['ptype']==2){
-							//金币充值
-							M('member')->goInc(['id'=>$order['userid']],'money',$order['jifen']);
-							$ww['userid'] = $order['userid'];
-							$ww['amount'] = $order['jifen'];
-							$ww['money'] = $order['money'];
-							$ww['type'] = 1;
-							$ww['msg'] = JZLANG('在线充值');
-							$ww['orderno'] = $order['orderno'];
-							$ww['buytype'] = 'money';
-							$ww['addtime'] = time();
-							M('buylog')->add($ww);
-						}else if($order['ptype']==3){
-							//积分
-							M('member')->goInc(['id'=>$order['userid']],'jifen',$order['jifen']);
-							$ww['userid'] = $order['userid'];
-							$ww['amount'] = $order['jifen'];
-							$ww['money'] = $order['money'];
-							$ww['type'] = 1;
-							$ww['msg'] = JZLANG('在线充值');
-							$ww['orderno'] = $order['orderno'];
-							$ww['buytype'] = 'jifen';
-							$ww['addtime'] = time();
-							M('buylog')->add($ww);
-						}
-
+					$r = M('orders')->update(['orderno'=>$orderno,'ispay'=>0],['ispay'=>1,'isshow'=>2,'paytime'=>$paytime]);
+                    
+                    if($r && $order['ptype']==2){
+                        //金币充值
+                        $this->updatemoney($order);
+                        
+                    }else if($r && $order['ptype']==3){
+                        //积分
+                        $this->updatejifen($order);
+                    }
 					//支付成功后处理...
 					//$this->overpay($order['orderno']);
 					
@@ -880,33 +824,16 @@ class MypayController extends CommonController
 				exit;
 			}
 			
-			$r = M('orders')->update(['orderno'=>$orderno],['ispay'=>1,'isshow'=>2,'paytime'=>$paytime]);
+			$r = M('orders')->update(['orderno'=>$orderno,'ispay'=>0],['ispay'=>1,'isshow'=>2,'paytime'=>$paytime]);
 			//检查是否金币或积分充值
-			if($order['ptype']==2){
-					//金币充值
-					M('member')->goInc(['id'=>$order['userid']],'money',$order['jifen']);
-					$ww['userid'] = $order['userid'];
-					$ww['amount'] = $order['jifen'];
-					$ww['money'] = $order['money'];
-					$ww['type'] = 1;
-					$ww['msg'] = JZLANG('在线充值');
-					$ww['orderno'] = $order['orderno'];
-					$ww['buytype'] = 'money';
-					$ww['addtime'] = time();
-					M('buylog')->add($ww);
-				}else if($order['ptype']==3){
-					//积分
-					M('member')->goInc(['id'=>$order['userid']],'jifen',$order['jifen']);
-					$ww['userid'] = $order['userid'];
-					$ww['amount'] = $order['jifen'];
-					$ww['money'] = $order['money'];
-					$ww['type'] = 1;
-					$ww['msg'] = JZLANG('在线充值');
-					$ww['orderno'] = $order['orderno'];
-					$ww['buytype'] = 'jifen';
-					$ww['addtime'] = time();
-					M('buylog')->add($ww);
-				}
+            if($r && $order['ptype']==2){
+                //金币充值
+                $this->updatemoney($order);
+                
+            }else if($r && $order['ptype']==3){
+                //积分
+                $this->updatejifen($order);
+            }
 
 
 			//支付成功后处理...
@@ -943,34 +870,16 @@ class MypayController extends CommonController
 					exit;
 				}
 				
-				$r = M('orders')->update(['orderno'=>$orderno],['ispay'=>1,'isshow'=>2,'paytime'=>$paytime]);
+				$r = M('orders')->update(['orderno'=>$orderno,'ispay'=>0],['ispay'=>1,'isshow'=>2,'paytime'=>$paytime]);
 				//检查是否金币或积分充值
-			if($order['ptype']==2){
-					//金币充值
-					M('member')->goInc(['id'=>$order['userid']],'money',$order['jifen']);
-					$ww['userid'] = $order['userid'];
-					$ww['amount'] = $order['jifen'];
-					$ww['money'] = $order['money'];
-					$ww['type'] = 1;
-					$ww['msg'] = JZLANG('在线充值');
-					$ww['orderno'] = $order['orderno'];
-					$ww['buytype'] = 'money';
-					$ww['addtime'] = time();
-					M('buylog')->add($ww);
-				}else if($order['ptype']==3){
-					//积分
-					M('member')->goInc(['id'=>$order['userid']],'jifen',$order['jifen']);
-					$ww['userid'] = $order['userid'];
-					$ww['amount'] = $order['jifen'];
-					$ww['money'] = $order['money'];
-					$ww['type'] = 1;
-					$ww['msg'] = JZLANG('在线充值');
-					$ww['orderno'] = $order['orderno'];
-					$ww['buytype'] = 'jifen';
-					$ww['addtime'] = time();
-					M('buylog')->add($ww);
-				}
-
+                if($r && $order['ptype']==2){
+                    //金币充值
+                    $this->updatemoney($order);
+                    
+                }else if($r && $order['ptype']==3){
+                    //积分
+                    $this->updatejifen($order);
+                }
 
 				//支付成功后处理...
 				$this->overpay($order['orderno']);
@@ -1005,35 +914,16 @@ class MypayController extends CommonController
 			//echo json_encode($result);die;
 			//$res = json_encode($result);
 			if($res['code']==0){
-				$r = M('orders')->update(['orderno'=>$outTradeNo],['ispay'=>1,'isshow'=>2,'paytime'=>time()]);
+				$r = M('orders')->update(['orderno'=>$outTradeNo,'ispay'=>0],['ispay'=>1,'isshow'=>2,'paytime'=>time()]);
 				//检查是否金币或积分充值
-			if($order['ptype']==2){
-					//金币充值
-					M('member')->goInc(['id'=>$order['userid']],'money',$order['jifen']);
-					$ww['userid'] = $order['userid'];
-					$ww['amount'] = $order['jifen'];
-					$ww['money'] = $order['money'];
-					$ww['type'] = 1;
-					$ww['msg'] = JZLANG('在线充值');
-					$ww['orderno'] = $order['orderno'];
-					$ww['buytype'] = 'money';
-					$ww['addtime'] = time();
-					M('buylog')->add($ww);
-				}else if($order['ptype']==3){
-					//积分
-					M('member')->goInc(['id'=>$order['userid']],'jifen',$order['jifen']);
-					$ww['userid'] = $order['userid'];
-					$ww['amount'] = $order['jifen'];
-					$ww['money'] = $order['money'];
-					$ww['type'] = 1;
-					$ww['msg'] = JZLANG('在线充值');
-					$ww['orderno'] = $order['orderno'];
-					$ww['buytype'] = 'jifen';
-					$ww['addtime'] = time();
-					M('buylog')->add($ww);
-				}
-
-
+                if($r && $order['ptype']==2){
+                    //金币充值
+                    $this->updatemoney($order);
+                    
+                }else if($r && $order['ptype']==3){
+                    //积分
+                    $this->updatejifen($order);
+                }
 				if($this->frparam('ajax')){
 					JsonReturn(['code'=>0,'msg'=>'success']);
 				}
@@ -1052,6 +942,40 @@ class MypayController extends CommonController
 		
 		
 	}
+	
+	private function updatejifen($order){
+	    if($order && $order['ptype']==3){
+            M('member')->goInc(['id'=>$order['userid']],'jifen',$order['jifen']);
+            $ww['userid'] = $order['userid'];
+            $ww['amount'] = $order['jifen'];
+            $ww['money'] = $order['price'];
+            $ww['type'] = 1;
+            $ww['msg'] = JZLANG('在线充值');
+            $ww['orderno'] = $order['orderno'];
+            $ww['buytype'] = 'jifen';
+            $ww['addtime'] = time();
+            M('buylog')->add($ww);
+        }
+       
+        return true;
+    }
+    
+    private function updatemoney($order){
+        if($order && $order['ptype']==2){
+            M('member')->goInc(['id'=>$order['userid']],'money',$order['jifen']);
+            $ww['userid'] = $order['userid'];
+            $ww['amount'] = $order['jifen'];
+            $ww['money'] = $order['price'];
+            $ww['type'] = 1;
+            $ww['msg'] = JZLANG('在线充值');
+            $ww['orderno'] = $order['orderno'];
+            $ww['buytype'] = 'money';
+            $ww['addtime'] = time();
+            M('buylog')->add($ww);
+        }
+        
+        return true;
+    }
 	
 	private function overpay($orderno){
 		$order = M('orders')->find(['orderno'=>$orderno,'ispay'=>1]);

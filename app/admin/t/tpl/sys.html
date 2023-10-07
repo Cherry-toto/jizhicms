@@ -58,6 +58,26 @@
 				foreach($allconfig as $vs){
 				$newconfig[$vs['typeid']][] = $vs;
 				}
+				function bubbleSort($arr) {
+					$n = count($arr);
+					for ($i = 0; $i < $n - 1; $i++) {
+					for ($j = 0; $j < $n - $i - 1; $j++) {
+					if ($arr[$j]['orders'] < $arr[$j + 1]['orders']) {
+					// 交换元素
+					$temp = $arr[$j];
+					$arr[$j] = $arr[$j + 1];
+					$arr[$j + 1] = $temp;
+					}
+					}
+					}
+					return $arr;
+				}
+				foreach($newconfig as $kk=>$vv){
+					//冒泡排序
+					$newconfig[$kk] = bubbleSort($vv);
+
+				}
+
 				/}
 				{loop table="ctype" orderby="id asc" isopen="1" as="v"}
 				{if(checkAction('Sys/ctype/type/'.$v['action']))}

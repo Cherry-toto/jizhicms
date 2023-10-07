@@ -14,6 +14,7 @@ if(APP_CONTROLLER=='Sys'){
 	</div>
 	<script>$(document).ready(function(){
 			var ue_'.$v['field'].$rd.' = UE.getEditor("'.$v['field'].$rd.'",{
+			    serverUrl:"'.U('uploads/index').'",
 				toolbars : [['.$config['ueditor_config'].']]
 				}		
 			);	
@@ -32,6 +33,7 @@ if(APP_CONTROLLER=='Sys'){
 			<script>
 			$(document).ready(function(){
 			var ue_'.$v['field'].$rd.' = UE.getEditor("'.$v['field'].$rd.'",{
+			    serverUrl:"'.U('uploads/index').'",
 				toolbars : [['.$this->webconf['ueditor_config'].']]
 				}		
 			);';

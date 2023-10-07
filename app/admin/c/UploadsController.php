@@ -1,38 +1,14 @@
 <?php
 
 
-namespace app\home\c;
+namespace app\admin\c;
 
 
 class UploadsController extends CommonController
 {
     function index(){
-    
-        //检测是否允许前台上传文件
-        if(!$this->webconf['isopenhomeupload']){
         
-            JsonReturn(['state'=> '已关闭前台上传文件功能！']);
-        }
-        if($this->webconf['onlyuserupload'] && !$this->islogin){
-        
-            JsonReturn(['state'=> '仅会员才可以上传！']);
-        }
-        if($this->webconf['onlyuserupload'] && $this->islogin){
-        
-            $all = M('pictures')->findAll(['userid'=>$this->member['id']],null,'size');
-            $allsize = 0;
-            foreach ($all as $v){
-                $allsize+=$v['size'];
-            }
-            $limisize = $this->member['uploadsize'] * 1024;
-            if($limisize<=$allsize){
-                JsonReturn(['state'=> '超出会员上传文件大小！']);
-            }
-        
-        
-        }
-
-        $filepath = isset($_SESSION['admin']) ? $this->webconf['admin_save_path'] : $this->webconf['home_save_path'];
+        $filepath = $this->webconf['admin_save_path'];
         $paths = explode('/',$filepath);
         $allowpath = (count($paths)>=2 && strpos($paths[1],'{')===false) ? '/'.$paths[0].'/'.$paths[1].'/' : '/'.$paths[0].'/';
         if(strpos($filepath,'{')===false){

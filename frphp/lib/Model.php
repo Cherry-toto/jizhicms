@@ -307,8 +307,8 @@ class Model {
 		return $this->db->getArray($sql);
 	}
 	//执行SQL获取分页
-	public function findSqlPage($sql){
-        $sql = str_ireplace('select','SELECT SQL_CALC_FOUND_ROWS ',$sql);
+    public function findSqlPage($sql,$orderlimit=''){
+        $sql = "select SQL_CALC_FOUND_ROWS * from (".$sql.") a ".$orderlimit;
         $data = $this->db->getArray($sql);
         $sql = 'SELECT FOUND_ROWS()';
         $result = $this->db->getArray($sql);

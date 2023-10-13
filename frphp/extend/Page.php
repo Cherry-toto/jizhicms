@@ -391,8 +391,9 @@ namespace frphp\extend;
 
 			$orderby = $this->order ? ' order by '.$this->order : '';
 			$limit = ' limit '.$limitsql;
-			$sql = $this->sql.' '.$orderby.' '.$limit;
-			$data = M()->findSqlPage($sql);
+            $sql = $this->sql;
+            $orderlimit = $orderby.' '.$limit;
+            $data = M()->findSqlPage($sql,$orderlimit);
             $this->datalist = $data['lists'];
             $this->sum = $data['sum'];
 

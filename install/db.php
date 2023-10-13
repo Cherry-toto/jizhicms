@@ -926,7 +926,7 @@ INSERT INTO `jz_level_group` (`id`,`name`,`isadmin`,`ischeck`,`classcontrol`,`pa
 -- ----------------------------
 -- Records of jz_member_group
 -- ----------------------------
-INSERT INTO `jz_member_group` (`id`,`name`,`description`,`paction`,`pid`,`isagree`,`iscomment`,`ischeckmsg`,`addtime`,`orders`,`discount`,`discount_type`) VALUES ('1','注册会员','前台会员分组，最低等级分组',',Message,Comment,User,Order,Home,Common,','0','1','1','1','0','0','0.00','0');
+INSERT INTO `jz_member_group` (`id`,`name`,`description`,`paction`,`pid`,`isagree`,`iscomment`,`ischeckmsg`,`addtime`,`orders`,`discount`,`discount_type`) VALUES ('1','注册会员','前台会员分组，最低等级分组',',Message,Comment,User,Order,Home,Common,Uploads,','0','1','1','1','0','0','0.00','0');
 -- ----------------------------
 -- Records of jz_menu
 -- ----------------------------
@@ -1294,6 +1294,8 @@ INSERT INTO `jz_ruler` (`id`,`name`,`fc`,`pid`,`isdesktop`,`sys`) VALUES ('243',
 INSERT INTO `jz_ruler` (`id`,`name`,`fc`,`pid`,`isdesktop`,`sys`) VALUES ('244','全局配置','Sys/ctype','39',0,'1');
 INSERT INTO `jz_ruler` (`id`,`name`,`fc`,`pid`,`isdesktop`,`sys`) VALUES ('245','修改配置字段','Sys/setfield','39',0,'1');
 INSERT INTO `jz_ruler` (`id`,`name`,`fc`,`pid`,`isdesktop`,`sys`) VALUES ('246','绑定模块数据获取','Fields/getSelect','26',0,'0');
+INSERT INTO `jz_ruler` (`id`,`name`,`fc`,`pid`,`isdesktop`,`sys`) VALUES ('247','编辑器上传','Uploads','0',0,'1');
+INSERT INTO `jz_ruler` (`id`,`name`,`fc`,`pid`,`isdesktop`,`sys`) VALUES ('248','上传功能','Uploads/index','246',0,'1');
 -- ----------------------------
 -- Records of jz_shouchang
 -- ----------------------------

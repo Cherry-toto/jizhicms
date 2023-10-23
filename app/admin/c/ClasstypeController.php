@@ -81,7 +81,12 @@ class ClasstypeController extends CommonController
 			$w['gourl'] = $this->frparam('gourl',1);
 			$w['lists_num'] = $this->frparam('lists_num');
             $w['gids'] = $this->frparam('gids',2) ? implode(',',$this->frparam('gids',2)) : '';
-			
+            
+            //检查同级重名
+            if(M('classtype')->find(['classname'=>$w['classname'],'pid'=>$w['pid']])){
+                JsonReturn(array('status'=>0,'info'=>JZLANG('存在同级下重名！')));
+            }
+            
 			if($w['pid']){
 				$parent = M('classtype')->find(array('id'=>$w['pid']));
 				if($parent['iscover']==1){

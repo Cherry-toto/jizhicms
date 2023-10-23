@@ -586,7 +586,7 @@ class CommonController extends Controller
 				case 7:
 				$l .= '<div class="form-control">
                     <label for="'.$v['field'].'">'.$v['fieldname'].'：</label>
-					<select name="'.$v['field'].'" id="'.$v['field'].'" >';
+					<select name="'.$v['field'].'" id="'.$v['field'].'" ><option value="">请选择</option>';
 					foreach(explode(',',$v['body']) as $vv){
 						$s=explode('=',$vv);
 						$l.='<option value="'.$s[1].'" ';
@@ -718,7 +718,7 @@ class CommonController extends Controller
 				case 13:
 				$l .= '<div class="form-control">
                     <label for="'.$v['field'].'">'.$v['fieldname'].'：</label>
-					<select name="'.$v['field'].'" id="'.$v['field'].'" >';
+					<select name="'.$v['field'].'" id="'.$v['field'].'" ><option value="">请选择</option>';
 						$body = explode(',',$v['body']);
 				$biaoshi = M('molds')->getField(['id'=>$body[0]],'biaoshi');
 				$datalist = M($biaoshi)->findAll(['isshow'=>1],null,null,50);
@@ -739,7 +739,7 @@ class CommonController extends Controller
                     $biaoshi = $this->classtypedata[$tid]['molds'];
                     $l .= '<div class="form-control">
                     <label for="'.$v['field'].'">'.$v['fieldname'].'：</label>
-					<select name="'.$v['field'].'" id="'.$v['field'].'" >';
+					<select name="'.$v['field'].'" id="'.$v['field'].'" ><option value="">请选择</option>';
                     $datalist = M($biaoshi)->findAll(['isshow'=>1],null,null,50);
                     foreach($datalist as $vv){
                         $l.='<option value="'.$vv['id'].'" ';

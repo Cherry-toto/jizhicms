@@ -375,7 +375,7 @@ class View
 		if(isset($a['jzpage'])){$jzpage=trim($a['jzpage'],"'");}else{$jzpage='page';}
 		if(isset($a['sql'])){$sql=trim($a['sql'],"'");}else{$sql='';}
 		if(isset($a['jzcache'])){$jzcache=trim($a['jzcache'],"'");}else{$jzcache=false;}
-		if(isset($a['jzcachetime'])){$jzcachetime=trim($a['jzcachetime'],"'");}else{$jzcachetime=30*60;}
+		if(isset($a['jzcachetime'])){$jzcachetime= 60 * trim($a['jzcachetime'],"'");}else{$jzcachetime=30*60;}
 		if(isset($a['orderby'])){
 			$order=$a['orderby'];
 			if(strpos($a['orderby'],'$')!==FALSE){$order=trim($a['orderby'],"'");}
@@ -649,7 +649,7 @@ class View
 				$txt .= "
 				\$cachestr = md5(\$".$as."_table.\$".$as."_w.\$".$as."_order.\$".$as."_fields.\$".$as."_limit);
 				$".$as."_data = getCache(\$cachestr);
-				if(!$".$as."_data){
+				if($".$as."_data!==false){
 					$".$as."_data = M(\$".$as."_table)->findAll(\$".$as."_w,\$".$as."_order,\$".$as."_fields,\$".$as."_limit);
 					setCache(\$cachestr,$".$as."_data,$jzcachetime);
 				}";

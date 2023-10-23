@@ -727,13 +727,13 @@ class IndexController extends CommonController
                     if($isshow[$k]==1){
                         $list = M($v)->findAll(['isshow'=>1],null,'id,molds,htmlurl,ownurl,target,addtime,keywords',$limit);
                     }else{
-                        $list = M($v)->findAll(null,null,'id,molds,htmlurl,gourl,target,addtime,keywords',$limit);
+                        $list = M($v)->findAll(null,null,'id,molds,htmlurl,target,addtime,keywords',$limit);
                     }
                 }else{
                     if($isshow[$k]==1){
                         $list = M($v)->findAll(['isshow'=>1],null,'id,molds,htmlurl,ownurl,target,addtime',$limit);
                     }else{
-                        $list = M($v)->findAll(null,null,'id,molds,htmlurl,gourl,target,addtime',$limit);
+                        $list = M($v)->findAll(null,null,'id,molds,htmlurl,target,addtime',$limit);
                     }
                 }
                 if(!$list){

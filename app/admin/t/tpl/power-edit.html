@@ -113,10 +113,10 @@
 						{if($webconf['admintpl']=='tpl')}
 						 window.location.href="{fun U('Member/power')}";
 						{else}
-						parent.location.reload();
+                        parent.layer.closeAll();
 						{/if}
 					});
-					parent.layer.close(index);
+
 				}
 			});
 			return false;

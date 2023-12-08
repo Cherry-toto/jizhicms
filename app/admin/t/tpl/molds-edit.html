@@ -174,7 +174,7 @@
                         autocomplete="off" class="layui-input">
                     </div>
 					<div class="layui-form-mid layui-word-aux">
-					  {fun JZLANG('数值越小越考前')}
+					  {fun JZLANG('数值越小越靠前')}
 				    </div>
                 </div>
 				<div class="layui-form-item" pane>
@@ -231,7 +231,7 @@
 							{if($webconf['admintpl']=='tpl')}
 							 window.location.href="{fun U('Molds/index')}";
 							{else}
-							parent.location.reload();
+                             parent.layer.closeAll();
 							{/if}
 							
 						});

@@ -164,6 +164,7 @@ class ExtmoldsController extends Controller
 			
 			$data = $this->frparam();
 			$data = get_fields_data($data,$molds);
+            check_field_must($data,$molds);
 			if($data['tid']){
 				$data['htmlurl'] = $this->classtypedata[$data['tid']]['htmlurl'];
 				
@@ -280,6 +281,7 @@ class ExtmoldsController extends Controller
 			
 			$data = $this->frparam();
 			$data = get_fields_data($data,$molds);
+            check_field_must($data,$molds);
 			if($data['tid']){
 				$data['htmlurl'] = $this->classtypedata[$data['tid']]['htmlurl'];
 			}

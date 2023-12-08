@@ -2867,3 +2867,28 @@ if(!function_exists('smb_str_split')) {
         return $result;
     }
 }
+
+if(!function_exists('check_field_must')){
+    function check_field_must($data,$molds){
+        // 不为空检测
+        $sql = " molds='{$molds}' and isshow=1 ";
+        $fields_list = M('Fields')->findAll($sql,'orders desc,id asc');
+        if($fields_list){
+            foreach($fields_list as $v){
+                if($v['ismust']==1){
+                    if($data[$v['field']]===''|| $data[$v['field']]===null){
+                        if(in_array($v['fieldtype'],array(6,10))){
+                            if($data[$v['field'].'_urls']==''){
+
+                                JsonReturn(['code'=>1,'msg'=>$v['fieldname'].JZLANG('不能为空！')]);
+                            }
+                        }else{
+                            JsonReturn(['code'=>1,'msg'=>$v['fieldname'].JZLANG('不能为空！')]);
+                        }
+
+                    }
+                }
+            }
+        }
+    }
+}

@@ -118,7 +118,7 @@
 						{if($webconf['admintpl']=='tpl')}
 						 window.location.href="{fun U('Member/index')}";
 						{else}
-						parent.location.reload();
+						parent.layer.closeAll();
 						{/if}
 						
 					});

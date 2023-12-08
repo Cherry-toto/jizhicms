@@ -123,11 +123,11 @@
 							{if($webconf['admintpl']=='tpl')}
 							window.location.href="{fun U('Extmolds/index',['molds'=>$molds['biaoshi']])}";
 							{else}
-							parent.location.reload();
+							parent.layer.closeAll();
 							{/if}
 						  
 						}, function(){
-						  
+							parent.layer.closeAll();
 						});
 					
 						

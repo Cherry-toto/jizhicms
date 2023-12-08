@@ -238,7 +238,7 @@
 							{if($webconf['admintpl']=='tpl')}
 							window.location.href="{fun U('Comment/commentlist')}";
 							{else}
-							parent.location.reload();
+                             parent.layer.closeAll();
 							{/if}
 						});
 					}else{

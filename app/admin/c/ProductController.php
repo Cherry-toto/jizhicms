@@ -91,6 +91,7 @@ class ProductController extends CommonController
 			
 			$data = $this->frparam();
 			$data = get_fields_data($data,'product');
+            check_field_must($data,'product');
 			if(!$this->frparam('seo_title',1) && $this->frparam('config_seotitle')==1){
 				$data['seo_title'] = $data['title'];
 			}
@@ -269,6 +270,7 @@ class ProductController extends CommonController
 			
 			$data = $this->frparam();
 			$data = get_fields_data($data,'product');
+            check_field_must($data,'product');
 			if(!$this->frparam('seo_title',1) && $this->frparam('config_seotitle')==1){
 				$data['seo_title'] = $data['title'];
 			}

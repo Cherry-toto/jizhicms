@@ -383,7 +383,7 @@ class UserController extends CommonController
 				$data[$k]['del'] =  U('user/commentdel',['id'=>$v['id']]);
 				if($xmolds){
 					$data[$k]['title'] = $xmolds['title'];
-					$data[$k]['url'] =  gourl($xmolds['id'],$xmolds['htmlurl']);
+					$data[$k]['url'] =  gourl($xmolds);
 				}
 			}
 			
@@ -565,7 +565,7 @@ class UserController extends CommonController
 			$task['type'] = 'likes';
 			$task['addtime'] = time();
 			$task['body'] = $data['title'];
-			$task['url'] = gourl($data['id'],$data['htmlurl']);
+			$task['url'] = gourl($data);
 			M('task')->add($task);
 			if($award){
 				$start = mktime(0, 0, 0, date('m'), date('d'), date('Y'));
@@ -627,7 +627,7 @@ class UserController extends CommonController
 				$data[$k]['classname'] = $this->classtypedata[$v['tid']]['classname'];
 				$molds = $this->classtypedata[$v['tid']]['molds'];
 				$vdata = M($molds)->find(['id'=>$v['aid']]);
-				$data[$k]['url'] = $vdata ? gourl($vdata['id'],$vdata['htmlurl']) : '';
+				$data[$k]['url'] = $vdata ? gourl($vdata) : '';
 				$data[$k]['details'] = $vdata ? $vdata : ['title'=>JZLANG('已被删除')];
 			}else{
 				$data[$k]['classname'] = '[ '.JZLANG('已被删除 ').']';
@@ -749,7 +749,7 @@ class UserController extends CommonController
 			$task['type'] = 'collect';
 			$task['addtime'] = time();
 			$task['body'] = $data['title'];
-			$task['url'] = gourl($data['id'],$data['htmlurl']);
+			$task['url'] = gourl($data);
 			M('task')->add($task);
 			if($isaward){
 				$start = mktime(0, 0, 0, date('m'), date('d'), date('Y'));
@@ -806,7 +806,7 @@ class UserController extends CommonController
 				$data[$k]['classname'] = $this->classtypedata[$v['tid']]['classname'];
 				$molds = $this->classtypedata[$v['tid']]['molds'];
 				$vdata = M($molds)->find(['id'=>$v['aid']]);
-				$data[$k]['url'] = $vdata ? gourl($vdata['id'],$vdata['htmlurl']) : '';
+				$data[$k]['url'] = $vdata ? gourl($vdata) : '';
 				$data[$k]['details'] = $vdata ? $vdata : ['title'=>JZLANG('已被删除')];
 			}else{
 				$data[$k]['classname'] = '[ '.JZLANG('已被删除').' ]';
@@ -986,7 +986,7 @@ class UserController extends CommonController
 			$data[$k]['edit'] =  U('user/release',['id'=>$v['id'],'molds'=>$molds]);
 			$data[$k]['del'] =  U('user/del',['id'=>$v['id'],'molds'=>$molds]);
 			$data[$k]['view'] =  U('user/preview',['id'=>$v['id'],'tid'=>$v['tid']]);
-			$data[$k]['url'] = gourl($v['id'],$v['htmlurl']);
+			$data[$k]['url'] = gourl($v);
 			
 		}
 		$this->pages = $pages;
@@ -1649,7 +1649,7 @@ class UserController extends CommonController
 					
 					$data[$k]['date'] = date('Y-m-d H:i:s',$v['addtime']);
 					
-					$data[$k]['url'] = gourl($v['id'],$v['htmlurl']);
+					$data[$k]['url'] = gourl($v);
 					
 				}
 				$this->pages = $pages;
@@ -1689,7 +1689,7 @@ class UserController extends CommonController
 					
 					$data[$k]['date'] = date('Y-m-d H:i:s',$v['addtime']);
 					
-					$data[$k]['url'] = gourl($v['id'],$v['htmlurl']);
+					$data[$k]['url'] = gourl($v);
 					
 				}
 				$this->pages = $pages;
@@ -1756,7 +1756,7 @@ class UserController extends CommonController
                         $data[$k]['classname'] = $this->classtypedata[$v['tid']]['classname'];
                         $molds = $this->classtypedata[$v['tid']]['molds'];
                         $vdata = M($molds)->find(['id'=>$v['aid']]);
-                        $data[$k]['url'] = gourl($vdata['id'],$vdata['htmlurl']);
+                        $data[$k]['url'] = gourl($vdata);
                         $data[$k]['details'] = $vdata;
                     }else{
                         $data[$k]['classname'] = '[ '.JZLANG('已被删除').' ]';
@@ -1794,7 +1794,7 @@ class UserController extends CommonController
 						if($xmolds){
 							$data[$k]['title'] = $xmolds['title'];
 							$data[$k]['date'] = date('Y/m/d H:i:s',$v['addtime']);
-							$data[$k]['url'] =  gourl($xmolds['id'],$xmolds['htmlurl']);
+							$data[$k]['url'] =  gourl($xmolds);
 							$data[$k]['body'] = newstr($v['body'],60);
 							$data[$k]['comment_num'] =  get_comment_num($v['tid'],$v['aid']);
 							
@@ -1828,7 +1828,7 @@ class UserController extends CommonController
                         $data[$k]['classname'] = $this->classtypedata[$v['tid']]['classname'];
                         $molds = $this->classtypedata[$v['tid']]['molds'];
                         $vdata = M($molds)->find(['id'=>$v['aid']]);
-                        $data[$k]['url'] = gourl($vdata['id'],$vdata['htmlurl']);
+                        $data[$k]['url'] = gourl($vdata);
                         $data[$k]['details'] = $vdata;
                     }else{
                         $data[$k]['classname'] = '[ '.JZLANG('已被删除 ').']';
@@ -2045,7 +2045,7 @@ class UserController extends CommonController
 			exit;
 		}
 		if(!isset($details['url'])){
-			$details['url'] = gourl($details,$details['htmlurl']);
+			$details['url'] = gourl($details);
 		}
 		
 		
@@ -2089,10 +2089,10 @@ class UserController extends CommonController
 		$aprev = M($this->type['molds'])->find($aprev_sql,'id desc');
 		$anext = M($this->type['molds'])->find($anext_sql,'id asc');
 		if($aprev){
-			$aprev['url'] = gourl($aprev,$aprev['htmlurl']);
+			$aprev['url'] = gourl($aprev);
 		}
 		if($anext){
-			$anext['url'] = gourl($anext,$anext['htmlurl']);
+			$anext['url'] = gourl($anext);
 		}
 		$this->aprev = $aprev;
 		$this->anext = $anext;

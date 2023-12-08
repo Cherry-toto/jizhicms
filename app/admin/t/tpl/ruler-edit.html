@@ -135,9 +135,8 @@
 						  {if($webconf['admintpl']=='tpl')}
 						   window.location.href="{fun U('Rulers/index')}";
 						  {else}
-						 
-						  parent.location.reload();
-						  parent.layer.close(index);
+
+                           parent.layer.closeAll();
 						  {/if}
 						
 					});

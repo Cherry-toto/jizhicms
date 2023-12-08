@@ -94,6 +94,7 @@ class MessageController extends CommonController
         if($this->frparam('go',1)==1){
             $data = $this->frparam();
             $data = get_fields_data($data,'message');
+            check_field_must($data,'message');
             if($this->frparam('id')){
                 if(M('Message')->update(array('id'=>$this->frparam('id')),$data)){
                     JsonReturn(array('code'=>0,'msg'=>JZLANG('修改成功！')));

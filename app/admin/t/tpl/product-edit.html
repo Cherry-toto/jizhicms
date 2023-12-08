@@ -175,11 +175,11 @@
 							{if($webconf['admintpl']=='tpl')}
 							 window.location.href="{fun U('Product/productlist')}";
 							{else}
-							parent.location.reload();
+							parent.layer.closeAll();
 							{/if}
 						  
 						}, function(){
-						  
+							parent.layer.closeAll();
 						});
 					
 					}else{

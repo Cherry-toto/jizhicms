@@ -265,7 +265,7 @@
 				{if($webconf['admintpl']=='tpl')}
 				 window.location.href="{fun U('Order/index')}";
 				{else}
-				 parent.layer.close(index);
+                 parent.layer.close(index);
 				{/if}
             
             return false;
@@ -291,7 +291,7 @@
 							{if($webconf['admintpl']=='tpl')}
 							 window.location.href="{fun U('Order/index')}";
 							{else}
-							 parent.location.reload();
+                             parent.layer.closeAll();
 							{/if}
 						});
 					

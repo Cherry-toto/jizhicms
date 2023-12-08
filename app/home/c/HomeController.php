@@ -26,13 +26,8 @@ class HomeController extends CommonController
 		if(stripos(REQUEST_URI,'.php')!==false && REQUEST_URI!='/index.php'){
 			$this->error(JZLANG('链接错误！'));
 		}
-		$url = current_url();
 		$this->ishome = true;
-		$cache_file = APP_PATH.'cache/data/'.md5(REQUEST_URI);
-		$this->cache_file = $cache_file;
-		$this->start_cache($cache_file);
 		$this->display($this->template.'/index');
-		$this->end_cache($this->cache_file);
 
 	}
 	//栏目
@@ -54,13 +49,6 @@ class HomeController extends CommonController
 		if(File_TXT_HIDE && !CLASS_HIDE_SLASH){
 			$url = (strripos($url,'/')+1 == strlen($url)) ? substr($url,0,strripos($url,'/')) : $url; 
 		}
-		//检查缓存
-		$cache_file = APP_PATH.'cache/data/'.md5(REQUEST_URI);
-		$this->cache_file = $cache_file;
-		if(!$this->frparam('ajax')){
-			$this->start_cache($cache_file);
-		}
-		
 		if(!$this->webconf['islevelurl']){
 			//没有开启URL层级
 			if(strpos($url,'/')!==false){
@@ -184,9 +172,6 @@ class HomeController extends CommonController
 				//默认是详情页-非详情页另做处理
 				$this->id = $id;
 				$this->jizhi_details($this->id);
-				if(!$this->frparam('ajax')){
-				$this->end_cache($this->cache_file);
-				}
 				
 			}
 			$children = $this->classtypedata[$res['id']]['children']['ids'];
@@ -352,9 +337,6 @@ class HomeController extends CommonController
 			}
 			
 			$this->display($this->template.'/'.$res['molds'].'/'.$res['lists_html']);
-			if(!$this->frparam('ajax')){
-			$this->end_cache($this->cache_file);
-			}
 
 			
 		}else{
@@ -400,13 +382,6 @@ class HomeController extends CommonController
 		$id = $this->frparam('id');
 		$tid = $this->frparam('tid');
 		$isclass = true;
-		//检查缓存
-		$url = REQUEST_URI;
-		$cache_file = APP_PATH.'cache/data/'.md5(frencode($url));
-		$this->cache_file = $cache_file;
-		if(!$this->frparam('ajax')){
-		$this->start_cache($cache_file);
-		}
 		if($id && $html){
 			//详情页+html
 			$res = M('classtype')->find(array('htmlurl'=>$html,'isclose'=>0));
@@ -434,9 +409,6 @@ class HomeController extends CommonController
             }
             $this->type = $this->classtypedata[$tid];
             $this->jizhi_details($this->id);
-            if(!$this->frparam('ajax')){
-                $this->end_cache($this->cache_file);
-            }
 
         }else{
 			//html只有栏目页
@@ -594,19 +566,12 @@ class HomeController extends CommonController
 				$res['lists_html'] = str_replace('.html','',$lists_html);
 			}
 			$this->display($this->template.'/'.$res['molds'].'/'.$res['lists_html']);
-			if(!$this->frparam('ajax')){
-			$this->end_cache($this->cache_file);
-			}
 			
 		}else{
 			
 			//默认是详情页-非详情页另做处理
 			$this->id = $id;
 			$this->jizhi_details($this->id);
-			if(!$this->frparam('ajax')){
-			$this->end_cache($this->cache_file);
-			}
-			
 		}
 		
 		
@@ -757,7 +722,7 @@ class HomeController extends CommonController
 			$this->type['details_html'] = str_replace('.html','',$details_html);
 		}
 		$this->display($this->template.'/'.$this->type['molds'].'/'.$this->type['details_html']);
-		
+		exit;
 	}
 	
 	
@@ -993,127 +958,25 @@ class HomeController extends CommonController
 		$url = substr(REQUEST_URI,1);
 		$position = strpos($url, '?');
         $url = $position === false ? $url : substr($url, 0, $position);
-		$cache_file = APP_PATH.'cache/data/'.md5(REQUEST_URI);
-		$this->cache_file = $cache_file;
-		$this->start_cache($cache_file);		
 		$r = M('customurl')->find(['url'=>$url]);
 		if($r){
 			if(isset($this->classtypedata[$r['tid']])){
 				$this->type = $this->classtypedata[$r['tid']];
 				$this->jizhi_details($r['aid']);
-				$this->end_cache($this->cache_file);
 			}else if($r['molds']=='tags'){
 				$param = [];
 				$param['id'] = $r['aid'];
 				$tags = new TagsController($param);
 				$tags->index();
-				$this->end_cache($this->cache_file);
 			}
 			
 			exit;
 		}
 		header("HTTP/1.0 404");
 		$this->display($this->template.'/404');
-		$this->end_cache($this->cache_file);
 		exit;
 	}
-	
-	//开启检查缓存
-	function start_cache($cache_file){
-		$cache_file = $cache_file.'_'.$this->template.'.php';
-        $cache_num = (int)$this->webconf['cachefilenum'];
-        if($cache_num){
-            $cache_file_list = getCache('cache_list');
-            $cache_file_list = $cache_file_list ?: [];
-            $n = count($cache_file_list);
-            $cache_num = $cache_num<=500 ?: 500;
-            if($n && $n>$cache_num ){
-                $del = array_slice($cache_file_list,0,$n-$cache_num);
-                
-                $cache_file_list = array_slice($cache_file_list,$n-$cache_num);
-                foreach($del as $v){
-                    unlink($v);
-                }
-                
-            }
-            $cache_file_list[] = $cache_file;
-            setCache('cache_list',$cache_file_list);
-        }
-		if($this->webconf['iscachepage']==1){
-			if(file_exists($cache_file)){
-				
-				//获取当前时间戳
-				$now_time = time();
-				//获取缓存文件时间戳
-				$last_time = filemtime($cache_file);
-				//如果缓存文件生成超过指定的时间直接删除文件
-				if((($now_time - $last_time)/60)>$this->webconf['cache_time']){
-					unlink($cache_file);
-				}else{
-					//有缓存文件直接调用
-					$content =  file_get_contents($cache_file);
-					echo substr($content,14);
-					exit;
-				}
-				
-				
-			}
-		}
-	
-		//开启缓存
-		ob_start();
-	}
-	//结束缓存
-	function end_cache($cache_file){
-		$cache_file = $cache_file.'_'.$this->template.'.php';
-		
-		//获取缓存
-		$content = ob_get_contents();
-		if($this->webconf['isautohtml']==1){
-			$filepath = substr($_SERVER["REQUEST_URI"],1,strlen($_SERVER["REQUEST_URI"])-1);
-			
-			$file = APP_PATH.$filepath;
-			if(strpos($filepath,'/')!==false){
-				$filepath = explode('/',$filepath);
-				array_pop($filepath);
-				$create_dir = APP_PATH;
-				foreach($filepath as $vv){
-					$create_dir.=$vv;
-					if(!is_dir($create_dir)){
-						$r = mkdir($create_dir,0777,true);
-						if(!$r){
-							echo JZLANG('系统创建').' [ '.str_replace('/','\\',$create_dir).' ] '.JZLANG('目录失败!');exit;
-						}
-						
-					}
-					$create_dir.='/';
-					
-				}
-				
-				
-			}
-			if(strpos($file,'.html')===false){
-				$file.='index.html';
-			}
-			$fp = fopen($file,'w');
-			fwrite($fp,$content);
-			fclose($fp);
-			
-		}
-		if($this->webconf['iscachepage']==1){
-			//写入到缓存内容到指定的文件夹
-			$content ='<?php die();?>'.$content;
-			$fp = fopen($cache_file,'w');
-			fwrite($fp,$content);
-			fclose($fp);
-		}
-		ob_flush();  
-		flush();
-		ob_end_clean(); 
-		
-		
-		exit;
-	}
+
 	
 	//生成RSS
 	function rss(){
@@ -1136,7 +999,7 @@ class HomeController extends CommonController
 		//文章item
 		$article = M('article')->findAll(['isshow'=>1]);
 		foreach($article as $v){
-			$v['url'] = gourl($v,$v['htmlurl']);
+			$v['url'] = gourl($v);
 			$item .= '<item>
 						<title><![CDATA[ '.$v['title'].' ]]></title>
 						<link>'.$v['url'].'</link>
@@ -1150,7 +1013,7 @@ class HomeController extends CommonController
 		//商品item
 		$product = M('product')->findAll(['isshow'=>1]);
 		foreach($product as $v){
-			$v['url'] = gourl($v,$v['htmlurl']);
+			$v['url'] = gourl($v);
 			$item .= '<item>
 						<title><![CDATA[ '.$v['title'].' ]]></title>
 						<link>'.$v['url'].'</link>

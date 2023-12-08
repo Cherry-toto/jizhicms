@@ -23,7 +23,6 @@ class ArticleController extends CommonController
 	//内容管理
 	function articlelist(){
 		$page = new Page('Article');
-		$classtypedata = $this->classtypedata;
 		$this->fields_list = M('Fields')->findAll(array('molds'=>'article','islist'=>1),'listorders desc');
 		$this->isshow = $this->frparam('isshow');
 		$this->tid=  $this->frparam('tid');
@@ -80,6 +79,7 @@ class ArticleController extends CommonController
 			
 			$data = $this->frparam();
 			$data = get_fields_data($data,'article');
+            check_field_must($data,'article');
 			if(!$this->frparam('seo_title',1) && $this->frparam('config_seotitle')==1){
 				$data['seo_title'] = $data['title'];
 			}
@@ -264,6 +264,7 @@ class ArticleController extends CommonController
 			
 			$data = $this->frparam();
 			$data = get_fields_data($data,'article');
+            check_field_must($data,'article');
 			if(!$this->frparam('seo_title',1) && $this->frparam('config_seotitle')==1){
 				$data['seo_title'] = $data['title'];
 			}

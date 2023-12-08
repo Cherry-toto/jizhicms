@@ -1370,7 +1370,7 @@ layui.use("laydate", function(){
                         JsonReturn(['code'=>1,'msg'=>$field.JZLANG('字段关联绑定失败，请重新绑定！')]);
                     }
                     if($value){
-                        $lists = M($molds)->findAll(['id'=>$value],null,'id ,'.$field);
+                        $lists = M($molds)->findAll(['id'=>$value],'id desc','id ,'.$field);
                     }else{
                         $lists = [];
                     }
@@ -1392,7 +1392,7 @@ layui.use("laydate", function(){
                     if($value){
                         $ids = $value;
                         $sql=" id in(".$ids.") ";
-                        $lists = M($molds)->findAll($sql,null,'id ,'.$field);
+                        $lists = M($molds)->findAll($sql,'id desc','id ,'.$field);
                     }else{
                         $lists = [];
                     }
@@ -1406,7 +1406,7 @@ layui.use("laydate", function(){
                     if($value){
                         $ids = $value;
                         $sql=" id in(".$ids.") ";
-                        $lists = M($molds)->findAll($sql,null,'id ,'.$field);
+                        $lists = M($molds)->findAll($sql,'id desc','id ,'.$field);
                     }else{
                         $lists = [];
                     }
@@ -1427,7 +1427,7 @@ layui.use("laydate", function(){
                             $sql = " id=".$value." and tid in(".implode(',',$tids).")";
                         }
                         
-                        $lists = M($molds)->findAll(['id'=>$value],null,'id ,'.$field);
+                        $lists = M($molds)->findAll(['id'=>$value],'id desc','id ,'.$field);
                     }else{
                         $lists = [];
                     }
@@ -1475,7 +1475,7 @@ layui.use("laydate", function(){
                 break;
         }
         $limit = $key ? null : 10;
-        $lists = M($molds)->findAll($sql,null,'id ,'.$field,$limit);
+        $lists = M($molds)->findAll($sql,'id desc','id ,'.$field,$limit);
 
         foreach($lists as $k=>$v){
             $lists[$k]['value'] = $v['id'];

@@ -510,7 +510,7 @@
 					tids = 0;
 				}
 				data.field.tids = tids;
-				
+				data.field.field = data.field.field.toLowerCase()
                 //发异步，把数据提交给php
 				$.post("{fun U('Fields/addFields')}",data.field,function(r){
 					

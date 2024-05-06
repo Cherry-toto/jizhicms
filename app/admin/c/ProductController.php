@@ -96,7 +96,7 @@ class ProductController extends CommonController
 				$data['seo_title'] = $data['title'];
 			}
 			if(!$this->frparam('description',1) && $this->frparam('config_description')==1){
-				$data['description'] = newstr(strip_tags($data['body']),200);
+				$data['description'] = newstr(strip_tags($_POST['body']),200);
 			}
             $water_models = explode(',',$this->webconf['text_molds']);
             if(in_array('product',$water_models)){
@@ -115,7 +115,7 @@ class ProductController extends CommonController
             if(!$data['litpic'] && $this->frparam('config_litpic')==1){
 				$pattern='/<img.*?src="(.*?)".*?>/is';
 				if($this->frparam('body',1)){
-					$r = preg_match($pattern,$_POST['body'],$matchContent);
+					$r = preg_match($pattern,stripslashes($data['body']),$matchContent);
 					if($r){
 						$data['litpic'] = $matchContent[1];
 					}else{
@@ -275,7 +275,7 @@ class ProductController extends CommonController
 				$data['seo_title'] = $data['title'];
 			}
 			if(!$this->frparam('description',1) && $this->frparam('config_description')==1){
-				$data['description'] = newstr(strip_tags($data['body']),200);
+				$data['description'] = newstr(strip_tags($_POST['body']),200);
 			}
             $water_models = explode(',',$this->webconf['text_molds']);
             if(in_array('product',$water_models)){
@@ -291,7 +291,7 @@ class ProductController extends CommonController
 			if(!$data['litpic'] && $this->frparam('config_litpic')==1){
 				$pattern='/<img.*?src="(.*?)".*?>/is';
 				if($this->frparam('body',1)){
-					$r = preg_match($pattern,$_POST['body'],$matchContent);
+					$r = preg_match($pattern,stripslashes($data['body']),$matchContent);
 					if($r){
 						$data['litpic'] = $matchContent[1];
 					}else{

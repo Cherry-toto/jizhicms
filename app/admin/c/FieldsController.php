@@ -1066,7 +1066,8 @@ layui.use("laydate", function(){
 					var '.$v['field'].'_xmselect = xmSelect.render({
 							el: "#'.$v['field'].'_xmselect", 
 							autoRow: true,
-							toolbar: { show: false },
+							toolbar: { show: true },
+							list: [ "ALL", "CLEAR"],
 							filterable: true,
 							radio:true,
 							remoteSearch: true,
@@ -1200,6 +1201,7 @@ layui.use("laydate", function(){
 							el: "#'.$v['field'].'_xmselect", 
 							autoRow: true,
 							toolbar: { show: true },
+							list: [ "ALL", "CLEAR"],
 							filterable: true,
 							remoteSearch: true,
 							remoteMethod: function(val, cb, show){
@@ -1270,6 +1272,8 @@ layui.use("laydate", function(){
                 var tids_obj = xmSelect.render({
         		el: "#tids",
         		language: "zn",
+        		toolbar: { show: true },
+				list: [ "ALL", "CLEAR"],
         		data: [';
 					foreach($this->classtypetree as $vv){
                         if($vv['molds']==$molds){

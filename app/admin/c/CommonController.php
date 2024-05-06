@@ -177,7 +177,7 @@ class CommonController extends Controller
 				   
 				}
 				if( (strtolower($pix)=='png' || strtolower($pix)=='jpg' || strtolower($pix)=='jpeg') && $this->webconf['iswatermark']==1 ){
-                    watermark($filename,$this->webconf['watermark_file'],$this->webconf['watermark_t'],$this->webconf['watermark_tm'],$this->webconf['text_word']);
+                    watermark($filename,APP_PATH.$this->webconf['watermark_file'],$this->webconf['watermark_t'],$this->webconf['watermark_tm'],$this->webconf['text_word']);
 				}
 				$data['url'] = '/'.$filename;
 				$data['code'] = 0;

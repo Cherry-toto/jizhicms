@@ -105,14 +105,14 @@ $(function () {
 
    //$("tbody.x-cate tr[fid!='0']").hide();
     // 栏目多级显示效果
-    $('.x-show').click(function () {
-		
+    $(document).on("click",".x-show",function(){
+
         if($(this).attr('status')=='true'){
-            $(this).html('&#xe625;'); 
+            $(this).html('&#xe625;');
             $(this).attr('status','false');
             cateId = $(this).parents('tr').attr('cate-id');
             $("tbody tr[fid="+cateId+"]").show();
-       }else{		
+        }else{
             cateIds = [];
             $(this).html('&#xe623;');
             $(this).attr('status','true');
@@ -121,11 +121,7 @@ $(function () {
             for (var i in cateIds) {
                 $("tbody tr[cate-id="+cateIds[i]+"]").hide().find('.x-show').html('&#xe623;').attr('status','true');
             }
-       }
-	  
-	  
-	   
-	   
+        }
     })
 
     //左侧菜单效果

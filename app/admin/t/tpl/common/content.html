@@ -1,5 +1,197 @@
-{if(!$data)}
-<script id="editor" name="body" type="text/plain" style="width:100%;height:400px;"></script>
-{else}
-<script id="editor" name="body" type="text/plain" style="width:100%;height:400px;">{$data['body']}</script>
-{/if}
+<div class="layui-input-block" style="width:100%;">
+		
+    <div style="border: 1px solid #ccc;">
+       <div id="editor-toolbar-body" style="border-bottom: 1px solid #ccc;"></div>
+       <div id="editor-text-area-body" style="height: 350px"></div>
+     </div>
+     <!-- 显示内容 -->
+     <div style="margin-top: 20px;">
+        {if($data)}
+       <textarea id="editor-content-textarea-body" style="display:none" name="body">{$data['body']}</textarea>
+       {else}
+       <textarea id="editor-content-textarea-body" style="display:none" name="body"></textarea>
+       {/if}
+     </div>
+
+   
+   
+</div>
+
+<script>
+			
+           
+	$(document).ready(function (){
+    var html = document.getElementById("editor-content-textarea-body").value
+     var E_body = window.wangEditor
+    // 切换语言
+    E_body.i18nChangeLanguage("zh-CN")
+    window.editor = E_body.createEditor({
+      selector: "#editor-text-area-body",
+      html: html,
+      config: {
+        placeholder: "请输入内容...",
+        MENU_CONF: {
+            uploadImage: {
+                fieldName: "file",
+                server: "{fun U('common/uploads')}",
+                 // 单个文件的最大体积限制，默认为 2M
+                maxFileSize: 1 * 1024 * 1024, // 1M
+            
+                // 最多可上传几个文件，默认为 100
+                maxNumberOfFiles: 10,
+           
+                allowedFileTypes: ["image/*"],
+                // 超时时间，默认为 10 秒
+                timeout: 30 * 1000, // 5 秒
+                 // 单个文件上传成功之后
+                //onSuccess(file: File, res: any) {  // TS 语法
+                onSuccess(file, res) {          // JS 语法
+                    console.log(`${file.name} 上传成功`, res)
+                    if(res.code!=0){
+                        alert(res.error)
+                    }
+                },
+            
+                // 单个文件上传失败
+                //onFailed(file: File, res: any) {   // TS 语法
+                onFailed(file, res) {           // JS 语法
+                    console.log(`${file.name} 上传失败`, res)
+                },
+            
+                // 上传错误，或者触发 timeout 超时
+                //onError(file: File, err: any, res: any) {  // TS 语法
+                onError(file, err, res) {               // JS 语法
+                    console.log(`${file.name} 上传出错`, err, res)
+                },
+                //customInsert(res: any, insertFn: InsertFnType) {  // TS 语法
+                customInsert(res, insertFn) {                  // JS 语法
+                    // res 即服务端的返回结果
+                    console.log(res,insertFn)
+                    // 从 res 中找到 url alt href ，然后插入图片
+                    insertFn(res.url)
+                },
+          },
+            uploadVideo: {
+                fieldName: "file",
+                server: "{fun U('common/uploads')}",
+                 // 单个文件的最大体积限制，默认为 2M
+                maxFileSize: 10 * 1024 * 1024 * 1024, // 1M
+            
+                // 最多可上传几个文件，默认为 100
+                maxNumberOfFiles: 100,
+     
+                allowedFileTypes: ["video/*"],
+                // 超时时间，默认为 10 秒
+                timeout: 60 * 1000, // 5 秒
+                 // 单个文件上传成功之后
+                //onSuccess(file: File, res: any) {  // TS 语法
+                onSuccess(file, res) {          // JS 语法
+                    console.log(`${file.name} 上传成功`, res)
+                    if(res.code!=0){
+                        alert(res.error)
+                    }
+                },
+            
+                // 单个文件上传失败
+                //onFailed(file: File, res: any) {   // TS 语法
+                onFailed(file, res) {           // JS 语法
+                    console.log(`${file.name} 上传失败`, res)
+                },
+            
+                // 上传错误，或者触发 timeout 超时
+                //onError(file: File, err: any, res: any) {  // TS 语法
+                onError(file, err, res) {               // JS 语法
+                    console.log(`${file.name} 上传出错`, err, res)
+                },
+                //customInsert(res: any, insertFn: InsertFnType) {  // TS 语法
+                customInsert(res, insertFn) {                  // JS 语法
+                    // res 即服务端的返回结果
+                    console.log(res,insertFn)
+                    // 从 res 中找到 url alt href ，然后插入图片
+                    insertFn(res.url)
+                },
+          },
+        },
+        onChange(editor) {
+          var html = editor.getHtml()
+          var num = 0,
+            reg = /<p>(&nbsp;|&nbsp;\s+)+<\/p>|<p>(<br>)+<\/p>/g;
+            while (num < html.length && html != "")
+            {
+                num++;
+                let k = html.match(reg);
+                if (k) {
+                html = html.replace(k[0], "");
+                }
+            } 
+          document.getElementById("editor-content-textarea-body").value = html
+        }
+      }
+    })
+    class MyMenuBody {
+        constructor() {
+            this.title = "源码"
+            this.tag = "button"
+            this.sourceActive = false
+        }
+        getValue(editor) {
+            if (this.sourceActive) {
+                return editor.getText()
+            } else {
+                return editor.getHtml()
+            }
+
+        }
+        isActive(editor) {
+            return this.sourceActive
+        }
+        isDisabled(editor) {
+            return false // or true
+        }
+        exec(editor, value) {
+            this.sourceActive = !this.sourceActive
+            editor.clear()
+            E_body.SlateTransforms.setNodes(editor, { type: "paragraph" }, { mode: "highest"})
+            var num = 0,
+            reg = /<p>(&nbsp;|&nbsp;\s+)+<\/p>|<p>(<br>)+<\/p>/g;
+            while (num < value.length && value != "")
+            {
+                num++;
+                let k = value.match(reg);
+                if (k) {
+                    value = value.replace(k[0], "");
+                }
+            } 
+            if (this.isActive()) {
+                editor.insertText(value)
+            } else {
+                editor.dangerouslyInsertHtml(value)
+            }
+
+
+
+        }
+    }
+    const myMenuConfBody = {
+        key: "bodyhtml",
+        factory() {
+            return new MyMenuBody()
+        }
+    }
+    E_body.Boot.registerMenu(myMenuConfBody)
+    window.toolbar = E_body.createToolbar({
+        editor,
+        selector: "#editor-toolbar-body",
+        config: {
+            insertKeys: {
+                index: 0,
+                keys: ["bodyhtml"],
+            }
+        }
+    })
+
+
+        
+	})
+
+</script>

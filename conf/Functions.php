@@ -561,9 +561,13 @@ if(!function_exists('get_fields_data')) {
                         break;
                     case 3:
                         if ($isadmin) {
-                            $data[$v['field']] = format_param($data[$v['field']], 4);
+                            $text = $data[$v['field']];
+                            $text = remote_data_local($text, $data['tid'], $data['molds']);
+                            $data[$v['field']] = format_param($text, 4);
                         }else{
-                            $data[$v['field']] = format_param($data[$v['field']], 6);
+                            $text = $data[$v['field']];
+                            $text = remote_data_local($text, $data['tid'], $data['molds']);
+                            $data[$v['field']] = format_param($text, 6);
                         }
                         
                         break;
@@ -996,11 +1000,25 @@ laydate.render({elem: "#laydate_' . $v['field'] . '" });});</script>';
         return array('fields_search' => $fields_search, 'fields_search_check' => $fields_search_check);
     }
 }
+if(!function_exists('get_classtype')){
+    function get_classtype(){
+        $classtypedata = getCache('jzclasstypedata');
+        if(!$classtypedata){
+            $classtype = M('classtype')->findAll();
+            $classtypedata = [];
+            foreach ($classtype as $v){
+                $classtypedata[$v['id']] = $v;
+            }
+            setCache('jzclasstypedata',$classtypedata);
+        }
+        return $classtypedata;
+    }
+}
 // 后台格式化类型显示
 if(!function_exists('format_fields')) {
     function format_fields($fields = null, $data = null)
     {
-        $classtypedata = getclasstypedata(classTypeData(), 0);
+        $classtypedata = get_classtype();
         if ($fields == null) {
             $list = array(
 
@@ -1965,6 +1983,7 @@ if(!function_exists('memberInfo')) {
 if(!function_exists('watermark')) {
     function watermark($img, $water, $pos = 9, $tm = 100, $word = '')
     {
+        $tm = $tm ?: 100;
         if(file_exists($water)){
             $info = getImageInfo($img);
     
@@ -2352,7 +2371,6 @@ if(!function_exists('jzresize')) {
                     $w = $width;
                     $h = intval($out_scale * $w);
                     if ($h > $height) {
-
                         $h = $height;
                         $w = intval($h / $out_scale);
                     }
@@ -2364,7 +2382,6 @@ if(!function_exists('jzresize')) {
                         $h = intval($out_scale * $w);
                         $start_x = 0;
                         $start_y = ($height - $h) / 2;
-
                     } else {
                         $h = intval($height);
                         $w = intval($h / $out_scale);
@@ -2378,36 +2395,40 @@ if(!function_exists('jzresize')) {
                     $start_y = 0;
                 }
 
-
                 $scale = $out_width / $w;
-
                 $new_img = imagecreatetruecolor($out_width, $out_height);
-                $new_img_width = intval($w * $scale);
-                $new_img_height = intval($h * $scale);
-
-
-                if ($type == 1 || $type == 3) {
-                    $alpha = imagecolorallocatealpha($new_img, 0, 0, 0, 127);
-                    imagefill($new_img, 0, 0, $alpha);
-                }
-
-                imagecopyresampled($new_img, $img, 0, 0, $start_x, $start_y, $new_img_width, $new_img_height, $w, $h);
+                // 根据图像类型处理透明度
                 switch ($type) {
-                    case 1:
-                        imagegif($new_img, $out_image, $img_quality);
+                    case 1: // GIF
+                        $transparent = imagecolorallocatealpha($new_img, 0, 0, 0, 127);
+                        imagefill($new_img, 0, 0, $transparent);
+                        imagecolortransparent($new_img, $transparent); // 使背景透明
                         break;
-                    case 2:
-                        imagejpeg($new_img, $out_image, $img_quality);
+                    case 3: // PNG
+                        imagesavealpha($new_img, true); // 保存透明通道信息
+                        $transparent = imagecolorallocatealpha($new_img, 0, 0, 0, 127);
+                        imagefill($new_img, 0, 0, $transparent);
                         break;
-                    case 3:
-                        imagesavealpha($new_img, true);
-                        imagepng($new_img, $out_image);
+                    default: // 对于不支持透明度的图像类型（如 JPEG），使用白色背景
+                        $white = imagecolorallocate($new_img, 255, 255, 255);
+                        imagefill($new_img, 0, 0, $white);
                         break;
-                    default:
-                        imagejpeg($new_img, $out_image, $img_quality);
                 }
-                imagedestroy($new_img);
+                imagecopyresampled($new_img, $img, 0, 0, $start_x, $start_y, $out_width, $out_height, $w, $h);
+                switch ($type) {
+                    case 1: // GIF
+                        imagegif($new_img, $out_image); // 保存GIF图像，不需要质量参数
+                        break;
+                    case 2: // JPEG
+                        imagejpeg($new_img, $out_image, $img_quality); // 保存JPEG图像，需要质量参数
+                        break;
+                    case 3: // PNG
+                        imagesavealpha($new_img, true); // 确保保存透明度信息
+                        imagepng($new_img, $out_image); // 保存PNG图像，不需要质量参数，但可以设置压缩级别
+                        break;
+                }
                 imagedestroy($img);
+                imagedestroy($new_img);
                 return '/' . $out_image;
             }
         }
@@ -2890,5 +2911,169 @@ if(!function_exists('check_field_must')){
                 }
             }
         }
+    }
+}
+
+if(!function_exists('remote_data_local')){
+    function remote_data_local($body = '', $tid=0, $molds=null)
+    {
+        $webconfig = getCache('webconfig');
+        $web_basehost    = get_domain();
+
+        $img_array = array();
+        preg_match_all('/<img.*?src="(.*?)".*?>/is', $body, $img_array);
+
+
+
+        //preg_match_all('/http(s?):\/\/(.*?).*?\\"/is', $body, $img_array);  //img 被转义的数据
+
+        $img_array = array_unique($img_array[1]);
+
+
+        if(isset($webconfig['admin_save_path'])){
+            //替换日期事件
+            $t = time();
+            $d = explode('-', date("Y-y-m-d-H-i-s"));
+            $format = $webconfig['admin_save_path'];
+            $format = str_replace("{yyyy}", $d[0], $format);
+            $format = str_replace("{yy}", $d[1], $format);
+            $format = str_replace("{mm}", $d[2], $format);
+            $format = str_replace("{dd}", $d[3], $format);
+            $format = str_replace("{hh}", $d[4], $format);
+            $format = str_replace("{ii}", $d[5], $format);
+            $format = str_replace("{ss}", $d[6], $format);
+            $format = str_replace("{time}", $t, $format);
+            if($format!=''){
+                //检查文件是否存在
+                if(strpos($format,'/')!==false && !file_exists(APP_PATH.$format)){
+                    $path = explode('/',$format);
+                    $path1 = APP_PATH;
+                    foreach($path as $v){
+                        if($path1==APP_PATH){
+                            if(!file_exists($path1.$v)){
+                                mkdir($path1.$v,0777);
+                            }
+                            $path1.=$v;
+                        }else{
+                            if(!file_exists($path1.'/'.$v)){
+                                mkdir($path1.'/'.$v,0777);
+                            }
+                            $path1.='/'.$v;
+                        }
+                    }
+                }else if(!file_exists(APP_PATH.$format)){
+                    mkdir(APP_PATH.$format,0777);
+                }
+                $admin_save_path = $format;
+
+            }else{
+                $admin_save_path = 'public/Admin';
+            }
+
+
+        }else{
+            $admin_save_path = 'public/Admin';
+        }
+        $dirname =  $admin_save_path.'/';
+
+
+        //创建目录失败
+        if (!file_exists($dirname) && !mkdir($dirname, 0777, true)) {
+            return $body;
+        } else if (!is_writeable($dirname)) {
+            return $body;
+        }
+
+
+
+        foreach ($img_array as $key => $value) {
+            $imgUrl = trim($value);
+            //  $imgUrl = preg_replace('/\\\"/', '', $imgUrl); //img 被转义的数据
+            $imgUrl = preg_replace('/#/', '', $imgUrl);
+
+            // 本站图片 / 根网址图片 / 第三方存储插件的图片
+            if (preg_match("/\/\/('.$web_basehost.')\//i", $imgUrl)) {
+                continue;
+            }
+            // 不是合法链接
+            if (!preg_match("#^http(s?):\/\/#i", $imgUrl)) {
+                continue;
+            }
+
+            $heads = @get_headers($imgUrl, 1);
+
+            // 获取请求头并检测死链
+            if (empty($heads)) {
+                continue;
+            } else if (!(stristr($heads[0], "200") && !stristr($heads[0], "304"))) {
+                continue;
+            }
+            // 图片扩展名
+            $fileType = substr($heads['Content-Type'], -4, 4);
+            if (!preg_match("#\.(jpg|jpeg|gif|png|ico|bmp|webp|svg)#i", $fileType)) {
+                if ($fileType == 'image/gif') {
+                    $pix = "gif";
+                } else if ($fileType == 'image/png') {
+                    $pix = "png";
+                } else if ($fileType == 'image/x-icon') {
+                    $pix = "ico";
+                } else if ($fileType == 'image/bmp') {
+                    $pix = "bmp";
+                }  else if ($fileType == 'image/webp') {
+                    $pix = "webp";
+                } else if ($heads['Content-Type'] == 'image/svg+xml') {
+                    $pix = "svg";
+                } else {
+                    $pix = 'jpg';
+                }
+            }
+            $pix = strtolower($pix);
+
+            //打开输出缓冲区并获取远程图片
+            ob_start();
+            $context = stream_context_create(
+                array('http' => array(
+                    'follow_location' => false // don't follow redirects
+                ))
+            );
+            readfile($imgUrl, false, $context);
+            $img = ob_get_contents();
+            ob_end_clean();
+            preg_match("/[\/]([^\/]*)[\.]?[^\.\/]*$/", $imgUrl, $m);
+
+            $file             = [];
+            $file['oriName']  = $m ? $m[1] : "";
+            $file['filesize'] = strlen($img);
+            $file['ext']      = $pix;
+            $file['name']     = date("ymdHis") . mt_rand(100, 999) .'.'. $file['ext'];
+            $file['fullName'] = $dirname . $file['name'];
+            $fullName         = $file['fullName'];
+
+            //检查文件大小是否超出限制
+            if ($file['filesize'] >= 20480000) {
+                continue;
+            }
+
+            //移动文件
+            if (!(file_put_contents($fullName, $img) && file_exists($fullName))) { //移动失败
+                continue;
+            }
+            //处理水印
+            if( (strtolower($pix)=='png' || strtolower($pix)=='jpg' || strtolower($pix)=='jpeg') && $webconfig['iswatermark']==1 ){
+                watermark($file['fullName'],APP_PATH.$webconfig['watermark_file'],$webconfig['watermark_t'],$webconfig['watermark_tm'],$webconfig['text_word']);
+            }
+
+
+            $fileurl = '/'.$file['fullName'];
+
+            $body = str_replace($imgUrl, $fileurl, $body);
+            //添加图片进数据库
+            $filesize = round(filesize(APP_PATH.$file['fullName'])/1024,2);
+            M('pictures')->add(['litpic'=>'/'.$file['fullName'],'addtime'=>time(),'userid'=>$_SESSION['admin']['id'],'size'=>$filesize,'filetype'=>strtolower($pix),'tid'=>$tid,'molds'=>$molds]);
+
+        }
+
+
+        return $body;
     }
 }

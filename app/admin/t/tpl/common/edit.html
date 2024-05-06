@@ -1,13 +1,2 @@
-<script type="text/javascript" charset="utf-8" src="/static/common/user/uedit/ueditor.config.js"></script>
-<script type="text/javascript" charset="utf-8" src="/static/common/user/uedit/ueditor.all.js?v=1"> </script>
-<script type="text/javascript" charset="utf-8" src="/static/common/user/uedit/lang/zh-cn/zh-cn.js"></script>
-<script>
-var ue = UE.getEditor('editor',{
-	serverUrl:"{fun U('uploads/index')}",
-{if($webconf['ueditor_config']!='')}
-toolbars : [[
-		   {$webconf['ueditor_config']}
-			]]
-{/if}			
-});
-</script>
+<script type="text/javascript" charset="utf-8" src="/static/common/wangeditor/wangeditor.min.js"></script>
+<link rel="stylesheet" href="/static/common/wangeditor/wangeditor.css">

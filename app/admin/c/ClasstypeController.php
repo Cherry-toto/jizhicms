@@ -73,7 +73,8 @@ class ClasstypeController extends CommonController
 			$w['description'] = $this->frparam('description',1);
 			$w['keywords'] = $this->frparam('keywords',1);
 			$w['litpic'] = $this->frparam('litpic',1);
-			$w['body'] = $this->frparam('body',4);
+            $text = remote_data_local(stripslashes($_POST['body']), 0, $w['molds']);
+			$w['body'] = format_param($text,4);
 			$w['htmlurl'] = $htmlurl;
 			$w['iscover'] = $this->frparam('iscover');
 			$w['lists_html'] = $this->frparam('lists_html',1);
@@ -81,7 +82,7 @@ class ClasstypeController extends CommonController
 			$w['gourl'] = $this->frparam('gourl',1);
 			$w['lists_num'] = $this->frparam('lists_num');
             $w['gids'] = $this->frparam('gids',2) ? implode(',',$this->frparam('gids',2)) : '';
-            
+
             //检查同级重名
             if(M('classtype')->find(['classname'=>$w['classname'],'pid'=>$w['pid']])){
                 JsonReturn(array('status'=>0,'info'=>JZLANG('存在同级下重名！')));
@@ -128,6 +129,7 @@ class ClasstypeController extends CommonController
 
 
 				//这里
+				setCache('jzclasstypedata',null);
 				setCache('classtypetree',null);
 				setCache('classtype',null);
 				setCache('mobileclasstype',null);
@@ -173,7 +175,8 @@ class ClasstypeController extends CommonController
 			$w['keywords'] = $this->frparam('keywords',1);
 			$w['id'] = $this->frparam('id');
 			$w['litpic'] = $this->frparam('litpic',1);
-			$w['body'] = $this->frparam('body',4);
+            $text = remote_data_local(stripslashes($_POST['body']), $w['id'], $w['molds']);
+            $w['body'] = format_param($text,4);
 			$w['htmlurl'] = $htmlurl;
 			$w['iscover'] = $this->frparam('iscover');
 			$w['lists_html'] = $this->frparam('lists_html',1) ? $this->frparam('lists_html',1) : $this->frparam('lists_html_write',1);
@@ -245,6 +248,7 @@ class ClasstypeController extends CommonController
 
 				}
 				
+				setCache('jzclasstypedata',null);
 				setCache('classtypetree',null);
 				setCache('classtype',null);
 				setCache('mobileclasstype',null);
@@ -270,6 +274,7 @@ class ClasstypeController extends CommonController
 		if(!$r){
 			JsonReturn(array('code'=>1,'info'=>JZLANG('修改失败！')));
 		}
+		setCache('jzclasstypedata',null);
 		setCache('classtypetree',null);
 		setCache('classtype',null);
 		setCache('mobileclasstype',null);
@@ -293,6 +298,7 @@ class ClasstypeController extends CommonController
 				$w['addtime'] = time();
 				$w['title'] = '['.$data['id'].']'.$data['classname'];
 				M('recycle')->add($w);
+				setCache('jzclasstypedata',null);
 				setCache('classtypetree',null);
 				setCache('classtype',null);
 				setCache('mobileclasstype',null);
@@ -318,6 +324,7 @@ class ClasstypeController extends CommonController
 			$x['isshow']=1;
 		}
 		M('Classtype')->update(array('id'=>$id),array('isshow'=>$x['isshow']));
+		setCache('jzclasstypedata',null);
 		setCache('classtypetree',null);
 		setCache('classtype',null);
 		setCache('mobileclasstype',null);
@@ -443,6 +450,7 @@ class ClasstypeController extends CommonController
                 
             }
             
+            setCache('jzclasstypedata',null);
             setCache('classtypetree',null);
             setCache('classtype',null);
             setCache('mobileclasstype',null);
@@ -548,6 +556,7 @@ class ClasstypeController extends CommonController
 			M('classtype')->update(' id in('.$tids.')',['pid'=>$pid]);
 			
 		}
+		setCache('jzclasstypedata',null);
 		setCache('classtypetree',null);
 		setCache('classtype',null);
 		setCache('mobileclasstype',null);
@@ -555,6 +564,22 @@ class ClasstypeController extends CommonController
 		setCache('classtypedatapc',null);
 		JsonReturn(array('code'=>0,'msg'=>JZLANG('操作成功！')));
 	}
+
+    function getchildren(){
+        $id  = $this->frparam('id');
+
+        $this->lists = $this->classtypedata[$id]['children']['list'];
+
+        $molds = M('Molds')->findAll(['isopen'=>1]);
+        $fs = array();
+        foreach($molds as $v){
+            $fs[$v['biaoshi']] = $v;
+        }
+        $this->molds = M('molds')->find(['biaoshi'=>'classtype']);
+        $this->moldslist = $fs;
+
+        $this->display('getchildren');
+    }
 	
 	
 }

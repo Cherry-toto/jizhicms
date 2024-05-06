@@ -26,12 +26,12 @@ class MessageController extends CommonController
 			$w = $this->frparam();
 			$w = get_fields_data($w,'message',0);
 			
-			$w['body'] = $this->frparam('body',1,'','POST');
-			$w['user'] = $this->frparam('user',1,'','POST');
-			$w['tel'] = $this->frparam('tel',1,'','POST');
+			$w['body'] = $this->frparam('body',6,'','POST');
+			$w['user'] = $this->frparam('user',6,'','POST');
+			$w['tel'] = $this->frparam('tel',6,'','POST');
 			$w['aid'] = $this->frparam('aid',0,0,'POST');
 			$w['tid'] = $this->frparam('tid',0,0,'POST');
-			$w['email'] = $this->frparam('email',1,'','POST');
+			$w['email'] = $this->frparam('email',6,'','POST');
 			$w['orders'] = 0;
 			$w['istop'] = 0;
 			$w['hits'] = 0;
@@ -63,7 +63,7 @@ class MessageController extends CommonController
 				$w['userid'] = 0;
 			}
 			
-			if($this->frparam('title',1,'','POST')==''){
+			if($this->frparam('title',6,'','POST')==''){
 				//$this->error('标题不能为空！');
 				if($this->frparam('ajax')){
 					JsonReturn(['code'=>1,'msg'=>JZLANG('标题不能为空！')]);
@@ -79,7 +79,7 @@ class MessageController extends CommonController
 			}
 			
 			
-			$w['title'] = $this->frparam('title',1);
+			$w['title'] = $this->frparam('title',6);
 			//仅在存在手机号的情况进行检测手机号是否有效-可自由设置
 			if($w['tel']){
 				if(!preg_match("/^(13[0-9]|14[579]|15[0-3,5-9]|16[6]|17[0135678]|18[0-9]|19[1-9])\\d{8}$/",$w['tel'])){

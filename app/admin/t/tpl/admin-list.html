@@ -75,9 +75,9 @@
 		</script>
 		<script type="text/html" id="isshow">
 		{if(checkAction('Admin/change_status'))}
-		<input type="checkbox" value="{{d.id}}" name="switch" lay-filter="status"   lay-text="{fun JZLANG('正常|封禁')}}"  lay-skin="switch" {{#  if(d.status == 1){ }}checked{{#  } }}>
+		<input type="checkbox" value="{{d.id}}" name="switch" lay-filter="status"   lay-text="{fun JZLANG('正常|封禁')}"  lay-skin="switch" {{#  if(d.status == 1){ }}checked{{#  } }}>
 		{else}
-		{{#  if(d.status == 1){ }}<span class="layui-badge layui-bg-green">{fun JZLANG('正常')}}</span>{{# }else{ }}<span class="layui-badge">{fun JZLANG('封禁')}}</span>{{#  } }}
+		{{#  if(d.status == 1){ }}<span class="layui-badge layui-bg-green">{fun JZLANG('正常')}</span>{{# }else{ }}<span class="layui-badge">{fun JZLANG('封禁')}</span>{{#  } }}
 		{/if}
 		</script>
 	 

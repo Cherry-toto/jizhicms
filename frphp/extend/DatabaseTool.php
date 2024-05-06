@@ -66,8 +66,10 @@ class DatabaseTool
         {
             foreach ($this->tables as $table)
             {
-                $ddl[] = $this->getDDL($table);
-                $data[] = $this->getData($table);
+                if(stripos($table,DB_PREFIX)!==false){
+                    $ddl[] = $this->getDDL($table);
+                    $data[] = $this->getData($table);
+                }
             }
             //开始写入
             $this->writeToFile($this->tables, $ddl, $data);
@@ -206,7 +208,7 @@ class DatabaseTool
         echo '备份数据库-'.$this->config['database'].'<br />';
         $countsql = 0;//记录sql数
         $filenum = 0;//文件序号
-        $backfile = $this->config['target']==''? $this->config['database'].'_'.date('Y_m_d_H_i_s').'_'.rand(100000,999999): $this->config['target'].date('YmdHis');//文件名
+        $backfile = $this->config['target']==''? str_replace('_','',$this->config['database']).'_'.date('Y_m_d_H_i_s').'_'.rand(100000,999999): $this->config['target'].date('YmdHis');//文件名
         $str = $public_str."SET FOREIGN_KEY_CHECKS=0;\r\n";
         foreach ($tables as $table)
         {

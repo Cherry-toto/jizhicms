@@ -274,7 +274,7 @@ class View
 				}
 			$tids = ' ( '. implode('or',$arr_tid).' ) ';
 			}else if(strpos($a['tid'],'$')!==false){
-				$tids = " tids like  '%,".trim($a['table'],"'").",%'  ";
+				$tids = " tids like  '%,".trim($a['tid'],"'").",%'  ";
 			}else{
 				$tids = " tids like  '%,".$a['tid'].",%'  ";
 			}

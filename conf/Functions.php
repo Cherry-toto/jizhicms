@@ -2893,6 +2893,11 @@ if(!function_exists('check_field_must')){
     function check_field_must($data,$molds){
         // 不为空检测
         $sql = " molds='{$molds}' and isshow=1 ";
+        if(isset($data['tid']) && $data['tid']){
+            $tid = (int)$data['tid'];
+            $sql.=" and tids like ',".$tid.",'";
+        
+        }
         $fields_list = M('Fields')->findAll($sql,'orders desc,id asc');
         if($fields_list){
             foreach($fields_list as $v){
@@ -2921,9 +2926,7 @@ if(!function_exists('remote_data_local')){
         $web_basehost    = get_domain();
 
         $img_array = array();
-        preg_match_all('/<img.*?src="(.*?)".*?>/is', $body, $img_array);
-
-
+        preg_match_all('/<img[^>]+src="([^">]+)"/', $body, $img_array);
 
         //preg_match_all('/http(s?):\/\/(.*?).*?\\"/is', $body, $img_array);  //img 被转义的数据
 

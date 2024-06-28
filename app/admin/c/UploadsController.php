@@ -22,7 +22,7 @@ class UploadsController extends CommonController
             /* 上传图片配置项 */
             "imageActionName"=>"uploadimage", /* 执行上传图片的action名称 */
             "imageFieldName"=>"upfile", /* 提交的图片表单名称 */
-            "imageMaxSize"=>999999990000, /* 上传大小限制，单位B */
+            "imageMaxSize"=>512000000, /* 上传大小限制，单位B 500M*/
             "imageAllowFiles"=>[".png", ".jpg", ".jpeg", ".gif", ".bmp",".webp"], /* 上传图片格式显示 */
             "imageCompressEnable"=>true, /* 是否压缩图片,默认是true */
             "imageCompressBorder"=>1600, /* 图片压缩最长边限制 */
@@ -70,7 +70,7 @@ class UploadsController extends CommonController
             "videoFieldName"=>"upfile", /* 提交的视频表单名称 */
             "videoPathFormat"=>"/".$filepath, /* 上传保存路径,可以自定义保存路径和文件名格式 */
             "videoUrlPrefix"=>"", /* 视频访问路径前缀 */
-            "videoMaxSize"=>102400000, /* 上传大小限制，单位B，默认100MB */
+            "videoMaxSize"=>1024000000, /* 上传大小限制，单位B，默认1000MB */
             "videoAllowFiles"=>[
                 ".flv", ".swf", ".mkv", ".avi", ".rm", ".rmvb", ".mpeg", ".mpg",
                 ".ogg", ".ogv", ".mov", ".wmv", ".mp4", ".webm", ".mp3", ".wav", ".mid"], /* 上传视频格式显示 */
@@ -80,7 +80,7 @@ class UploadsController extends CommonController
             "fileFieldName"=>"upfile", /* 提交的文件表单名称 */
             "filePathFormat"=>"/".$filepath, /* 上传保存路径,可以自定义保存路径和文件名格式 */
             "fileUrlPrefix"=>"", /* 文件访问路径前缀 */
-            "fileMaxSize"=>51200000, /* 上传大小限制，单位B，默认50MB */
+            "fileMaxSize"=>512000000, /* 上传大小限制，单位B，默认500MB */
             "fileAllowFiles"=>[
                 ".png", ".jpg", ".jpeg", ".gif", ".bmp",
                 ".flv", ".swf", ".mkv", ".avi", ".rm", ".rmvb", ".mpeg", ".mpg",

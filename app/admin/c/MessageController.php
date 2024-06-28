@@ -49,7 +49,7 @@ class MessageController extends CommonController
         $data = $this->frparam();
         $res = molds_search('message',$data);
         $this->fields_search = $res['fields_search'];
-        $this->fields_list = M('Fields')->findAll(array('molds'=>'message','islist'=>1),'orders desc');
+        $this->fields_list = M('Fields')->findAll(array('molds'=>'message','islist'=>1),'listorders desc');
         $this->molds = M('molds')->find(['biaoshi'=>'message']);
         if($this->frparam('ajax')){
             $page = new Page('Message');

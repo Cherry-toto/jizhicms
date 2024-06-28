@@ -78,9 +78,10 @@ function format_param($value=null,$int=0,$default=false){
             $ra=Array('select','insert','update','delete');
             return str_ireplace($ra,'',$value);
         case 6:
-            $value = addslashes($value);
             $value= strip_tags($value, "<a><p><img><table><span><strong><h1><h2><h3><h4><h5><h6><div><ul><ol><li><form><input><header><td><tr><th><thead><tbody><source><area><aside><video><pre><code><i><font><audio><b><article><cite><dd><dl><em><section><small><del><hr><br>");
             $value = SafeFilter($value);
+            $value=htmlspecialchars(trim($value), ENT_QUOTES);
+            $value = addslashes($value);
             return trim($value);
 	}
 }

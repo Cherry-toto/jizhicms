@@ -501,7 +501,7 @@ class ArticleController extends CommonController
 			$this->data = M('Article')->find(array('id'=>$this->frparam('id')));
 		}
 		$this->molds = M('molds')->find(['biaoshi'=>'article']);
-		$this->classtypes = $this->classtypedata;
+		$this->classtypes = $this->classtypetree;
 		$config = $this->webconf['article_config'];
 		if(!$config){
 			$configdata = [

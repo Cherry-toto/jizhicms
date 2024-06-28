@@ -38,14 +38,14 @@ if(APP_CONTROLLER=='Sys'){
                 fieldName: "file",
                 server: "'.U('common/uploads').'",
                  // 单个文件的最大体积限制，默认为 2M
-                maxFileSize: 1 * 1024 * 1024, // 1M
+                maxFileSize: 100 * 1024 * 1024, // 1M
             
                 // 最多可上传几个文件，默认为 100
-                maxNumberOfFiles: 10,
+                maxNumberOfFiles: 100,
            
                 allowedFileTypes: ["image/*"],
                 // 超时时间，默认为 10 秒
-                timeout: 30 * 1000, // 5 秒
+                timeout: 10 * 60 * 1000, // 5 秒
                  // 单个文件上传成功之后
                 //onSuccess(file: File, res: any) {  // TS 语法
                 onSuccess(file, res) {          // JS 语法
@@ -78,14 +78,14 @@ if(APP_CONTROLLER=='Sys'){
                 fieldName: "file",
                 server: "'.U('common/uploads').'",
                  // 单个文件的最大体积限制，默认为 2M
-                maxFileSize: 10 * 1024 * 1024 * 1024, // 1M
+                maxFileSize: 10000 * 1024 * 1024 * 1024, // 1M
             
                 // 最多可上传几个文件，默认为 100
                 maxNumberOfFiles: 100,
      
                 allowedFileTypes: ["video/*"],
                 // 超时时间，默认为 10 秒
-                timeout: 60 * 1000, // 5 秒
+                timeout: 30 * 60 * 1000, // 5 秒
                  // 单个文件上传成功之后
                 //onSuccess(file: File, res: any) {  // TS 语法
                 onSuccess(file, res) {          // JS 语法
@@ -234,14 +234,14 @@ if(APP_CONTROLLER=='Sys'){
                 fieldName: "file",
                 server: "'.U('common/uploads').'",
                  // 单个文件的最大体积限制，默认为 2M
-                maxFileSize: 1 * 1024 * 1024, // 1M
+                maxFileSize: 100 * 1024 * 1024, // 1M
             
                 // 最多可上传几个文件，默认为 100
-                maxNumberOfFiles: 10,
+                maxNumberOfFiles: 100,
            
                 allowedFileTypes: ["image/*"],
                 // 超时时间，默认为 10 秒
-                timeout: 30 * 1000, // 5 秒
+                timeout: 10 * 60 * 1000, // 5 秒
                  // 单个文件上传成功之后
                 //onSuccess(file: File, res: any) {  // TS 语法
                 onSuccess(file, res) {          // JS 语法
@@ -274,14 +274,14 @@ if(APP_CONTROLLER=='Sys'){
                 fieldName: "file",
                 server: "'.U('common/uploads').'",
                  // 单个文件的最大体积限制，默认为 2M
-                maxFileSize: 10 * 1024 * 1024 * 1024, // 1M
+                maxFileSize: 10000 * 1024 * 1024 * 1024, // 1M
             
                 // 最多可上传几个文件，默认为 100
                 maxNumberOfFiles: 100,
      
                 allowedFileTypes: ["video/*"],
                 // 超时时间，默认为 10 秒
-                timeout: 60 * 1000, // 5 秒
+                timeout: 30 * 60 * 1000, // 5 秒
                  // 单个文件上传成功之后
                 //onSuccess(file: File, res: any) {  // TS 语法
                 onSuccess(file, res) {          // JS 语法

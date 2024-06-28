@@ -28,7 +28,7 @@ class MemberController extends CommonController
         $data = $this->frparam();
         $res = molds_search('member',$data);
         $this->fields_search = $res['fields_search'];
-        $this->fields_list = M('Fields')->findAll(array('molds'=>'member','islist'=>1),'orders desc');
+        $this->fields_list = M('Fields')->findAll(array('molds'=>'member','islist'=>1),'listorders desc');
         if($this->frparam('ajax')){
 
             $page = new Page('member');

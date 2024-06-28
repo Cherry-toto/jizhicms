@@ -729,10 +729,10 @@ class HomeController extends CommonController
 	//搜索--单一模块搜索
 	function search(){
 		$tables = explode('|',$this->webconf['search_table']);
-		$molds = strtolower($this->frparam('molds',1));//搜索的模块
-		$tid = $this->frparam('tid',1);
+		$molds = strtolower($this->frparam('molds',6));//搜索的模块
+		$tid = $this->frparam('tid',6);
 		if(in_array($molds,$tables) && $molds!=''){
-			$word = $this->frparam('word',1);
+			$word = $this->frparam('word',6);
 			if($word==''){
 				if($this->frparam('ajax')){
 					JsonReturn(['code'=>1,'data'=>'','msg'=>JZLANG('请输入关键词搜索！')]);
@@ -857,7 +857,7 @@ class HomeController extends CommonController
 	function searchAll(){
 		$tables = explode('|',$this->webconf['search_table_muti']);
 		$molds = $this->frparam('molds',2);//搜索的模块
-		$tid = $this->frparam('tid',1);
+		$tid = $this->frparam('tid',6);
 		if($molds && is_array($molds)){
 			$allow_table = [];
 			foreach($molds as $v){
@@ -872,7 +872,7 @@ class HomeController extends CommonController
 				Error(JZLANG('您的搜索超出设定范围！'));
 			}
 			
-			$word = $this->frparam('word',1);
+			$word = $this->frparam('word',6);
 			if($word==''){
 				if($this->frparam('ajax')){
 					JsonReturn(['code'=>1,'data'=>'','msg'=>JZLANG('请输入关键词搜索！')]);

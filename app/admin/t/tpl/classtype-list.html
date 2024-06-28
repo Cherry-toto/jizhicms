@@ -68,7 +68,7 @@
 							<th >{fun JZLANG('操作')}</th>
 						</thead>
 						<tbody class="x-cate">
-						{loop table="classtype" pid="0" as="v"}
+						{loop table="classtype" pid="0" orderby="orders desc" as="v"}
 						<tr cate-id="{$v['id']}" fid="{$v['pid']}" {if($v['pid']!=0)}style="display:none;"{/if}>
 						<td>
 							<div class="layui-unselect layui-form-checkbox" lay-skin="primary" data-id="{$v['id']}"><i class="layui-icon">&#xe605;</i></div>
@@ -227,16 +227,18 @@
 	});
 
 	$(document).ready(function(){
-		$(".x-sort").change(function(){
+
+		$(document).on("change",".x-sort",function(){
 			var id = $(this).parent().parent().attr('cate-id');
 			var order = $(this).val();
 
 			$.post('{fun U('Classtype/editClassOrders')}',{id:id,orders:order},function(r){
 				window.location.reload();
 			});
-
 		})
+
 	});
+
 
 	function getchildren(id,t){
 

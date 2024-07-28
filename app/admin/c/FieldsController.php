@@ -585,7 +585,7 @@ class FieldsController extends CommonController
 		$sql = array();
 		$molds = strtolower($this->frparam('molds',5));
 		$moldsdata = M('molds')->find(['biaoshi'=>$molds]);
-		if($tid){
+		if($tid  && !in_array($molds,['orders','level','level_group','tags','attr','chain','collect','collect_type','links','link_type','pictures','comment'])){
 			$sql[] = " (tids like '%,".$tid.",%' or tids is null) ";
 		}
         $id = $this->frparam('id');

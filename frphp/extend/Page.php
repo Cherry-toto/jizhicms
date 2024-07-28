@@ -65,16 +65,29 @@ namespace frphp\extend;
 			$request_uri = $_SERVER["REQUEST_URI"];    
             if(strpos($request_uri,APP_URL)!==false){
 				//后台
-				$this->file_ext = '';
-				$this->sep = '?page=';
-				if(isset($_GET['page'])){
-					unset($_GET['page']);
-				}
-				$url = get_domain().APP_URL.'/'.APP_CONTROLLER.'/'.APP_ACTION;
-				if(count($_GET)>0){
-					$this->sep = '&page=';
-					$url = get_domain().APP_URL.'/'.APP_CONTROLLER.'/'.APP_ACTION.'?'.http_build_query($_GET);
-				}
+                $this->file_ext = '';
+                if($this->typeurl=='tpl'){
+                   
+                    $url = $request_uri;
+                    if(strpos($url,'?')!==false){
+                        $urls = explode('?',$url);
+                        $url = $urls[0];
+                    }
+                    $position = strpos($url, '?');
+                    $url = $position === false ? $url : substr($url, 0, $position);
+                    $url = (strripos($url,'/')+1 == strlen($url)) ? substr($url,0,strripos($url,'/')) : $url;
+                }else{
+                    $this->sep = '?page=';
+                    if(isset($_GET['page'])){
+                        unset($_GET['page']);
+                    }
+                    $url = get_domain().APP_URL.'/'.APP_CONTROLLER.'/'.APP_ACTION;
+                    if(count($_GET)>0){
+                        $this->sep = '&page=';
+                        $url = get_domain().APP_URL.'/'.APP_CONTROLLER.'/'.APP_ACTION.'?'.http_build_query($_GET);
+                    }
+                }
+				
 			}else{
 			
 				switch($this->typeurl){

@@ -48,7 +48,7 @@ $(function () {
 
     tableCheck = {
         init:function  () {
-            $(".layui-form-checkbox").click(function(event) {
+            $(document).on("click",".header.layui-form-checkbox,.x-cate .layui-form-checkbox",function(){
                 if($(this).hasClass('layui-form-checked')){
                     $(this).removeClass('layui-form-checked');
                     if($(this).hasClass('header')){
@@ -60,8 +60,8 @@ $(function () {
                         $(".layui-form-checkbox").addClass('layui-form-checked');
                     }
                 }
-                
-            });
+        
+            })
         },
         getData:function  () {
             var obj = $(".layui-form-checked").not('.header');

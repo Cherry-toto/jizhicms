@@ -488,7 +488,7 @@ class CommonController extends Controller
 				break;
 				case 5:
 				$rd = rand(1000,9999);
-                if($molds=='member'){
+				if($molds=='member' && $v['field']=='litpic'){
                     $uploadurl = U('user/uploads');
                 }else{
                     $uploadurl = U('common/uploads');

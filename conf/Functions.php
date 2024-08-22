@@ -562,11 +562,15 @@ if(!function_exists('get_fields_data')) {
                     case 3:
                         if ($isadmin) {
                             $text = $data[$v['field']];
-                            $text = remote_data_local($text, $data['tid'], $data['molds']);
+                            if(webConf('islocal')){
+                                $text = remote_data_local($text, $data['tid'], $data['molds']);
+                            }
                             $data[$v['field']] = format_param($text, 4);
                         }else{
                             $text = $data[$v['field']];
-                            $text = remote_data_local($text, $data['tid'], $data['molds']);
+                            if(webConf('islocal')) {
+                                $text = remote_data_local($text, $data['tid'], $data['molds']);
+                            }
                             $data[$v['field']] = format_param($text, 6);
                         }
                         

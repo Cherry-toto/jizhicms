@@ -33,8 +33,14 @@ class OrderController extends CommonController
 	
 	function create(){
 		if($this->frparam('go')){
-			if(isset($_SESSION['cart']) && $_SESSION['cart']!=''){
-				$carts = explode('||',$_SESSION['cart']);
+            $carts = [];
+            if(isset($GLOBALS['Redis'])){
+                $carts = explode('||',$GLOBALS['Redis']->get('cart'));
+            }else if(isset($_SESSION['cart']) && $_SESSION['cart']!=''){
+                $carts = explode('||',$_SESSION['cart']);
+            }
+
+            if(is_array($carts) && count($carts)>0){
 				$group = M('member_group')->find(['id'=>$this->member['gid']]);
 				$new = [];
 				$price = 0.00;
@@ -104,6 +110,9 @@ class OrderController extends CommonController
 						
 					}
 					$_SESSION['cart'] = '';
+                    if(isset($GLOBALS['Redis'])){
+                        $GLOBALS['Redis']->del('cart');
+                    }
 					$this->carts = $newcart;
 					$this->qianbao = $qianbao+$discount*($this->webconf['money_exchange'])-$yunfei*($this->webconf['money_exchange']);
 					$this->jifen = $jifen+$discount*($this->webconf['jifen_exchange'])-$yunfei*($this->webconf['jifen_exchange']);

@@ -14,6 +14,9 @@
 			$this->distrubcode= "1235467890qwertyuipkjhgfdaszxcvbnm";
 			$this->fonturl=$fonturl;
 			$this->session=$this->sessioncode();
+			if(isset($GLOBALS['Redis']) && $GLOBALS['Redis']!==null){
+                $GLOBALS['Redis']->setex($code,5 * 60 ,md5(md5($this->session)));
+            }
 			$_SESSION[$code]=md5(md5($this->session));
 		}
 		

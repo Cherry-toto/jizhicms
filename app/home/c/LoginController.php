@@ -44,15 +44,23 @@ class LoginController extends CommonController
 			$data['password'] = str_replace("'",'',$this->frparam('password',1));
 			if(!isset($this->webconf['closehomevercode']) || $this->webconf['closehomevercode']!=1){
 				$vercode = strtolower($this->frparam('vercode',1));
-				if(!$vercode || md5(md5($vercode))!=$_SESSION['login_vercode']){
-					$xdata = array('code'=>1,'msg'=>JZLANG('验证码错误！'));
-					if($this->frparam('ajax')){
-						JsonReturn($xdata);
-					}
-					Error(JZLANG('验证码错误！'));
-				}
+                if(isset($GLOBALS['Redis']) && $GLOBALS['Redis']->get('login_vercode') !=  md5(md5($vercode))){
+                    JsonReturn(array('code'=>1,'msg'=>JZLANG('验证码错误！')));
+                }else{
+                    if(!$vercode || md5(md5($vercode))!=$_SESSION['login_vercode']){
+                        $xdata = array('code'=>1,'msg'=>JZLANG('验证码错误！'));
+                        if($this->frparam('ajax')){
+                            JsonReturn($xdata);
+                        }
+                        Error(JZLANG('验证码错误！'));
+                    }
+                }
+
 			}
 			$_SESSION['login_vercode'] = getRandChar(32);
+            if(isset($GLOBALS['Redis'])){
+                $GLOBALS['Redis']->del('login_vercode');
+            }
 			if($data['username']=='' || $data['password']==''){
 				$xdata = array('code'=>1,'msg'=>JZLANG('账户密码不能为空！'));
 				if($this->frparam('ajax')){
@@ -144,6 +152,13 @@ class LoginController extends CommonController
                 M('member')->update(array('id'=>$res['id']),$update);
 				//兼容ajax登录
 				if($this->frparam('ajax')){
+
+                    if(isset($GLOBALS['Redis'])){
+
+                        $token = getRandChar(32);
+                        $GLOBALS['Redis']->setex($token,7 * 86400,json_encode($_SESSION['member'],JSON_UNESCAPED_UNICODE));
+                        JsonReturn(['code'=>0,'msg'=>JZLANG('登录成功！'),'token'=>$token,'url'=>$_SESSION['return_url']]);
+                    }
 					JsonReturn(['code'=>0,'msg'=>JZLANG('登录成功！'),'url'=>$_SESSION['return_url']]);
 				}
 				Redirect($_SESSION['return_url']);
@@ -183,15 +198,23 @@ class LoginController extends CommonController
 		  }
 		  if(!isset($this->webconf['closehomevercode']) || $this->webconf['closehomevercode']!=1){
 			    $vercode = strtolower($this->frparam('vercode',1));
-			    if(!$vercode || md5(md5($vercode))!=$_SESSION['reg_vercode']){
-					$xdata = array('code'=>1,'msg'=>JZLANG('验证码错误！'));
-					if($this->frparam('ajax')){
-						JsonReturn($xdata);
-					}
-					Error(JZLANG('验证码错误！'));
-				}
+              if(isset($GLOBALS['Redis']) && $GLOBALS['Redis']->get('reg_vercode')!=md5(md5($vercode))){
+                  JsonReturn(['code'=>1,'msg'=>JZLANG('验证码错误！')]);
+              }else{
+                  if(!$vercode || md5(md5($vercode))!=$_SESSION['reg_vercode']){
+                      $xdata = array('code'=>1,'msg'=>JZLANG('验证码错误！'));
+                      if($this->frparam('ajax')){
+                          JsonReturn($xdata);
+                      }
+                      Error(JZLANG('验证码错误！'));
+                  }
+              }
+
 		  }
           $_SESSION['reg_vercode'] = getRandChar(32);
+          if(isset($GLOBALS['Redis'])){
+              $GLOBALS['Redis']->del('reg_vercode');
+          }
 		  $w['email'] = $this->frparam('email',1,'');
 		  $w['password'] = $this->frparam('password',1);
 		  $w['repassword'] = $this->frparam('repassword',1);
@@ -271,6 +294,11 @@ class LoginController extends CommonController
 					unset($member['pass']);
 					unset($member_group['id']);
 					$_SESSION['member'] = array_merge($member,$member_group);
+                    if(isset($GLOBALS['Redis'])){
+                        $token = getRandChar(32);
+                        $GLOBALS['Redis']->setex($token,7 * 86400,json_encode($_SESSION['member'],JSON_UNESCAPED_UNICODE));
+                        JsonReturn(['code'=>0,'msg'=>'注册成功！','token'=>$token,'url'=>U('user/index')]);
+                    }
 					$xdata = array('code'=>0,'msg'=>JZLANG('注册成功！'),'url'=>U('user/index'));
 				}
 				if($this->frparam('ajax')){
@@ -410,8 +438,153 @@ class LoginController extends CommonController
 	  
 	  $this->display($this->template.'/user/forget');
   }
-  
-  
+
+  function mforget(){
+
+        $params = $this->frparam();
+        if(!$params){
+            JsonReturn(['code'=>1,'msg'=>'数据异常']);
+        }
+        $account = format_param($params['account'],6);
+        $vercode = format_param($params['vercode'],6);
+        if(!$account){
+            JsonReturn(['code'=>1,'msg'=>'请输入账号/邮箱！']);
+        }
+        $type = (int)$params['type'];
+        switch ($type){
+            //发生认证码
+            case 1:
+
+                $forget_code = $GLOBALS['Redis']->get('forget_code');
+                if(!$forget_code || $forget_code!=md5(md5($vercode))){
+                    JsonReturn(['code'=>1,'msg'=>'图形验证码错误！']);
+                }
+                $GLOBALS['Redis']->del('forget_code');
+                if(stripos($account,'@')!==false){
+                    //邮箱
+                    $user = M('member')->find(['email'=>$account]);
+                    if($user){
+                        //检查是否发送通知，通知是否过期
+                        if($user['ishassend']){
+                            $t = time() - $user['hassendtime'];
+                            if($t<600){
+                                JsonReturn(['code'=>1,'msg'=>'邮箱已发送，请10分钟后再发送！']);
+                            }
+                        }
+
+                        //生成随机秘钥
+                        $w['hassendtime'] = time();
+                        $w['ishassend'] = 1;
+                        $w['token'] = mt_rand(100000,999999);
+                        M('member')->update(['id'=>$user['id']],$w);
+                        //发送邮件
+                        if($this->webconf['email_server'] && $this->webconf['email_port'] &&  $this->webconf['send_email'] &&  $this->webconf['send_pass']){
+                            $title = JZLANG('找回密码').'-'.$this->webconf['web_name'];
+                            //$url = U('login/forget').'?token='.$w['token'].'&email='.$email;
+                            $body = JZLANG('您的账号正在进行找回密码操作，如果确定是本人操作，请在10分钟内输入认证码：').'<strong>'.$w['token'].'</strong>';
+
+                            send_mail($this->webconf['send_email'],$this->webconf['send_pass'],$this->webconf['send_name'],$user['email'],$title,$body);
+
+                            JsonReturn(['code'=>0,'msg'=>'认证码已发送，请到您的邮箱查看！']);
+
+                        }else{
+                            JsonReturn(['code'=>0,'msg'=>'邮箱服务器未配置，无法发送邮件，请联系管理员找回密码！']);
+                        }
+
+                    }else{
+                        JsonReturn(['code'=>1,'msg'=>'用户未找到！']);
+                    }
+                }else{
+                    //手机短信
+                    $account = intval($account);
+                    if(strlen($account)==11){
+                        //邮箱
+                        $user = M('member')->find(['tel'=>$account]);
+                        if(!$user){
+                            JsonReturn(['code'=>1,'msg'=>'用户未找到！']);
+                        }
+                        JsonReturn(['code'=>0,'msg'=>'短信已发送成功！']);
+                    }else{
+                        JsonReturn(['code'=>1,'msg'=>'手机号格式错误！']);
+                    }
+
+                }
+
+                break;
+            case 2:
+                $token = intval($params['code']);
+                if(!$token){
+                    JsonReturn(['code'=>1,'msg'=>'认证码不能为空！']);
+                }
+                if(stripos($account,'@')!==false){
+                    //邮箱
+                    $user = M('member')->find(['email'=>$account,'token'=>$token]);
+
+                }else{
+                    $account = intval($account);
+                    if(strlen($account)==11){
+                        //邮箱
+                        $user = M('member')->find(['tel'=>$account,'token'=>$token]);
+
+                    }else{
+                        JsonReturn(['code'=>1,'msg'=>'手机号格式错误！']);
+                    }
+
+                }
+
+                if(!$user){
+                    JsonReturn(['code'=>1,'msg'=>'认证码错误！']);
+                }
+                $t = time() - $user['hassendtime'];
+                if($t>600){
+                    JsonReturn(['code'=>1,'msg'=>'认证码过期，请重新获取认证码！']);
+                }
+                $token = getRandChar(32);
+                M('member')->update(['id'=>$user['id']],['token'=>$token]);
+
+                JsonReturn(['code'=>0,'msg'=>'success','token'=>$token]);
+
+
+
+
+                break;
+            case 3:
+                $token = format_param($params['token'],6);
+                if(!$token){
+                    JsonReturn(['code'=>1,'msg'=>'非法操作！']);
+                }
+                $pass = format_param($params['pass'],6);
+                $repass = format_param($params['repass'],6);
+                if($pass!=$repass){
+                    JsonReturn(['code'=>1,'msg'=>'两次密码不同！']);
+                }
+                $forget_code = $GLOBALS['Redis']->get('forget_code');
+                if(!$forget_code || $forget_code!=md5(md5($vercode))){
+                    JsonReturn(['code'=>1,'msg'=>'图形验证码错误！']);
+                }
+                if(stripos($account,'@')!==false){
+                    $user = M('member')->find(['token'=>$token,'email'=>$account]);
+                }else{
+                    $account = intval($account);
+                    $user = M('member')->find(['token'=>$token,'tel'=>$account]);
+                }
+
+                if(!$user){
+                    JsonReturn(['code'=>1,'msg'=>'非法操作！']);
+                }
+                $pass = md5(md5($pass).md5($pass));
+                M('member')->update(['id'=>$user['id']],['pass'=>$pass]);
+                JsonReturn(['code'=>0,'msg'=>'重置密码成功！']);
+
+                break;
+        }
+
+
+
+
+
+
+    }
   function nologin(){
   		if($this->islogin){
   			Redirect(U('user/index'));
@@ -422,6 +595,14 @@ class LoginController extends CommonController
   function loginout(){
   	  $_SESSION['member'] = null;
 	  $_SESSION['return_url'] = null;
+      if($this->frparam('ajax')){
+
+          if($this->frparam('token',1) && isset($GLOBALS['Redis'])){
+              $GLOBALS['Redis']->del($this->frparam('token',1));
+          }
+
+          JsonReturn(['code'=>0,'msg'=>JZLANG('安全退出~')]);
+      }
       Error(JZLANG('安全退出~'),get_domain());
   }
   

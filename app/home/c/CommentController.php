@@ -31,26 +31,44 @@ class CommentController extends CommonController
 		
 		if($this->frparam('go',0,false,"POST")){
 			if($this->islogin){
-				
-				
-				if(!isset($_SESSION['message_time'])){
-					$_SESSION['message_time'] = time();
-					$_SESSION['message_num'] = 0;
-				}
-				
-				if(($_SESSION['message_time']+10*60)<time()){
-					$_SESSION['message_num'] = 0;
-					$_SESSION['message_time'] = time();
-				}
-				$_SESSION['message_num']++;
-				if($_SESSION['message_num']>10 && ($_SESSION['message_time']+10*60)>time()){
-					if($this->frparam('ajax')){
-						JsonReturn(array('code'=>1,'msg'=>JZLANG('您的操作过于频繁，请十分钟后再试~')));
-					}
-					
-					Error(JZLANG('您的操作过于频繁，请十分钟后再试~'));
-				}
-			
+                if(isset($GLOBALS['Redis'])){
+                    $message_time = $GLOBALS['Redis']->get('message_time');
+                    $message_num = $GLOBALS['Redis']->get('message_num');
+                    if(!$message_time){
+                        $message_time = time();
+                        $message_num = 0;
+                    }
+                    if(($message_time+10*60)<time()){
+
+                        $GLOBALS['Redis']->setex('message_time', 10 * 60, time());
+                    }
+                    $message_num += 1;
+                    $GLOBALS['Redis']->setex('message_num', 10 * 60, $message_num);
+                    if($message_num>5 && ($message_time+10*60)>=time()){
+                        if($this->frparam('ajax')){
+                            JsonReturn(array('code'=>1,'msg'=>JZLANG('您的操作过于频繁，请十分钟后再试~')));
+                        }
+                        Error(JZLANG('您的操作过于频繁，请十分钟后再试~'));
+                    }
+                }else{
+                    if(!isset($_SESSION['message_time'])){
+                        $_SESSION['message_time'] = time();
+                        $_SESSION['message_num'] = 0;
+                    }
+
+                    if(($_SESSION['message_time']+10*60)<time()){
+                        $_SESSION['message_num'] = 0;
+                        $_SESSION['message_time'] = time();
+                    }
+                    $_SESSION['message_num']++;
+                    if($_SESSION['message_num']>10 && ($_SESSION['message_time']+10*60)>time()){
+                        if($this->frparam('ajax')){
+                            JsonReturn(array('code'=>1,'msg'=>JZLANG('您的操作过于频繁，请十分钟后再试~')));
+                        }
+                        Error(JZLANG('您的操作过于频繁，请十分钟后再试~'));
+                    }
+                }
+
 				//$w = $this->frparam();
 				//$w = get_fields_data($w,'comment',0);
 				$w['tid'] = $this->frparam('tid',0,0);

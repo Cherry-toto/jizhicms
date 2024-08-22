@@ -44,24 +44,41 @@ class MessageController extends CommonController
 			
 			if(!isset($this->webconf['messageyzm']) || $this->webconf['messageyzm']){
 				$vercode = strtolower($this->frparam('vercode',1));
-				if(!$vercode || md5(md5($vercode))!=$_SESSION['message_vercode']){
-					$xdata = array('code'=>1,'msg'=>JZLANG('验证码错误！'));
-					if($this->frparam('ajax')){
-						JsonReturn($xdata);
-					}
-					Error(JZLANG('验证码错误！'));
-				}
-				
-			}
+                if(isset($GLOBALS['Redis']) && $GLOBALS['Redis']->get('message_vercode')!=md5(md5($vercode))){
+                    JsonReturn(array('code'=>1,'msg'=>JZLANG('验证码错误！')));
+                }else{
+                    if(!$vercode || md5(md5($vercode))!=$_SESSION['message_vercode']){
+                        $xdata = array('code'=>1,'msg'=>JZLANG('验证码错误！'));
+                        if($this->frparam('ajax')){
+                            JsonReturn($xdata);
+                        }
+                        Error(JZLANG('验证码错误！'));
+                    }
+                }
+                $_SESSION['message_vercode'] = getRandChar(30);
+                if(isset($GLOBALS['Redis'])){
+                    $GLOBALS['Redis']->del('message_vercode');
+                }
+
+
+            }
 			
 			
 			$w['ip'] = GetIP();
 			$w['addtime'] = time();
 			if(isset($_SESSION['member'])){
 				$w['userid'] = $_SESSION['member']['id'];
-			}else{
-				$w['userid'] = 0;
-			}
+            }else if(isset($GLOBALS['Redis']) && $this->frparam('token',1)){
+                $m = $GLOBALS['Redis']->get($this->frparam('token',1));
+                if($m){
+                    $member = json_decode($m,true);
+                    $w['userid'] = $member['id'];
+                }else{
+                    $w['userid'] = 0;
+                }
+            }else{
+                $w['userid'] = 0;
+            }
 			
 			if($this->frparam('title',6,'','POST')==''){
 				//$this->error('标题不能为空！');
@@ -119,28 +136,46 @@ class MessageController extends CommonController
 					}
 				}
 			}
+
+            if(isset($GLOBALS['Redis'])){
+                $message_time = $GLOBALS['Redis']->get('message_time');
+                $message_num = $GLOBALS['Redis']->get('message_num');
+                if(!$message_time){
+                    $message_time = time();
+                    $message_num = 0;
+                }
+                if(($message_time+10*60)<time()){
+
+                    $GLOBALS['Redis']->setex('message_time', 10 * 60, time());
+                }
+                $message_num += 1;
+                $GLOBALS['Redis']->setex('message_num', 10 * 60, $message_num);
+                if($message_num>5 && ($message_time+10*60)>=time()){
+                    if($this->frparam('ajax')){
+                        JsonReturn(['code'=>0,'msg'=>JZLANG('您操作过于频繁，请10分钟后再尝试！')]);
+                    }
+                    Error(JZLANG('您操作过于频繁，请10分钟后再尝试！'));
+                }
+            }else {
+                if(!isset($_SESSION['message_time'])){
+                    $_SESSION['message_time'] = time();
+                    $_SESSION['message_num'] = 0;
+                }
+
+                if(($_SESSION['message_time']+10*60)<time()){
+                    $_SESSION['message_num'] = 0;
+                    $_SESSION['message_time'] = time();
+                }
+                $_SESSION['message_num']++;
+                if($_SESSION['message_num']>5 && ($_SESSION['message_time']+10*60)>=time()){
+                    if($this->frparam('ajax')){
+                        JsonReturn(['code'=>0,'msg'=>JZLANG('您操作过于频繁，请10分钟后再尝试！')]);
+                    }
+                    Error(JZLANG('您操作过于频繁，请10分钟后再尝试！'));
+                }
+            }
 			
-			
-			
-			
-			if(!isset($_SESSION['message_time'])){
-				$_SESSION['message_time'] = time();
-				$_SESSION['message_num'] = 0;
-			}
-			
-			if(($_SESSION['message_time']+10*60)<time()){
-				$_SESSION['message_num'] = 0;
-				$_SESSION['message_time'] = time();
-			}
-			$_SESSION['message_num']++;
-			if($_SESSION['message_num']>5 && ($_SESSION['message_time']+10*60)>=time()){
-				if($this->frparam('ajax')){
-					JsonReturn(['code'=>0,'msg'=>JZLANG('您操作过于频繁，请10分钟后再尝试！')]);
-				}
-				Error(JZLANG('您操作过于频繁，请10分钟后再尝试！'));
-			}
-			
-			
+
 			$res = M('message')->add($w);
 			if($res){
 				if($this->frparam('ajax')){

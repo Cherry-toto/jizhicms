@@ -32,12 +32,23 @@ class UserController extends CommonController
 	}
 
 	function checklogin(){
-		if(!$this->islogin){
-			if($this->frparam('ajax')){
-				JsonReturn(['code'=>1,'msg'=>JZLANG('您还未登录，请重新登录！')]);
-			}
-			Redirect(U('login/index'));
-		}
+        if(isset($GLOBALS['Redis']) && $this->frparam('token',1)){
+            $token = $this->frparam('token',1);
+            $member = $GLOBALS['Redis']->get($token);
+            if(!$member){
+                JsonReturn(['code'=>1,'msg'=>'您还未登录，请重新登录！']);
+            }
+            $this->member = json_decode($member,true);
+            $_SESSION['member'] = $this->member;
+            $this->islogin = true;
+        }
+        if(!$this->islogin){
+            if($this->frparam('ajax')){
+                JsonReturn(['code'=>1,'msg'=>JZLANG('您还未登录，请重新登录！')]);
+            }
+            Redirect(U('login/index'));
+        }
+
 		
 	}
 	
@@ -62,7 +73,7 @@ class UserController extends CommonController
 		$this->checklogin();
 		if($_POST){
 			$w = $this->frparam();
-            if(!isset($w['csrfkey']) || $w['csrfkey']!=$_SESSION['csrfkey']){
+            if(!isset($GLOBALS['Redis']) && (!isset($w['csrfkey']) || $w['csrfkey']!=$_SESSION['csrfkey']) ){
                 if($this->frparam('ajax')){
                     JsonReturn(['code'=>1,'msg'=>JZLANG('非法操作！')]);
                 }
@@ -167,6 +178,10 @@ class UserController extends CommonController
 			$member = M('member')->find(['id'=>$this->member['id']]);
 			unset($member['pass']);
 			$_SESSION['member'] = array_merge($_SESSION['member'],$member);
+            if(isset($GLOBALS['Redis'])){
+                $GLOBALS['Redis']->setex($this->frparam('token',1),7 * 86400,json_encode($_SESSION['member'],JSON_UNESCAPED_UNICODE));
+
+            }
 			if($this->frparam('ajax')){
 				JsonReturn(['code'=>0,'msg'=>JZLANG('修改成功！')]);
 			}
@@ -175,6 +190,9 @@ class UserController extends CommonController
 		}
         $_SESSION['csrfkey'] = getRandChar(32);
         $this->csrfkey = $_SESSION['csrfkey'];
+        if($this->frparam('ajax')){
+            JsonReturn(['code'=>0,'msg'=>'success','data'=>$this->member]);
+        }
 		$this->display($this->template.'/user/userinfo');
        
     }
@@ -847,9 +865,17 @@ class UserController extends CommonController
 	//购物车
 	function cart(){
 		$this->checklogin();
-		if(!isset($_SESSION['cart'])){
-			$_SESSION['cart'] = '';
-		}
+        if(isset($GLOBALS['Redis'])){
+            $cart = $GLOBALS['Redis']->get('cart');
+            if(!$cart){
+                $cart = '';
+            }
+        }else{
+            if(!isset($_SESSION['cart'])){
+                $_SESSION['cart'] = '';
+            }
+            $cart = $_SESSION['cart'];
+        }
 		$this->member_group = M('member_group')->find(['id'=>$this->member['gid']]);
 		//tid-id-num
 		$cart = explode('||',$_SESSION['cart']);
@@ -890,11 +916,18 @@ class UserController extends CommonController
 		}
 		
 		//session存储
-		if(!isset($_SESSION['cart'])){
-			//id-tid-num
-			$cart = $tid.'-'.$id.'-'.$num.'-'.$product['price'];
-		}else{
-			$cart = $_SESSION['cart'];
+        if(
+            !isset($_SESSION['cart'])
+            && (!isset($GLOBALS['Redis']) || !$GLOBALS['Redis']->get('cart'))
+        ){
+            //id-tid-num
+            $cart = $tid.'-'.$id.'-'.$num.'-'.$product['price'];
+        }else{
+            if(isset($GLOBALS['GLOBALS'])){
+                $cart = $GLOBALS['Redis']->get('cart');
+            }else{
+                $cart = $_SESSION['cart'];
+            }
 			$carts = explode('||',$cart);
 			$new = [];
 			$isnew = true;
@@ -916,6 +949,9 @@ class UserController extends CommonController
 			$cart = implode('||',$new);
 		}
 		$_SESSION['cart'] = $cart;
+        if(isset($GLOBALS['Redis'])){
+            $GLOBALS['Redis']->setex('cart', 7 * 86400, $cart);
+        }
 		JsonReturn(['code'=>0,'msg'=>'success','url'=>U('user/cart')]);
 		
 		
@@ -928,7 +964,11 @@ class UserController extends CommonController
 		if(!$id || !$tid){
 			JsonReturn(['code'=>1,'msg'=>JZLANG('参数错误！')]);
 		}
-		$cart = $_SESSION['cart'];
+        if(isset($GLOBALS['Redis'])){
+            $cart = $GLOBALS['Redis']->get('cart');
+        }else{
+            $cart = $_SESSION['cart'];
+        }
 		$carts = explode('||',$cart);
 		$new = [];
 		
@@ -943,6 +983,9 @@ class UserController extends CommonController
 		
 		$cart = implode('||',$new);
 		$_SESSION['cart'] = $cart;
+        if(isset($GLOBALS['Redis'])){
+            $GLOBALS['Redis']->setex('cart', 7 * 86400, $cart);
+        }
 		JsonReturn(['code'=>0,'msg'=>'success','url'=>$cart]);
 	}
 

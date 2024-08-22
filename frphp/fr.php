@@ -103,7 +103,7 @@ class frphp
 		$webconfig = getCache('webconfig');
 		if( !isset($webconfig['closesession']) || (isset($webconfig['closesession']) && $webconfig['closesession']==0) || APP_HOME=='app/admin'){
 			//检查是否开启redis_session ---2019/09/05 留恋风
-			if(open_redis_session){
+            if(open_redis_session || (isset($webconfig['openredis']) && $webconfig['openredis'])){
 				$session = new \SessionRedis($this->config['redis']);
 				session_set_save_handler($session,true);
 				if (!isset($_COOKIE['PHPSESSID'])) {

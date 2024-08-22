@@ -51,6 +51,12 @@ class CommonController extends Controller
 		$this->frpage = $this->frparam('page',0,1);
 		$customconf = get_custom();
 		$this->customconf = $customconf;
+        if(isset($GLOBALS['Redis']) && $this->frparam('token',1)){
+            $member = $GLOBALS['Redis']->get($this->frparam('token',1));
+            if($member){
+                $_SESSION['member'] = json_decode($member,true);
+            }
+        }
 		if(isset($_SESSION['member'])){
 			$this->islogin = true;
 			$this->member = $_SESSION['member'];

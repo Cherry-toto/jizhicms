@@ -371,6 +371,7 @@ CREATE TABLE `jz_member` (
   `province` varchar(50) DEFAULT NULL COMMENT '省份',
   `city` varchar(50) DEFAULT NULL COMMENT '城市',
   `regtime` int(11) NOT NULL DEFAULT '0' COMMENT '注册时间',
+  `hassendtime` int(11) NOT NULL DEFAULT '0' COMMENT '发送验证码时间',
   `logintime` int(11) NOT NULL DEFAULT '0' COMMENT '登录时间',
   `isshow` tinyint(1) NOT NULL DEFAULT '1' COMMENT '状态：1正常0封禁',
   `signature` varchar(255) DEFAULT NULL COMMENT '个性签名',

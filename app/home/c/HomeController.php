@@ -634,8 +634,8 @@ class HomeController extends CommonController
         $details['format_addtime'] = $details['addtime'] ? date('Y-m-d H:i:s',$details['addtime']) : '';
 		$this->jz = $details;
 		
-		$aprev_sql = ' id<'.$id.' and tid in ('.implode(',',$this->classtypedata[$this->type['id']]['children']['ids']).') ';
-		$anext_sql = ' id>'.$id.' and tid in ('.implode(',',$this->classtypedata[$this->type['id']]['children']['ids']).') ';
+		$aprev_sql = ' id<'.$id.' and isshow=1 and tid in ('.implode(',',$this->classtypedata[$this->type['id']]['children']['ids']).') ';
+		$anext_sql = ' id>'.$id.' and isshow=1 and tid in ('.implode(',',$this->classtypedata[$this->type['id']]['children']['ids']).') ';
 		$aprev = M($this->type['molds'])->find($aprev_sql,'id desc');
 		$anext = M($this->type['molds'])->find($anext_sql,'id asc');
 		if($aprev){

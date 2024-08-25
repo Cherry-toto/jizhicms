@@ -22,7 +22,7 @@ class UserController extends CommonController
 		
 		if(!M('molds')->find(['biaoshi'=>'member','isopen'=>1])){
 			if($this->frparam('ajax')){
-				JsonReturn(['code'=>1,'msg'=>JZLANG('会员中心已关闭！')]);
+				JsonReturn(['code'=>1,'msg'=>JZLANG('会员中心已关闭！'),'data'=>[]]);
 			}
 			Error(JZLANG('会员中心已关闭！'));
 			exit;
@@ -36,7 +36,7 @@ class UserController extends CommonController
             $token = $this->frparam('token',1);
             $member = $GLOBALS['Redis']->get($token);
             if(!$member){
-                JsonReturn(['code'=>1,'msg'=>'您还未登录，请重新登录！']);
+                JsonReturn(['code'=>1,'msg'=>JZLANG('您还未登录，请重新登录！'),'data'=>[]]);
             }
             $this->member = json_decode($member,true);
             $_SESSION['member'] = $this->member;
@@ -44,7 +44,7 @@ class UserController extends CommonController
         }
         if(!$this->islogin){
             if($this->frparam('ajax')){
-                JsonReturn(['code'=>1,'msg'=>JZLANG('您还未登录，请重新登录！')]);
+                JsonReturn(['code'=>1,'msg'=>JZLANG('您还未登录，请重新登录！'),'data'=>[]]);
             }
             Redirect(U('login/index'));
         }
@@ -75,7 +75,7 @@ class UserController extends CommonController
 			$w = $this->frparam();
             if(!isset($GLOBALS['Redis']) && (!isset($w['csrfkey']) || $w['csrfkey']!=$_SESSION['csrfkey']) ){
                 if($this->frparam('ajax')){
-                    JsonReturn(['code'=>1,'msg'=>JZLANG('非法操作！')]);
+                    JsonReturn(['code'=>1,'msg'=>JZLANG('非法操作！'),'data'=>[]]);
                 }
                 Error(JZLANG('非法操作！'));
             }
@@ -118,7 +118,7 @@ class UserController extends CommonController
 				
 				}else{  
 					if($this->frparam('ajax')){
-						JsonReturn(['code'=>1,'msg'=>JZLANG('手机号码格式错误！')]);
+						JsonReturn(['code'=>1,'msg'=>JZLANG('手机号码格式错误！'),'data'=>[]]);
 					}
 					Error(JZLANG('手机号码格式错误！'));
 					
@@ -129,7 +129,7 @@ class UserController extends CommonController
 					if($r['id']!=$this->member['id']){
 						
 						if($this->frparam('ajax')){
-							JsonReturn(['code'=>1,'msg'=>JZLANG('手机号已被注册！')]);
+							JsonReturn(['code'=>1,'msg'=>JZLANG('手机号已被注册！'),'data'=>[]]);
 						}
 						Error(JZLANG('手机号已被注册！'));
 					}
@@ -137,13 +137,13 @@ class UserController extends CommonController
 			}
 			if($w['username']==''){
 				if($this->frparam('ajax')){
-					JsonReturn(['code'=>1,'msg'=>JZLANG('账户不能为空！')]);
+					JsonReturn(['code'=>1,'msg'=>JZLANG('账户不能为空！'),'data'=>[]]);
 				}
 				Error(JZLANG('账户不能为空！'));
 			}
 			if($w['pass']!=$w['repass'] && $w['pass']!=''){
 				if($this->frparam('ajax')){
-					JsonReturn(['code'=>1,'msg'=>JZLANG('两次密码不同！')]);
+					JsonReturn(['code'=>1,'msg'=>JZLANG('两次密码不同！'),'data'=>[]]);
 				}
 				Error(JZLANG('两次密码不同！'));
 			}
@@ -152,7 +152,7 @@ class UserController extends CommonController
 				if($r){
 					if($r['id']!=$this->member['id']){
 						if($this->frparam('ajax')){
-							JsonReturn(['code'=>1,'msg'=>JZLANG('邮箱已被使用！')]);
+							JsonReturn(['code'=>1,'msg'=>JZLANG('邮箱已被使用！'),'data'=>[]]);
 						}
 						Error(JZLANG('邮箱已被使用！'));
 					}
@@ -163,7 +163,7 @@ class UserController extends CommonController
 			if($r){
 				if($r['id']!=$this->member['id']){
 					if($this->frparam('ajax')){
-						JsonReturn(['code'=>1,'msg'=>JZLANG('昵称已被使用！')]);
+						JsonReturn(['code'=>1,'msg'=>JZLANG('昵称已被使用！'),'data'=>[]]);
 					}
 					Error(JZLANG('昵称已被使用！'));
 				}
@@ -183,7 +183,7 @@ class UserController extends CommonController
 
             }
 			if($this->frparam('ajax')){
-				JsonReturn(['code'=>0,'msg'=>JZLANG('修改成功！')]);
+				JsonReturn(['code'=>0,'msg'=>JZLANG('修改成功！'),'data'=>[]]);
 			}
 			Error(JZLANG('修改成功！'));
 			
@@ -230,7 +230,7 @@ class UserController extends CommonController
 			$sql = 'userid='.$this->member['id'].' and isshow!=0 ';
 		}
 		$sql.=" and ptype=1 ";
-		$data = $page->where($sql)->orderby('addtime desc')->page($this->frparam('page',0,1))->go();
+		$data = $page->where($sql)->limit($this->frparam('limit',0,15))->orderby('addtime desc')->page($this->frparam('page',0,1))->go();
 		$page->file_ext = '';
 		$pages = $page->pageList(5,'?page=');
 		$this->pages = $pages;
@@ -239,18 +239,18 @@ class UserController extends CommonController
 			$data[$k]['details'] =  U('user/orderdetails',['orderno'=>$v['orderno']]);
 			$data[$k]['del'] =  U('user/orderdel',['orderno'=>$v['orderno']]);
 		}
-		if($this->frparam('ajax')){
-			
-			JsonReturn(['code'=>0,'data'=>$data]);
-		}
+
 		$this->lists = $data;//列表数据
 		$this->sum = $page->sum;//总数据
 		$this->listpage = $page->listpage;//分页数组-自定义分页可用
 		$this->prevpage = $page->prevpage;//上一页
 		$this->nextpage = $page->nextpage;//下一页
 		$this->allpage = $page->allpage;//总页数
-		
-		
+
+        if($this->frparam('ajax')){
+
+            JsonReturn(['code'=>0,'data'=>['list'=>$data,'count'=>$this->sum,'allpage'=>$this->allpage],'msg'=>'success']);
+        }
 		
 		$this->display($this->template.'/user/order');
        
@@ -320,7 +320,7 @@ class UserController extends CommonController
 					$msg = JZLANG('订单已支付，请勿重复操作！');
 				}
 				if($this->frparam('ajax')){
-					JsonReturn(['code'=>1,'msg'=>$msg]);
+					JsonReturn(['code'=>1,'msg'=>$msg,'data'=>[]]);
 				}
 				Error($msg);
 				
@@ -385,7 +385,7 @@ class UserController extends CommonController
 		$this->checklogin();
 		$page = new Page('Comment');
 		$sql = 'userid='.$this->member['id'].' and isshow!=2 ';
-		$data = $page->where($sql)->orderby('addtime desc')->limit(5)->page($this->frparam('page',0,1))->go();
+		$data = $page->where($sql)->limit($this->frparam('limit',0,15))->orderby('addtime desc')->limit(5)->page($this->frparam('page',0,1))->go();
 		$page->file_ext = '';
 		$pages = $page->pageList(5,'?page=');
 		$pages = $page->pageList();
@@ -414,7 +414,7 @@ class UserController extends CommonController
 		$this->nextpage = $page->nextpage;//下一页
 		$this->allpage = $page->allpage;//总页数
 		if($this->frparam('ajax')){
-			JsonReturn(['code'=>0,'data'=>$data]);
+            JsonReturn(['code'=>0,'data'=>['list'=>$data,'count'=>$this->sum,'allpage'=>$this->allpage],'msg'=>'success']);
 		}
 		
 		$this->display($this->template.'/user/comment');
@@ -445,7 +445,7 @@ class UserController extends CommonController
 		$id = $this->frparam('id');
 		if(!$tid || !$id){
 			if($this->frparam('ajax')){
-				JsonReturn(['code'=>0,'msg'=>JZLANG('参数错误！'),'url'=>$_SESSION['return_url']]);
+				JsonReturn(['code'=>0,'msg'=>JZLANG('参数错误！'),'data'=>['url'=>$_SESSION['return_url']],'url'=>$_SESSION['return_url']]);
 			}
 			Error(JZLANG('参数错误！'));
 		}
@@ -514,7 +514,7 @@ class UserController extends CommonController
 			$_SESSION['likes'] = $likes;
 			M('member')->update(['id'=>$u['id']],['likes'=>$u['likes']]);
 			if($this->frparam('ajax')){
-				JsonReturn(['code'=>0,'msg'=>$msg,'url'=>$_SESSION['return_url']]);
+				JsonReturn(['code'=>0,'msg'=>$msg,'data'=>['url'=>$_SESSION['return_url']],'url'=>$_SESSION['return_url']]);
 			}
 			Success($msg,$_SESSION['return_url']);
 		}
@@ -523,7 +523,7 @@ class UserController extends CommonController
 		$res = M('likes')->find(['tid'=>$tid,'aid'=>$id,'userid'=>$this->member['id']]);
 		if(!$this->classtypedata[$tid]['molds']){
 			if($this->frparam('ajax')){
-				JsonReturn(['code'=>0,'msg'=>JZLANG('栏目未绑定模型，无法喜欢！'),'url'=>$_SESSION['return_url']]);
+				JsonReturn(['code'=>0,'msg'=>JZLANG('栏目未绑定模型，无法喜欢！'),'data'=>['url'=>$_SESSION['return_url']],'url'=>$_SESSION['return_url']]);
 			}
 			Error(JZLANG('栏目未绑定模型，无法喜欢！'));
 		}
@@ -623,7 +623,7 @@ class UserController extends CommonController
 		
 		
 		if($this->frparam('ajax')){
-			JsonReturn(['code'=>0,'msg'=>$msg,'url'=>$_SESSION['return_url']]);
+			JsonReturn(['code'=>0,'msg'=>$msg,'data'=>['url'=>$_SESSION['return_url']],'url'=>$_SESSION['return_url']]);
 		}
 		Success($msg,$_SESSION['return_url']);
 		
@@ -664,7 +664,7 @@ class UserController extends CommonController
 		$this->nextpage = $model->nextpage;//下一页
 		$this->allpage = $model->allpage;//总页数
 		if($this->frparam('ajax')){
-			JsonReturn(['code'=>0,'data'=>$data]);
+            JsonReturn(['code'=>0,'data'=>['list'=>$data,'count'=>$this->sum,'allpage'=>$this->allpage],'msg'=>'success']);
 		}
 		
 		$this->display($this->template.'/user/likes');
@@ -693,13 +693,13 @@ class UserController extends CommonController
 		$id = $this->frparam('id');
 		if(!$tid || !$id){
 			if($this->frparam('ajax')){
-				JsonReturn(['code'=>0,'msg'=>JZLANG('参数错误！'),'url'=>$_SESSION['return_url']]);
+				JsonReturn(['code'=>0,'msg'=>JZLANG('参数错误！'),'data'=>['url'=>$_SESSION['return_url']],'url'=>$_SESSION['return_url']]);
 			}
 			Error(JZLANG('参数错误！'));
 		}
 		if(!$this->classtypedata[$tid]['molds']){
 			if($this->frparam('ajax')){
-				JsonReturn(['code'=>0,'msg'=>JZLANG('栏目未绑定模型，无法收藏！'),'url'=>$_SESSION['return_url']]);
+				JsonReturn(['code'=>0,'data'=>['url'=>$_SESSION['return_url']],'msg'=>JZLANG('栏目未绑定模型，无法收藏！'),'url'=>$_SESSION['return_url']]);
 			}
 			Error(JZLANG('栏目未绑定模型，无法收藏！'));
 		}
@@ -803,7 +803,7 @@ class UserController extends CommonController
 		}
 		
 		if($this->frparam('ajax')){
-			JsonReturn(['code'=>0,'msg'=>$msg,'url'=>$_SESSION['return_url']]);
+			JsonReturn(['code'=>0,'msg'=>$msg,'data'=>['url'=>$_SESSION['return_url']],'url'=>$_SESSION['return_url']]);
 		}
 		Success($msg,$_SESSION['return_url']);
 		
@@ -843,8 +843,8 @@ class UserController extends CommonController
 		$this->nextpage = $model->nextpage;//下一页
 		$this->allpage = $model->allpage;//总页数
 		if($this->frparam('ajax')){
-			
-			JsonReturn(['code'=>0,'data'=>$data]);
+
+            JsonReturn(['code'=>0,'data'=>['list'=>$data,'count'=>$this->sum,'allpage'=>$this->allpage],'msg'=>'success']);
 		}
 		
 		$this->display($this->template.'/user/collect');
@@ -907,12 +907,12 @@ class UserController extends CommonController
 		$tid = $this->frparam('tid');
 		$num = $this->frparam('num');
 		if(!$id || !$tid || !$num){
-			JsonReturn(['code'=>1,'msg'=>JZLANG('参数错误！')]);
+			JsonReturn(['code'=>1,'msg'=>JZLANG('参数错误！'),'data'=>[]]);
 		}
 		//检查库存
 		$product = M($this->classtypedata[$tid]['molds'])->find(['id'=>$id]);
 		if($product['stock_num']<$num){
-			JsonReturn(['code'=>1,'msg'=>JZLANG('库存不足！')]);
+			JsonReturn(['code'=>1,'msg'=>JZLANG('库存不足！'),'data'=>[]]);
 		}
 		
 		//session存储
@@ -952,7 +952,7 @@ class UserController extends CommonController
         if(isset($GLOBALS['Redis'])){
             $GLOBALS['Redis']->setex('cart', 7 * 86400, $cart);
         }
-		JsonReturn(['code'=>0,'msg'=>'success','url'=>U('user/cart')]);
+		JsonReturn(['code'=>0,'msg'=>'success','data'=>['url'=>U('user/cart')],'url'=>U('user/cart')]);
 		
 		
 	}
@@ -962,7 +962,7 @@ class UserController extends CommonController
 		$id = $this->frparam('id');
 		$tid = $this->frparam('tid');
 		if(!$id || !$tid){
-			JsonReturn(['code'=>1,'msg'=>JZLANG('参数错误！')]);
+			JsonReturn(['code'=>1,'msg'=>JZLANG('参数错误！'),'data'=>[]]);
 		}
         if(isset($GLOBALS['Redis'])){
             $cart = $GLOBALS['Redis']->get('cart');
@@ -986,7 +986,7 @@ class UserController extends CommonController
         if(isset($GLOBALS['Redis'])){
             $GLOBALS['Redis']->setex('cart', 7 * 86400, $cart);
         }
-		JsonReturn(['code'=>0,'msg'=>'success','url'=>$cart]);
+		JsonReturn(['code'=>0,'msg'=>'success','data'=>['url'=>$cart],'url'=>$cart]);
 	}
 
 	//文章列表
@@ -1014,7 +1014,7 @@ class UserController extends CommonController
 				break;
 		}
 		
-		$data = $page->where($sql)->orderby('addtime desc')->page($this->frparam('page',0,1))->go();
+		$data = $page->where($sql)->limit($this->frparam('limit',0,15))->orderby('addtime desc')->page($this->frparam('page',0,1))->go();
 		$page->file_ext = '';
 		$pages = $page->pageList(5,'?page=');
 		
@@ -1041,10 +1041,24 @@ class UserController extends CommonController
 		$this->allpage = $page->allpage;//总页数
 		if($this->frparam('ajax')){
 
-			JsonReturn(['code'=>0,'data'=>$data]);
+			JsonReturn(['code'=>0,'data'=>['list'=>$data,'count'=>$this->sum,'allpage'=>$this->allpage],'msg'=>'success']);
 		}
 		$this->display($this->template.'/user/article');
        
+    }
+
+    function getContent(){
+        $this->checklogin();
+        $molds = $this->frparam('molds',1,'article');
+        if(!$this->frparam('id')){
+            JsonReturn(['code'=>1,'msg'=>JZLANG('ID错误！'),'data'=>[]]);
+        }
+        $data = M($molds)->find(['id'=>$this->frparam('id'),'member_id'=>$this->member['id']]);
+        if(!$data){
+            JsonReturn(['code'=>1,'msg'=>JZLANG('未找到相关文章！'),'data'=>[]]);
+        }
+        JsonReturn(['code'=>0,'msg'=>'success','data'=>$data]);
+
     }
     //文章发布和修改
     function release(){
@@ -1056,11 +1070,11 @@ class UserController extends CommonController
 			$w['molds'] = $this->frparam('molds',1);
 			$release_table = explode('|',$this->webconf['release_table']);
 			if(!in_array($w['molds'],$release_table)){
-				JsonReturn(array('code'=>1,'msg'=>JZLANG('该模块不允许发布！')));
+				JsonReturn(array('code'=>1,'msg'=>JZLANG('该模块不允许发布！'),'data'=>[]));
 			}
             $ishome = M('molds')->getField(['biaoshi'=>$w['molds']],'ishome');
             if(!$ishome){
-                JsonReturn(array('code'=>1,'msg'=>JZLANG('该模块不允许发布！')));
+                JsonReturn(array('code'=>1,'msg'=>JZLANG('该模块不允许发布！'),'data'=>[]));
             }
 			$w = get_fields_data($data,$w['molds'],0);
 			$w['molds'] = $this->frparam('molds',1);
@@ -1077,12 +1091,12 @@ class UserController extends CommonController
 										if(strpos($s,'{xxx}')!==false){
 											$pattern = '/'.str_replace('{xxx}','(.*)',$s).'/';
 											if(preg_match($pattern, $vv)){
-												JsonReturn(array('code'=>1,'msg'=>JZLANG('添加失败，存在敏感词').' [ '.$s.' ]'));
+												JsonReturn(array('code'=>1,'msg'=>JZLANG('添加失败，存在敏感词').' [ '.$s.' ]','data'=>[]));
 											}
 											
 										}else{
 											if(strpos($vv,$s)!==false){
-												JsonReturn(array('code'=>1,'msg'=>JZLANG('添加失败，存在敏感词').' [ '.$s.' ]'));
+												JsonReturn(array('code'=>1,'msg'=>JZLANG('添加失败，存在敏感词').' [ '.$s.' ]','data'=>[]));
 											}
 											
 										}
@@ -1095,12 +1109,12 @@ class UserController extends CommonController
 								if(strpos($s,'{xxx}')!==false){
 									$pattern = '/'.str_replace('{xxx}','(.*)',$s).'/';
 									if(preg_match($pattern, $v)){
-										JsonReturn(array('code'=>1,'msg'=>JZLANG('添加失败，存在敏感词').' [ '.$s.' ]'));
+										JsonReturn(array('code'=>1,'msg'=>JZLANG('添加失败，存在敏感词').' [ '.$s.' ]','data'=>[]));
 									}
 									
 								}else{
 									if(strpos($v,$s)!==false){
-										JsonReturn(array('code'=>1,'msg'=>JZLANG('添加失败，存在敏感词').' [ '.$s.' ]'));
+										JsonReturn(array('code'=>1,'msg'=>JZLANG('添加失败，存在敏感词').' [ '.$s.' ]','data'=>[]));
 									}
 									
 								}
@@ -1116,7 +1130,7 @@ class UserController extends CommonController
 			$w['tid'] = $this->frparam('tid');
 			if(!$w['tid']){
 				if($this->frparam('ajax')){
-					JsonReturn(['code'=>1,'msg'=>JZLANG('请选择分类！')]);
+					JsonReturn(['code'=>1,'msg'=>JZLANG('请选择分类！'),'data'=>[]]);
 				}else{
 					Error(JZLANG('请选择分类！'));
 				}
@@ -1124,7 +1138,7 @@ class UserController extends CommonController
 			}
 			if(!isset($this->classtypedata[$w['tid']])){
 				if($this->frparam('ajax')){
-					JsonReturn(['code'=>1,'msg'=>JZLANG('分类错误！')]);
+					JsonReturn(['code'=>1,'msg'=>JZLANG('分类错误！'),'data'=>[]]);
 				}else{
 					Error(JZLANG('分类错误！'));
 				}
@@ -1132,7 +1146,7 @@ class UserController extends CommonController
 			}
 			if($this->classtypedata[$w['tid']]['ishome']!=1){
 				if($this->frparam('ajax')){
-					JsonReturn(['code'=>1,'msg'=>JZLANG('该分类不允许发布！')]);
+					JsonReturn(['code'=>1,'msg'=>JZLANG('该分类不允许发布！'),'data'=>[]]);
 				}else{
 					Error(JZLANG('该分类不允许发布！'));
 				}
@@ -1141,7 +1155,7 @@ class UserController extends CommonController
 			if($this->classtypedata[$w['tid']]['gid']!=0){
 				if($this->classtypedata[$w['tid']]['gid']>$this->member['gid']){
 					if($this->frparam('ajax')){
-						JsonReturn(['code'=>1,'msg'=>JZLANG('您没有权限在该分类发布内容！')]);
+						JsonReturn(['code'=>1,'msg'=>JZLANG('您没有权限在该分类发布内容！'),'data'=>[]]);
 					}else{
 						Error(JZLANG('您没有权限在该分类发布内容！'));
 					}
@@ -1166,14 +1180,14 @@ class UserController extends CommonController
 								if($data[$v['field'].'_urls']==''){
 									
 									if($this->frparam('ajax')){
-										JsonReturn(['code'=>1,'msg'=>$v['fieldname'].JZLANG('不能为空！')]);
+										JsonReturn(['code'=>1,'msg'=>$v['fieldname'].JZLANG('不能为空！'),'data'=>[]]);
 									}else{
 										Error($v['fieldname'].JZLANG('不能为空！'));
 									}
 								}
 							}else{
 								if($this->frparam('ajax')){
-									JsonReturn(['code'=>1,'msg'=>$v['fieldname'].JZLANG('不能为空！')]);
+									JsonReturn(['code'=>1,'msg'=>$v['fieldname'].JZLANG('不能为空！'),'data'=>[]]);
 								}else{
 									Error($v['fieldname'].JZLANG('不能为空！'));
 								}
@@ -1190,14 +1204,14 @@ class UserController extends CommonController
 					if(!$w['body']){
 						
 						if($this->frparam('ajax')){
-							JsonReturn(['code'=>1,'msg'=>JZLANG('内容不能为空！')]);
+							JsonReturn(['code'=>1,'msg'=>JZLANG('内容不能为空！'),'data'=>[]]);
 						}else{
 							Error(JZLANG('内容不能为空！'));
 						}
 					}
 					if(!$w['title']){
 						if($this->frparam('ajax')){
-							JsonReturn(['code'=>1,'msg'=>JZLANG('标题不能为空！')]);
+							JsonReturn(['code'=>1,'msg'=>JZLANG('标题不能为空！'),'data'=>[]]);
 						}else{
 							Error(JZLANG('标题不能为空！'));
 						}
@@ -1208,14 +1222,14 @@ class UserController extends CommonController
 				case 'product':
 					if(!$w['body']){
 						if($this->frparam('ajax')){
-							JsonReturn(['code'=>1,'msg'=>JZLANG('内容不能为空！')]);
+							JsonReturn(['code'=>1,'msg'=>JZLANG('内容不能为空！'),'data'=>[]]);
 						}else{
 							Error(JZLANG('内容不能为空！'));
 						}
 					}
 					if(!$w['title']){
 						if($this->frparam('ajax')){
-							JsonReturn(['code'=>1,'msg'=>JZLANG('标题不能为空！')]);
+							JsonReturn(['code'=>1,'msg'=>JZLANG('标题不能为空！'),'data'=>[]]);
 						}else{
 							Error(JZLANG('标题不能为空！'));
 						}
@@ -1223,7 +1237,7 @@ class UserController extends CommonController
 					
 					if(!$w['stock_num']){
 						if($this->frparam('ajax')){
-							JsonReturn(['code'=>1,'msg'=>JZLANG('库存不能为0！')]);
+							JsonReturn(['code'=>1,'msg'=>JZLANG('库存不能为0！'),'data'=>[]]);
 						}else{
 							Error(JZLANG('库存不能为0！'));
 						}
@@ -1248,13 +1262,13 @@ class UserController extends CommonController
 				$a = M($w['molds'])->update(['id'=>$this->frparam('id'),'member_id'=>$this->member['id']],$w);
 				if(!$a){ 
 					if($this->frparam('ajax')){
-						JsonReturn(['code'=>1,'msg'=>JZLANG('未修改内容，不能提交！')]);
+						JsonReturn(['code'=>1,'msg'=>JZLANG('未修改内容，不能提交！'),'data'=>[]]);
 					}else{
 						Error(JZLANG('未修改内容，不能提交！'));
 					}
 				}
 				if($this->frparam('ajax')){
-					JsonReturn(['code'=>0,'msg'=>JZLANG('修改成功！'),'url'=>U('user/posts',['molds'=>$w['molds']])]);
+					JsonReturn(['code'=>0,'msg'=>JZLANG('修改成功！'),'url'=>U('user/posts',['molds'=>$w['molds']]),'data'=>['url'=>U('user/posts',['molds'=>$w['molds']])]]);
 				}else{
 					Success(JZLANG('修改成功！'),U('user/posts',['molds'=>$w['molds']]));
 				}
@@ -1263,13 +1277,13 @@ class UserController extends CommonController
 				$a = M($w['molds'])->add($w);
 				if(!$a){
 					if($this->frparam('ajax')){
-						JsonReturn(['code'=>1,'msg'=>JZLANG('发布失败，请重试！')]);
+						JsonReturn(['code'=>1,'msg'=>JZLANG('发布失败，请重试！'),'data'=>[]]);
 					}else{
 						Error(JZLANG('发布失败，请重试！'));
 					}
 				}
 				if($this->frparam('ajax')){
-					JsonReturn(['code'=>0,'msg'=>JZLANG('发布成功！'),'url'=>U('user/posts',['molds'=>$w['molds']])]);
+					JsonReturn(['code'=>0,'msg'=>JZLANG('发布成功！'),'data'=>['url'=>U('user/posts',['molds'=>$w['molds']])],'url'=>U('user/posts',['molds'=>$w['molds']])]);
 				}else{
 					Success(JZLANG('发布成功！'),U('user/posts',['molds'=>$w['molds']]));
 				}
@@ -1304,8 +1318,14 @@ class UserController extends CommonController
 		if(!$res){ Error(JZLANG('未找到您要的文章！'));}
 		$r = M($molds)->delete(['id'=>$id]);
 		if($r){
+            if($this->frparam('ajax')){
+                JsonReturn(['code'=>0,'msg'=>JZLANG('删除成功！'),'data'=>[]]);
+            }
 			Success(JZLANG('删除成功！'),U('user/posts',['molds'=>$molds]));
 		}else{
+            if($this->frparam('ajax')){
+                JsonReturn(['code'=>1,'msg'=>JZLANG('删除失败！'),'data'=>[]]);
+            }
 			Error(JZLANG('删除失败！'));
 		}
 		
@@ -1324,20 +1344,20 @@ class UserController extends CommonController
 		  //检测是否允许前台上传文件
 		  if(!$this->webconf['isopenhomeupload']){
 			  $data['error'] =  "Error: ".JZLANG("已关闭前台上传文件功能");
-			  $data['code'] = 1004;
+			  $data['code'] = 1;
 			  JsonReturn($data);
 		  }
 		 
 			$fileType = webConf('fileType');
 			if(strpos($fileType,strtolower($pix))===false   || stripos($pix,'php')!==false){
 				$data['error'] =  "Error: ".JZLANG("文件类型不允许上传！");
-				$data['code'] = 1002;
+				$data['code'] = 1;
 				JsonReturn($data);
 			}
 			$fileSize = (int)webConf('fileSize');
 			if($fileSize!=0 && ($_FILES[$file]["size"]/1024)>$fileSize){
 				$data['error'] =  "Error: ".JZLANG("文件大小超过网站内部限制！");
-				$data['code'] = 1003;
+				$data['code'] = 1;
 				JsonReturn($data);
 			}
 		 
@@ -1362,7 +1382,7 @@ class UserController extends CommonController
 				
 			}else{
 				$data['error'] =  "Error: ".JZLANG("请检查目录")."[".$home_save_path."]".JZLANG("写入权限");
-				$data['code'] = 1001;
+				$data['code'] = 1;
 				  
 			} 
 
@@ -1585,7 +1605,7 @@ class UserController extends CommonController
 		$this->nextpage = $page->nextpage;//下一页
 		$this->allpage = $page->allpage;//总页数
 		if($this->frparam('ajax')){
-			JsonReturn(['code'=>0,'data'=>$data]);
+			JsonReturn(['code'=>0,'data'=>$data,'msg'=>'success']);
 		}
 		
 		$this->display($this->template.'/user/notify');
@@ -1595,7 +1615,7 @@ class UserController extends CommonController
 	function allread(){
 		$this->checklogin();
 		M('task')->update(['userid'=>$this->member['id']],['isread'=>1]);
-		JsonReturn(['code'=>0,'msg'=>JZLANG('操作成功！')]);
+		JsonReturn(['code'=>0,'msg'=>JZLANG('操作成功！'),'data'=>[]]);
 		
 	}
 	
@@ -1645,7 +1665,7 @@ class UserController extends CommonController
 			}
 		}else{
     		if($this->frparam('ajax')){
-				JsonReturn(['code'=>1,'msg'=>JZLANG('链接错误！'),'data'=>'']);
+				JsonReturn(['code'=>1,'msg'=>JZLANG('链接错误！'),'data'=>[]]);
 			}
 			Error(JZLANG('链接错误！'));
     	}
@@ -1679,7 +1699,7 @@ class UserController extends CommonController
 				$sql = 'member_id='.$this->user['id'].' and isshow=1  ';
 				
 				
-				$data = $page->where($sql)->orderby('addtime desc')->page($this->frparam('page',0,1))->go();
+				$data = $page->where($sql)->limit($this->frparam('limit',0,15))->orderby('addtime desc')->page($this->frparam('page',0,1))->go();
 				$page->file_ext = '';
 				$pages = $page->pageList(5,'?page=');
 				
@@ -1704,7 +1724,7 @@ class UserController extends CommonController
 				$this->allpage = $page->allpage;//总页数
 				if($this->frparam('ajax')){
 
-					JsonReturn(['code'=>0,'data'=>$data]);
+                    JsonReturn(['code'=>0,'data'=>['list'=>$data,'count'=>$this->sum,'allpage'=>$this->allpage],'msg'=>'success']);
 				}
 			break;
 			case 2:
@@ -1719,7 +1739,7 @@ class UserController extends CommonController
 				$sql = 'member_id='.$this->user['id'].' and isshow=1  ';
 				
 				
-				$data = $page->where($sql)->orderby('addtime desc')->page($this->frparam('page',0,1))->go();
+				$data = $page->where($sql)->limit($this->frparam('limit',0,15))->orderby('addtime desc')->page($this->frparam('page',0,1))->go();
 				$page->file_ext = '';
 				$pages = $page->pageList(5,'?page=');
 				
@@ -1744,7 +1764,7 @@ class UserController extends CommonController
 				$this->allpage = $page->allpage;//总页数
 				if($this->frparam('ajax')){
 
-					JsonReturn(['code'=>0,'data'=>$data]);
+                    JsonReturn(['code'=>0,'data'=>['list'=>$data,'count'=>$this->sum,'allpage'=>$this->allpage],'msg'=>'success']);
 				}
 			break;
 			case 3:
@@ -1760,7 +1780,7 @@ class UserController extends CommonController
 					$ids = 0;
 				}
 				$sql = " id in(".$ids.") " ;
-				$data = $page->where($sql)->orderby('fans desc,regtime desc,id desc')->limit(12)->page($this->frpage)->go();
+				$data = $page->where($sql)->orderby('fans desc,regtime desc,id desc')->limit($this->frparam('limit',0,15))->page($this->frpage)->go();
 				$pages = $page->pageList(5,'?page=');
 				$this->pages = $pages;//组合分页
 				$this->lists = $data;//列表数据
@@ -1769,13 +1789,16 @@ class UserController extends CommonController
 				$this->prevpage = $page->prevpage;//上一页
 				$this->nextpage = $page->nextpage;//下一页
 				$this->allpage = $page->allpage;//总页数
+                if($this->frparam('ajax')){
+                    JsonReturn(['code'=>0,'data'=>['list'=>$data,'count'=>$this->sum,'allpage'=>$this->allpage],'msg'=>'success']);
+                }
 			break;
 			case 4:
 				$this->frpage = $this->frparam('page',0,1);
 				$page = new Page('member');
 				$member_id = $this->user['id'];
 				$sql = " follow like '%,".$member_id.",%'" ;
-				$data = $page->where($sql)->orderby('fans desc,regtime desc,id desc')->limit(15)->page($this->frpage)->go();
+				$data = $page->where($sql)->orderby('fans desc,regtime desc,id desc')->limit($this->frparam('limit',0,15))->page($this->frpage)->go();
 				$pages = $page->pageList(3,'?page=');
 				$this->pages = $pages;//组合分页
 				$this->lists = $data;//列表数据
@@ -1784,6 +1807,9 @@ class UserController extends CommonController
 				$this->prevpage = $page->prevpage;//上一页
 				$this->nextpage = $page->nextpage;//下一页
 				$this->allpage = $page->allpage;//总页数
+                if($this->frparam('ajax')){
+                    JsonReturn(['code'=>0,'data'=>['list'=>$data,'count'=>$this->sum,'allpage'=>$this->allpage],'msg'=>'success']);
+                }
 			break;
 			case 5:
                 $model = new Page('shouchang');
@@ -1818,14 +1844,14 @@ class UserController extends CommonController
 				$this->nextpage = $model->nextpage;//下一页
 				$this->allpage = $model->allpage;//总页数
 				if($this->frparam('ajax')){
-					
-					JsonReturn(['code'=>0,'data'=>$data]);
+
+                    JsonReturn(['code'=>0,'data'=>['list'=>$data,'count'=>$this->sum,'allpage'=>$this->allpage],'msg'=>'success']);
 				}
 			break;
 			case 6:
 				$page = new Page('Comment');
 				$sql = 'userid='.$this->user['id'].' and isshow=1 ';
-				$data = $page->where($sql)->orderby('addtime desc')->limit(5)->page($this->frparam('page',0,1))->go();
+				$data = $page->where($sql)->orderby('addtime desc')->limit($this->frparam('limit',0,15))->page($this->frparam('page',0,1))->go();
 				$page->file_ext = '';
 				$pages = $page->pageList(5,'?page=');
 				$this->pages = $pages;
@@ -1853,7 +1879,7 @@ class UserController extends CommonController
 				$this->nextpage = $page->nextpage;//下一页
 				$this->allpage = $page->allpage;//总页数
 				if($this->frparam('ajax')){
-					JsonReturn(['code'=>0,'data'=>$data]);
+                    JsonReturn(['code'=>0,'data'=>['list'=>$data,'count'=>$this->sum,'allpage'=>$this->allpage],'msg'=>'success']);
 				}
 	
 			break;
@@ -1892,7 +1918,7 @@ class UserController extends CommonController
 				$this->nextpage = $model->nextpage;//下一页
 				$this->allpage = $model->allpage;//总页数
 				if($this->frparam('ajax')){
-					JsonReturn(['code'=>0,'data'=>$data]);
+                    JsonReturn(['code'=>0,'data'=>['list'=>$data,'count'=>$this->sum,'allpage'=>$this->allpage],'msg'=>'success']);
 				}
 			break;
 		}
@@ -1915,7 +1941,7 @@ class UserController extends CommonController
     		M('member')->update(['id'=>$this->member['id']],$data);
     		$_SESSION['member'] = array_merge($_SESSION['member'],$data);
     		if($this->frparam('ajax')){
-				JsonReturn(['code'=>0,'msg'=>JZLANG('设置成功'),'data'=>'']);
+				JsonReturn(['code'=>0,'msg'=>JZLANG('设置成功'),'data'=>[]]);
 			}
 			Success(JZLANG('设置成功！'),U('user/setmsg'));
     	}
@@ -1929,7 +1955,7 @@ class UserController extends CommonController
     		$data = [];
     	}
 		$data = getTree($data);
-    	JsonReturn(['code'=>0,'data'=>$data]);
+    	JsonReturn(['code'=>0,'data'=>$data,'msg'=>'success']);
     }
 
     //钱包
@@ -1956,12 +1982,12 @@ class UserController extends CommonController
     	$this->checklogin();
     	if($_POST){
     		if($this->webconf['paytype']==0){
-				JsonReturn(['code'=>1,'msg'=>JZLANG('未开启在线支付！'),'data'=>'']);
+				JsonReturn(['code'=>1,'msg'=>JZLANG('未开启在线支付！'),'data'=>[]]);
 			}
     		$money = $this->frparam('allmoney',3);
     		$number = $this->frparam('number');
     		if(!$money || !$number){
-    			JsonReturn(['code'=>1,'msg'=>JZLANG('参数错误！'),'data'=>'']);
+    			JsonReturn(['code'=>1,'msg'=>JZLANG('参数错误！'),'data'=>[]]);
     		}
     		$w['jifen'] = $number;
     		$w['price'] = $money;
@@ -1981,7 +2007,7 @@ class UserController extends CommonController
     		if($res){
     			JsonReturn(['code'=>0,'msg'=>'success','data'=>$w]);
     		}else{
-    			JsonReturn(['code'=>1,'msg'=>JZLANG('参数错误！'),'data'=>'']);
+    			JsonReturn(['code'=>1,'msg'=>JZLANG('参数错误！'),'data'=>[]]);
     		}
 
     	}
@@ -2211,7 +2237,7 @@ class UserController extends CommonController
 
 			}
 			
-			JsonReturn(['code'=>0,'jz'=>$details,'prev'=>$aprev,'next'=>$anext]);
+			JsonReturn(['code'=>0,'data'=>['jz'=>$details,'prev'=>$aprev,'next'=>$anext],'msg'=>'success','jz'=>$details,'prev'=>$aprev,'next'=>$anext]);
 		}
 		if(!$this->type['details_html']){
 			$details_html = M('molds')->getField(['biaoshi'=>$this->type['molds']],'details_html');

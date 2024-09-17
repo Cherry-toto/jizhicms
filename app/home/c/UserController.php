@@ -628,6 +628,18 @@ class UserController extends CommonController
 		Success($msg,$_SESSION['return_url']);
 		
 	}
+
+    function checkLikes(){
+        $this->checklogin();
+        $tid = $this->frparam('tid',0,0);
+        $id = $this->frparam('id',0,0);
+        $res = M('likes')->find(['tid'=>$tid,'aid'=>$id,'userid'=>$this->member['id']]);
+        if($res){
+            JsonReturn(['code'=>0,'msg'=>'success','data'=>true]);
+        }else{
+            JsonReturn(['code'=>1,'msg'=>'fail','data'=>false]);
+        }
+    }
 	
 	function likes(){
 		$this->checklogin();
@@ -808,6 +820,18 @@ class UserController extends CommonController
 		Success($msg,$_SESSION['return_url']);
 		
 	}
+
+    function checkCollect(){
+        $this->checklogin();
+        $tid = $this->frparam('tid',0,0);
+        $id = $this->frparam('id',0,0);
+        $res = M('shouchang')->find(['userid'=>$this->member['id'],'tid'=>$tid,'aid'=>$id]);
+        if($res){
+            JsonReturn(['code'=>0,'msg'=>'success','data'=>true]);
+        }else{
+            JsonReturn(['code'=>1,'msg'=>'fail','data'=>false]);
+        }
+    }
 	
 	function collect(){
 		$this->checklogin();

@@ -111,6 +111,7 @@ class LinksController extends CommonController
 			}
 			$data['userid'] = $this->admin['id'];
 			$data['molds'] = $molds;
+            $data['addtime'] = $data['updatetime'] = time();
 			$r = M($molds)->add($data);
 			if($r){
 				if(isset($data['ownurl'])){
@@ -166,7 +167,7 @@ class LinksController extends CommonController
 				}else{
 					M('customurl')->delete(['molds'=>$molds,'aid'=>$this->frparam('id')]);
 				}
-				
+                $data['updatetime'] = time();
 				if(M($molds)->update(array('id'=>$this->frparam('id')),$data)){
 					if($this->webconf['release_award_open']==1 && $data['isshow']==1){
 						$award = round($this->webconf['release_award'],2);

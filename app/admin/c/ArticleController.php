@@ -164,7 +164,7 @@ class ArticleController extends CommonController
 			}else{
 				$data['isshow'] = 0;
 			}
-			$data['addtime'] =  isset($data['addtime']) ? $data['addtime'] : time();
+			$data['addtime'] = $data['updatetime'] =  isset($data['addtime']) ? $data['addtime'] : time();
             //检查是否重复
             if($this->webconf['hidetitleonliy']){
                 $hidetitleonly = explode('|',$this->webconf['hidetitleonliy']);
@@ -382,6 +382,7 @@ class ArticleController extends CommonController
                     }
                 }
                 $data['addtime'] = isset($data['addtime']) ? $data['addtime'] : time();
+                $data['updatetime'] = time();
 				if(M('Article')->update(array('id'=>$this->frparam('id')),$data)){
 					if($old_tags!=$data['tags']){
 						

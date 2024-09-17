@@ -1496,7 +1496,7 @@ layui.use("laydate", function(){
 			
 			$fields = M('fields')->find(array('id'=>$id));
 			//不允许删除字段
-			$noallow = ['addtime','member_id','hits','target','ownurl','id','molds','htmlurl','jzattr','tids','tid','litpic','title','keywords','seo_title','body'];
+			$noallow = ['addtime','updatetime','tags','orders','isshow','member_id','hits','target','ownurl','id','molds','htmlurl','jzattr','tids','tid','litpic','title','keywords','seo_title','body'];
 			if(in_array($fields['field'],$noallow)){
 				JsonReturn(array('code'=>1,'msg'=>JZLANG('系统字段不允许删除！')));
 			}
@@ -1638,8 +1638,7 @@ layui.use("laydate", function(){
 					
 				}
 				
-				$v['edit_url'] = U('editFields',['id'=>$v['id']]);
-				
+
 				$v['edit_url'] = U('editFields',['id'=>$v['id']]);
 			}
 			JsonReturn(['code'=>0,'data'=>$data,'count'=>count($data)]);

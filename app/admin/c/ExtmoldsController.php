@@ -221,7 +221,6 @@ class ExtmoldsController extends Controller
                     $data['litpic'] = waterwordmark($data['title'],APP_PATH.$this->frparam('litpic',1),0);
                 }
             }
-            
 			$r = M($molds)->add($data);
 			if($r){
 				if(isset($data['ownurl'])){
@@ -350,6 +349,7 @@ class ExtmoldsController extends Controller
                     }
                 }
                 $data['addtime'] = isset($data['addtime']) ? $data['addtime'] : time();
+                $data['updatetime'] = time();
 				if(M($molds)->update(array('id'=>$this->frparam('id')),$data)){
 					
 					if($old_tags!=$data['tags']){

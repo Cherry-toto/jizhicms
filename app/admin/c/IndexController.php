@@ -678,6 +678,16 @@ class IndexController extends CommonController
     function sitemap(){
         $cachedata = getCache('sitemapdata');
         if($_POST || $cachedata){
+            if($_POST){
+                $sitemap_config = [
+                    'page_size'=>$this->frparam('page_size'),
+                    'tagsurl'=>$this->frparam('tagsurl',1),
+                    'filetype'=>$this->frparam('filetype',1),
+                ];
+                $str = serialize($sitemap_config);
+                M('sysconfig')->update(['field'=>'sitemap_config'],['data'=>$str]);
+                setCache('webconfig',null);
+            }
             $model = !$cachedata ? $this->frparam('model',2) : $cachedata['model'];
             $isshow = !$cachedata ? $this->frparam('isshow',2) : $cachedata['isshow'];
             $freq = !$cachedata ? $this->frparam('freq',2) : $cachedata['frep'];
@@ -691,7 +701,7 @@ class IndexController extends CommonController
                 //首页
                 $l_pre.='<url>
 <loc>'.$www.'/</loc>
-<lastmod>'.date('Y-m-d').'T08:00:00+00:00</lastmod>
+<lastmod>'.date('Y-m-d\TH:i:sP', time()).'</lastmod>
 <changefreq>always</changefreq>
 <priority>1.00</priority>
 </url>';		$l_next = '</urlset>';
@@ -749,14 +759,14 @@ class IndexController extends CommonController
                             if($filetype=='xml'){
                                 $l_pc.='<url>
 								  <loc>'.$this->classtypedata[$s['id']]['url'].'</loc>
-								  <lastmod>'.date('Y-m-d').'T08:00:00+00:00</lastmod>
+								  <lastmod>'.date('Y-m-d\TH:i:sP', $s['updatetime'] ?? time()).'</lastmod>
 								  <changefreq>'.$freq[$k].'</changefreq>
 								  <priority>'.$priority[$k].'</priority>
 								</url>';
                                 if($this->webconf['iswap']==1){
                                     $l_mobile.='<url>
 									  <loc>'.$classtypedataMobile[$s['id']]['url'].'</loc>
-									  <lastmod>'.date('Y-m-d').'T08:00:00+00:00</lastmod>
+									  <lastmod>'.date('Y-m-d\TH:i:sP', $s['updatetime'] ?? time()).'</lastmod>
 									  <changefreq>'.$freq[$k].'</changefreq>
 									  <priority>'.$priority[$k].'</priority>
 									</url>';
@@ -822,7 +832,7 @@ class IndexController extends CommonController
                             if($filetype=='xml'){
                                 $l_pc.='<url>
 							  <loc>'.$url.'</loc>
-							  <lastmod>'.date('Y-m-d',$s['addtime']).'T08:00:00+00:00</lastmod>
+							  <lastmod>'.date('Y-m-d\TH:i:sP', $s['updatetime'] ?? time()).'</lastmod>
 							  <changefreq>'.$freq[$k].'</changefreq>
 							  <priority>'.$priority[$k].'</priority>
 							</url>';
@@ -839,7 +849,7 @@ class IndexController extends CommonController
                                     if($filetype=='xml'){
                                         $l_mobile.='<url>
 									  <loc>'.$murl.'</loc>
-									  <lastmod>'.date('Y-m-d',$s['addtime']).'T08:00:00+00:00</lastmod>
+									  <lastmod>'.date('Y-m-d\TH:i:sP', $s['updatetime'] ?? time()).'</lastmod>
 									  <changefreq>'.$freq[$k].'</changefreq>
 									  <priority>'.$priority[$k].'</priority>
 									</url>';
@@ -976,7 +986,17 @@ class IndexController extends CommonController
             
             
         }
-        
+        $sitemap_config = $this->webconf['sitemap_config'] ?? '';
+        if($sitemap_config){
+            $sitemap_config = unserialize($sitemap_config);
+        }else{
+            $sitemap_config = [
+                'page_size'=>10000,
+                'tagsurl'=>'/tags/index?id={id}',
+                'filetype'=>'xml',
+            ];
+        }
+        $this->sitemap_conf = $sitemap_config;
         $this->display('sitemap');
     }
     

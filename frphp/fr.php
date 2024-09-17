@@ -113,6 +113,16 @@ class frphp
 					if(!session_id()){ session_start();}
 					setcookie('PHPSESSID', $_COOKIE['PHPSESSID'], time() + $this->config['redis']['EXPIRE'],'/',null,null,true);
 				}
+				//全局Redis
+                $redis = new \Redis();
+                $redis->connect($this->config['redis']['HOST'],$this->config['redis']['PORT']);
+                if($this->config['redis']['AUTH']){
+                    $redis->auth($this->config['redis']['AUTH']);
+                }
+                $GLOBALS['Redis'] = $redis;
+                if(!$GLOBALS['Redis']){
+                    exit('请检查Redis配置是否正确！');
+                }
 			}else{
 				
 				//开启SESSION,并设置600s缓存时间

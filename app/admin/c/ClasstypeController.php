@@ -110,6 +110,7 @@ class ClasstypeController extends CommonController
 			$data = $this->frparam();
 			$data = get_fields_data($data,'classtype');
 			$w = array_merge($data,$w);
+            $w['addtime'] = $w['updatetime'] = isset($w['addtime']) ? $w['addtime'] : time();
 			$a = M('classtype')->add($w);
 			if($a){
 			    if($w['pid']){
@@ -196,7 +197,7 @@ class ClasstypeController extends CommonController
 				JsonReturn(array('status'=>0,'info'=>JZLANG('不能选择当前栏目及下级为顶级栏目')));
 			}
 			
-			
+			$w['updatetime'] = time();
 			$a = M('classtype')->update(array('id'=>$w['id']),$w);
 			if($a){
 				if($w['iscover']==1){
@@ -381,6 +382,7 @@ class ClasstypeController extends CommonController
                         $w['details_html'] = $this->frparam('details_html',1);
                         $w['isshow'] =$this->frparam('isshow',0,1);
                         $w['ishome'] =$this->frparam('ishome',0,1);
+                        $w['addtime'] = $w['updatetime'] = time();
                         $r = M('classtype')->add($w);
                         $sql = "molds='".$w['molds']."'";
                         $fields=M('fields')->findAll($sql);
@@ -429,6 +431,7 @@ class ClasstypeController extends CommonController
                         $w['details_html'] = $data_6[$k];
                         $w['isshow'] = $data_7[$k];
                         $w['orders'] = $data_8[$k];
+                        $w['addtime'] = $w['updatetime'] = time();
                         $r = M('classtype')->add($w);
                         
                         $sql = "molds='".$w['molds']."'";

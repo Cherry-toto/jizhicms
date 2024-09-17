@@ -104,6 +104,7 @@ class MoldsController extends CommonController
 				`zan` int(11) DEFAULT 0 COMMENT '".JZLANG("点赞数")."',
 				`tags` varchar(255) DEFAULT NULL COMMENT 'TAG',
 				`addtime` int(11) DEFAULT 0 COMMENT '".JZLANG("发布时间")."',
+				`updatetime` int(11) DEFAULT 0 COMMENT '".JZLANG("更新时间")."',
 				PRIMARY 
 				KEY  (`id`)
 				) ENGINE=MyISAM  DEFAULT CHARSET=utf8mb4 AUTO_INCREMENT=1";
@@ -338,6 +339,21 @@ class MoldsController extends CommonController
 				$w['islist'] = 1;
 				$w['vdata'] = '0';
 				M('fields')->add($w);
+                $w['field'] = 'updatetime';
+                $w['molds'] = $data['biaoshi'];
+                $w['fieldname'] = JZLANG('更新时间');
+                $w['tips'] = JZLANG('选择时间');
+                $w['fieldtype'] = 11;
+                $w['fieldlong'] = 11;
+                $w['format'] = 'date_2';
+                $w['body'] = '';
+                $w['ismust'] = 0;
+                $w['isshow'] = 1;
+                $w['isadmin'] = 1;
+                $w['issearch'] = 0;
+                $w['islist'] = 1;
+                $w['vdata'] = '0';
+                M('fields')->add($w);
                 $id = M('molds')->getField(['biaoshi'=>'attr'],'id');
 				$w['field'] = 'jzattr';
 				$w['molds'] = $data['biaoshi'];
@@ -807,12 +823,22 @@ class MoldsController extends CommonController
 				'default'=>0,
 				'type'=>'int(11)',
             ],
+            'updatetime'=>[
+                'field'=>'updatetime',
+                'title'=>JZLANG('更新时间'),
+                'isshow'=>1,
+                'isadmin'=>1,
+                'islist'=>1,
+                'fieldtype'=>11,
+                'length'=>11,
+                'default'=>0,
+                'type'=>'int(11)',
+            ],
         ];
         $default_fields = array_column($default,'field');
         if($_POST){
             $field = $this->frparam('field',2);
             $len = $this->frparam('len',2);
-            $type = $this->frparam('fieldtype',2);
             $title = $this->frparam('title',2);
             $fieldtype = $this->frparam('fieldtype',2);
             $isshow = $this->frparam('isshow',2);
@@ -839,7 +865,7 @@ class MoldsController extends CommonController
                 $w['molds'] = $molds;
                 $w['field'] = $field[$k];
                 $w['fieldname'] = $v;
-                $w['fieldtype'] = $type[$k];
+                $w['fieldtype'] = $fieldtype[$k];
                 $w['fieldlong'] = $len[$k];
                 $w['isshow'] = $isshow[$k];
                 $w['isadmin'] = $isadmin[$k];

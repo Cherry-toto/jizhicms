@@ -154,7 +154,7 @@
 									<span class="x-red">*</span>{fun JZLANG('每页链接数')}
 								</label>
 								<div class="layui-input-inline">
-									<input name="page_size" value="10000" class="layui-input">
+									<input name="page_size" value="{$sitemap_conf['page_size']}" class="layui-input">
 								</div>
 							</div>
 							<div class="layui-form-item">
@@ -162,7 +162,7 @@
 									<span class="x-red">*</span>{fun JZLANG('TAGS链接类型')}
 								</label>
 								<div class="layui-input-inline">
-									<input name="tagsurl" value="/tags/index?id={id}" class="layui-input">
+									<input name="tagsurl" value="{$sitemap_conf['tagsurl']}" class="layui-input">
 								</div>
 								<div class="layui-form-mid layui-word-aux">
 									{id}，{keywords}自动替换变量，链接必须 / 开头，否则出错
@@ -174,8 +174,8 @@
 								</label>
 								<div class="layui-input-inline">
 									<select name="filetype"  >
-										<option value="xml">xml</option>
-										<option value="txt">txt</option>
+										<option value="xml" {if($sitemap_conf['filetype']=='xml')}selected{/if}>xml</option>
+										<option value="txt" {if($sitemap_conf['filetype']=='txt')}selected{/if}>txt</option>
 									</select>
 								</div>
 							</div>

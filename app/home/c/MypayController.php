@@ -70,6 +70,9 @@ class MypayController extends CommonController
 			Error(JZLANG('该模块缺少price价格参数！'));
 		}
 		$num = $this->frparam('num',0,1);
+        if ($num<=0){
+            Error('数量错误！');
+        }
 		$money = $product['price'] * $num;
 		$w['addtime'] = time();
 		//运费

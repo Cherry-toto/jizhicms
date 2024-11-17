@@ -56,7 +56,7 @@ class OrderController extends CommonController
 				foreach($carts as $v){
 					$d = explode('-',$v);
 					//tid-id-num
-					if($d[0]!='' && $d[1]!='' && $d[2]!='' && $d[2]!=0){
+					if($d[0]!='' && $d[1]!='' && $d[2]!='' && $d[2]!=0 && intval($d[2])>0){
 						$type = $this->classtypedata[$d[0]];
 						$info = M($type['molds'])->find(['id'=>$d[1]]);
 						//tid-id-num-price

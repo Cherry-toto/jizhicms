@@ -2690,7 +2690,7 @@ if(!function_exists('waterwordmark')) {
         }
         $color = [$r, $g, $b];
         // 文字字体路径
-        $fontPath = $webconf['text_font'] ? APP_PATH.'static/common/'.$webconf['text_font']:APP_PATH.'static/common/simsun.ttf';
+        $fontPath = $webconf['text_font'] ? APP_PATH.'static/common/'.$webconf['text_font']:APP_PATH.'static/common/Alibaba-PuHuiTi-Bold.ttf';
         // 文字水印位置（1-9，左上到右下）
         $position = $webconf['text_wz'] ?: 5;
     

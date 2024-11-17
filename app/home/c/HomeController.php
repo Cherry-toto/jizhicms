@@ -26,6 +26,10 @@ class HomeController extends CommonController
 		if(stripos(REQUEST_URI,'.php')!==false && REQUEST_URI!='/index.php'){
 			$this->error(JZLANG('链接错误！'));
 		}
+		$urls = explode('/',REQUEST_URI);
+		if(count($urls)>=2 && REQUEST_URI=='/' && REQUEST_URI=='/index.php' && REQUEST_URI=='/index.html'){
+			$this->error(JZLANG('链接错误！'));
+		}
 		$this->ishome = true;
 		$this->display($this->template.'/index');
 
@@ -55,7 +59,13 @@ class HomeController extends CommonController
 				$urls = explode('/',$url);
 				//内容详情页
 				$html = $urls[0];
-				$id = (int)$urls[1];
+				
+				if(isset($urls[1])){
+					$id = (int)$urls[1];
+					if(!$id){
+						$this->error(JZLANG('链接错误！'));exit;
+					}
+				}
 				$res = M('classtype')->find(array('htmlurl'=>$html,'isclose'=>0));
 			}else{
 				

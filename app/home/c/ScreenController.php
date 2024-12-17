@@ -26,10 +26,26 @@ class ScreenController extends CommonController
 		if(!M('molds')->find(['biaoshi'=>$this->frparam('molds',1)])){
 			$this->error(JZLANG('非法参数！'));
 		}
-		if(!isset($_SESSION['screen'])){
-			$_SESSION['screen'] = [];
-		}
-		$session_screen = $_SESSION['screen'];
+        if(isset($GLOBALS['Redis'])){
+            if(!$GLOBALS['Redis']->get('screen')){
+                $GLOBALS['Redis']->setex('screen',SessionTime,'');
+            }
+            $str = $GLOBALS['Redis']->get('screen');
+            $session_screen = $str ? json_decode($str,true) : [];
+        }else if(session_id()){
+            if(!isset($_SESSION['screen'])){
+                $_SESSION['screen'] = [];
+            }
+            $session_screen = $_SESSION['screen'];
+        }else{
+            if(!isset($_COOKIE['screen'])){
+                setcookie('screen','',time() + SessionTime,'/');
+            }
+            $str = $_COOKIE['screen'];
+            $session_screen = $str ? json_decode($str,true) : [];
+        }
+
+
 		//查询扩展字段
 		$fields = M('fields')->findAll(['molds'=>$this->frparam('molds',1)]);
 		$newfield = [];
@@ -120,7 +136,7 @@ class ScreenController extends CommonController
 			
 		}
 		
-		$sql = '1=1 and isshow=1';
+		$sql = '1=1 and isshow=1 and addtime<='.time().' ';
 		//组合搜索内容
 		foreach($session_screen as $k=>$v){
 			if(!array_key_exists($k,$newfield)){
@@ -163,8 +179,14 @@ class ScreenController extends CommonController
 			
 		}
 		$this->filters = $session_screen;
-		//dump($session_screen);
-		$_SESSION['screen'] = $session_screen;
+        if(isset($GLOBALS['Redis'])){
+            $GLOBALS['Redis']->setex('screen',SessionTime,json_encode($session_screen,JSON_UNESCAPED_UNICODE));
+        }else if(session_id()){
+            $_SESSION['screen'] = $session_screen;
+        }else{
+            setcookie('screen',$session_screen,time() + SessionTime,'/');
+        }
+
 		$molds = $this->frparam('molds',1);
 		$sql .= ' and tid in ('.implode(',',$this->classtypedata[$res['id']]['children']['ids']).') ';
 		$page = new Page($molds);

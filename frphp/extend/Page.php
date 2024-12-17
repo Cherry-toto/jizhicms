@@ -51,18 +51,19 @@ namespace frphp\extend;
 		public $typeurl = '';
 		//是否需要后缀File_TXT
 		public $file_ext = '.html';
+		//是否极致内部表
+		public $prefix = 1;
 		
 		
-		
-		public function __construct($table=''){
+		public function __construct($table='',$prefix = 1){
 			
 			$this->table = $table;
-
+			$this->prefix = $prefix;
 		}
 		
 		
 		public function getUrl(){
-			$request_uri = $_SERVER["REQUEST_URI"];    
+            $request_uri = format_param($_SERVER["REQUEST_URI"],6);
             if(strpos($request_uri,APP_URL)!==false){
 				//后台
                 $this->file_ext = '';
@@ -345,7 +346,7 @@ namespace frphp\extend;
 				
 			}
 
-            $data = M($this->table)->findPage($this->sql,$this->order,$this->fields,$limitsql);
+            $data = M($this->table,$this->prefix)->findPage($this->sql,$this->order,$this->fields,$limitsql);
             $this->datalist = $data['lists'];
             $this->sum = $data['sum'];
 
@@ -380,7 +381,7 @@ namespace frphp\extend;
 				
 			}
 
-            $data = M($this->table)->findPage($this->sql,$this->order,$this->fields,$limitsql);
+            $data = M($this->table,$this->prefix)->findPage($this->sql,$this->order,$this->fields,$limitsql);
             $this->datalist = $data['lists'];
             $this->sum = $data['sum'];
 			$this->limit = $limit;

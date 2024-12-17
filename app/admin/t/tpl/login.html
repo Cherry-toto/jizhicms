@@ -3,7 +3,7 @@
 <head>
 	<meta charset="UTF-8">
 	{include="style"}
-
+	<script src="/static/common/md5.js" charset="utf-8"></script>
 </head>
 <body class="login-bg">
     
@@ -56,7 +56,7 @@
 				});
               //监听提交
               form.on('submit(login)', function(data){
-           
+           		data.field.password = hex_md5(data.field.password)
 				$.post("{fun U('Login/index')}",data.field,function(res){
 				    
 					 var res = JSON.parse(res);

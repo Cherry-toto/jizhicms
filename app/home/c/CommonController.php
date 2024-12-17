@@ -17,6 +17,15 @@ use frphp\lib\Controller;
 class CommonController extends Controller
 {
 	function _init(){
+        if(class_exists('app\home\plugins\CommonController')){
+            $extCommonModel = new \app\home\plugins\CommonController($this->frparam());
+            if(method_exists($extCommonModel,APP_ACTION)){
+                $action = APP_ACTION;
+                $extCommonModel->$action();
+                exit;
+            }
+            
+        }
 		//判断当前模板并引入扩展函数
 		$hometpl = get_template();
 		if(defined('TPL_PATH')){
@@ -136,131 +145,6 @@ class CommonController extends Controller
 		
 	}
 	
-	function multiuploads(){
-		$file = $this->frparam('filename',1);
-		if(!$file){
-			$file = 'file';
-		}
-	    //检测是否允许前台上传文件
-	    if(!$this->webconf['isopenhomeupload']){
-		   $data['error'] =  "Error: ".JZLANG("已关闭前台上传文件功能");
-		   $data['code'] = 1004;
-		   JsonReturn($data);
-	    }
-        if($this->webconf['onlyuserupload'] && !$this->islogin){
-            $data['error'] =  "Error: 仅会员才可以上传！";
-            $data['code'] = 1005;
-            JsonReturn($data);
-        }
-
-        if($this->webconf['onlyuserupload'] && $this->islogin){
-
-            $all = M('pictures')->findAll(['userid'=>$this->member['id']],null,'size');
-            $allsize = 0;
-            foreach ($all as $v){
-                $allsize+=$v['size'];
-            }
-            $limisize = $this->member['uploadsize'] * 1024;
-            if($limisize<=$allsize){
-                $data['error'] =  "Error: 超出会员上传文件大小！";
-                $data['code'] = 1006;
-                JsonReturn($data);
-
-            }
-
-
-        }
-		foreach($_FILES[$file]['name'] as $k=>$v){
-			$pix = explode('.',$v);
-		    $pix = end($pix);
-		    $fileType = webConf('fileType');
-			if(strpos($fileType,strtolower($pix))===false || stripos($pix,'php')!==false || stripos($pix,'phtml')!==false){
-				$data['error'] =  "Error: ".JZLANG("文件类型不允许上传！");
-				$data['code'] = 1002;
-				JsonReturn($data);
-			}
-			$fileSize = (int)webConf('fileSize');
-			if($fileSize!=0 && ($_FILES[$file]["size"][$k]/1024)>$fileSize){
-				$data['error'] =  "Error: ".JZLANG("文件大小超过网站内部限制！");
-				$data['code'] = 1003;
-				JsonReturn($data);
-			}
-		 
-			 if(isset($this->webconf['home_save_path'])){
-			  //替换日期事件
-				$t = time();
-				$d = explode('-', date("Y-y-m-d-H-i-s"));
-				$format = $this->webconf['home_save_path'];
-				$format = str_replace("{yyyy}", $d[0], $format);
-				$format = str_replace("{yy}", $d[1], $format);
-				$format = str_replace("{mm}", $d[2], $format);
-				$format = str_replace("{dd}", $d[3], $format);
-				$format = str_replace("{hh}", $d[4], $format);
-				$format = str_replace("{ii}", $d[5], $format);
-				$format = str_replace("{ss}", $d[6], $format);
-				$format = str_replace("{time}", $t, $format);
-				if($format!=''){
-					//检查文件是否存在
-					if(strpos($format,'/')!==false && !file_exists(APP_PATH.$format)){
-						$path = explode('/',$format);
-						$path1 = APP_PATH;
-						foreach($path as $v){
-							if($path1==APP_PATH){
-								if(!file_exists($path1.$v)){
-									mkdir($path1.$v,0777);
-								}
-								$path1.=$v;
-							}else{
-								if(!file_exists($path1.'/'.$v)){
-									mkdir($path1.'/'.$v,0777);
-								}
-								$path1.='/'.$v;
-							}
-						}
-					}else if(!file_exists(APP_PATH.$format)){
-						mkdir(APP_PATH.$format,0777);
-					}
-					$home_save_path = $format;
-					
-				}else{
-					$home_save_path = 'public/Home';
-				}
-				
-				
-		  }else{
-			 $home_save_path = 'public/Home';
-		  }
-		 
-		 
-			$filename[]=$home_save_path.'/'.date('Ymd').rand(1000,9999).'.'.$pix; //定义文件名 
-		}
-
-		$response = array();
-		foreach ($_FILES[$file]['tmp_name'] as $k=>$v){
-			if(move_uploaded_file($v, $filename[$k])){
-				
-				if(isset($_SESSION['member'])){
-					$userid = $_SESSION['member']['id'];
-				}else{
-					$userid = 0;
-				}
-				$filesize = round(filesize(APP_PATH.$filename[$k])/1024,2);
-				M('pictures')->add(['litpic'=>'/'.$filename[$k],'addtime'=>time(),'userid'=>$userid,'size'=>$filesize,'tid'=>$this->frparam('tid',0,0),'filetype'=>strtolower($pix),'molds'=>$this->frparam('molds',1,null),'path'=>'Home']);
-				$response[] = '/'.$filename[$k];
-
-			}else{  
-				$data['error'] =  "Error: ".JZLANG("请检查目录")."[".$home_save_path."]".JZLANG("写入权限");
-				$data['code'] = 1001;
-				JsonReturn($data);
-			} 
-		}
-		$data = ['code'=>0,'urls'=>$response,'msg'=>JZLANG('上传成功！')];
-		JsonReturn($data);
-
-
-		
-	}
-
 	function uploads(){
 		$file = $this->frparam('filename',1);
 		if(!$file){
@@ -361,9 +245,16 @@ class CommonController extends Controller
 			  }else{
 				 $home_save_path = 'public/Home';
 			  }
-			 
-		  
-		    $filename =  $home_save_path.'/'.date('Ymd').rand(1000,9999).'.'.$pix;
+            
+            if(!isset($this->webconf['upload_file_name']) || (isset($this->webconf['upload_file_name']) && $this->webconf['upload_file_name'])){
+                $filename =  $home_save_path.'/'.date('Ymd').rand(1000,9999).'.'.$pix;
+            }else{
+                $name = urldecode($_FILES[$file]['name']);
+                $name = str_ireplace(["'",'"','%','&',' '],'',$name);
+                $name = format_param($name,6);
+                $filename =  $home_save_path.'/'.$name;
+            }
+		    
 		  
 			if(move_uploaded_file($_FILES[$file]['tmp_name'],$filename)){
 				$data['url'] = '/'.$filename;

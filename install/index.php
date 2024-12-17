@@ -41,13 +41,16 @@ function check_chinese(){
 }
 
 function check_version(){
-	
-	if (PHP_VERSION < 5.6) {
-		$GLOBALS['errmsg']=1;
-		return '<b>'.PHP_VERSION.'不满足</b>';
-	}else{
-	   return PHP_VERSION;
-	}
+    
+    if (PHP_VERSION < 5.6) {
+        $GLOBALS['errmsg']=1;
+        return '<b>'.PHP_VERSION.'不满足</b>';
+    }else if(PHP_VERSION > 7.5){
+        $GLOBALS['errmsg']=1;
+        return '<b>'.PHP_VERSION.'不满足</b>';
+    }else{
+        return PHP_VERSION;
+    }
 }
 //检查目录是否可写入
 function new_is_writeable($file) {

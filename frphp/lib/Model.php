@@ -25,15 +25,19 @@ class Model {
 		$this->db = DBholder::getInstance();
 	}
 	
-	public static function getInstance($table=null){
+	public static function getInstance($table = null,$prefix = 1){
 		if(self::$instance===false){
 			self::$instance = new self($table);
 		}
 		if($table!=null){
 			self::$table = $table;
 		}
+		if($prefix){
+			self::$table = DB_PREFIX.strtolower(self::$table);
+		}else{
+			self::$table = self::$table;
+		}
 		
-		self::$table = DB_PREFIX.strtolower(self::$table);
 		
 		return self::$instance;
 	}

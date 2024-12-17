@@ -208,7 +208,7 @@ class frphp
 		
 		//去除二级目录
 		$url = str_replace(ROOT,'/',$url);
-		$url = format_param($url,1);
+		$url = format_param($url,6);
 		define('REQUEST_URI',$url);
         $controllerName = DefaultController;
         $actionName = DefaultAction;

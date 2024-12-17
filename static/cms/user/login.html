@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
   {include="user/style"}
+  <script src="/static/common/md5.js" charset="utf-8"></script>
   <title>个人中心-未登录</title>
 </head>
 <body>
@@ -178,7 +179,7 @@ function checklogin(){
   }else{
     $("#isremember").val(0);
   }
-  
+  $("#password").val(hex_md5($("#password").val()))
   return true;
 
 }

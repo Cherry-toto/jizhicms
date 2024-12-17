@@ -27,6 +27,24 @@ class SysController extends CommonController
         $custom = M('sysconfig')->findAll('type!=0');
         if($_POST){
             $data = $this->frparam();
+            //检查redis配置问题
+            if(isset($data['openredis']) && $data['openredis']){
+                $config = require(APP_PATH . 'Conf/config.php');
+                $redis = new \Redis();
+                $res = $redis->connect($config['redis']['HOST'],$config['redis']['PORT']);
+                if(!$res){
+                    JsonReturn(['code'=>1,'msg'=>JZLANG('Redis连接失败！请先检查conf/config.php里面redis配置！')]);
+                }
+                if($config['redis']['AUTH']){
+                    $r = $redis->auth($config['redis']['AUTH']);
+                    if(!$r){
+                        JsonReturn(['code'=>1,'msg'=>JZLANG('Redis开启了密码验证，并且验证失败！请先检查conf/config.php里面redis中AUTH配置是否正确！如果没有设置密码，请将值设置成null')]);
+                    }
+                }
+
+
+
+            }
             //删除自定义栏目
             if($this->frparam('deltype')){
                 $ctype = $this->frparam('ctype');

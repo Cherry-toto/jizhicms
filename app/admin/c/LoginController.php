@@ -45,7 +45,7 @@ class LoginController extends Controller
 				}
 			}
 			$_SESSION['frcode'] = getRandChar(32);
-			$where['pass'] = md5(md5($data['password']).'YF');
+			$where['pass'] = md5($data['password'].'YF');
 			$where['name'] = $data['username'];
 			
 			$res1 = M('level')->find($where);

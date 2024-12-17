@@ -22,6 +22,7 @@ CREATE TABLE `jz_article` (
   `litpic` varchar(255) DEFAULT NULL COMMENT '缩略图',
   `body` mediumtext COMMENT '文章内容',
   `addtime` int(11) NOT NULL DEFAULT '0' COMMENT '添加时间',
+  `updatetime` int(11) NOT NULL DEFAULT '0' COMMENT '更新时间',
   `orders` int(4) NOT NULL DEFAULT '0' COMMENT '排序',
   `hits` int(11) NOT NULL DEFAULT '0' COMMENT '点击次数',
   `isshow` tinyint(1) NOT NULL DEFAULT '1' COMMENT '是否审核：1审核0未审2退回',
@@ -125,6 +126,8 @@ CREATE TABLE `jz_classtype` (
   `ishome` tinyint(1) NOT NULL DEFAULT '1' COMMENT '是否允许会员发布',
   `isclose` tinyint(1) NOT NULL DEFAULT '0' COMMENT '关闭栏目',
   `gids` varchar(255) DEFAULT NULL COMMENT '允许访问角色',
+  `addtime` int(11) NOT NULL DEFAULT '0' COMMENT '添加时间',
+  `updatetime` int(11) NOT NULL DEFAULT '0' COMMENT '更新时间',
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COMMENT='栏目表';
 -- ----------------------------
@@ -141,6 +144,7 @@ CREATE TABLE `jz_collect` (
   `h` varchar(10) NOT NULL DEFAULT '0' COMMENT '高',
   `orders` int(11) NOT NULL DEFAULT '0' COMMENT '排序',
   `addtime` int(11) NOT NULL DEFAULT '0' COMMENT '添加时间',
+  `updatetime` int(11) NOT NULL DEFAULT '0' COMMENT '更新时间',
   `isshow` tinyint(1) NOT NULL DEFAULT '1' COMMENT '是否显示：1显示0隐藏',
   `url` varchar(255) DEFAULT NULL COMMENT '链接',
   PRIMARY KEY (`id`)
@@ -153,6 +157,7 @@ CREATE TABLE `jz_collect_type` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(50) DEFAULT NULL COMMENT '分类名',
   `addtime` int(11) NOT NULL DEFAULT '0' COMMENT '添加时间',
+  `updatetime` int(11) NOT NULL DEFAULT '0' COMMENT '更新时间',
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COMMENT='轮播图分类';
 -- ----------------------------
@@ -169,6 +174,7 @@ CREATE TABLE `jz_comment` (
   `body` text COMMENT '评论内容',
   `reply` text COMMENT '回复内容',
   `addtime` int(11) NOT NULL DEFAULT '0' COMMENT '发布时间',
+  `updatetime` int(11) NOT NULL DEFAULT '0' COMMENT '更新时间',
   `userid` int(11) NOT NULL DEFAULT '0' COMMENT '发布会员：0表示游客',
   `likes` int(11) NOT NULL DEFAULT '0' COMMENT '点赞数',
   `isshow` tinyint(1) NOT NULL DEFAULT '1' COMMENT '是否显示：1显示0隐藏2被删除',
@@ -202,6 +208,7 @@ CREATE TABLE `jz_customurl` (
   `tid` int(11) NOT NULL DEFAULT '0' COMMENT '栏目ID',
   `aid` int(11) NOT NULL DEFAULT '0' COMMENT '内容ID',
   `addtime` int(11) NOT NULL DEFAULT '0' COMMENT '添加时间',
+  `updatetime` int(11) NOT NULL DEFAULT '0' COMMENT '更新时间',
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COMMENT='自定义链接表';
 -- ----------------------------
@@ -251,6 +258,7 @@ CREATE TABLE `jz_hook` (
   `isopen` tinyint(1) NOT NULL DEFAULT '0' COMMENT '是否关闭：1开启0关闭',
   `plugins_name` varchar(50) DEFAULT NULL COMMENT '关联插件名',
   `addtime` int(11) NOT NULL DEFAULT '0' COMMENT '添加时间',
+  `updatetime` int(11) NOT NULL DEFAULT '0' COMMENT '更新时间',
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COMMENT='插件钩子';
 -- ----------------------------
@@ -314,6 +322,7 @@ CREATE TABLE `jz_likes` (
   `aid` int(11) NOT NULL DEFAULT '0' COMMENT '内容ID',
   `userid` int(11) NOT NULL DEFAULT '0' COMMENT '会员ID',
   `addtime` int(11) NOT NULL DEFAULT '0' COMMENT '添加时间',
+  `updatetime` int(11) NOT NULL DEFAULT '0' COMMENT '更新时间',
   PRIMARY KEY (`id`),
   KEY `tid` (`tid`,`aid`,`userid`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COMMENT='点赞表';
@@ -325,6 +334,7 @@ CREATE TABLE `jz_link_type` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(50) DEFAULT NULL COMMENT '友链分类名',
   `addtime` int(11) NOT NULL DEFAULT '0' COMMENT '添加时间',
+  `updatetime` int(11) NOT NULL DEFAULT '0' COMMENT '更新时间',
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COMMENT='友情链接分类表';
 -- ----------------------------
@@ -345,6 +355,7 @@ CREATE TABLE `jz_links` (
   `target` varchar(255) DEFAULT NULL COMMENT '外链',
   `ownurl` varchar(255) DEFAULT NULL COMMENT '自定义链接',
   `addtime` int(11) NOT NULL DEFAULT '0' COMMENT '发布时间',
+  `updatetime` int(11) NOT NULL DEFAULT '0' COMMENT '更新时间',
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COMMENT='友情链接表';
 -- ----------------------------
@@ -404,6 +415,7 @@ CREATE TABLE `jz_member_group` (
   `iscomment` tinyint(1) NOT NULL DEFAULT '1' COMMENT '是否允许评论',
   `ischeckmsg` tinyint(1) NOT NULL DEFAULT '1' COMMENT '是否需要审核评论',
   `addtime` int(11) NOT NULL DEFAULT '0' COMMENT '添加时间',
+  `updatetime` int(11) NOT NULL DEFAULT '0' COMMENT '更新时间',
   `orders` int(11) NOT NULL DEFAULT '0' COMMENT '排序',
   `discount` decimal(10,2) NOT NULL DEFAULT '0.00' COMMENT '折扣价：现金折扣或者百分比折扣',
   `discount_type` tinyint(1) NOT NULL DEFAULT '0' COMMENT '折扣类型：0无折扣1现金折扣,1百分比折扣',
@@ -436,6 +448,7 @@ CREATE TABLE `jz_message` (
   `body` text COMMENT '留言内容',
   `tel` varchar(50) DEFAULT NULL COMMENT '电话',
   `addtime` int(11) NOT NULL DEFAULT '0' COMMENT '发布时间',
+  `updatetime` int(11) NOT NULL DEFAULT '0' COMMENT '更新时间',
   `orders` int(4) NOT NULL DEFAULT '0' COMMENT '排序',
   `email` varchar(255) DEFAULT NULL COMMENT '邮箱',
   `isshow` tinyint(1) NOT NULL DEFAULT '0' COMMENT '是否审核：1审核0未审',
@@ -512,6 +525,7 @@ CREATE TABLE `jz_page` (
   `istop` tinyint(1) NOT NULL DEFAULT '0' COMMENT '是否置顶：1是0否',
   `hits` int(11) NOT NULL DEFAULT '0' COMMENT '点击量',
   `addtime` int(11) NOT NULL DEFAULT '0' COMMENT '发布时间',
+  `updatetime` int(11) NOT NULL DEFAULT '0' COMMENT '更新时间',
   `tids` varchar(255) NOT NULL COMMENT '副栏目',
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COMMENT='单页模型';
@@ -529,6 +543,7 @@ CREATE TABLE `jz_pictures` (
   `size` varchar(50) DEFAULT NULL COMMENT '大小',
   `litpic` varchar(255) DEFAULT NULL COMMENT '链接',
   `addtime` int(11) NOT NULL DEFAULT '0' COMMENT '添加时间',
+  `updatetime` int(11) NOT NULL DEFAULT '0' COMMENT '更新时间',
   `userid` int(11) NOT NULL DEFAULT '0' COMMENT '管理员ID/发布会员ID',
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COMMENT='图片集';
@@ -559,6 +574,7 @@ CREATE TABLE `jz_pingjia` (
   `zan` int(11) DEFAULT '0' COMMENT '点赞数',
   `tags` varchar(255) DEFAULT NULL COMMENT 'TAG',
   `addtime` int(11) DEFAULT '0' COMMENT '发布时间',
+  `updatetime` int(11) NOT NULL DEFAULT '0' COMMENT '更新时间',
   `zhiye` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4;
@@ -577,6 +593,7 @@ CREATE TABLE `jz_plugins` (
   `module` varchar(20) NOT NULL DEFAULT 'Home' COMMENT '模块',
   `isopen` tinyint(1) NOT NULL DEFAULT '0' COMMENT '是否开启：1开启0关闭',
   `addtime` int(11) NOT NULL DEFAULT '0' COMMENT '发布时间',
+  `updatetime` int(11) NOT NULL DEFAULT '0' COMMENT '更新时间',
   `config` text COMMENT '配置',
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COMMENT='插件表';
@@ -616,6 +633,7 @@ CREATE TABLE `jz_product` (
   `userid` int(11) NOT NULL DEFAULT '0' COMMENT '录入管理员ID',
   `orders` int(11) NOT NULL DEFAULT '0' COMMENT '排序',
   `addtime` int(11) NOT NULL DEFAULT '0' COMMENT '更新时间',
+  `updatetime` int(11) NOT NULL DEFAULT '0' COMMENT '更新时间',
   `istop` varchar(2) NOT NULL DEFAULT '0' COMMENT '是否置顶：1是0否',
   `ishot` varchar(2) NOT NULL DEFAULT '0' COMMENT '是否头条：1是0否',
   `istuijian` varchar(2) NOT NULL DEFAULT '0' COMMENT '是否推荐：1是0否',
@@ -708,6 +726,7 @@ CREATE TABLE `jz_tags` (
   `ownurl` varchar(255) DEFAULT NULL COMMENT '自定义链接',
   `tags` varchar(255) DEFAULT NULL COMMENT 'TAG标签',
   `addtime` int(11) NOT NULL DEFAULT '0' COMMENT '添加时间',
+  `updatetime` int(11) NOT NULL DEFAULT '0' COMMENT '更新时间',
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COMMENT='TAGS表';
 -- ----------------------------
@@ -896,6 +915,12 @@ INSERT INTO `jz_fields` (`id`,`field`,`molds`,`fieldname`,`tips`,`fieldtype`,`ti
 INSERT INTO `jz_fields` (`id`,`field`,`molds`,`fieldname`,`tips`,`fieldtype`,`tids`,`fieldlong`,`body`,`orders`,`ismust`,`isshow`,`isadmin`,`issearch`,`islist`,`format`,`vdata`,`isajax`,`listorders`,`isext`,`width`,`ishome`) VALUES (119, 'addtime', 'message', '提交时间', NULL, 11, ',4,', '11', NULL, 2, 0, 1, 1, 1, 1, NULL, NULL, 1, 0, 0, NULL, 1);
 INSERT INTO `jz_fields` (`id`,`field`,`molds`,`fieldname`,`tips`,`fieldtype`,`tids`,`fieldlong`,`body`,`orders`,`ismust`,`isshow`,`isadmin`,`issearch`,`islist`,`format`,`vdata`,`isajax`,`listorders`,`isext`,`width`,`ishome`) VALUES (120, 'reply', 'message', '回复留言', NULL, 3, ',4,', NULL, NULL, 2, 0, 1, 1, 0, 0, NULL, NULL, 1, 0, 0, NULL, 1);
 INSERT INTO `jz_fields` (`id`,`field`,`molds`,`fieldname`,`tips`,`fieldtype`,`tids`,`fieldlong`,`body`,`orders`,`ismust`,`isshow`,`isadmin`,`issearch`,`islist`,`format`,`vdata`,`isajax`,`listorders`,`isext`,`width`,`ishome`) VALUES (121, 'uploadsize', 'member', '上传限制', '单位M，上传总文件大小限制，超过此大小不允许上传', 4, ',0,', '11', NULL, 2, 0, 0, 1, 0, 0, NULL, '0', 1, 0, 0, NULL, 0);
+INSERT INTO `jz_fields` (`id`,`field`,`molds`,`fieldname`,`tips`,`fieldtype`,`tids`,`fieldlong`,`body`,`orders`,`ismust`,`isshow`,`isadmin`,`issearch`,`islist`,`format`,`vdata`,`isajax`,`listorders`,`isext`,`width`,`ishome`) VALUES ('122','updatetime','article','更新时间', NULL,'11',NULL,'11', NULL,'1','0','1','1','0','1', NULL,'0','1','0','0','150','0');
+INSERT INTO `jz_fields` (`id`,`field`,`molds`,`fieldname`,`tips`,`fieldtype`,`tids`,`fieldlong`,`body`,`orders`,`ismust`,`isshow`,`isadmin`,`issearch`,`islist`,`format`,`vdata`,`isajax`,`listorders`,`isext`,`width`,`ishome`) VALUES ('123','updatetime','product','更新时间', NULL,'11',NULL,'11', NULL,'1','0','1','1','0','1', NULL,'0','1','99','0','120','0');
+INSERT INTO `jz_fields` (`id`,`field`,`molds`,`fieldname`,`tips`,`fieldtype`,`tids`,`fieldlong`,`body`,`orders`,`ismust`,`isshow`,`isadmin`,`issearch`,`islist`,`format`,`vdata`,`isajax`,`listorders`,`isext`,`width`,`ishome`) VALUES ('124','updatetime','pingjia','更新时间','选择时间','11',NULL,'11', NULL,'100','0','1','1','0','1','date_2','0','1','0','0', NULL,'1');
+INSERT INTO `jz_fields` (`id`,`field`,`molds`,`fieldname`,`tips`,`fieldtype`,`tids`,`fieldlong`,`body`,`orders`,`ismust`,`isshow`,`isadmin`,`issearch`,`islist`,`format`,`vdata`,`isajax`,`listorders`,`isext`,`width`,`ishome`) VALUES (125, 'updatetime', 'message', '更新时间', NULL, 11, ',4,', '11', NULL, 2, 0, 1, 1, 1, 1, NULL, NULL, 1, 0, 0, NULL, 1);
+INSERT INTO `jz_fields` (`id`,`field`,`molds`,`fieldname`,`tips`,`fieldtype`,`tids`,`fieldlong`,`body`,`orders`,`ismust`,`isshow`,`isadmin`,`issearch`,`islist`,`format`,`vdata`,`isajax`,`listorders`,`isext`,`width`,`ishome`) VALUES ('126','updatetime','links','更新时间','系统自带','11', NULL,'11', NULL,'0','0','0','0','0','0','date_2','0','1','0','0', NULL,'0');
+INSERT INTO `jz_fields` (`id`,`field`,`molds`,`fieldname`,`tips`,`fieldtype`,`tids`,`fieldlong`,`body`,`orders`,`ismust`,`isshow`,`isadmin`,`issearch`,`islist`,`format`,`vdata`,`isajax`,`listorders`,`isext`,`width`,`ishome`) VALUES ('127','updatetime','tags','更新时间','系统自带','11', NULL,'11', NULL,'0','0','1','1','0','0','date_2','0','1','0','0', NULL,'1');
 -- ----------------------------
 -- Records of jz_hook
 -- ----------------------------
@@ -1304,7 +1329,7 @@ INSERT INTO `jz_ruler` (`id`,`name`,`fc`,`pid`,`isdesktop`,`sys`) VALUES ('249',
 -- ----------------------------
 -- Records of jz_sysconfig
 -- ----------------------------
-INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`,`typeid`,`config`,`orders`,`sys`) VALUES ('1','web_version','系统版号','版本号是系统自带，请勿改动','0','2.5.2','0', NULL,'0','1');
+INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`,`typeid`,`config`,`orders`,`sys`) VALUES ('1','web_version','系统版号','版本号是系统自带，请勿改动','0','2.5.4','0', NULL,'0','1');
 INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`,`typeid`,`config`,`orders`,`sys`) VALUES ('2','web_name','网站SEO名称','控制在25个字、50个字节以内','2','极致CMS建站系统','1', NULL,'0','1');
 INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`,`typeid`,`config`,`orders`,`sys`) VALUES ('3','web_keyword','网站SEO关键词','5个左右，8汉字以内，用英文逗号隔开','2','极致建站,cms,开源cms,免费cms,cms系统,phpcms,免费企业建站,建站系统,企业cms,jizhicms,极致cms,建站cms,建站系统,极致博客,极致blog,内容管理系统','1', NULL,'0','1');
 INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`,`typeid`,`config`,`orders`,`sys`) VALUES ('4','web_desc','网站SEO描述','控制在80个汉字，160个字符以内','3','极致CMS是开源免费的PHPCMS网站内容管理系统，无商业授权，简单易用，提供丰富的插件，帮您实现零基础搭建不同类型网站（企业站，门户站，个人博客站等），是您建站的好帮手。极速建站，就选极致CMS。','1', NULL,'0','1');
@@ -1430,7 +1455,7 @@ INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`,`typeid`,`c
 INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`,`typeid`,`config`,`orders`,`sys`) VALUES ('134','onlyuserupload','会员上传限制','开启后，仅会员才可以上传！受会员上传大小限制！','6','1','2','开启=1,关闭=0','1','1');
 INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`,`typeid`,`config`,`orders`,`sys`) VALUES ('135','cachefilenum','缓存文件数','0表示不限制，最大不超过500','2','100','0',null,0,'1');
 INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`,`typeid`,`config`,`orders`,`sys`) VALUES ('136','watermark_word','水印文字','只有没有水印图片的时候才生效','2','这个是水印文字','8',null,96,'1');
-INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`,`typeid`,`config`,`orders`,`sys`) VALUES ('137','watermark_font','水印字体','默认simsun.ttf，存放在static/common','2','simsun.ttf','8',null,95,'1');
+INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`,`typeid`,`config`,`orders`,`sys`) VALUES ('137','watermark_font','水印字体','默认Alibaba-PuHuiTi-Bold.ttf，存放在static/common','2','Alibaba-PuHuiTi-Bold.ttf','8',null,95,'1');
 INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`,`typeid`,`config`,`orders`,`sys`) VALUES ('138','watermark_size','水印大小','默认24','2','24','8',null,94,'1');
 INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`,`typeid`,`config`,`orders`,`sys`) VALUES ('139','watermark_h','水印行高','默认34','2','34','8',null,93,'1');
 INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`,`typeid`,`config`,`orders`,`sys`) VALUES ('140','watermark_rgb','水印颜色','默认白色：#FFFFFF','2','#FFFFFF','8',null,92,'1');
@@ -1443,12 +1468,15 @@ INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`,`typeid`,`c
 INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`,`typeid`,`config`,`orders`,`sys`) VALUES ('147','text_size','文字大小','默认24','2','24','8',null,85,'1');
 INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`,`typeid`,`config`,`orders`,`sys`) VALUES ('148','text_h','文字行高','默认34','2','34','8',null,84,'1');
 INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`,`typeid`,`config`,`orders`,`sys`) VALUES ('149','text_rgb','文字颜色','默认白色：#FFFFFF','2','#FFFFFF','8',null,83,'1');
-INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`,`typeid`,`config`,`orders`,`sys`) VALUES ('150','text_font','文字字体','默认simsun.ttf，存放在static/common','2','simsun.ttf','8',null,82,'1');
+INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`,`typeid`,`config`,`orders`,`sys`) VALUES ('150','text_font','文字字体','默认Alibaba-PuHuiTi-Bold.ttf，存放在static/common','2','Alibaba-PuHuiTi-Bold.ttf','8',null,82,'1');
 INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`,`typeid`,`config`,`orders`,`sys`) VALUES ('151','text_wz','水印位置','九宫格1-9，默认5中间','2','5','8',null,81,'1');
 INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`,`typeid`,`config`,`orders`,`sys`) VALUES ('152','text_x','微调X','相对于水印位置再进行X轴微调，默认0','2','0','8',null,80,'1');
 INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`,`typeid`,`config`,`orders`,`sys`) VALUES ('153','text_y','微调Y','相对于水印位置再进行Y轴微调，默认0','2','0','8',null,79,'1');
 INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`,`typeid`,`config`,`orders`,`sys`) VALUES ('154','islocal','是否开启图片本地化','图片本地化可以将内容的外网图片保存到服务器','6','1','2','开启=1,关闭=0','1','1');
 INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`,`typeid`,`config`,`orders`,`sys`) VALUES ('155','openredis','是否开启Redis','开启Redis后可以使用token登录前台账户，但必须服务器安装了Redis，在config里面需要配置redis信息','6','0','2','开启=1,关闭=0','1','1');
+INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`,`typeid`,`config`,`orders`,`sys`) VALUES ('156','sitemap_config','sitemap配置','用于sitemap生成','3','a:3:{s:9:"page_size";i:10000;s:7:"tagsurl";s:19:"/tags/index?id={id}";s:8:"filetype";s:3:"xml";}','0','','1','1');
+INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`,`typeid`,`config`,`orders`,`sys`) VALUES ('157','schedule_table','定时发布表','带有addtime发布时间字段的表才可以使用定时发布功能,用|分隔','3','article|product','2','','1','1');
+INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`,`typeid`,`config`,`orders`,`sys`) VALUES ('158','upload_file_name','上传文件重命名','上传文件后是否重命名，默认开启重命名，关闭后上传文件名不会变','6','1','2','开启=1,关闭=0','1','1');
 -- ----------------------------
 -- Records of jz_tags
 -- ----------------------------

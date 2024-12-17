@@ -10,726 +10,745 @@ SET FOREIGN_KEY_CHECKS=0;
 -- ----------------------------
 DROP TABLE IF EXISTS `jz_article`;
 CREATE TABLE `jz_article` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `title` varchar(255) DEFAULT NULL COMMENT '文章标题',
-  `tid` int(11) NOT NULL DEFAULT '0' COMMENT '所属栏目',
-  `molds` varchar(50) DEFAULT 'article' COMMENT '模型标识',
-  `htmlurl` varchar(50) DEFAULT NULL COMMENT '栏目链接',
-  `keywords` varchar(255) DEFAULT NULL COMMENT '关键词',
-  `description` text COMMENT '简介',
-  `seo_title` varchar(255) DEFAULT NULL COMMENT 'SEO标题',
-  `userid` int(11) NOT NULL DEFAULT '0' COMMENT '管理员ID：0前台发布',
-  `litpic` varchar(255) DEFAULT NULL COMMENT '缩略图',
-  `body` mediumtext COMMENT '文章内容',
-  `addtime` int(11) NOT NULL DEFAULT '0' COMMENT '添加时间',
-  `orders` int(4) NOT NULL DEFAULT '0' COMMENT '排序',
-  `hits` int(11) NOT NULL DEFAULT '0' COMMENT '点击次数',
-  `isshow` tinyint(1) NOT NULL DEFAULT '1' COMMENT '是否审核：1审核0未审2退回',
-  `comment_num` int(11) NOT NULL DEFAULT '0' COMMENT '评论数',
-  `istop` varchar(2) NOT NULL DEFAULT '0' COMMENT '是否置顶：1是0否',
-  `ishot` varchar(2) NOT NULL DEFAULT '0' COMMENT '是否头条：1是0否',
-  `istuijian` varchar(2) NOT NULL DEFAULT '0' COMMENT '是否推荐：1是0否',
-  `tags` varchar(255) DEFAULT NULL COMMENT 'TAG标签',
-  `member_id` int(11) NOT NULL DEFAULT '0' COMMENT '发布会员：0后台发布',
-  `target` varchar(255) DEFAULT NULL COMMENT '外链',
-  `ownurl` varchar(255) DEFAULT NULL COMMENT '自定义链接',
-  `jzattr` varchar(50) DEFAULT NULL COMMENT '推荐属性：1置顶2热点3推荐',
-  `tids` varchar(255) DEFAULT NULL COMMENT '副栏目',
-  `zan` int(11) DEFAULT '0' COMMENT '点赞数',
-  PRIMARY KEY (`id`)
+`id` int(11) NOT NULL AUTO_INCREMENT,
+`title` varchar(255) DEFAULT NULL COMMENT '文章标题',
+`tid` int(11) NOT NULL DEFAULT '0' COMMENT '所属栏目',
+`molds` varchar(50) DEFAULT 'article' COMMENT '模型标识',
+`htmlurl` varchar(50) DEFAULT NULL COMMENT '栏目链接',
+`keywords` varchar(255) DEFAULT NULL COMMENT '关键词',
+`description` text COMMENT '简介',
+`seo_title` varchar(255) DEFAULT NULL COMMENT 'SEO标题',
+`userid` int(11) NOT NULL DEFAULT '0' COMMENT '管理员ID：0前台发布',
+`litpic` varchar(255) DEFAULT NULL COMMENT '缩略图',
+`body` mediumtext COMMENT '文章内容',
+`addtime` int(11) NOT NULL DEFAULT '0' COMMENT '添加时间',
+`updatetime` int(11) NOT NULL DEFAULT '0' COMMENT '更新时间',
+`orders` int(4) NOT NULL DEFAULT '0' COMMENT '排序',
+`hits` int(11) NOT NULL DEFAULT '0' COMMENT '点击次数',
+`isshow` tinyint(1) NOT NULL DEFAULT '1' COMMENT '是否审核：1审核0未审2退回',
+`comment_num` int(11) NOT NULL DEFAULT '0' COMMENT '评论数',
+`istop` varchar(2) NOT NULL DEFAULT '0' COMMENT '是否置顶：1是0否',
+`ishot` varchar(2) NOT NULL DEFAULT '0' COMMENT '是否头条：1是0否',
+`istuijian` varchar(2) NOT NULL DEFAULT '0' COMMENT '是否推荐：1是0否',
+`tags` varchar(255) DEFAULT NULL COMMENT 'TAG标签',
+`member_id` int(11) NOT NULL DEFAULT '0' COMMENT '发布会员：0后台发布',
+`target` varchar(255) DEFAULT NULL COMMENT '外链',
+`ownurl` varchar(255) DEFAULT NULL COMMENT '自定义链接',
+`jzattr` varchar(50) DEFAULT NULL COMMENT '推荐属性：1置顶2热点3推荐',
+`tids` varchar(255) DEFAULT NULL COMMENT '副栏目',
+`zan` int(11) DEFAULT '0' COMMENT '点赞数',
+PRIMARY KEY (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COMMENT='文章表';
 -- ----------------------------
 -- Table structure for jz_attr
 -- ----------------------------
 DROP TABLE IF EXISTS `jz_attr`;
 CREATE TABLE `jz_attr` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `molds` varchar(50) DEFAULT 'attr' COMMENT '模型标识',
-  `name` varchar(50) DEFAULT NULL COMMENT '属性名',
-  `isshow` tinyint(1) NOT NULL DEFAULT '1' COMMENT '是否显示',
-  PRIMARY KEY (`id`)
+`id` int(11) NOT NULL AUTO_INCREMENT,
+`molds` varchar(50) DEFAULT 'attr' COMMENT '模型标识',
+`name` varchar(50) DEFAULT NULL COMMENT '属性名',
+`isshow` tinyint(1) NOT NULL DEFAULT '1' COMMENT '是否显示',
+PRIMARY KEY (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COMMENT='推荐属性';
 -- ----------------------------
 -- Table structure for jz_buylog
 -- ----------------------------
 DROP TABLE IF EXISTS `jz_buylog`;
 CREATE TABLE `jz_buylog` (
-  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `aid` int(11) DEFAULT '0' COMMENT '内容ID',
-  `userid` int(11) DEFAULT '0' COMMENT '会员ID',
-  `orderno` varchar(255) DEFAULT NULL COMMENT '订单号',
-  `type` tinyint(1) DEFAULT '1' COMMENT '交易类型：1购买商品0兑换金币',
-  `buytype` varchar(20) DEFAULT NULL COMMENT '支付类型',
-  `msg` varchar(255) DEFAULT NULL COMMENT '记录',
-  `molds` varchar(255) DEFAULT NULL COMMENT '模型标识',
-  `amount` decimal(10,2) NOT NULL DEFAULT '0.00' COMMENT '总计',
-  `money` decimal(10,2) NOT NULL DEFAULT '0.00' COMMENT '金额',
-  `addtime` int(11) DEFAULT '0' COMMENT '添加时间',
-  PRIMARY KEY (`id`)
+`id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+`aid` int(11) DEFAULT '0' COMMENT '内容ID',
+`userid` int(11) DEFAULT '0' COMMENT '会员ID',
+`orderno` varchar(255) DEFAULT NULL COMMENT '订单号',
+`type` tinyint(1) DEFAULT '1' COMMENT '交易类型：1购买商品0兑换金币',
+`buytype` varchar(20) DEFAULT NULL COMMENT '支付类型',
+`msg` varchar(255) DEFAULT NULL COMMENT '记录',
+`molds` varchar(255) DEFAULT NULL COMMENT '模型标识',
+`amount` decimal(10,2) NOT NULL DEFAULT '0.00' COMMENT '总计',
+`money` decimal(10,2) NOT NULL DEFAULT '0.00' COMMENT '金额',
+`addtime` int(11) DEFAULT '0' COMMENT '添加时间',
+PRIMARY KEY (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COMMENT='购买记录表';
 -- ----------------------------
 -- Table structure for jz_cachedata
 -- ----------------------------
 DROP TABLE IF EXISTS `jz_cachedata`;
 CREATE TABLE `jz_cachedata` (
-  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `title` varchar(255) DEFAULT NULL COMMENT '标题',
-  `field` varchar(50) DEFAULT NULL COMMENT '字段',
-  `molds` varchar(50) DEFAULT NULL COMMENT '模型标识',
-  `tid` int(11) NOT NULL DEFAULT '0' COMMENT '栏目ID',
-  `isall` tinyint(1) NOT NULL DEFAULT '1' COMMENT '是否输出所有：1是0否',
-  `sqls` varchar(500) DEFAULT NULL COMMENT 'SQL',
-  `orders` varchar(255) DEFAULT NULL COMMENT '排序',
-  `limits` int(11) NOT NULL DEFAULT '10' COMMENT '输出条数',
-  `times` int(11) NOT NULL DEFAULT '0' COMMENT '更新周期',
-  PRIMARY KEY (`id`)
+`id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+`title` varchar(255) DEFAULT NULL COMMENT '标题',
+`field` varchar(50) DEFAULT NULL COMMENT '字段',
+`molds` varchar(50) DEFAULT NULL COMMENT '模型标识',
+`tid` int(11) NOT NULL DEFAULT '0' COMMENT '栏目ID',
+`isall` tinyint(1) NOT NULL DEFAULT '1' COMMENT '是否输出所有：1是0否',
+`sqls` varchar(500) DEFAULT NULL COMMENT 'SQL',
+`orders` varchar(255) DEFAULT NULL COMMENT '排序',
+`limits` int(11) NOT NULL DEFAULT '10' COMMENT '输出条数',
+`times` int(11) NOT NULL DEFAULT '0' COMMENT '更新周期',
+PRIMARY KEY (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COMMENT='数据缓存表';
 -- ----------------------------
 -- Table structure for jz_chain
 -- ----------------------------
 DROP TABLE IF EXISTS `jz_chain`;
 CREATE TABLE `jz_chain` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `title` varchar(100) DEFAULT NULL COMMENT '内链词',
-  `newtitle` varchar(100) DEFAULT NULL COMMENT '替换词',
-  `url` varchar(255) DEFAULT NULL COMMENT '链接',
-  `num` int(11) NOT NULL DEFAULT '-1' COMMENT '替换次数',
-  `isshow` tinyint(1) NOT NULL DEFAULT '1' COMMENT '是否显示',
-  PRIMARY KEY (`id`)
+`id` int(11) NOT NULL AUTO_INCREMENT,
+`title` varchar(100) DEFAULT NULL COMMENT '内链词',
+`newtitle` varchar(100) DEFAULT NULL COMMENT '替换词',
+`url` varchar(255) DEFAULT NULL COMMENT '链接',
+`num` int(11) NOT NULL DEFAULT '-1' COMMENT '替换次数',
+`isshow` tinyint(1) NOT NULL DEFAULT '1' COMMENT '是否显示',
+PRIMARY KEY (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COMMENT='内链';
 -- ----------------------------
 -- Table structure for jz_classtype
 -- ----------------------------
 DROP TABLE IF EXISTS `jz_classtype`;
 CREATE TABLE `jz_classtype` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `classname` varchar(50) DEFAULT NULL COMMENT '栏目名',
-  `seo_classname` varchar(50) DEFAULT NULL COMMENT 'SEO栏目名',
-  `molds` varchar(50) DEFAULT NULL COMMENT '模型标识',
-  `litpic` varchar(255) DEFAULT NULL COMMENT '缩略图',
-  `description` text COMMENT '描述',
-  `keywords` varchar(255) DEFAULT NULL COMMENT '关键词',
-  `body` text COMMENT '内容',
-  `orders` int(4) NOT NULL DEFAULT '0' COMMENT '排序',
-  `orderstype` int(4) NOT NULL DEFAULT '0' COMMENT '排序类型：1时间倒序2ID正序3点击量倒序4ID正序5时间正序6点击量正序',
-  `isshow` tinyint(1) NOT NULL DEFAULT '1' COMMENT '是否显示',
-  `iscover` tinyint(1) NOT NULL DEFAULT '0' COMMENT '是否覆盖下级',
-  `pid` int(11) NOT NULL DEFAULT '0' COMMENT '上级栏目ID',
-  `gid` int(11) NOT NULL DEFAULT '0' COMMENT '栏目权限：0不限制',
-  `htmlurl` varchar(50) DEFAULT NULL COMMENT '栏目链接',
-  `lists_html` varchar(50) DEFAULT NULL COMMENT '栏目页模板',
-  `details_html` varchar(50) DEFAULT NULL COMMENT '详情页模板',
-  `lists_num` int(4) DEFAULT '0' COMMENT '列表数量',
-  `comment_num` int(11) NOT NULL DEFAULT '0' COMMENT '评论数',
-  `gourl` varchar(255) DEFAULT NULL COMMENT '栏目外链',
-  `ishome` tinyint(1) NOT NULL DEFAULT '1' COMMENT '是否允许会员发布',
-  `isclose` tinyint(1) NOT NULL DEFAULT '0' COMMENT '关闭栏目',
-  `gids` varchar(255) DEFAULT NULL COMMENT '允许访问角色',
-  PRIMARY KEY (`id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8mb4 COMMENT='栏目表';
+`id` int(11) NOT NULL AUTO_INCREMENT,
+`classname` varchar(50) DEFAULT NULL COMMENT '栏目名',
+`seo_classname` varchar(50) DEFAULT NULL COMMENT 'SEO栏目名',
+`molds` varchar(50) DEFAULT NULL COMMENT '模型标识',
+`litpic` varchar(255) DEFAULT NULL COMMENT '缩略图',
+`description` text COMMENT '描述',
+`keywords` varchar(255) DEFAULT NULL COMMENT '关键词',
+`body` text COMMENT '内容',
+`orders` int(4) NOT NULL DEFAULT '0' COMMENT '排序',
+`orderstype` int(4) NOT NULL DEFAULT '0' COMMENT '排序类型：1时间倒序2ID正序3点击量倒序4ID正序5时间正序6点击量正序',
+`isshow` tinyint(1) NOT NULL DEFAULT '1' COMMENT '是否显示',
+`iscover` tinyint(1) NOT NULL DEFAULT '0' COMMENT '是否覆盖下级',
+`pid` int(11) NOT NULL DEFAULT '0' COMMENT '上级栏目ID',
+`gid` int(11) NOT NULL DEFAULT '0' COMMENT '栏目权限：0不限制',
+`htmlurl` varchar(50) DEFAULT NULL COMMENT '栏目链接',
+`lists_html` varchar(50) DEFAULT NULL COMMENT '栏目页模板',
+`details_html` varchar(50) DEFAULT NULL COMMENT '详情页模板',
+`lists_num` int(4) DEFAULT '0' COMMENT '列表数量',
+`comment_num` int(11) NOT NULL DEFAULT '0' COMMENT '评论数',
+`gourl` varchar(255) DEFAULT NULL COMMENT '栏目外链',
+`ishome` tinyint(1) NOT NULL DEFAULT '1' COMMENT '是否允许会员发布',
+`isclose` tinyint(1) NOT NULL DEFAULT '0' COMMENT '关闭栏目',
+`gids` varchar(255) DEFAULT NULL COMMENT '允许访问角色',
+`addtime` int(11) NOT NULL DEFAULT '0' COMMENT '添加时间',
+`updatetime` int(11) NOT NULL DEFAULT '0' COMMENT '更新时间',
+PRIMARY KEY (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COMMENT='栏目表';
 -- ----------------------------
 -- Table structure for jz_collect
 -- ----------------------------
 DROP TABLE IF EXISTS `jz_collect`;
 CREATE TABLE `jz_collect` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `title` varchar(255) DEFAULT NULL COMMENT '标题',
-  `description` varchar(500) DEFAULT NULL COMMENT '简介',
-  `tid` int(11) DEFAULT NULL COMMENT '所属栏目',
-  `litpic` varchar(255) DEFAULT NULL COMMENT '缩略图',
-  `w` varchar(10) NOT NULL DEFAULT '0' COMMENT '宽',
-  `h` varchar(10) NOT NULL DEFAULT '0' COMMENT '高',
-  `orders` int(11) NOT NULL DEFAULT '0' COMMENT '排序',
-  `addtime` int(11) NOT NULL DEFAULT '0' COMMENT '添加时间',
-  `isshow` tinyint(1) NOT NULL DEFAULT '1' COMMENT '是否显示：1显示0隐藏',
-  `url` varchar(255) DEFAULT NULL COMMENT '链接',
-  PRIMARY KEY (`id`)
+`id` int(11) NOT NULL AUTO_INCREMENT,
+`title` varchar(255) DEFAULT NULL COMMENT '标题',
+`description` varchar(500) DEFAULT NULL COMMENT '简介',
+`tid` int(11) DEFAULT NULL COMMENT '所属栏目',
+`litpic` varchar(255) DEFAULT NULL COMMENT '缩略图',
+`w` varchar(10) NOT NULL DEFAULT '0' COMMENT '宽',
+`h` varchar(10) NOT NULL DEFAULT '0' COMMENT '高',
+`orders` int(11) NOT NULL DEFAULT '0' COMMENT '排序',
+`addtime` int(11) NOT NULL DEFAULT '0' COMMENT '添加时间',
+`updatetime` int(11) NOT NULL DEFAULT '0' COMMENT '更新时间',
+`isshow` tinyint(1) NOT NULL DEFAULT '1' COMMENT '是否显示：1显示0隐藏',
+`url` varchar(255) DEFAULT NULL COMMENT '链接',
+PRIMARY KEY (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COMMENT='轮播图';
 -- ----------------------------
 -- Table structure for jz_collect_type
 -- ----------------------------
 DROP TABLE IF EXISTS `jz_collect_type`;
 CREATE TABLE `jz_collect_type` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `name` varchar(50) DEFAULT NULL COMMENT '分类名',
-  `addtime` int(11) NOT NULL DEFAULT '0' COMMENT '添加时间',
-  PRIMARY KEY (`id`)
+`id` int(11) NOT NULL AUTO_INCREMENT,
+`name` varchar(50) DEFAULT NULL COMMENT '分类名',
+`addtime` int(11) NOT NULL DEFAULT '0' COMMENT '添加时间',
+`updatetime` int(11) NOT NULL DEFAULT '0' COMMENT '更新时间',
+PRIMARY KEY (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COMMENT='轮播图分类';
 -- ----------------------------
 -- Table structure for jz_comment
 -- ----------------------------
 DROP TABLE IF EXISTS `jz_comment`;
 CREATE TABLE `jz_comment` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `molds` varchar(50) DEFAULT 'comment' COMMENT '模型标识',
-  `tid` int(4) NOT NULL DEFAULT '0' COMMENT '栏目tid',
-  `aid` int(11) NOT NULL DEFAULT '0' COMMENT '文章id',
-  `pid` int(11) NOT NULL DEFAULT '0' COMMENT '回复帖子id',
-  `zid` int(11) NOT NULL DEFAULT '0' COMMENT '主回复帖子：同一层楼内回复，规定主回复id',
-  `body` text COMMENT '评论内容',
-  `reply` text COMMENT '回复内容',
-  `addtime` int(11) NOT NULL DEFAULT '0' COMMENT '发布时间',
-  `userid` int(11) NOT NULL DEFAULT '0' COMMENT '发布会员：0表示游客',
-  `likes` int(11) NOT NULL DEFAULT '0' COMMENT '点赞数',
-  `isshow` tinyint(1) NOT NULL DEFAULT '1' COMMENT '是否显示：1显示0隐藏2被删除',
-  `isread` tinyint(1) NOT NULL DEFAULT '0' COMMENT '是否已读：1已读0未读',
-  PRIMARY KEY (`id`),
-  KEY `tid` (`tid`),
-  KEY `aid` (`aid`),
-  KEY `pid` (`pid`),
-  KEY `zid` (`zid`)
+`id` int(11) NOT NULL AUTO_INCREMENT,
+`molds` varchar(50) DEFAULT 'comment' COMMENT '模型标识',
+`tid` int(4) NOT NULL DEFAULT '0' COMMENT '栏目tid',
+`aid` int(11) NOT NULL DEFAULT '0' COMMENT '文章id',
+`pid` int(11) NOT NULL DEFAULT '0' COMMENT '回复帖子id',
+`zid` int(11) NOT NULL DEFAULT '0' COMMENT '主回复帖子：同一层楼内回复，规定主回复id',
+`body` text COMMENT '评论内容',
+`reply` text COMMENT '回复内容',
+`addtime` int(11) NOT NULL DEFAULT '0' COMMENT '发布时间',
+`updatetime` int(11) NOT NULL DEFAULT '0' COMMENT '更新时间',
+`userid` int(11) NOT NULL DEFAULT '0' COMMENT '发布会员：0表示游客',
+`likes` int(11) NOT NULL DEFAULT '0' COMMENT '点赞数',
+`isshow` tinyint(1) NOT NULL DEFAULT '1' COMMENT '是否显示：1显示0隐藏2被删除',
+`isread` tinyint(1) NOT NULL DEFAULT '0' COMMENT '是否已读：1已读0未读',
+PRIMARY KEY (`id`),
+KEY `tid` (`tid`),
+KEY `aid` (`aid`),
+KEY `pid` (`pid`),
+KEY `zid` (`zid`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COMMENT='评论表';
 -- ----------------------------
 -- Table structure for jz_ctype
 -- ----------------------------
 DROP TABLE IF EXISTS `jz_ctype`;
 CREATE TABLE `jz_ctype` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `title` varchar(50) DEFAULT NULL COMMENT '配置栏名称',
-  `action` varchar(255) DEFAULT NULL COMMENT '配置标识，用于权限控制',
-  `sys` tinyint(1) DEFAULT 0 COMMENT '系统配置，1是0否',
-  `isopen` tinyint(1) DEFAULT 1 COMMENT '是否启用，1启用0关闭',
-  PRIMARY KEY (`id`)
+`id` int(11) NOT NULL AUTO_INCREMENT,
+`title` varchar(50) DEFAULT NULL COMMENT '配置栏名称',
+`action` varchar(255) DEFAULT NULL COMMENT '配置标识，用于权限控制',
+`sys` tinyint(1) DEFAULT 0 COMMENT '系统配置，1是0否',
+`isopen` tinyint(1) DEFAULT 1 COMMENT '是否启用，1启用0关闭',
+PRIMARY KEY (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COMMENT='系统设置栏目名';
 -- ----------------------------
 -- Table structure for jz_customurl
 -- ----------------------------
 DROP TABLE IF EXISTS `jz_customurl`;
 CREATE TABLE `jz_customurl` (
-  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `molds` varchar(50) DEFAULT NULL COMMENT '模型标识',
-  `url` varchar(255) DEFAULT NULL COMMENT '自定义URL',
-  `tid` int(11) NOT NULL DEFAULT '0' COMMENT '栏目ID',
-  `aid` int(11) NOT NULL DEFAULT '0' COMMENT '内容ID',
-  `addtime` int(11) NOT NULL DEFAULT '0' COMMENT '添加时间',
-  PRIMARY KEY (`id`)
+`id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+`molds` varchar(50) DEFAULT NULL COMMENT '模型标识',
+`url` varchar(255) DEFAULT NULL COMMENT '自定义URL',
+`tid` int(11) NOT NULL DEFAULT '0' COMMENT '栏目ID',
+`aid` int(11) NOT NULL DEFAULT '0' COMMENT '内容ID',
+`addtime` int(11) NOT NULL DEFAULT '0' COMMENT '添加时间',
+`updatetime` int(11) NOT NULL DEFAULT '0' COMMENT '更新时间',
+PRIMARY KEY (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COMMENT='自定义链接表';
 -- ----------------------------
 -- Table structure for jz_fields
 -- ----------------------------
 DROP TABLE IF EXISTS `jz_fields`;
 CREATE TABLE `jz_fields` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `field` varchar(50) DEFAULT NULL COMMENT '字段标识',
-  `molds` varchar(50) DEFAULT NULL COMMENT '模型标识',
-  `fieldname` varchar(100) DEFAULT NULL COMMENT '字段名称',
-  `tips` varchar(100) DEFAULT NULL COMMENT '填写提示',
-  `fieldtype` tinyint(2) NOT NULL DEFAULT '1' COMMENT '输入类型',
-  `tids` text COMMENT '绑定栏目',
-  `fieldlong` varchar(50) DEFAULT NULL COMMENT '字段长度',
-  `body` text COMMENT '字段配置',
-  `orders` int(11) NOT NULL DEFAULT '0' COMMENT '表单排序',
-  `ismust` tinyint(1) NOT NULL DEFAULT '0' COMMENT '是否必填：1是0否',
-  `isshow` tinyint(1) NOT NULL DEFAULT '1' COMMENT '前台是否显示：1显示0隐藏',
-  `isadmin` tinyint(1) NOT NULL DEFAULT '1' COMMENT '后台是否显示：1显示0隐藏',
-  `issearch` tinyint(1) NOT NULL DEFAULT '0' COMMENT '搜索显示：1显示0隐藏',
-  `islist` tinyint(1) NOT NULL DEFAULT '0' COMMENT '列表显示：1显示0隐藏',
-  `format` varchar(50) DEFAULT NULL COMMENT '格式化',
-  `vdata` varchar(50) DEFAULT NULL COMMENT '默认值',
-  `isajax` tinyint(1) NOT NULL DEFAULT '1' COMMENT 'AJAX显示：1显示0隐藏',
-  `listorders` int(4) NOT NULL DEFAULT '0' COMMENT '列表排序',
-  `isext` tinyint(1) NOT NULL DEFAULT '0' COMMENT '是否扩展信息',
-  `width` varchar(50) DEFAULT NULL COMMENT '列表中显示宽度',
-  `ishome` tinyint(1) NOT NULL DEFAULT '1' COMMENT '前台表单录入',
-  PRIMARY KEY (`id`)
+`id` int(11) NOT NULL AUTO_INCREMENT,
+`field` varchar(50) DEFAULT NULL COMMENT '字段标识',
+`molds` varchar(50) DEFAULT NULL COMMENT '模型标识',
+`fieldname` varchar(100) DEFAULT NULL COMMENT '字段名称',
+`tips` varchar(100) DEFAULT NULL COMMENT '填写提示',
+`fieldtype` tinyint(2) NOT NULL DEFAULT '1' COMMENT '输入类型',
+`tids` text COMMENT '绑定栏目',
+`fieldlong` varchar(50) DEFAULT NULL COMMENT '字段长度',
+`body` text COMMENT '字段配置',
+`orders` int(11) NOT NULL DEFAULT '0' COMMENT '表单排序',
+`ismust` tinyint(1) NOT NULL DEFAULT '0' COMMENT '是否必填：1是0否',
+`isshow` tinyint(1) NOT NULL DEFAULT '1' COMMENT '前台是否显示：1显示0隐藏',
+`isadmin` tinyint(1) NOT NULL DEFAULT '1' COMMENT '后台是否显示：1显示0隐藏',
+`issearch` tinyint(1) NOT NULL DEFAULT '0' COMMENT '搜索显示：1显示0隐藏',
+`islist` tinyint(1) NOT NULL DEFAULT '0' COMMENT '列表显示：1显示0隐藏',
+`format` varchar(50) DEFAULT NULL COMMENT '格式化',
+`vdata` varchar(50) DEFAULT NULL COMMENT '默认值',
+`isajax` tinyint(1) NOT NULL DEFAULT '1' COMMENT 'AJAX显示：1显示0隐藏',
+`listorders` int(4) NOT NULL DEFAULT '0' COMMENT '列表排序',
+`isext` tinyint(1) NOT NULL DEFAULT '0' COMMENT '是否扩展信息',
+`width` varchar(50) DEFAULT NULL COMMENT '列表中显示宽度',
+`ishome` tinyint(1) NOT NULL DEFAULT '1' COMMENT '前台表单录入',
+PRIMARY KEY (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4;
 -- ----------------------------
 -- Table structure for jz_hook
 -- ----------------------------
 DROP TABLE IF EXISTS `jz_hook`;
 CREATE TABLE `jz_hook` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `module` varchar(50) DEFAULT NULL COMMENT '模块，Home/A',
-  `namespace` varchar(100) DEFAULT NULL COMMENT '控制器命名空间',
-  `controller` varchar(50) DEFAULT NULL COMMENT '控制器',
-  `action` varchar(255) DEFAULT NULL COMMENT '执行函数：可同时注册多个方法，逗号拼接',
-  `hook_namespace` varchar(100) DEFAULT NULL COMMENT '钩子控制器所在的命名空间',
-  `hook_controller` varchar(50) DEFAULT NULL COMMENT '钩子控制器',
-  `hook_action` varchar(50) DEFAULT NULL COMMENT '钩子执行方法',
-  `all_action` tinyint(1) NOT NULL DEFAULT '0' COMMENT '是否全局控制器',
-  `orders` int(4) NOT NULL DEFAULT '0' COMMENT '排序：越大越靠前执行',
-  `isopen` tinyint(1) NOT NULL DEFAULT '0' COMMENT '是否关闭：1开启0关闭',
-  `plugins_name` varchar(50) DEFAULT NULL COMMENT '关联插件名',
-  `addtime` int(11) NOT NULL DEFAULT '0' COMMENT '添加时间',
-  PRIMARY KEY (`id`)
+`id` int(11) NOT NULL AUTO_INCREMENT,
+`module` varchar(50) DEFAULT NULL COMMENT '模块，Home/A',
+`namespace` varchar(100) DEFAULT NULL COMMENT '控制器命名空间',
+`controller` varchar(50) DEFAULT NULL COMMENT '控制器',
+`action` varchar(255) DEFAULT NULL COMMENT '执行函数：可同时注册多个方法，逗号拼接',
+`hook_namespace` varchar(100) DEFAULT NULL COMMENT '钩子控制器所在的命名空间',
+`hook_controller` varchar(50) DEFAULT NULL COMMENT '钩子控制器',
+`hook_action` varchar(50) DEFAULT NULL COMMENT '钩子执行方法',
+`all_action` tinyint(1) NOT NULL DEFAULT '0' COMMENT '是否全局控制器',
+`orders` int(4) NOT NULL DEFAULT '0' COMMENT '排序：越大越靠前执行',
+`isopen` tinyint(1) NOT NULL DEFAULT '0' COMMENT '是否关闭：1开启0关闭',
+`plugins_name` varchar(50) DEFAULT NULL COMMENT '关联插件名',
+`addtime` int(11) NOT NULL DEFAULT '0' COMMENT '添加时间',
+`updatetime` int(11) NOT NULL DEFAULT '0' COMMENT '更新时间',
+PRIMARY KEY (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COMMENT='插件钩子';
 -- ----------------------------
 -- Table structure for jz_layout
 -- ----------------------------
 DROP TABLE IF EXISTS `jz_layout`;
 CREATE TABLE `jz_layout` (
-  `id` int(4) NOT NULL AUTO_INCREMENT,
-  `name` varchar(200) DEFAULT NULL COMMENT '桌面名称',
-  `top_layout` text COMMENT '顶部菜单',
-  `left_layout` text COMMENT '左侧菜单',
-  `gid` int(11) DEFAULT NULL COMMENT '所属角色',
-  `ext` varchar(255) DEFAULT NULL COMMENT '备注',
-  `sys` tinyint(1) NOT NULL DEFAULT '0' COMMENT '是否系统配置：1是0否',
-  `isdefault` tinyint(1) NOT NULL DEFAULT '0' COMMENT '默认配置：1是0否',
-  PRIMARY KEY (`id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8mb4 COMMENT='桌面设置';
+`id` int(4) NOT NULL AUTO_INCREMENT,
+`name` varchar(200) DEFAULT NULL COMMENT '桌面名称',
+`top_layout` text COMMENT '顶部菜单',
+`left_layout` text COMMENT '左侧菜单',
+`gid` int(11) DEFAULT NULL COMMENT '所属角色',
+`ext` varchar(255) DEFAULT NULL COMMENT '备注',
+`sys` tinyint(1) NOT NULL DEFAULT '0' COMMENT '是否系统配置：1是0否',
+`isdefault` tinyint(1) NOT NULL DEFAULT '0' COMMENT '默认配置：1是0否',
+PRIMARY KEY (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COMMENT='桌面设置';
 -- ----------------------------
 -- Table structure for jz_level
 -- ----------------------------
 DROP TABLE IF EXISTS `jz_level`;
 CREATE TABLE `jz_level` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `molds` varchar(50) DEFAULT 'level' COMMENT '模型标识',
-  `name` varchar(20) DEFAULT NULL COMMENT '管理员名称',
-  `pass` varchar(100) DEFAULT NULL COMMENT '密码',
-  `tel` varchar(20) DEFAULT NULL COMMENT '电话号码',
-  `gid` int(4) NOT NULL DEFAULT '2' COMMENT '所属角色',
-  `email` varchar(50) DEFAULT NULL COMMENT '邮箱',
-  `regtime` int(11) NOT NULL DEFAULT '0' COMMENT '注册时间',
-  `logintime` int(11) NOT NULL DEFAULT '0' COMMENT '登录时间',
-  `status` tinyint(1) NOT NULL DEFAULT '1' COMMENT '状态：1正常0冻结',
-  `isshow` tinyint(1) NOT NULL DEFAULT '1' COMMENT '是否显示',
-  PRIMARY KEY (`id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8mb4 COMMENT='管理员表';
+`id` int(11) NOT NULL AUTO_INCREMENT,
+`molds` varchar(50) DEFAULT 'level' COMMENT '模型标识',
+`name` varchar(20) DEFAULT NULL COMMENT '管理员名称',
+`pass` varchar(100) DEFAULT NULL COMMENT '密码',
+`tel` varchar(20) DEFAULT NULL COMMENT '电话号码',
+`gid` int(4) NOT NULL DEFAULT '2' COMMENT '所属角色',
+`email` varchar(50) DEFAULT NULL COMMENT '邮箱',
+`regtime` int(11) NOT NULL DEFAULT '0' COMMENT '注册时间',
+`logintime` int(11) NOT NULL DEFAULT '0' COMMENT '登录时间',
+`status` tinyint(1) NOT NULL DEFAULT '1' COMMENT '状态：1正常0冻结',
+`isshow` tinyint(1) NOT NULL DEFAULT '1' COMMENT '是否显示',
+PRIMARY KEY (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COMMENT='管理员表';
 -- ----------------------------
 -- Table structure for jz_level_group
 -- ----------------------------
 DROP TABLE IF EXISTS `jz_level_group`;
 CREATE TABLE `jz_level_group` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `molds` varchar(50) DEFAULT 'level_group' COMMENT '模型标识',
-  `name` varchar(50) DEFAULT NULL COMMENT '角色名称',
-  `isadmin` tinyint(1) NOT NULL DEFAULT '0' COMMENT '超管：1是0否',
-  `ischeck` tinyint(1) NOT NULL DEFAULT '0' COMMENT '发布审核：1需要审核0不需要',
-  `classcontrol` tinyint(1) NOT NULL DEFAULT '0' COMMENT '是否配置栏目权限：1是0否',
-  `paction` text COMMENT '权限列表',
-  `tids` text COMMENT '拥有栏目权限',
-  `isagree` tinyint(1) NOT NULL DEFAULT '1' COMMENT '状态：1正常0冻结',
-  `isshow` tinyint(1) NOT NULL DEFAULT '1' COMMENT '是否显示',
-  `description` varchar(500) DEFAULT NULL COMMENT '描述',
-  PRIMARY KEY (`id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8mb4 COMMENT='角色表';
+`id` int(11) NOT NULL AUTO_INCREMENT,
+`molds` varchar(50) DEFAULT 'level_group' COMMENT '模型标识',
+`name` varchar(50) DEFAULT NULL COMMENT '角色名称',
+`isshow` tinyint(1) NOT NULL DEFAULT '1' COMMENT '是否显示',
+`isadmin` tinyint(1) NOT NULL DEFAULT '0' COMMENT '超管：1是0否',
+`ischeck` tinyint(1) NOT NULL DEFAULT '0' COMMENT '发布审核：1需要审核0不需要',
+`classcontrol` tinyint(1) NOT NULL DEFAULT '0' COMMENT '是否配置栏目权限：1是0否',
+`paction` text COMMENT '权限列表',
+`tids` text COMMENT '拥有栏目权限',
+`isagree` tinyint(1) NOT NULL DEFAULT '1' COMMENT '状态：1正常0冻结',
+`description` varchar(500) DEFAULT NULL COMMENT '描述',
+PRIMARY KEY (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COMMENT='角色表';
 -- ----------------------------
 -- Table structure for jz_likes
 -- ----------------------------
 DROP TABLE IF EXISTS `jz_likes`;
 CREATE TABLE `jz_likes` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `tid` int(11) NOT NULL DEFAULT '0' COMMENT '栏目ID',
-  `aid` int(11) NOT NULL DEFAULT '0' COMMENT '内容ID',
-  `userid` int(11) NOT NULL DEFAULT '0' COMMENT '会员ID',
-  `addtime` int(11) NOT NULL DEFAULT '0' COMMENT '添加时间',
-  PRIMARY KEY (`id`),
-  KEY `tid` (`tid`,`aid`,`userid`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8mb4 COMMENT='点赞表';
+`id` int(11) NOT NULL AUTO_INCREMENT,
+`tid` int(11) NOT NULL DEFAULT '0' COMMENT '栏目ID',
+`aid` int(11) NOT NULL DEFAULT '0' COMMENT '内容ID',
+`userid` int(11) NOT NULL DEFAULT '0' COMMENT '会员ID',
+`addtime` int(11) NOT NULL DEFAULT '0' COMMENT '添加时间',
+`updatetime` int(11) NOT NULL DEFAULT '0' COMMENT '更新时间',
+PRIMARY KEY (`id`),
+KEY `tid` (`tid`,`aid`,`userid`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COMMENT='点赞表';
 -- ----------------------------
 -- Table structure for jz_link_type
 -- ----------------------------
 DROP TABLE IF EXISTS `jz_link_type`;
 CREATE TABLE `jz_link_type` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `name` varchar(50) DEFAULT NULL COMMENT '友链分类名',
-  `addtime` int(11) NOT NULL DEFAULT '0' COMMENT '添加时间',
-  PRIMARY KEY (`id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8mb4 COMMENT='友情链接分类表';
+`id` int(11) NOT NULL AUTO_INCREMENT,
+`name` varchar(50) DEFAULT NULL COMMENT '友链分类名',
+`addtime` int(11) NOT NULL DEFAULT '0' COMMENT '添加时间',
+`updatetime` int(11) NOT NULL DEFAULT '0' COMMENT '更新时间',
+PRIMARY KEY (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COMMENT='友情链接分类表';
 -- ----------------------------
 -- Table structure for jz_links
 -- ----------------------------
 DROP TABLE IF EXISTS `jz_links`;
 CREATE TABLE `jz_links` (
-  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `title` varchar(255) DEFAULT NULL COMMENT '友链名称',
-  `molds` varchar(50) DEFAULT 'links' COMMENT '模型标识',
-  `url` varchar(255) DEFAULT NULL COMMENT '链接',
-  `isshow` tinyint(1) DEFAULT '1' COMMENT '是否显示：1显示0隐藏',
-  `tid` int(11) NOT NULL DEFAULT '0' COMMENT '栏目ID',
-  `userid` int(11) NOT NULL DEFAULT '0' COMMENT '管理员ID',
-  `htmlurl` varchar(50) DEFAULT NULL COMMENT '栏目链接',
-  `orders` int(11) NOT NULL DEFAULT '0' COMMENT '排序',
-  `member_id` int(11) NOT NULL DEFAULT '0' COMMENT '会员ID',
-  `target` varchar(255) DEFAULT NULL COMMENT '外链',
-  `ownurl` varchar(255) DEFAULT NULL COMMENT '自定义链接',
-  `addtime` int(11) NOT NULL DEFAULT '0' COMMENT '发布时间',
-  PRIMARY KEY (`id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8mb4 COMMENT='友情链接表';
+`id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+`title` varchar(255) DEFAULT NULL COMMENT '友链名称',
+`molds` varchar(50) DEFAULT 'links' COMMENT '模型标识',
+`url` varchar(255) DEFAULT NULL COMMENT '链接',
+`isshow` tinyint(1) DEFAULT '1' COMMENT '是否显示：1显示0隐藏',
+`tid` int(11) NOT NULL DEFAULT '0' COMMENT '栏目ID',
+`userid` int(11) NOT NULL DEFAULT '0' COMMENT '管理员ID',
+`htmlurl` varchar(50) DEFAULT NULL COMMENT '栏目链接',
+`orders` int(11) NOT NULL DEFAULT '0' COMMENT '排序',
+`member_id` int(11) NOT NULL DEFAULT '0' COMMENT '会员ID',
+`target` varchar(255) DEFAULT NULL COMMENT '外链',
+`ownurl` varchar(255) DEFAULT NULL COMMENT '自定义链接',
+`addtime` int(11) NOT NULL DEFAULT '0' COMMENT '发布时间',
+`updatetime` int(11) NOT NULL DEFAULT '0' COMMENT '更新时间',
+PRIMARY KEY (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COMMENT='友情链接表';
 -- ----------------------------
 -- Table structure for jz_member
 -- ----------------------------
 DROP TABLE IF EXISTS `jz_member`;
 CREATE TABLE `jz_member` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `molds` varchar(50) DEFAULT 'member' COMMENT '模型标识',
-  `username` varchar(50) DEFAULT NULL COMMENT '用户昵称',
-  `openid` varchar(255) DEFAULT NULL COMMENT '微信OPENID',
-  `pass` varchar(255) DEFAULT NULL COMMENT '密码',
-  `token` varchar(255) DEFAULT NULL COMMENT 'Token',
-  `sex` tinyint(1) NOT NULL DEFAULT '0' COMMENT '性别：1男2女0未知',
-  `gid` int(11) NOT NULL DEFAULT '1' COMMENT '会员分组ID',
-  `litpic` varchar(255) DEFAULT NULL COMMENT '头像',
-  `tel` varchar(50) DEFAULT NULL COMMENT '手机号码',
-  `jifen` decimal(10,2) NOT NULL DEFAULT '0.00' COMMENT '积分数',
-  `likes` text COMMENT '喜欢点赞（已废弃）',
-  `collection` text COMMENT '收藏（已废弃）',
-  `money` decimal(10,2) NOT NULL DEFAULT '0.00' COMMENT '金币',
-  `email` varchar(255) DEFAULT NULL COMMENT '邮箱',
-  `address` varchar(255) DEFAULT NULL COMMENT '地址',
-  `province` varchar(50) DEFAULT NULL COMMENT '省份',
-  `city` varchar(50) DEFAULT NULL COMMENT '城市',
-  `regtime` int(11) NOT NULL DEFAULT '0' COMMENT '注册时间',
-  `hassendtime` int(11) NOT NULL DEFAULT '0' COMMENT '发送验证码时间',
-  `logintime` int(11) NOT NULL DEFAULT '0' COMMENT '登录时间',
-  `isshow` tinyint(1) NOT NULL DEFAULT '1' COMMENT '状态：1正常0封禁',
-  `signature` varchar(255) DEFAULT NULL COMMENT '个性签名',
-  `birthday` varchar(25) DEFAULT NULL COMMENT '生日：2020-01-01',
-  `follow` text COMMENT '关注列表',
-  `fans` int(11) NOT NULL DEFAULT '0' COMMENT '粉丝数',
-  `ismsg` tinyint(1) NOT NULL DEFAULT '1' COMMENT '是否开启接收消息提醒',
-  `iscomment` tinyint(1) NOT NULL DEFAULT '1' COMMENT '是否开启接收评论消息提醒',
-  `iscollect` tinyint(1) NOT NULL DEFAULT '1' COMMENT '是否开启接收收藏消息提醒',
-  `islikes` tinyint(1) NOT NULL DEFAULT '1' COMMENT '是否开启接收点赞消息提醒',
-  `isat` tinyint(1) NOT NULL DEFAULT '1' COMMENT '是否开启接收@消息提醒',
-  `isrechange` tinyint(1) NOT NULL DEFAULT '1' COMMENT '是否开启接收交易消息提醒',
-  `pid` int(11) NOT NULL DEFAULT '0' COMMENT '推荐用户ID',
-  `uploadsize` int(11) NOT NULL DEFAULT '50' COMMENT '上传大小限制',
-  PRIMARY KEY (`id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8mb4 COMMENT='会员表';
+`id` int(11) NOT NULL AUTO_INCREMENT,
+`molds` varchar(50) DEFAULT 'member' COMMENT '模型标识',
+`username` varchar(50) DEFAULT NULL COMMENT '用户昵称',
+`openid` varchar(255) DEFAULT NULL COMMENT '微信OPENID',
+`pass` varchar(255) DEFAULT NULL COMMENT '密码',
+`token` varchar(255) DEFAULT NULL COMMENT 'Token',
+`sex` tinyint(1) NOT NULL DEFAULT '0' COMMENT '性别：1男2女0未知',
+`gid` int(11) NOT NULL DEFAULT '1' COMMENT '会员分组ID',
+`litpic` varchar(255) DEFAULT NULL COMMENT '头像',
+`tel` varchar(50) DEFAULT NULL COMMENT '手机号码',
+`jifen` decimal(10,2) NOT NULL DEFAULT '0.00' COMMENT '积分数',
+`likes` text COMMENT '喜欢点赞（已废弃）',
+`collection` text COMMENT '收藏（已废弃）',
+`money` decimal(10,2) NOT NULL DEFAULT '0.00' COMMENT '金币',
+`email` varchar(255) DEFAULT NULL COMMENT '邮箱',
+`address` varchar(255) DEFAULT NULL COMMENT '地址',
+`province` varchar(50) DEFAULT NULL COMMENT '省份',
+`city` varchar(50) DEFAULT NULL COMMENT '城市',
+`regtime` int(11) NOT NULL DEFAULT '0' COMMENT '注册时间',
+`hassendtime` int(11) NOT NULL DEFAULT '0' COMMENT '发送验证码时间',
+`logintime` int(11) NOT NULL DEFAULT '0' COMMENT '登录时间',
+`isshow` tinyint(1) NOT NULL DEFAULT '1' COMMENT '状态：1正常0封禁',
+`signature` varchar(255) DEFAULT NULL COMMENT '个性签名',
+`birthday` varchar(25) DEFAULT NULL COMMENT '生日：2020-01-01',
+`follow` text COMMENT '关注列表',
+`fans` int(11) NOT NULL DEFAULT '0' COMMENT '粉丝数',
+`ismsg` tinyint(1) NOT NULL DEFAULT '1' COMMENT '是否开启接收消息提醒',
+`iscomment` tinyint(1) NOT NULL DEFAULT '1' COMMENT '是否开启接收评论消息提醒',
+`iscollect` tinyint(1) NOT NULL DEFAULT '1' COMMENT '是否开启接收收藏消息提醒',
+`islikes` tinyint(1) NOT NULL DEFAULT '1' COMMENT '是否开启接收点赞消息提醒',
+`isat` tinyint(1) NOT NULL DEFAULT '1' COMMENT '是否开启接收@消息提醒',
+`isrechange` tinyint(1) NOT NULL DEFAULT '1' COMMENT '是否开启接收交易消息提醒',
+`pid` int(11) NOT NULL DEFAULT '0' COMMENT '推荐用户ID',
+`uploadsize` int(11) NOT NULL DEFAULT '50' COMMENT '上传大小限制',
+PRIMARY KEY (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COMMENT='会员表';
 -- ----------------------------
 -- Table structure for jz_member_group
 -- ----------------------------
 DROP TABLE IF EXISTS `jz_member_group`;
 CREATE TABLE `jz_member_group` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `molds` varchar(50) DEFAULT 'member_group' COMMENT '模型标识',
-  `name` varchar(50) DEFAULT NULL COMMENT '分组名',
-  `description` varchar(255) DEFAULT NULL COMMENT '分组简介',
-  `paction` text COMMENT '权限',
-  `pid` int(11) NOT NULL DEFAULT '0' COMMENT '分组上级',
-  `isshow` tinyint(1) NOT NULL DEFAULT '1' COMMENT '是否显示',
-  `isagree` tinyint(1) NOT NULL DEFAULT '1' COMMENT '是否允许登录',
-  `iscomment` tinyint(1) NOT NULL DEFAULT '1' COMMENT '是否允许评论',
-  `ischeckmsg` tinyint(1) NOT NULL DEFAULT '1' COMMENT '是否需要审核评论',
-  `addtime` int(11) NOT NULL DEFAULT '0' COMMENT '添加时间',
-  `orders` int(11) NOT NULL DEFAULT '0' COMMENT '排序',
-  `discount` decimal(10,2) NOT NULL DEFAULT '0.00' COMMENT '折扣价：现金折扣或者百分比折扣',
-  `discount_type` tinyint(1) NOT NULL DEFAULT '0' COMMENT '折扣类型：0无折扣1现金折扣,1百分比折扣',
-  PRIMARY KEY (`id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8mb4 COMMENT='会员分组';
+`id` int(11) NOT NULL AUTO_INCREMENT,
+`name` varchar(50) DEFAULT NULL COMMENT '分组名',
+`molds` varchar(50) DEFAULT 'member_group' COMMENT '模型标识',
+`description` varchar(255) DEFAULT NULL COMMENT '分组简介',
+`paction` text COMMENT '权限',
+`pid` int(11) NOT NULL DEFAULT '0' COMMENT '分组上级',
+`isshow` tinyint(1) NOT NULL DEFAULT '1' COMMENT '是否显示',
+`isagree` tinyint(1) NOT NULL DEFAULT '1' COMMENT '是否允许登录',
+`iscomment` tinyint(1) NOT NULL DEFAULT '1' COMMENT '是否允许评论',
+`ischeckmsg` tinyint(1) NOT NULL DEFAULT '1' COMMENT '是否需要审核评论',
+`addtime` int(11) NOT NULL DEFAULT '0' COMMENT '添加时间',
+`updatetime` int(11) NOT NULL DEFAULT '0' COMMENT '更新时间',
+`orders` int(11) NOT NULL DEFAULT '0' COMMENT '排序',
+`discount` decimal(10,2) NOT NULL DEFAULT '0.00' COMMENT '折扣价：现金折扣或者百分比折扣',
+`discount_type` tinyint(1) NOT NULL DEFAULT '0' COMMENT '折扣类型：0无折扣1现金折扣,1百分比折扣',
+PRIMARY KEY (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COMMENT='会员分组';
 -- ----------------------------
 -- Table structure for jz_menu
 -- ----------------------------
 DROP TABLE IF EXISTS `jz_menu`;
 CREATE TABLE `jz_menu` (
-  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `name` varchar(255) DEFAULT NULL COMMENT '导航名称',
-  `nav` text COMMENT '导航配置',
-  `isshow` tinyint(1) NOT NULL DEFAULT '1' COMMENT '是否显示：1显示0不显示',
-  PRIMARY KEY (`id`)
+`id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+`name` varchar(255) DEFAULT NULL COMMENT '导航名称',
+`nav` text COMMENT '导航配置',
+`isshow` tinyint(1) NOT NULL DEFAULT '1' COMMENT '是否显示：1显示0不显示',
+PRIMARY KEY (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COMMENT='导航表';
 -- ----------------------------
 -- Table structure for jz_message
 -- ----------------------------
 DROP TABLE IF EXISTS `jz_message`;
 CREATE TABLE `jz_message` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `molds` varchar(50) DEFAULT 'message' COMMENT '模型标识',
-  `title` varchar(255) DEFAULT NULL COMMENT '标题',
-  `userid` int(11) NOT NULL DEFAULT '0' COMMENT '发布会员',
-  `tid` int(4) NOT NULL DEFAULT '0' COMMENT '栏目ID',
-  `aid` int(11) NOT NULL DEFAULT '0' COMMENT '文章ID',
-  `user` varchar(255) DEFAULT NULL COMMENT '用户名',
-  `ip` varchar(255) DEFAULT NULL COMMENT 'IP',
-  `body` text COMMENT '留言内容',
-  `tel` varchar(50) DEFAULT NULL COMMENT '电话',
-  `addtime` int(11) NOT NULL DEFAULT '0' COMMENT '发布时间',
-  `orders` int(4) NOT NULL DEFAULT '0' COMMENT '排序',
-  `email` varchar(255) DEFAULT NULL COMMENT '邮箱',
-  `isshow` tinyint(1) NOT NULL DEFAULT '0' COMMENT '是否审核：1审核0未审',
-  `istop` tinyint(1) NOT NULL DEFAULT '0' COMMENT '是否置顶：1是0否',
-  `hits` int(11) NOT NULL DEFAULT '0' COMMENT '点击量',
-  `tids` varchar(255) DEFAULT NULL COMMENT '副栏目',
-  PRIMARY KEY (`id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8mb4 COMMENT='留言表';
+`id` int(11) NOT NULL AUTO_INCREMENT,
+`title` varchar(255) DEFAULT NULL COMMENT '标题',
+`molds` varchar(50) DEFAULT 'message' COMMENT '模型标识',
+`userid` int(11) NOT NULL DEFAULT '0' COMMENT '发布会员',
+`tid` int(4) NOT NULL DEFAULT '0' COMMENT '栏目ID',
+`aid` int(11) NOT NULL DEFAULT '0' COMMENT '文章ID',
+`user` varchar(255) DEFAULT NULL COMMENT '用户名',
+`ip` varchar(255) DEFAULT NULL COMMENT 'IP',
+`body` text COMMENT '留言内容',
+`tel` varchar(50) DEFAULT NULL COMMENT '电话',
+`addtime` int(11) NOT NULL DEFAULT '0' COMMENT '发布时间',
+`updatetime` int(11) NOT NULL DEFAULT '0' COMMENT '更新时间',
+`orders` int(4) NOT NULL DEFAULT '0' COMMENT '排序',
+`email` varchar(255) DEFAULT NULL COMMENT '邮箱',
+`isshow` tinyint(1) NOT NULL DEFAULT '0' COMMENT '是否审核：1审核0未审',
+`istop` tinyint(1) NOT NULL DEFAULT '0' COMMENT '是否置顶：1是0否',
+`hits` int(11) NOT NULL DEFAULT '0' COMMENT '点击量',
+`tids` varchar(255) DEFAULT NULL COMMENT '副栏目',
+PRIMARY KEY (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COMMENT='留言表';
 -- ----------------------------
 -- Table structure for jz_molds
 -- ----------------------------
 DROP TABLE IF EXISTS `jz_molds`;
 CREATE TABLE `jz_molds` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `name` varchar(50) DEFAULT NULL COMMENT '模型名称',
-  `biaoshi` varchar(50) DEFAULT NULL COMMENT '模型标识',
-  `sys` tinyint(1) NOT NULL DEFAULT '0' COMMENT '是否系统：1是0否',
-  `isopen` tinyint(1) NOT NULL DEFAULT '1' COMMENT '是否开启：1开启0关闭',
-  `iscontrol` tinyint(1) NOT NULL DEFAULT '0' COMMENT '是否开启权限：1开启权限0不开启',
-  `ismust` tinyint(1) NOT NULL DEFAULT '0' COMMENT '栏目必选：1是0否',
-  `isclasstype` tinyint(1) NOT NULL DEFAULT '1' COMMENT '是否显示栏目',
-  `isshowclass` tinyint(1) DEFAULT '1' COMMENT '栏目绑定：1显示0隐藏',
-  `list_html` varchar(50) DEFAULT 'list.html' COMMENT '默认列表模板',
-  `details_html` varchar(50) DEFAULT 'details.html' COMMENT '默认详情模板',
-  `orders` int(11) NOT NULL DEFAULT '100' COMMENT '排序',
-  `ispreview` tinyint(1) DEFAULT '1' COMMENT '是否可以预览',
-  `ishome` tinyint(1) DEFAULT '0' COMMENT '前台发布',
-  PRIMARY KEY (`id`),
-  KEY `biaoshi` (`biaoshi`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8mb4 COMMENT='模型表';
+`id` int(11) NOT NULL AUTO_INCREMENT,
+`name` varchar(50) DEFAULT NULL COMMENT '模型名称',
+`biaoshi` varchar(50) DEFAULT NULL COMMENT '模型标识',
+`sys` tinyint(1) NOT NULL DEFAULT '0' COMMENT '是否系统：1是0否',
+`isopen` tinyint(1) NOT NULL DEFAULT '1' COMMENT '是否开启：1开启0关闭',
+`iscontrol` tinyint(1) NOT NULL DEFAULT '0' COMMENT '是否开启权限：1开启权限0不开启',
+`ismust` tinyint(1) NOT NULL DEFAULT '0' COMMENT '栏目必选：1是0否',
+`isclasstype` tinyint(1) NOT NULL DEFAULT '1' COMMENT '是否显示栏目',
+`isshowclass` tinyint(1) DEFAULT '1' COMMENT '栏目绑定：1显示0隐藏',
+`list_html` varchar(50) DEFAULT 'list.html' COMMENT '默认列表模板',
+`details_html` varchar(50) DEFAULT 'details.html' COMMENT '默认详情模板',
+`orders` int(11) NOT NULL DEFAULT '100' COMMENT '排序',
+`ispreview` tinyint(1) DEFAULT '1' COMMENT '是否可以预览',
+`ishome` tinyint(1) DEFAULT '0' COMMENT '前台发布',
+PRIMARY KEY (`id`),
+KEY `biaoshi` (`biaoshi`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COMMENT='模型表';
 -- ----------------------------
 -- Table structure for jz_orders
 -- ----------------------------
 DROP TABLE IF EXISTS `jz_orders`;
 CREATE TABLE `jz_orders` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `molds` varchar(50) DEFAULT 'orders' COMMENT '模型标识',
-  `orderno` varchar(255) DEFAULT NULL COMMENT '订单号',
-  `userid` int(11) NOT NULL DEFAULT '0' COMMENT '下单会员',
-  `paytype` varchar(20) DEFAULT NULL COMMENT '支付方式',
-  `ptype` tinyint(1) DEFAULT '1' COMMENT '交易类型：1商品购买2充值金额3充值积分',
-  `tel` varchar(50) DEFAULT NULL COMMENT '电话',
-  `username` varchar(50) DEFAULT NULL COMMENT '用户名',
-  `tid` int(11) NOT NULL DEFAULT '0' COMMENT '栏目ID',
-  `price` varchar(200) DEFAULT NULL COMMENT '价格',
-  `jifen` decimal(10,2) NOT NULL DEFAULT '0.00' COMMENT '积分',
-  `qianbao` decimal(10,2) NOT NULL DEFAULT '0.00' COMMENT '钱包',
-  `body` text COMMENT '购买内容',
-  `receive_username` varchar(50) DEFAULT NULL COMMENT '收件人',
-  `receive_tel` varchar(20) DEFAULT NULL COMMENT '收件电话',
-  `receive_email` varchar(50) DEFAULT NULL COMMENT '收件邮箱',
-  `receive_address` varchar(255) DEFAULT NULL COMMENT '收件地址',
-  `ispay` tinyint(1) NOT NULL DEFAULT '0' COMMENT '是否支付：1支付0未支付',
-  `paytime` int(11) NOT NULL DEFAULT '0' COMMENT '支付时间',
-  `addtime` int(11) NOT NULL DEFAULT '0' COMMENT '下单时间',
-  `send_time` int(11) NOT NULL DEFAULT '0' COMMENT '发货时间',
-  `isshow` tinyint(1) NOT NULL DEFAULT '1' COMMENT '订单状态：1提交订单,2已支付,3超时,4已提交订单,5已发货,6已废弃失效,0删除订单',
-  `discount` decimal(10,2) NOT NULL DEFAULT '0.00' COMMENT '折扣',
-  `yunfei` decimal(10,2) NOT NULL DEFAULT '0.00' COMMENT '运费',
-  PRIMARY KEY (`id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8mb4 COMMENT='订单表';
+`id` int(11) NOT NULL AUTO_INCREMENT,
+`orderno` varchar(255) DEFAULT NULL COMMENT '订单号',
+`molds` varchar(50) DEFAULT 'orders' COMMENT '模型标识',
+`userid` int(11) NOT NULL DEFAULT '0' COMMENT '下单会员',
+`paytype` varchar(20) DEFAULT NULL COMMENT '支付方式',
+`ptype` tinyint(1) DEFAULT '1' COMMENT '交易类型：1商品购买2充值金额3充值积分',
+`tel` varchar(50) DEFAULT NULL COMMENT '电话',
+`username` varchar(50) DEFAULT NULL COMMENT '用户名',
+`tid` int(11) NOT NULL DEFAULT '0' COMMENT '栏目ID',
+`price` varchar(200) DEFAULT NULL COMMENT '价格',
+`jifen` decimal(10,2) NOT NULL DEFAULT '0.00' COMMENT '积分',
+`qianbao` decimal(10,2) NOT NULL DEFAULT '0.00' COMMENT '钱包',
+`body` text COMMENT '购买内容',
+`receive_username` varchar(50) DEFAULT NULL COMMENT '收件人',
+`receive_tel` varchar(20) DEFAULT NULL COMMENT '收件电话',
+`receive_email` varchar(50) DEFAULT NULL COMMENT '收件邮箱',
+`receive_address` varchar(255) DEFAULT NULL COMMENT '收件地址',
+`ispay` tinyint(1) NOT NULL DEFAULT '0' COMMENT '是否支付：1支付0未支付',
+`paytime` int(11) NOT NULL DEFAULT '0' COMMENT '支付时间',
+`addtime` int(11) NOT NULL DEFAULT '0' COMMENT '下单时间',
+`send_time` int(11) NOT NULL DEFAULT '0' COMMENT '发货时间',
+`isshow` tinyint(1) NOT NULL DEFAULT '1' COMMENT '订单状态：1提交订单,2已支付,3超时,4已提交订单,5已发货,6已废弃失效,0删除订单',
+`discount` decimal(10,2) NOT NULL DEFAULT '0.00' COMMENT '折扣',
+`yunfei` decimal(10,2) NOT NULL DEFAULT '0.00' COMMENT '运费',
+PRIMARY KEY (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COMMENT='订单表';
 -- ----------------------------
 -- Table structure for jz_page
 -- ----------------------------
 DROP TABLE IF EXISTS `jz_page`;
 CREATE TABLE `jz_page` (
-  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `molds` varchar(50) DEFAULT 'page' COMMENT '模型标识',
-  `tid` int(11) NOT NULL DEFAULT '0' COMMENT '栏目ID',
-  `htmlurl` varchar(50) DEFAULT NULL COMMENT '链接',
-  `orders` int(11) NOT NULL DEFAULT '0' COMMENT '排序',
-  `member_id` int(11) NOT NULL DEFAULT '0' COMMENT '用户ID',
-  `isshow` tinyint(1) DEFAULT '1' COMMENT '是否显示：1显示0隐藏',
-  `istop` tinyint(1) NOT NULL DEFAULT '0' COMMENT '是否置顶：1是0否',
-  `hits` int(11) NOT NULL DEFAULT '0' COMMENT '点击量',
-  `addtime` int(11) NOT NULL DEFAULT '0' COMMENT '发布时间',
-  `tids` varchar(255) NOT NULL COMMENT '副栏目',
-  PRIMARY KEY (`id`)
+`id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+`tid` int(11) NOT NULL DEFAULT '0' COMMENT '栏目ID',
+`molds` varchar(50) DEFAULT 'page' COMMENT '模型标识',
+`htmlurl` varchar(50) DEFAULT NULL COMMENT '链接',
+`orders` int(11) NOT NULL DEFAULT '0' COMMENT '排序',
+`member_id` int(11) NOT NULL DEFAULT '0' COMMENT '用户ID',
+`isshow` tinyint(1) DEFAULT '1' COMMENT '是否显示：1显示0隐藏',
+`istop` tinyint(1) NOT NULL DEFAULT '0' COMMENT '是否置顶：1是0否',
+`hits` int(11) NOT NULL DEFAULT '0' COMMENT '点击量',
+`addtime` int(11) NOT NULL DEFAULT '0' COMMENT '发布时间',
+`updatetime` int(11) NOT NULL DEFAULT '0' COMMENT '更新时间',
+`tids` varchar(255) NOT NULL COMMENT '副栏目',
+PRIMARY KEY (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COMMENT='单页模型';
 -- ----------------------------
 -- Table structure for jz_pictures
 -- ----------------------------
 DROP TABLE IF EXISTS `jz_pictures`;
 CREATE TABLE `jz_pictures` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `tid` int(11) NOT NULL DEFAULT '0' COMMENT '栏目ID',
-  `aid` int(11) NOT NULL DEFAULT '0' COMMENT '内容ID',
-  `molds` varchar(50) DEFAULT NULL COMMENT '模型标识',
-  `path` varchar(20) DEFAULT 'Admin' COMMENT '板块：Admin后台Home前台',
-  `filetype` varchar(20) DEFAULT NULL COMMENT '类型',
-  `size` varchar(50) DEFAULT NULL COMMENT '大小',
-  `litpic` varchar(255) DEFAULT NULL COMMENT '链接',
-  `addtime` int(11) NOT NULL DEFAULT '0' COMMENT '添加时间',
-  `userid` int(11) NOT NULL DEFAULT '0' COMMENT '管理员ID/发布会员ID',
-  PRIMARY KEY (`id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8mb4 COMMENT='图片集';
+`id` int(11) NOT NULL AUTO_INCREMENT,
+`tid` int(11) NOT NULL DEFAULT '0' COMMENT '栏目ID',
+`aid` int(11) NOT NULL DEFAULT '0' COMMENT '内容ID',
+`molds` varchar(50) DEFAULT NULL COMMENT '模型标识',
+`path` varchar(20) DEFAULT 'Admin' COMMENT '板块：Admin后台Home前台',
+`filetype` varchar(20) DEFAULT NULL COMMENT '类型',
+`size` varchar(50) DEFAULT NULL COMMENT '大小',
+`litpic` varchar(255) DEFAULT NULL COMMENT '链接',
+`addtime` int(11) NOT NULL DEFAULT '0' COMMENT '添加时间',
+`updatetime` int(11) NOT NULL DEFAULT '0' COMMENT '更新时间',
+`userid` int(11) NOT NULL DEFAULT '0' COMMENT '管理员ID/发布会员ID',
+PRIMARY KEY (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COMMENT='图片集';
 -- ----------------------------
 -- Table structure for jz_pingjia
 -- ----------------------------
 DROP TABLE IF EXISTS `jz_pingjia`;
 CREATE TABLE `jz_pingjia` (
-  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `tid` int(11) DEFAULT '0' COMMENT '所属栏目',
-  `tids` varchar(255) DEFAULT NULL COMMENT '副栏目',
-  `title` varchar(255) DEFAULT NULL COMMENT '标题',
-  `litpic` varchar(255) DEFAULT NULL COMMENT '缩略图',
-  `keywords` varchar(255) DEFAULT NULL COMMENT '关键词',
-  `description` varchar(500) DEFAULT NULL COMMENT '简介',
-  `body` text COMMENT '内容',
-  `molds` varchar(50) DEFAULT 'pingjia' COMMENT '模型标识',
-  `userid` int(11) DEFAULT '0' COMMENT '发布管理员',
-  `orders` int(11) DEFAULT '0' COMMENT '排序',
-  `member_id` int(11) DEFAULT '0' COMMENT '前台用户',
-  `comment_num` int(11) DEFAULT '0' COMMENT '评论数',
-  `htmlurl` varchar(100) DEFAULT NULL COMMENT '栏目链接',
-  `isshow` tinyint(1) DEFAULT '1' COMMENT '是否显示',
-  `target` varchar(255) DEFAULT NULL COMMENT '外链',
-  `ownurl` varchar(255) DEFAULT NULL COMMENT '自定义URL',
-  `jzattr` varchar(50) DEFAULT NULL COMMENT '推荐属性',
-  `hits` int(11) DEFAULT '0' COMMENT '点击量',
-  `zan` int(11) DEFAULT '0' COMMENT '点赞数',
-  `tags` varchar(255) DEFAULT NULL COMMENT 'TAG',
-  `addtime` int(11) DEFAULT '0' COMMENT '发布时间',
-  `zhiye` varchar(255) DEFAULT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8mb4;
+`id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+`tid` int(11) DEFAULT '0' COMMENT '所属栏目',
+`tids` varchar(255) DEFAULT NULL COMMENT '副栏目',
+`title` varchar(255) DEFAULT NULL COMMENT '标题',
+`litpic` varchar(255) DEFAULT NULL COMMENT '缩略图',
+`keywords` varchar(255) DEFAULT NULL COMMENT '关键词',
+`description` varchar(500) DEFAULT NULL COMMENT '简介',
+`body` text COMMENT '内容',
+`molds` varchar(50) DEFAULT 'pingjia' COMMENT '模型标识',
+`userid` int(11) DEFAULT '0' COMMENT '发布管理员',
+`orders` int(11) DEFAULT '0' COMMENT '排序',
+`member_id` int(11) DEFAULT '0' COMMENT '前台用户',
+`comment_num` int(11) DEFAULT '0' COMMENT '评论数',
+`htmlurl` varchar(100) DEFAULT NULL COMMENT '栏目链接',
+`isshow` tinyint(1) DEFAULT '1' COMMENT '是否显示',
+`target` varchar(255) DEFAULT NULL COMMENT '外链',
+`ownurl` varchar(255) DEFAULT NULL COMMENT '自定义URL',
+`jzattr` varchar(50) DEFAULT NULL COMMENT '推荐属性',
+`hits` int(11) DEFAULT '0' COMMENT '点击量',
+`zan` int(11) DEFAULT '0' COMMENT '点赞数',
+`tags` varchar(255) DEFAULT NULL COMMENT 'TAG',
+`addtime` int(11) DEFAULT '0' COMMENT '发布时间',
+`updatetime` int(11) NOT NULL DEFAULT '0' COMMENT '更新时间',
+`zhiye` varchar(255) DEFAULT NULL,
+PRIMARY KEY (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4;
 -- ----------------------------
 -- Table structure for jz_plugins
 -- ----------------------------
 DROP TABLE IF EXISTS `jz_plugins`;
 CREATE TABLE `jz_plugins` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `name` varchar(50) DEFAULT NULL COMMENT '插件名称',
-  `filepath` varchar(50) DEFAULT NULL COMMENT '插件文件名',
-  `description` varchar(255) DEFAULT NULL COMMENT '简介',
-  `version` decimal(3,1) NOT NULL DEFAULT '0.0' COMMENT '版本',
-  `author` varchar(50) DEFAULT NULL COMMENT '作者',
-  `update_time` int(11) NOT NULL DEFAULT '0' COMMENT '更新时间',
-  `module` varchar(20) NOT NULL DEFAULT 'Home' COMMENT '模块',
-  `isopen` tinyint(1) NOT NULL DEFAULT '0' COMMENT '是否开启：1开启0关闭',
-  `addtime` int(11) NOT NULL DEFAULT '0' COMMENT '发布时间',
-  `config` text COMMENT '配置',
-  PRIMARY KEY (`id`)
+`id` int(11) NOT NULL AUTO_INCREMENT,
+`name` varchar(50) DEFAULT NULL COMMENT '插件名称',
+`filepath` varchar(50) DEFAULT NULL COMMENT '插件文件名',
+`description` varchar(255) DEFAULT NULL COMMENT '简介',
+`version` decimal(3,1) NOT NULL DEFAULT '0.0' COMMENT '版本',
+`author` varchar(50) DEFAULT NULL COMMENT '作者',
+`update_time` int(11) NOT NULL DEFAULT '0' COMMENT '更新时间',
+`module` varchar(20) NOT NULL DEFAULT 'Home' COMMENT '模块',
+`isopen` tinyint(1) NOT NULL DEFAULT '0' COMMENT '是否开启：1开启0关闭',
+`addtime` int(11) NOT NULL DEFAULT '0' COMMENT '发布时间',
+`updatetime` int(11) NOT NULL DEFAULT '0' COMMENT '更新时间',
+`config` text COMMENT '配置',
+PRIMARY KEY (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COMMENT='插件表';
 -- ----------------------------
 -- Table structure for jz_power
 -- ----------------------------
 DROP TABLE IF EXISTS `jz_power`;
 CREATE TABLE `jz_power` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `action` varchar(50) DEFAULT NULL COMMENT '函数名',
-  `name` varchar(50) DEFAULT NULL COMMENT '权限名',
-  `pid` int(11) NOT NULL DEFAULT '0' COMMENT '父类权限ID',
-  `isagree` tinyint(1) NOT NULL DEFAULT '1' COMMENT '是否开放',
-  PRIMARY KEY (`id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8mb4 COMMENT='用户权限表';
+`id` int(11) NOT NULL AUTO_INCREMENT,
+`action` varchar(50) DEFAULT NULL COMMENT '函数名',
+`name` varchar(50) DEFAULT NULL COMMENT '权限名',
+`pid` int(11) NOT NULL DEFAULT '0' COMMENT '父类权限ID',
+`isagree` tinyint(1) NOT NULL DEFAULT '1' COMMENT '是否开放',
+PRIMARY KEY (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COMMENT='用户权限表';
 -- ----------------------------
 -- Table structure for jz_product
 -- ----------------------------
 DROP TABLE IF EXISTS `jz_product`;
 CREATE TABLE `jz_product` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `molds` varchar(50) DEFAULT 'product' COMMENT '模型标识',
-  `title` varchar(255) DEFAULT NULL COMMENT '商品名称',
-  `seo_title` varchar(255) DEFAULT NULL COMMENT 'SEO标题',
-  `tid` int(11) NOT NULL DEFAULT '0' COMMENT '所属栏目',
-  `hits` int(11) NOT NULL DEFAULT '0' COMMENT '点击量',
-  `htmlurl` varchar(50) DEFAULT NULL COMMENT '栏目链接',
-  `keywords` varchar(255) DEFAULT NULL COMMENT '关键词',
-  `description` varchar(255) DEFAULT NULL COMMENT '简介',
-  `litpic` varchar(255) DEFAULT NULL COMMENT '首图',
-  `stock_num` int(11) NOT NULL DEFAULT '0' COMMENT '库存',
-  `price` decimal(10,2) NOT NULL DEFAULT '0.00' COMMENT '价格',
-  `pictures` text COMMENT '图集',
-  `isshow` tinyint(1) NOT NULL DEFAULT '1' COMMENT '是否显示：1显示0不显示',
-  `comment_num` int(11) NOT NULL DEFAULT '0' COMMENT '评论数',
-  `body` mediumtext COMMENT '详情',
-  `userid` int(11) NOT NULL DEFAULT '0' COMMENT '录入管理员ID',
-  `orders` int(11) NOT NULL DEFAULT '0' COMMENT '排序',
-  `addtime` int(11) NOT NULL DEFAULT '0' COMMENT '更新时间',
-  `istop` varchar(2) NOT NULL DEFAULT '0' COMMENT '是否置顶：1是0否',
-  `ishot` varchar(2) NOT NULL DEFAULT '0' COMMENT '是否头条：1是0否',
-  `istuijian` varchar(2) NOT NULL DEFAULT '0' COMMENT '是否推荐：1是0否',
-  `tags` varchar(255) DEFAULT NULL COMMENT 'TAG标签',
-  `member_id` int(11) NOT NULL DEFAULT '0' COMMENT '发布会员',
-  `target` varchar(255) DEFAULT NULL COMMENT '外链',
-  `ownurl` varchar(255) DEFAULT NULL COMMENT '自定义链接',
-  `jzattr` varchar(50) DEFAULT NULL COMMENT '推荐属性：1置顶2热点3推荐',
-  `tids` varchar(255) DEFAULT NULL,
-  `zan` int(11) DEFAULT '0',
-  `lx` varchar(2) DEFAULT NULL,
-  `color` varchar(2) DEFAULT NULL,
-  `hy` varchar(500) DEFAULT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8mb4 COMMENT='商品表';
+`id` int(11) NOT NULL AUTO_INCREMENT,
+`molds` varchar(50) DEFAULT 'product' COMMENT '模型标识',
+`title` varchar(255) DEFAULT NULL COMMENT '商品名称',
+`seo_title` varchar(255) DEFAULT NULL COMMENT 'SEO标题',
+`tid` int(11) NOT NULL DEFAULT '0' COMMENT '所属栏目',
+`hits` int(11) NOT NULL DEFAULT '0' COMMENT '点击量',
+`htmlurl` varchar(50) DEFAULT NULL COMMENT '栏目链接',
+`keywords` varchar(255) DEFAULT NULL COMMENT '关键词',
+`description` varchar(255) DEFAULT NULL COMMENT '简介',
+`litpic` varchar(255) DEFAULT NULL COMMENT '首图',
+`stock_num` int(11) NOT NULL DEFAULT '0' COMMENT '库存',
+`price` decimal(10,2) NOT NULL DEFAULT '0.00' COMMENT '价格',
+`pictures` text COMMENT '图集',
+`isshow` tinyint(1) NOT NULL DEFAULT '1' COMMENT '是否显示：1显示0不显示',
+`comment_num` int(11) NOT NULL DEFAULT '0' COMMENT '评论数',
+`body` mediumtext COMMENT '详情',
+`userid` int(11) NOT NULL DEFAULT '0' COMMENT '录入管理员ID',
+`orders` int(11) NOT NULL DEFAULT '0' COMMENT '排序',
+`addtime` int(11) NOT NULL DEFAULT '0' COMMENT '更新时间',
+`updatetime` int(11) NOT NULL DEFAULT '0' COMMENT '更新时间',
+`istop` varchar(2) NOT NULL DEFAULT '0' COMMENT '是否置顶：1是0否',
+`ishot` varchar(2) NOT NULL DEFAULT '0' COMMENT '是否头条：1是0否',
+`istuijian` varchar(2) NOT NULL DEFAULT '0' COMMENT '是否推荐：1是0否',
+`tags` varchar(255) DEFAULT NULL COMMENT 'TAG标签',
+`member_id` int(11) NOT NULL DEFAULT '0' COMMENT '发布会员',
+`target` varchar(255) DEFAULT NULL COMMENT '外链',
+`ownurl` varchar(255) DEFAULT NULL COMMENT '自定义链接',
+`jzattr` varchar(50) DEFAULT NULL COMMENT '推荐属性：1置顶2热点3推荐',
+`tids` varchar(255) DEFAULT NULL,
+`zan` int(11) DEFAULT '0',
+`lx` varchar(2) DEFAULT NULL,
+`color` varchar(2) DEFAULT NULL,
+`hy` varchar(500) DEFAULT NULL,
+PRIMARY KEY (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COMMENT='商品表';
 -- ----------------------------
 -- Table structure for jz_recycle
 -- ----------------------------
 DROP TABLE IF EXISTS `jz_recycle`;
 CREATE TABLE `jz_recycle` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `title` varchar(255) DEFAULT NULL COMMENT '标记',
-  `molds` varchar(50) DEFAULT NULL COMMENT '回收模型标志',
-  `data` mediumtext COMMENT '回收数据',
-  `addtime` int(11) NOT NULL DEFAULT '0' COMMENT '删除时间',
-  `aid` int(11) NOT NULL DEFAULT '0' COMMENT '关联删除',
-  PRIMARY KEY (`id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8mb4 COMMENT='回收站';
+`id` int(11) NOT NULL AUTO_INCREMENT,
+`title` varchar(255) DEFAULT NULL COMMENT '标记',
+`molds` varchar(50) DEFAULT NULL COMMENT '回收模型标志',
+`data` mediumtext COMMENT '回收数据',
+`addtime` int(11) NOT NULL DEFAULT '0' COMMENT '删除时间',
+`aid` int(11) NOT NULL DEFAULT '0' COMMENT '关联删除',
+PRIMARY KEY (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COMMENT='回收站';
 -- ----------------------------
 -- Table structure for jz_ruler
 -- ----------------------------
 DROP TABLE IF EXISTS `jz_ruler`;
 CREATE TABLE `jz_ruler` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `name` varchar(50) DEFAULT NULL COMMENT '权限名称',
-  `fc` varchar(50) DEFAULT NULL COMMENT '函数',
-  `pid` int(11) NOT NULL DEFAULT '0' COMMENT '父类权限',
-  `isdesktop` tinyint(1) NOT NULL DEFAULT '0' COMMENT '是否桌面配置显示（已废弃）',
-  `sys` tinyint(1) NOT NULL DEFAULT '0' COMMENT '系统：1是0否',
-  PRIMARY KEY (`id`)
+`id` int(11) NOT NULL AUTO_INCREMENT,
+`name` varchar(50) DEFAULT NULL COMMENT '权限名称',
+`fc` varchar(50) DEFAULT NULL COMMENT '函数',
+`pid` int(11) NOT NULL DEFAULT '0' COMMENT '父类权限',
+`isdesktop` tinyint(1) NOT NULL DEFAULT '0' COMMENT '是否桌面配置显示（已废弃）',
+`sys` tinyint(1) NOT NULL DEFAULT '0' COMMENT '系统：1是0否',
+PRIMARY KEY (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COMMENT='角色权限表';
 -- ----------------------------
 -- Table structure for jz_shouchang
 -- ----------------------------
 DROP TABLE IF EXISTS `jz_shouchang`;
 CREATE TABLE `jz_shouchang` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `tid` int(11) NOT NULL DEFAULT '0' COMMENT '栏目ID',
-  `aid` int(11) NOT NULL DEFAULT '0' COMMENT '内容ID',
-  `userid` int(11) NOT NULL DEFAULT '0' COMMENT '会员ID',
-  `addtime` int(11) NOT NULL DEFAULT '0' COMMENT '添加时间',
-  PRIMARY KEY (`id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8mb4 COMMENT='用户收藏表';
+`id` int(11) NOT NULL AUTO_INCREMENT,
+`tid` int(11) NOT NULL DEFAULT '0' COMMENT '栏目ID',
+`aid` int(11) NOT NULL DEFAULT '0' COMMENT '内容ID',
+`userid` int(11) NOT NULL DEFAULT '0' COMMENT '会员ID',
+`addtime` int(11) NOT NULL DEFAULT '0' COMMENT '添加时间',
+PRIMARY KEY (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COMMENT='用户收藏表';
 -- ----------------------------
 -- Table structure for jz_sysconfig
 -- ----------------------------
 DROP TABLE IF EXISTS `jz_sysconfig`;
 CREATE TABLE `jz_sysconfig` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `field` varchar(50) DEFAULT NULL COMMENT '配置字段',
-  `title` varchar(255) DEFAULT NULL COMMENT '配置名称',
-  `tip` varchar(255) DEFAULT NULL COMMENT '字段填写提示',
-  `type` tinyint(1) NOT NULL DEFAULT '0' COMMENT '参数类型：1图片2单行文本3多行文本4编辑器5文件上传6下拉开启关闭选项7下拉是否选项8栏目选项9代码',
-  `data` text COMMENT '配置内容',
-  `typeid` tinyint(1) NOT NULL DEFAULT '0' COMMENT '配置栏ID',
-  `config` text COMMENT '单选多选配置信息',
-  `orders` int(11) NOT NULL DEFAULT '0' COMMENT '排序',
-  `sys` tinyint(1) NOT NULL DEFAULT '1' COMMENT '是否系统字段',
-  PRIMARY KEY (`id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8mb4 COMMENT='系统配置';
+`id` int(11) NOT NULL AUTO_INCREMENT,
+`field` varchar(50) DEFAULT NULL COMMENT '配置字段',
+`title` varchar(255) DEFAULT NULL COMMENT '配置名称',
+`tip` varchar(255) DEFAULT NULL COMMENT '字段填写提示',
+`type` tinyint(1) NOT NULL DEFAULT '0' COMMENT '参数类型：1图片2单行文本3多行文本4编辑器5文件上传6下拉开启关闭选项7下拉是否选项8栏目选项9代码',
+`data` text COMMENT '配置内容',
+`typeid` tinyint(1) NOT NULL DEFAULT '0' COMMENT '配置栏ID',
+`config` text COMMENT '单选多选配置信息',
+`orders` int(11) NOT NULL DEFAULT '0' COMMENT '排序',
+`sys` tinyint(1) NOT NULL DEFAULT '1' COMMENT '是否系统字段',
+PRIMARY KEY (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COMMENT='系统配置';
 -- ----------------------------
 -- Table structure for jz_tags
 -- ----------------------------
 DROP TABLE IF EXISTS `jz_tags`;
 CREATE TABLE `jz_tags` (
-  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `tid` int(11) DEFAULT '0' COMMENT '栏目ID',
-  `tids` varchar(500) DEFAULT NULL COMMENT '相关栏目',
-  `orders` int(11) DEFAULT '0' COMMENT '排序',
-  `comment_num` int(11) DEFAULT '0' COMMENT '评论数',
-  `molds` varchar(50) DEFAULT 'tags' COMMENT '模型标识',
-  `htmlurl` varchar(100) DEFAULT NULL COMMENT '栏目链接',
-  `keywords` varchar(50) DEFAULT NULL COMMENT '关键词',
-  `newname` varchar(50) DEFAULT NULL COMMENT '替换词（已废弃）',
-  `num` int(4) DEFAULT '-1' COMMENT '替换次数：-1不限制',
-  `isshow` tinyint(1) DEFAULT '1' COMMENT '是否显示：1显示隐藏',
-  `target` varchar(50) DEFAULT '_blank' COMMENT '外链',
-  `number` int(11) DEFAULT '0' COMMENT '数量',
-  `member_id` int(11) DEFAULT '0' COMMENT '发布会员',
-  `ownurl` varchar(255) DEFAULT NULL COMMENT '自定义链接',
-  `tags` varchar(255) DEFAULT NULL COMMENT 'TAG标签',
-  `addtime` int(11) NOT NULL DEFAULT '0' COMMENT '添加时间',
-  PRIMARY KEY (`id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8mb4 COMMENT='TAGS表';
+`id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+`tid` int(11) DEFAULT '0' COMMENT '栏目ID',
+`tids` varchar(500) DEFAULT NULL COMMENT '相关栏目',
+`orders` int(11) DEFAULT '0' COMMENT '排序',
+`comment_num` int(11) DEFAULT '0' COMMENT '评论数',
+`molds` varchar(50) DEFAULT 'tags' COMMENT '模型标识',
+`htmlurl` varchar(100) DEFAULT NULL COMMENT '栏目链接',
+`keywords` varchar(50) DEFAULT NULL COMMENT '关键词',
+`newname` varchar(50) DEFAULT NULL COMMENT '替换词（已废弃）',
+`num` int(4) DEFAULT '-1' COMMENT '替换次数：-1不限制',
+`isshow` tinyint(1) DEFAULT '1' COMMENT '是否显示：1显示隐藏',
+`target` varchar(50) DEFAULT '_blank' COMMENT '外链',
+`number` int(11) DEFAULT '0' COMMENT '数量',
+`member_id` int(11) DEFAULT '0' COMMENT '发布会员',
+`ownurl` varchar(255) DEFAULT NULL COMMENT '自定义链接',
+`tags` varchar(255) DEFAULT NULL COMMENT 'TAG标签',
+`addtime` int(11) NOT NULL DEFAULT '0' COMMENT '添加时间',
+`updatetime` int(11) NOT NULL DEFAULT '0' COMMENT '更新时间',
+PRIMARY KEY (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COMMENT='TAGS表';
 -- ----------------------------
 -- Table structure for jz_task
 -- ----------------------------
 DROP TABLE IF EXISTS `jz_task`;
 CREATE TABLE `jz_task` (
-  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `tid` int(11) DEFAULT '0' COMMENT '栏目ID',
-  `aid` int(11) DEFAULT '0' COMMENT '文章ID',
-  `userid` int(11) DEFAULT '0' COMMENT '发布会员',
-  `puserid` int(11) DEFAULT '0' COMMENT '对象会员',
-  `molds` varchar(50) DEFAULT NULL COMMENT '模块标识',
-  `type` varchar(50) DEFAULT NULL COMMENT '消息类型',
-  `body` varchar(255) DEFAULT NULL COMMENT '内容',
-  `url` varchar(255) DEFAULT NULL COMMENT '链接',
-  `isread` tinyint(1) DEFAULT '0' COMMENT '是否已读：1已读0未读',
-  `isshow` tinyint(1) DEFAULT '1' COMMENT '是否显示：1显示0隐藏',
-  `readtime` int(11) DEFAULT '0' COMMENT '阅读时间',
-  `addtime` int(11) DEFAULT '0' COMMENT '发布时间',
-  PRIMARY KEY (`id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8mb4 COMMENT='会员消息表';
+`id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+`tid` int(11) DEFAULT '0' COMMENT '栏目ID',
+`aid` int(11) DEFAULT '0' COMMENT '文章ID',
+`userid` int(11) DEFAULT '0' COMMENT '发布会员',
+`puserid` int(11) DEFAULT '0' COMMENT '对象会员',
+`molds` varchar(50) DEFAULT NULL COMMENT '模块标识',
+`type` varchar(50) DEFAULT NULL COMMENT '消息类型',
+`body` varchar(255) DEFAULT NULL COMMENT '内容',
+`url` varchar(255) DEFAULT NULL COMMENT '链接',
+`isread` tinyint(1) DEFAULT '0' COMMENT '是否已读：1已读0未读',
+`isshow` tinyint(1) DEFAULT '1' COMMENT '是否显示：1显示0隐藏',
+`readtime` int(11) DEFAULT '0' COMMENT '阅读时间',
+`addtime` int(11) DEFAULT '0' COMMENT '发布时间',
+PRIMARY KEY (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COMMENT='会员消息表';
 -- ----------------------------
 -- Records of jz_article
 -- ----------------------------
@@ -946,6 +965,12 @@ INSERT INTO `jz_fields` (`id`,`field`,`molds`,`fieldname`,`tips`,`fieldtype`,`ti
 INSERT INTO `jz_fields` (`id`,`field`,`molds`,`fieldname`,`tips`,`fieldtype`,`tids`,`fieldlong`,`body`,`orders`,`ismust`,`isshow`,`isadmin`,`issearch`,`islist`,`format`,`vdata`,`isajax`,`listorders`,`isext`,`width`,`ishome`) VALUES (119, 'addtime', 'message', '提交时间', NULL, 11, ',4,', '11', NULL, 2, 0, 1, 1, 1, 1, NULL, NULL, 1, 0, 0, NULL, 1);
 INSERT INTO `jz_fields` (`id`,`field`,`molds`,`fieldname`,`tips`,`fieldtype`,`tids`,`fieldlong`,`body`,`orders`,`ismust`,`isshow`,`isadmin`,`issearch`,`islist`,`format`,`vdata`,`isajax`,`listorders`,`isext`,`width`,`ishome`) VALUES (120, 'reply', 'message', '回复留言', NULL, 3, ',4,', NULL, NULL, 2, 0, 1, 1, 0, 0, NULL, NULL, 1, 0, 0, NULL, 1);
 INSERT INTO `jz_fields` (`id`,`field`,`molds`,`fieldname`,`tips`,`fieldtype`,`tids`,`fieldlong`,`body`,`orders`,`ismust`,`isshow`,`isadmin`,`issearch`,`islist`,`format`,`vdata`,`isajax`,`listorders`,`isext`,`width`,`ishome`) VALUES (121, 'uploadsize', 'member', '上传限制', '单位M，上传总文件大小限制，超过此大小不允许上传', 4, ',0,', '11', NULL, 2, 0, 0, 1, 0, 0, NULL, '0', 1, 0, 0, NULL, 0);
+INSERT INTO `jz_fields` (`id`,`field`,`molds`,`fieldname`,`tips`,`fieldtype`,`tids`,`fieldlong`,`body`,`orders`,`ismust`,`isshow`,`isadmin`,`issearch`,`islist`,`format`,`vdata`,`isajax`,`listorders`,`isext`,`width`,`ishome`) VALUES ('122','updatetime','article','更新时间', NULL,'11',NULL,'11', NULL,'1','0','1','1','0','1', NULL,'0','1','0','0','150','0');
+INSERT INTO `jz_fields` (`id`,`field`,`molds`,`fieldname`,`tips`,`fieldtype`,`tids`,`fieldlong`,`body`,`orders`,`ismust`,`isshow`,`isadmin`,`issearch`,`islist`,`format`,`vdata`,`isajax`,`listorders`,`isext`,`width`,`ishome`) VALUES ('123','updatetime','product','更新时间', NULL,'11',NULL,'11', NULL,'1','0','1','1','0','1', NULL,'0','1','99','0','120','0');
+INSERT INTO `jz_fields` (`id`,`field`,`molds`,`fieldname`,`tips`,`fieldtype`,`tids`,`fieldlong`,`body`,`orders`,`ismust`,`isshow`,`isadmin`,`issearch`,`islist`,`format`,`vdata`,`isajax`,`listorders`,`isext`,`width`,`ishome`) VALUES ('124','updatetime','pingjia','更新时间','选择时间','11',NULL,'11', NULL,'100','0','1','1','0','1','date_2','0','1','0','0', NULL,'1');
+INSERT INTO `jz_fields` (`id`,`field`,`molds`,`fieldname`,`tips`,`fieldtype`,`tids`,`fieldlong`,`body`,`orders`,`ismust`,`isshow`,`isadmin`,`issearch`,`islist`,`format`,`vdata`,`isajax`,`listorders`,`isext`,`width`,`ishome`) VALUES (125, 'updatetime', 'message', '更新时间', NULL, 11, ',4,', '11', NULL, 2, 0, 1, 1, 1, 1, NULL, NULL, 1, 0, 0, NULL, 1);
+INSERT INTO `jz_fields` (`id`,`field`,`molds`,`fieldname`,`tips`,`fieldtype`,`tids`,`fieldlong`,`body`,`orders`,`ismust`,`isshow`,`isadmin`,`issearch`,`islist`,`format`,`vdata`,`isajax`,`listorders`,`isext`,`width`,`ishome`) VALUES ('126','updatetime','links','更新时间','系统自带','11', NULL,'11', NULL,'0','0','0','0','0','0','date_2','0','1','0','0', NULL,'0');
+INSERT INTO `jz_fields` (`id`,`field`,`molds`,`fieldname`,`tips`,`fieldtype`,`tids`,`fieldlong`,`body`,`orders`,`ismust`,`isshow`,`isadmin`,`issearch`,`islist`,`format`,`vdata`,`isajax`,`listorders`,`isext`,`width`,`ishome`) VALUES ('127','updatetime','tags','更新时间','系统自带','11', NULL,'11', NULL,'0','0','1','1','0','0','date_2','0','1','0','0', NULL,'1');
 -- ----------------------------
 -- Records of jz_hook
 -- ----------------------------
@@ -1409,7 +1434,7 @@ INSERT INTO `jz_shouchang` (`id`,`tid`,`aid`,`userid`,`addtime`) VALUES ('4','7'
 -- ----------------------------
 -- Records of jz_sysconfig
 -- ----------------------------
-INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`,`typeid`,`config`,`orders`,`sys`) VALUES ('1','web_version','系统版号','版本号是系统自带，请勿改动','0','2.5.2','0', NULL,'0','1');
+INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`,`typeid`,`config`,`orders`,`sys`) VALUES ('1','web_version','系统版号','版本号是系统自带，请勿改动','0','2.5.4','0', NULL,'0','1');
 INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`,`typeid`,`config`,`orders`,`sys`) VALUES ('2','web_name','网站SEO名称','控制在25个字、50个字节以内','2','极致CMS建站系统','1', NULL,'0','1');
 INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`,`typeid`,`config`,`orders`,`sys`) VALUES ('3','web_keyword','网站SEO关键词','5个左右，8汉字以内，用英文逗号隔开','2','极致建站,cms,开源cms,免费cms,cms系统,phpcms,免费企业建站,建站系统,企业cms,jizhicms,极致cms,建站cms,建站系统,极致博客,极致blog,内容管理系统','1', NULL,'0','1');
 INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`,`typeid`,`config`,`orders`,`sys`) VALUES ('4','web_desc','网站SEO描述','控制在80个汉字，160个字符以内','3','极致CMS是开源免费的PHPCMS网站内容管理系统，无商业授权，简单易用，提供丰富的插件，帮您实现零基础搭建不同类型网站（企业站，门户站，个人博客站等），是您建站的好帮手。极速建站，就选极致CMS。','1', NULL,'0','1');
@@ -1535,7 +1560,7 @@ INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`,`typeid`,`c
 INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`,`typeid`,`config`,`orders`,`sys`) VALUES ('134','onlyuserupload','会员上传限制','开启后，仅会员才可以上传！受会员上传大小限制！','6','1','2','开启=1,关闭=0','1','1');
 INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`,`typeid`,`config`,`orders`,`sys`) VALUES ('135','cachefilenum','缓存文件数','0表示不限制，最大不超过500','2','100','0',null,0,'1');
 INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`,`typeid`,`config`,`orders`,`sys`) VALUES ('136','watermark_word','水印文字','只有没有水印图片的时候才生效','2','这个是水印文字','8',null,96,'1');
-INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`,`typeid`,`config`,`orders`,`sys`) VALUES ('137','watermark_font','水印字体','默认simsun.ttf，存放在static/common','2','simsun.ttf','8',null,95,'1');
+INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`,`typeid`,`config`,`orders`,`sys`) VALUES ('137','watermark_font','水印字体','默认Alibaba-PuHuiTi-Bold.ttf，存放在static/common','2','Alibaba-PuHuiTi-Bold.ttf','8',null,95,'1');
 INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`,`typeid`,`config`,`orders`,`sys`) VALUES ('138','watermark_size','水印大小','默认24','2','24','8',null,94,'1');
 INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`,`typeid`,`config`,`orders`,`sys`) VALUES ('139','watermark_h','水印行高','默认34','2','34','8',null,93,'1');
 INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`,`typeid`,`config`,`orders`,`sys`) VALUES ('140','watermark_rgb','水印颜色','默认白色：#FFFFFF','2','#FFFFFF','8',null,92,'1');
@@ -1548,12 +1573,15 @@ INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`,`typeid`,`c
 INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`,`typeid`,`config`,`orders`,`sys`) VALUES ('147','text_size','文字大小','默认24','2','24','8',null,85,'1');
 INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`,`typeid`,`config`,`orders`,`sys`) VALUES ('148','text_h','文字行高','默认34','2','34','8',null,84,'1');
 INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`,`typeid`,`config`,`orders`,`sys`) VALUES ('149','text_rgb','文字颜色','默认白色：#FFFFFF','2','#FFFFFF','8',null,83,'1');
-INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`,`typeid`,`config`,`orders`,`sys`) VALUES ('150','text_font','文字字体','默认simsun.ttf，存放在static/common','2','simsun.ttf','8',null,82,'1');
+INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`,`typeid`,`config`,`orders`,`sys`) VALUES ('150','text_font','文字字体','默认Alibaba-PuHuiTi-Bold.ttf，存放在static/common','2','Alibaba-PuHuiTi-Bold.ttf','8',null,82,'1');
 INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`,`typeid`,`config`,`orders`,`sys`) VALUES ('151','text_wz','水印位置','九宫格1-9，默认5中间','2','5','8',null,81,'1');
 INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`,`typeid`,`config`,`orders`,`sys`) VALUES ('152','text_x','微调X','相对于水印位置再进行X轴微调，默认0','2','0','8',null,80,'1');
 INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`,`typeid`,`config`,`orders`,`sys`) VALUES ('153','text_y','微调Y','相对于水印位置再进行Y轴微调，默认0','2','0','8',null,79,'1');
 INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`,`typeid`,`config`,`orders`,`sys`) VALUES ('154','islocal','是否开启图片本地化','图片本地化可以将内容的外网图片保存到服务器','6','1','2','开启=1,关闭=0','1','1');
 INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`,`typeid`,`config`,`orders`,`sys`) VALUES ('155','openredis','是否开启Redis','开启Redis后可以使用token登录前台账户，但必须服务器安装了Redis，在config里面需要配置redis信息','6','0','2','开启=1,关闭=0','1','1');
+INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`,`typeid`,`config`,`orders`,`sys`) VALUES ('156','sitemap_config','sitemap配置','用于sitemap生成','3','a:3:{s:9:"page_size";i:10000;s:7:"tagsurl";s:19:"/tags/index?id={id}";s:8:"filetype";s:3:"xml";}','0','','1','1');
+INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`,`typeid`,`config`,`orders`,`sys`) VALUES ('157','schedule_table','定时发布表','带有addtime发布时间字段的表才可以使用定时发布功能,用|分隔','3','article|product','2','','1','1');
+INSERT INTO `jz_sysconfig` (`id`,`field`,`title`,`tip`,`type`,`data`,`typeid`,`config`,`orders`,`sys`) VALUES ('158','upload_file_name','上传文件重命名','上传文件后是否重命名，默认开启重命名，关闭后上传文件名不会变','6','1','2','开启=1,关闭=0','1','1');
 -- ----------------------------
 -- Records of jz_tags
 -- ----------------------------

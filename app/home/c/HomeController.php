@@ -198,6 +198,12 @@ class HomeController extends CommonController
 			}
 			$sql = ' isshow=1 ';
 			$molds = $res['molds'];
+            if($this->webconf['schedule_table']){
+                $tables = explode('|',$this->webconf['schedule_table']);
+                if(in_array($molds,$tables)){
+                    $sql.=' and addtime<='.time().' ';
+                }
+            }
             $sql .= " and (tid in (".implode(',',$child).") or tids like '%,".$this->type['id'].",%' )";
             $page = new Page($molds);
             $jzattr = $this->frparam('attr',1);
@@ -263,9 +269,19 @@ class HomeController extends CommonController
 			$this->nextpage = $page->nextpage;//下一页
 			$this->allpage = $page->allpage;//总页数
 			//清空screen筛选
-			if(isset($_SESSION['screen'])){
-				$_SESSION['screen'] = null;
-			}
+            if(isset($GLOBALS['Redis'])){
+                if($GLOBALS['Redis']->get('screen')){
+                    $GLOBALS['Redis']->setex('screen',0,'');
+                }
+            }else if(session_id()){
+                if(isset($_SESSION['screen'])){
+                    $_SESSION['screen'] = null;
+                }
+            }else{
+                if(isset($_COOKIE['screen'])){
+                    setcookie('screen','',-1,'/');
+                }
+            }
 			$this->filters = [];
 			if($this->frparam('ajax') && $this->webconf['isajax']){
 				
@@ -456,6 +472,12 @@ class HomeController extends CommonController
 			}
 			$sql = ' isshow=1 ';
 			$molds = $res['molds'];
+            if($this->webconf['schedule_table']){
+                $tables = explode('|',$this->webconf['schedule_table']);
+                if(in_array($molds,$tables)){
+                    $sql.= ' and addtime<='.time().' ';
+                }
+            }
 			$sql .= ' and tid in ('.implode(',',$child).') ';
 			$page = new Page($molds);
 			
@@ -488,9 +510,19 @@ class HomeController extends CommonController
 			$this->nextpage = $page->nextpage;//下一页
 			$this->allpage = $page->allpage;//总页数
 			//清空screen筛选
-			if(isset($_SESSION['screen'])){
-				$_SESSION['screen'] = null;
-			}
+            if(isset($GLOBALS['Redis'])){
+                if($GLOBALS['Redis']->get('screen')){
+                    $GLOBALS['Redis']->setex('screen',0,'');
+                }
+            }else if(session_id()){
+                if(isset($_SESSION['screen'])){
+                    $_SESSION['screen'] = null;
+                }
+            }else{
+                if(isset($_COOKIE['screen'])){
+                    setcookie('screen','',-1,'/');
+                }
+            }
 			$this->filters = [];
 			
 			if($this->frparam('ajax') && $this->webconf['isajax']){
@@ -643,9 +675,20 @@ class HomeController extends CommonController
         $details['class_litpic'] = $this->type['litpic'];
         $details['format_addtime'] = $details['addtime'] ? date('Y-m-d H:i:s',$details['addtime']) : '';
 		$this->jz = $details;
-		
-		$aprev_sql = ' id<'.$id.' and isshow=1 and tid in ('.implode(',',$this->classtypedata[$this->type['id']]['children']['ids']).') ';
-		$anext_sql = ' id>'.$id.' and isshow=1 and tid in ('.implode(',',$this->classtypedata[$this->type['id']]['children']['ids']).') ';
+        $is_schedule = false;
+        if($this->webconf['schedule_table']){
+            $tables = explode('|',$this->webconf['schedule_table']);
+            if(in_array($this->type['molds'],$tables)){
+                $is_schedule = true;
+            }
+        }
+        if($is_schedule){
+            $aprev_sql = ' id<'.$id.' and isshow=1 and tid in ('.implode(',',$this->classtypedata[$this->type['id']]['children']['ids']).')  and addtime<='.time();
+            $anext_sql = ' id>'.$id.' and isshow=1 and tid in ('.implode(',',$this->classtypedata[$this->type['id']]['children']['ids']).') and addtime<='.time();
+        }else{
+            $aprev_sql = ' id<'.$id.' and isshow=1 and tid in ('.implode(',',$this->classtypedata[$this->type['id']]['children']['ids']).') ';
+            $anext_sql = ' id>'.$id.' and isshow=1 and tid in ('.implode(',',$this->classtypedata[$this->type['id']]['children']['ids']).') ';
+        }
 		$aprev = M($this->type['molds'])->find($aprev_sql,'id desc');
 		$anext = M($this->type['molds'])->find($anext_sql,'id asc');
 		if($aprev){
@@ -777,7 +820,12 @@ class HomeController extends CommonController
 			}else if($tid){
 				$sql.=' and tid in('.$tid.') ';
 			}
-			
+            if($this->webconf['schedule_table']){
+                $tables = explode('|',$this->webconf['schedule_table']);
+                if(in_array($molds,$tables)){
+                    $sql.=' and addtime<='.time().' ';
+                }
+            }
 			$page = new Page($molds);
 			$page->typeurl = 'search';
 			$this->currentpage = $this->frparam('page',0,1);
@@ -870,9 +918,19 @@ class HomeController extends CommonController
 		$tid = $this->frparam('tid',6);
 		if($molds && is_array($molds)){
 			$allow_table = [];
+            $is_schedule = false;
+            $schedule_tables = [];
+            if($this->webconf['schedule_table']){
+                $schedule_tables = explode('|',$this->webconf['schedule_table']);
+                $is_schedule = true;
+
+            }
 			foreach($molds as $v){
 				if(in_array($v,$tables)){
 					$allow_table[]=strtolower($v);
+                    if(!in_array($v,$schedule_tables)){
+                        $is_schedule = false;
+                    }
 				}
 			}
 			if(count($allow_table)==0){
@@ -916,6 +974,9 @@ class HomeController extends CommonController
 				$sql.=' and tid in('.$tid.') ';
 			}
 			$sqlx = [];
+            if(stripos($this->webconf['search_fields_muti'],'addtime')!==false && $is_schedule){
+                $sql.=' and addtime<='.time().' ';
+            }
 			foreach($allow_table as $v){
 				$sqlx[] = ' select '.$this->webconf['search_fields_muti'].' from '.DB_PREFIX.$v." where ".$sql;
 			}

@@ -24,7 +24,7 @@
  */
 
 
-function M($name=null) {
+function M($name = null,$prefix = 1) {
 	if(empty($name)){
 		$path = 'frphp\\lib\\Model';
 		return $path::getInstance();
@@ -37,9 +37,9 @@ function M($name=null) {
 		$name = APP_HOME.'\\'.HOME_MODEL.'\\'.$name.'Model';
 		if(!class_exists($name)){
 			$path = 'frphp\\lib\\Model';
-			return $path::getInstance($table);
+			return $path::getInstance($table,$prefix);
 		}else{
-			return $name::getInstance($table);
+			return $name::getInstance($table,$prefix);
 		}
 		
 	}

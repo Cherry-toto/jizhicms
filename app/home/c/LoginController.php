@@ -73,7 +73,7 @@ class LoginController extends CommonController
 			}
 			
 			
-			$where['pass'] = md5(md5($data['password']).md5($data['password']));
+			$where['pass'] = md5($data['password'].$data['password']);
 			$where['tel'] = $data['username'];
 			$res = M('member')->find($where);
 			//unset($where['tel']);
@@ -84,7 +84,7 @@ class LoginController extends CommonController
 			$where['email'] = $data['username'];
 			unset($where['tel']);
 			unset($where['token']);
-			$where['pass'] = md5(md5($data['password']).md5($data['password']));
+			$where['pass'] = md5($data['password'].$data['password']);
 			$res2 = M('member')->find($where);
 
 			

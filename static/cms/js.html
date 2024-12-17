@@ -5,6 +5,7 @@
 <!-- Main JS -->
 <script src="{$tpl}static/js/main.js"></script>
 <script src="{$common}layui/layui.js"></script>
+<script src="/static/common/md5.js" charset="utf-8"></script>
 <script>
 function likes(tid,id){
         $.ajax({
@@ -91,7 +92,7 @@ function mlogin(){
 	{else}
 	var yzm = '';
 	{/if}
-	
+		pass = hex_md5(pass)
 	$.post('/login/index',{tel:user,password:pass,vercode:yzm,ajax:1},function(res){
 		if(res.code==0){
 			layer.msg('登录成功！',{icon: 6,time: 2000},function(){

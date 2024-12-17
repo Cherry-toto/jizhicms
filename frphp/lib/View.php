@@ -279,22 +279,22 @@ class View
 				$tids = " tids like  '%,".$a['tid'].",%'  ";
 			}
 		}
-		$fields = '1=1';
+		$where = '1=1';
 		if(isset($a['fields'])){
 			if(strpos($a['fields'],',')!==false){
 				$a['fields'] = str_replace(',',"','",$a['fields']);
 			}
-			$fields = " field in ('".$a['fields']."') ";
+            $where = " field in ('".$a['fields']."') ";
 		}
 
-		$sql=' fieldtype in(7,8,12) and  isshow=1 and field!=\'isshow\' and molds='.$molds.'  and '.$tids.' and '.$fields;
+		$sql=' fieldtype in(7,8,12) and  isshow=1 and field!=\'isshow\' and molds='.$molds.'  and '.$tids.' and addtime<='.time().' and '.$where;
 		$txt="<?php
 		\$table ='fields';
 		\$w=\"".$sql."\";
 		\$order=$order;";
 		$as = trim($as,"'");
 		$txt .= "
-		$".$as."_data = M(\$table)->findAll(\$w,\$order);";
+		$".$as."_data = M(\$table)->findAll(\$w,\$order,\$fields);";
 		
 
 		$txt.='$n=0;foreach($'.$as.'_data as $'.$as.'_key=>  $'.$as.'){
@@ -332,83 +332,83 @@ class View
 	}
 	
 	//loop全局标签
-	private function template_html_loop($f){
-		preg_match_all('/.*?(\s*.*?=.*?[\"|\'].*?[\"|\']\s).*?/si',' '.$f.' ',$aa);
-		$a=array();foreach($aa[1] as $v){$t=explode('=',trim(str_replace(array('"'),"'",$v)));$a=array_merge($a,array(trim($t[0]) => trim($t[1])));}
-		if(isset($a['table'])){
-			if(strpos($a['table'],'$')!==FALSE){$a['table']=trim($a['table'],"'");}
-			$db=$a['table'];
-		}else{
-			if(!isset($a['tid'])){ exit('缺少table参数！');}
-			if(strpos($a['tid'],'$')!==false){
-				$db = ' $classtypedata['.trim($a['tid'],"'").']["molds"] ';
-			}else{
-				if(strpos($a['tid'],',')!==false){
-					$tids = explode(',',$a['tid']);
-					$db = ' $classtypedata['.trim($tids[0],"'").']["molds"] ';
-				}else{
-					$db = ' $classtypedata['.trim($a['tid'],"'").']["molds"] ';
-				}
-			}
-			
-		}
-		if(isset($a['limit'])){
-			if(strpos($a['limit'],'$')!==false){
-				$limit=trim($a['limit'],"'");
-			}else{
-				$limit=$a['limit'];
-			}
-		}else{$limit='null';}
-		if(isset($a['notempty'])){$notempty=trim($a['notempty'],"'");}else{$notempty=false;}
-		if(isset($a['empty'])){$empty=trim($a['empty'],"'");}else{$empty=false;}
-		if(isset($a['fields'])){
-			if(strpos($a['fields'],'$')!==false){
-				$fields=trim($a['fields'],"'");
-			}else{
-				$fields=$a['fields'];
-			}
-			
-		}else{$fields='null';}
-		if(isset($a['isall'])){$isall=trim($a['isall'],"'");}else{$isall=false;}
-		if(isset($a['as'])){$as=$a['as'];}else{$as='v';}
-		if(isset($a['day'])){$day=$a['day'];}else{$day=false;}
-		if(isset($a['jzpage'])){$jzpage=trim($a['jzpage'],"'");}else{$jzpage='page';}
-		if(isset($a['sql'])){$sql=trim($a['sql'],"'");}else{$sql='';}
-		if(isset($a['jzcache'])){$jzcache=trim($a['jzcache'],"'");}else{$jzcache=false;}
-		if(isset($a['jzcachetime'])){$jzcachetime= 60 * trim($a['jzcachetime'],"'");}else{$jzcachetime=30*60;}
-		if(isset($a['orderby'])){
-			$order=$a['orderby'];
-			if(strpos($a['orderby'],'$')!==FALSE){$order=trim($a['orderby'],"'");}
-			//$order=' '.str_replace('|',' ',$order).' ';
-		}else{$order="' id desc '";}
-		if(isset($a['like'])){
-			// like='title|学习,keywords|学习' => title like '%学习%' and keywords like '%学习%';
-			$lk = array();
-			if(strpos($a['like'],',')!==false){
-				$like = explode(',',trim($a['like'],"'"));
-				foreach($like as $v){
-					$s = explode('|',$v);
-					if(strpos($s[1],'$')!==false){
-						$lk[] = " ".$s[0]." like \'%'.".trim($s[1]).".'%\' ";
-					}else{
-						$lk[]= " ".$s[0]." like \'%".trim($s[1])."%\' ";
-					}
-					
-				}
-				$lk = " and ( ". implode(" or ",$lk)." )";
-			}else{
-				if(strpos($a['like'],'$')!==false){
-					$like = explode('|',trim($a['like'],"'"));
-					$lk = " and ".$like[0]." like \'%'.".trim($like[1]).".'%\' ";
-				}else{
-					$like = explode('|',trim($a['like'],"'"));
-					$lk = " and ".$like[0]." like \'%".trim($like[1])."%\' ";
-				}
-				
-			}
-			
-		}else{ $lk='';}
-		if(isset($a['notlike'])){
+    private function template_html_loop($f){
+        preg_match_all('/.*?(\s*.*?=.*?[\"|\'].*?[\"|\']\s).*?/si',' '.$f.' ',$aa);
+        $a=array();foreach($aa[1] as $v){$t=explode('=',trim(str_replace(array('"'),"'",$v)));$a=array_merge($a,array(trim($t[0]) => trim($t[1])));}
+        if(isset($a['table'])){
+            if(strpos($a['table'],'$')!==FALSE){$a['table']=trim($a['table'],"'");}
+            $db=$a['table'];
+        }else{
+            if(!isset($a['tid'])){ exit('缺少table参数！');}
+            if(strpos($a['tid'],'$')!==false){
+                $db = ' $classtypedata['.trim($a['tid'],"'").']["molds"] ';
+            }else{
+                if(strpos($a['tid'],',')!==false){
+                    $tids = explode(',',$a['tid']);
+                    $db = ' $classtypedata['.trim($tids[0],"'").']["molds"] ';
+                }else{
+                    $db = ' $classtypedata['.trim($a['tid'],"'").']["molds"] ';
+                }
+            }
+            
+        }
+        if(isset($a['limit'])){
+            if(strpos($a['limit'],'$')!==false){
+                $limit=trim($a['limit'],"'");
+            }else{
+                $limit=$a['limit'];
+            }
+        }else{$limit='null';}
+        if(isset($a['notempty'])){$notempty=trim($a['notempty'],"'");}else{$notempty=false;}
+        if(isset($a['empty'])){$empty=trim($a['empty'],"'");}else{$empty=false;}
+        if(isset($a['fields'])){
+            if(strpos($a['fields'],'$')!==false){
+                $fields=trim($a['fields'],"'");
+            }else{
+                $fields=$a['fields'];
+            }
+            
+        }else{$fields='null';}
+        if(isset($a['isall'])){$isall=trim($a['isall'],"'");}else{$isall=false;}
+        if(isset($a['as'])){$as=$a['as'];}else{$as='v';}
+        if(isset($a['day'])){$day=$a['day'];}else{$day=false;}
+        if(isset($a['jzpage'])){$jzpage=trim($a['jzpage'],"'");}else{$jzpage='page';}
+        if(isset($a['sql'])){$sql=trim($a['sql'],"'");}else{$sql='';}
+        if(isset($a['jzcache'])){$jzcache=trim($a['jzcache'],"'");}else{$jzcache=false;}
+        if(isset($a['jzcachetime'])){$jzcachetime= 60 * trim($a['jzcachetime'],"'");}else{$jzcachetime=30*60;}
+        if(isset($a['orderby'])){
+            $order=$a['orderby'];
+            if(strpos($a['orderby'],'$')!==FALSE){$order=trim($a['orderby'],"'");}
+            //$order=' '.str_replace('|',' ',$order).' ';
+        }else{$order="' id desc '";}
+        if(isset($a['like'])){
+            // like='title|学习,keywords|学习' => title like '%学习%' and keywords like '%学习%';
+            $lk = array();
+            if(strpos($a['like'],',')!==false){
+                $like = explode(',',trim($a['like'],"'"));
+                foreach($like as $v){
+                    $s = explode('|',$v);
+                    if(strpos($s[1],'$')!==false){
+                        $lk[] = " ".$s[0]." like \'%'.".trim($s[1]).".'%\' ";
+                    }else{
+                        $lk[]= " ".$s[0]." like \'%".trim($s[1])."%\' ";
+                    }
+                    
+                }
+                $lk = " and ( ". implode(" or ",$lk)." )";
+            }else{
+                if(strpos($a['like'],'$')!==false){
+                    $like = explode('|',trim($a['like'],"'"));
+                    $lk = " and ".$like[0]." like \'%'.".trim($like[1]).".'%\' ";
+                }else{
+                    $like = explode('|',trim($a['like'],"'"));
+                    $lk = " and ".$like[0]." like \'%".trim($like[1])."%\' ";
+                }
+                
+            }
+            
+        }else{ $lk='';}
+        if(isset($a['notlike'])){
             $not = array();
             if(strpos($a['notlike'],',')!==false){
                 $like = explode(',',trim($a['notlike'],"'"));
@@ -433,106 +433,110 @@ class View
                 
             }
         }else{
-		    $notlike = '';
+            $notlike = '';
         }
-		//不在某个参数范围内
-		$notin_sql = '';
-		if(isset($a['notin'])){
-			if(strpos($a['notin'],'|')!==false){
-				$notin = explode('|',trim($a['notin'],"'"));
-				if(strpos($notin[1],'$')!==false){
-					$notin_sql = ' and '.$notin[0].' not in(\'.'.$notin[1].'.\') ';
-				}else{
-					$notin_sql = ' and '.$notin[0].' not in('.$notin[1].') ';
-				}
-				
-			}
-		}
-		//在某个参数范围内
-		$in_sql = '';
-		if(isset($a['in'])){
-			if(strpos($a['in'],'|')!==false){
-				$in = explode('|',trim($a['in'],"'"));
-				if(strpos($in[1],'$')!==false){
-					$in_sql = ' and '.$in[0].' in(\'.'.$in[1].'.\') ';
-				}else{
-					$in_sql = ' and '.$in[0].' in('.$in[1].') ';
-				}
-				
-			}
-		}
-		if($sql){
-			$sql = " and ('.".$sql.".' ) ";
-		}
-		unset($a['table']);unset($a['orderby']);unset($a['limit']);unset($a['as']);unset($a['like']);unset($a['notlike']);unset($a['fields']);unset($a['isall']);unset($a['notin']);unset($a['notempty']);unset($a['empty']);unset($a['day']);unset($a['in']);unset($a['sql']);unset($a['jzpage']);unset($a['jzcache']);unset($a['jzcachetime']);
-		$pages='';
-		$w = ' 1=1 ';
+        //不在某个参数范围内
+        $notin_sql = '';
+        if(isset($a['notin'])){
+            if(strpos($a['notin'],'|')!==false){
+                $notin = explode('|',trim($a['notin'],"'"));
+                if(strpos($notin[1],'$')!==false){
+                    $notin_sql = ' and '.$notin[0].' not in(\'.'.$notin[1].'.\') ';
+                }else{
+                    $notin_sql = ' and '.$notin[0].' not in('.$notin[1].') ';
+                }
+                
+            }
+        }
+        //在某个参数范围内
+        $in_sql = '';
+        if(isset($a['in'])){
+            if(strpos($a['in'],'|')!==false){
+                $in = explode('|',trim($a['in'],"'"));
+                if(strpos($in[1],'$')!==false){
+                    $in_sql = ' and '.$in[0].' in(\'.'.$in[1].'.\') ';
+                }else{
+                    $in_sql = ' and '.$in[0].' in('.$in[1].') ';
+                }
+                
+            }
+        }
+        if($sql){
+            $sql = " and ('.".$sql.".' ) ";
+        }
+        if(isset($a['notjz'])){
+            $jz = 0;
+        }else{
+            $jz = 1;
+        }
+        unset($a['table']);unset($a['orderby']);unset($a['limit']);unset($a['as']);unset($a['like']);unset($a['notlike']);unset($a['fields']);unset($a['isall']);unset($a['notin']);unset($a['notempty']);unset($a['empty']);unset($a['day']);unset($a['in']);unset($a['sql']);unset($a['jzpage']);unset($a['jzcache']);unset($a['jzcachetime']);unset($a['notjz']);
+        $w = ' 1=1 ';
         $fu = '';
-		$ispage=false;
-		if($jzpage!='page'){
-			if(stripos($jzpage,'$')!==false){
-				$jzpage = "'.$jzpage.'";
-			}
-			$pagenum = "\$pagenum = (int)\$_REQUEST['".$jzpage."'] ? (int)\$_REQUEST['".$jzpage."']  : 1; ";
-		}else{
-			$pagenum = "\$pagenum = isset(\$frpage) ? \$frpage : (int)\$_REQUEST['page'];";
-		}
-		
-		foreach($a as $k=>$v){
-			if(strpos($v,'$')===FALSE){
-				//$v = str_ireplace("'",'',$v);
-				$v = trim($v,"'");
-			}
-			
-			if($k=='ispage'){
-				$ispage=true;
-			}else if($k=='tid'){
+        $ispage=false;
+        if($jzpage!='page'){
+            if(stripos($jzpage,'$')!==false){
+                $jzpage = "'.$jzpage.'";
+            }
+            $pagenum = "\$pagenum = (int)\$_REQUEST['".$jzpage."'] ? (int)\$_REQUEST['".$jzpage."']  : 1; ";
+        }else{
+            $pagenum = "\$pagenum = isset(\$frpage) ? \$frpage : (int)\$_REQUEST['page'];";
+        }
+        
+        foreach($a as $k=>$v){
+            if(strpos($v,'$')===FALSE){
+                //$v = str_ireplace("'",'',$v);
+                $v = trim($v,"'");
+            }
+            
+            if($k=='ispage'){
+                $ispage=true;
+            }else if($k=='tid'){
                 $classtypedata = classTypeData();
-				if(strpos($a['tid'],',')!==false){
-					
-					if($isall){
-						$a['tid'] = trim($a['tid'],"'");
-						$tids=explode(',',$a['tid']);
-						$ss = [];
+                if(strpos($a['tid'],',')!==false){
+                    
+                    if($isall){
+                        $a['tid'] = trim($a['tid'],"'");
+                        $tids=explode(',',$a['tid']);
+                        $ss = [];
                         $fu = " \$fu = [];\$f = [];";
-						foreach($tids as $s){
-							if($classtypedata[$s]){
+                        foreach($tids as $s){
+                            if($classtypedata[$s]){
                                 $ss[] = '  tid in(\'.implode(",",$classtypedata['.$s.']["children"]["ids"]).\') ';
                                 $fu .= " \$fu = array_merge(\$fu,\$classtypedata[".$s."][\"children\"][\"ids\"]);";
                             }
-
-						}
+                            
+                        }
                         $fu .= "foreach(\$fu as \$fv){
 							\$f[] = 'tids like \'%,'.\$fv.',%\'';
 							
 						}";
-						if(count($ss)){
+                        if(count($ss)){
                             $w.=' and ('.implode(' or ',$ss).' or \'.implode(\' or \',$f).\' )';
                         }
-
-					}else{
-						$w.=' and tid in('.trim($a['tid'],"'").') ';
-					}
-					
-					
-				}else{
-					
-					if(strpos($a['tid'],'$')!==false){
-						if($isall){
+                        
+                    }else{
+                        $w.=' and tid in('.trim($a['tid'],"'").') ';
+                    }
+                    
+                    
+                }else{
+                    
+                    if(strpos($a['tid'],'$')!==false){
+                        if($isall){
                             $fu = " \$f = []; \$fu = \$classtypedata[".trim($v,"'")."]['children']['ids'];";
                             $fu .= "foreach(\$fu as \$fv){
 								\$f[] = 'tids like \'%,'.\$fv.',%\'  ';
 								
 							}";
-							$w.= ' and ( tid in(\'.implode(",",$classtypedata['.trim($v,"'").']["children"]["ids"]).\') or \'.implode(\' or \',$f).\' ) ';
-						}else{
-							$w.="and tid='.".trim($v,"'").".' ";
-						}
-						
-						
-					}else{
-						
-						if($isall){
+                            $w.= ' and ( tid in(\'.implode(",",$classtypedata['.trim($v,"'").']["children"]["ids"]).\') or \'.implode(\' or \',$f).\' ) ';
+                        }else{
+                            $w.="and tid='.".trim($v,"'").".' ";
+                        }
+                        
+                        
+                    }else{
+                        
+                        if($isall){
                             $fu = " \$f = []; \$fu = \$classtypedata[".trim($v,"'")."]['children']['ids'];";
                             $fu .= "foreach(\$fu as \$fv){
 								\$f[] = 'tids like \'%,'.\$fv.',%\'  ';
@@ -540,100 +544,106 @@ class View
                             if($classtypedata[$v]) {
                                 $w .= ' and  (tid in(\'.implode(",",$classtypedata[' . trim($v, "'") . ']["children"]["ids"]).\')  or  \'.implode(\' or \',$f).\') ';
                             }
-						}else{
-							$w.="and tid=".$v." ";
-						}
-						
-						
-					}
-				}
-				
-			}else if($k=='istop'){
-				$w.=" and jzattr like \'%,1,%\' ";
-			}else if($k=='ishot'){
-				$w.=" and jzattr like \'%,2,%\' ";
-			}else if($k=='istuijian'){
-				$w.=" and jzattr like \'%,3,%\' ";
-			}else if($k=='jzattr'){
-				if(strpos($v,',')!==false){
-					$s = explode(',',$v);
-					$s_sql = [];
-					foreach($s as $ss){
-						$s_sql[]=" jzattr like \'%,".$ss.",%\'  ";
-					}
-					$w.=" and ( ".implode('or',$s_sql)." ) ";
-				}else{
-					$w.=" and jzattr like \'%,".$v.",%\'";
-				}
-				
-			}else{
-				if(strpos($v,'$')!==FALSE){
-					$w.="and ".$k."=\''.".trim($v,"'").".'\' ";
-				}else{
-					$w.="and ".$k."=\'".$v."\' ";
-				}
-				
-			}
-			
-			
-			
-		}
-		
-		if($notempty){
-			//多个字段
-			if(strpos($notempty,'|')!==false){
-				$notempty = explode('|',$notempty);
-				foreach($notempty as $v){
-					$w.=' (and trim('.$v.') !="" && trim('.$v.') is not null) ';
-				}
-				
-			}else{
-				$w.=' and (trim('.$notempty.') !="" && trim('.$notempty.') is not null)  ';
-			}
-			
-		}
-		if($empty){
-			//多个字段
-			if(strpos($empty,'|')!==false){
-				$empty = explode('|',$empty);
-				foreach($empty as $v){
-					$w.=' and (trim('.$v.') ="" or  trim('.$v.') is null) ';
-				}
-				
-			}else{
-				$w.=' and (trim('.$empty.') ="" or trim('.$empty.') is null) ';
-			}
-			
-		}
-		if($day){
-			$day =str_replace("'",'',$day);
-			if(strpos($day,'$')!==false){
-				$day = trim($day,"'");
-				$w.=" and DATE_SUB(CURDATE(), INTERVAL '".".$day."."' DAY) <= date(FROM_UNIXTIME(addtime))";
-			}else{
-				$w.=" and DATE_SUB(CURDATE(), INTERVAL ".$day." DAY) <= date(FROM_UNIXTIME(addtime))";
-			}
-		}
-		
-		$w .= $notin_sql;
-		$w .= $in_sql;
-		$w .= $sql;
-		$w.= $lk;
-		$w.= $notlike;
-		$as = trim($as,"'");
-		$txt="<?php
+                        }else{
+                            $w.="and tid=".$v." ";
+                        }
+                        
+                        
+                    }
+                }
+                
+            }else if($k=='istop'){
+                $w.=" and jzattr like \'%,1,%\' ";
+            }else if($k=='ishot'){
+                $w.=" and jzattr like \'%,2,%\' ";
+            }else if($k=='istuijian'){
+                $w.=" and jzattr like \'%,3,%\' ";
+            }else if($k=='jzattr'){
+                if(strpos($v,',')!==false){
+                    $s = explode(',',$v);
+                    $s_sql = [];
+                    foreach($s as $ss){
+                        $s_sql[]=" jzattr like \'%,".$ss.",%\'  ";
+                    }
+                    $w.=" and ( ".implode('or',$s_sql)." ) ";
+                }else{
+                    $w.=" and jzattr like \'%,".$v.",%\'";
+                }
+                
+            }else{
+                if(strpos($v,'$')!==FALSE){
+                    $w.="and ".$k."=\''.".trim($v,"'").".'\' ";
+                }else{
+                    $w.="and ".$k."=\'".$v."\' ";
+                }
+                
+            }
+            
+            
+            
+        }
+        
+        if($notempty){
+            //多个字段
+            if(strpos($notempty,'|')!==false){
+                $notempty = explode('|',$notempty);
+                foreach($notempty as $v){
+                    $w.=' (and trim('.$v.') !="" && trim('.$v.') is not null) ';
+                }
+                
+            }else{
+                $w.=' and (trim('.$notempty.') !="" && trim('.$notempty.') is not null)  ';
+            }
+            
+        }
+        if($empty){
+            //多个字段
+            if(strpos($empty,'|')!==false){
+                $empty = explode('|',$empty);
+                foreach($empty as $v){
+                    $w.=' and (trim('.$v.') ="" or  trim('.$v.') is null) ';
+                }
+                
+            }else{
+                $w.=' and (trim('.$empty.') ="" or trim('.$empty.') is null) ';
+            }
+            
+        }
+        if($day){
+            $day =str_replace("'",'',$day);
+            if(strpos($day,'$')!==false){
+                $day = trim($day,"'");
+                $w.=" and DATE_SUB(CURDATE(), INTERVAL '".".$day."."' DAY) <= date(FROM_UNIXTIME(addtime))";
+            }else{
+                $w.=" and DATE_SUB(CURDATE(), INTERVAL ".$day." DAY) <= date(FROM_UNIXTIME(addtime))";
+            }
+        }
+        if(webconf('schedule_table')){
+            $tables = explode('|',webconf('schedule_table'));
+            if(in_array($db,$tables)){
+                $w.= ' and addtime<='.time().' ';
+            }
+        }
+        $w .= $notin_sql;
+        $w .= $in_sql;
+        $w .= $sql;
+        $w.= $lk;
+        $w.= $notlike;
+        $as = trim($as,"'");
+        $txt="<?php
 		\$".$as."_table =$db;
 		$fu
 		\$".$as."_w='".$w."';
 		\$".$as."_order=$order;
 		\$".$as."_fields=$fields;
+		\$".$as."_prefix = $jz;
 		\$".$as."_limit=$limit;";
-		
-		if($ispage){
-			
-			$txt .="
+        
+        if($ispage){
+            
+            $txt .="
 			".$pagenum."
-			\$".$as."_page = new frphp\Extend\Page(\$".$as."_table);
+			\$".$as."_page = new frphp\Extend\Page(\$".$as."_table,\$".$as."_prefix);
 			\$".$as."_page->typeurl = 'tpl';
 			\$".$as."_page->paged = '".$jzpage."';
 			\$".$as."_data = \$".$as."_page->where(\$".$as."_w)->fields(\$".$as."_fields)->orderby(\$".$as."_order)->limit(\$".$as."_limit)->page(\$pagenum)->go();
@@ -643,23 +653,23 @@ class View
 			\$".$as."_prevpage = \$".$as."_page->prevpage;
 			\$".$as."_nextpage = \$".$as."_page->nextpage;
 			\$".$as."_allpage = \$".$as."_page->allpage;";
-		}else{
-			
-			if($jzcache){
-				$txt .= "
+        }else{
+            
+            if($jzcache){
+                $txt .= "
 				\$cachestr = md5(\$".$as."_table.\$".$as."_w.\$".$as."_order.\$".$as."_fields.\$".$as."_limit);
 				$".$as."_data = getCache(\$cachestr);
 				if($".$as."_data!==false){
-					$".$as."_data = M(\$".$as."_table)->findAll(\$".$as."_w,\$".$as."_order,\$".$as."_fields,\$".$as."_limit);
+					$".$as."_data = M(\$".$as."_table,\$".$as."_prefix)->findAll(\$".$as."_w,\$".$as."_order,\$".$as."_fields,\$".$as."_limit);
 					setCache(\$cachestr,$".$as."_data,$jzcachetime);
 				}";
-			}else{
-				$txt .= "
-				$".$as."_data = M(\$".$as."_table)->findAll(\$".$as."_w,\$".$as."_order,\$".$as."_fields,\$".$as."_limit);";
-			}
-			
-		}
-		$txt.='$'.$as.'_n=0;foreach($'.$as.'_data as $'.$as.'_key=> $'.$as.'){
+            }else{
+                $txt .= "
+				$".$as."_data = M(\$".$as."_table,\$".$as."_prefix)->findAll(\$".$as."_w,\$".$as."_order,\$".$as."_fields,\$".$as."_limit);";
+            }
+            
+        }
+        $txt.='$'.$as.'_n=0;foreach($'.$as.'_data as $'.$as.'_key=> $'.$as.'){
 			$'.$as.'_n++;
 			if(!array_key_exists(\'url\',$'.$as.')){
 				
@@ -675,10 +685,11 @@ class View
 				
 			}
 			?>';
-		
-		return $txt;
-		
-	}
-	
-	
+        
+        return $txt;
+        
+    }
+    
+    
+    
 }

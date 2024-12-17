@@ -16,6 +16,16 @@ use frphp\lib\Controller;
 class CommonController extends Controller
 {
 	function _init(){
+        if(class_exists('app\admin\plugins\CommonController')){
+            $extCommonModel = new \app\admin\plugins\CommonController($this->frparam());
+            if(method_exists($extCommonModel,APP_ACTION)){
+                $action = APP_ACTION;
+                $extCommonModel->$action();
+                exit;
+            }
+            
+        }
+	    
       if(!isset($_SESSION['admin']) || $_SESSION['admin']['id']==0){
 		   $_SESSION['admin'] = null;
       	   Redirect(U('Login/index'));
@@ -24,7 +34,7 @@ class CommonController extends Controller
  
       if($_SESSION['admin']['isadmin']!=1){
 		if(strpos($_SESSION['admin']['paction'],','.APP_CONTROLLER.',')!==false){
-           
+        
         }else{
 			$action = APP_CONTROLLER.'/'.APP_ACTION;
 			if(strpos($_SESSION['admin']['paction'],','.$action.',')===false){
@@ -36,7 +46,7 @@ class CommonController extends Controller
 			   Error(JZLANG('您没有权限！').'【'.$ac['name'].'】',U('Index/welcome'));
 			}
 		}
-       
+      
       
       }
 
@@ -155,8 +165,18 @@ class CommonController extends Controller
 		  }else{
 			 $admin_save_path = 'public/Admin';
 		  }
-		  $filename =  $admin_save_path.'/'.date('Ymd').rand(1000,9999).'.'.$pix;
-		  $filename_x =  $admin_save_path.'/'.date('Ymd').rand(1000,9999).'.'.$pix;
+            
+          if(!isset($this->webconf['upload_file_name']) || (isset($this->webconf['upload_file_name']) && $this->webconf['upload_file_name'])){
+              $filename =  $admin_save_path.'/'.date('Ymd').rand(1000,9999).'.'.$pix;
+              $filename_x =  $admin_save_path.'/'.date('Ymd').rand(1000,9999).'.'.$pix;
+          }else{
+		      $name = urldecode($_FILES['file']['name']);
+		      $name = str_ireplace(["'",'"','%','&',' '],'',$name);
+		      $name = format_param($name,6);
+              $filename =  $admin_save_path.'/'.$name;
+              $filename_x =  $admin_save_path.'/'.$name;
+          }
+		  
 		  
 			if(move_uploaded_file($_FILES["file"]['tmp_name'],$filename)){
 			

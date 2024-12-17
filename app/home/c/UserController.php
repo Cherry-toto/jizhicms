@@ -947,7 +947,7 @@ class UserController extends CommonController
             //id-tid-num
             $cart = $tid.'-'.$id.'-'.$num.'-'.$product['price'];
         }else{
-            if(isset($GLOBALS['GLOBALS'])){
+            if(isset($GLOBALS['Redis'])){
                 $cart = $GLOBALS['Redis']->get('cart');
             }else{
                 $cart = $_SESSION['cart'];

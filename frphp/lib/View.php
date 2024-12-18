@@ -287,7 +287,7 @@ class View
             $where = " field in ('".$a['fields']."') ";
 		}
 
-		$sql=' fieldtype in(7,8,12) and  isshow=1 and field!=\'isshow\' and molds='.$molds.'  and '.$tids.' and addtime<='.time().' and '.$where;
+		$sql=' fieldtype in(7,8,12) and  isshow=1 and field!=\'isshow\' and molds='.$molds.'  and '.$tids.' and '.$where;
 		$txt="<?php
 		\$table ='fields';
 		\$w=\"".$sql."\";

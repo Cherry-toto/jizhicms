@@ -424,7 +424,7 @@
 								{foreach $levelgroup as $v}
 								<tr cate-id="{$v['id']}" fid="{$v['pid']}">
 									<td>
-										<div class="layui-unselect layui-form-checkbox {if(strpos($data['tids'],','.$v['id'].',')!==false)} layui-form-checked {/if}" lay-skin="primary" data-id='{$v[' id']}'><i class="layui-icon">&#xe605;</i></div>
+										<div class="layui-unselect layui-form-checkbox {if(strpos($data['tids'],','.$v['id'].',')!==false)} layui-form-checked {/if}" lay-skin="primary" data-id='{$v['id']}'><i class="layui-icon">&#xe605;</i></div>
 									</td>
 									<td>
 										{fun str_repeat('&nbsp;&nbsp;&nbsp;',$v['level'])}
@@ -454,7 +454,7 @@
 								{if($v['molds']==$data['molds'] || $data['molds']=='classtype')}
 								<tr cate-id="{$v['id']}" fid="{$v['pid']}">
 									<td>
-										<div class="layui-unselect layui-form-checkbox {if(strpos($data['tids'],','.$v['id'].',')!==false)} layui-form-checked {/if}" lay-skin="primary" data-id='{$v[' id']}'><i class="layui-icon">&#xe605;</i></div>
+										<div class="layui-unselect layui-form-checkbox {if(strpos($data['tids'],','.$v['id'].',')!==false)} layui-form-checked {/if}" lay-skin="primary" data-id='{$v['id']}'><i class="layui-icon">&#xe605;</i></div>
 									</td>
 									<td>
 										{fun str_repeat('&nbsp;&nbsp;&nbsp;',$v['level'])}

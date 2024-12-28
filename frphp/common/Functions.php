@@ -29,11 +29,11 @@ function M($name = null,$prefix = 1) {
 		$path = 'frphp\\lib\\Model';
 		return $path::getInstance();
 	}
+    $table = $name;
     $name = ucfirst($name);
 	if($name==''){
 		return '缺少模型类！';
 	}else{
-		$table = $name;
 		$name = APP_HOME.'\\'.HOME_MODEL.'\\'.$name.'Model';
 		if(!class_exists($name)){
 			$path = 'frphp\\lib\\Model';

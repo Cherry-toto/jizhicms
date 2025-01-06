@@ -48,11 +48,11 @@ class MessageController extends CommonController
                 }else{
                     if (!session_id()) {
                         if(!$vercode || md5(md5($vercode))!=$_COOKIE['message_vercode']){
-                            $xdata = array('code'=>1,'msg'=>JZLANG('1验证码错误！').$_COOKIE['message_vercode']);
+                            $xdata = array('code'=>1,'msg'=>JZLANG('验证码错误！').$_COOKIE['message_vercode']);
                             if($this->frparam('ajax')){
                                 JsonReturn($xdata);
                             }
-                            Error(JZLANG('2验证码错误！').$_COOKIE['message_vercode']);
+                            Error(JZLANG('验证码错误！').$_COOKIE['message_vercode']);
                         }
                         $message_vercode = getRandChar(30);
                         $_COOKIE['message_vercode'] = $message_vercode;
@@ -63,7 +63,7 @@ class MessageController extends CommonController
                             if($this->frparam('ajax')){
                                 JsonReturn($xdata);
                             }
-                            Error(JZLANG('111验证码错误！'));
+                            Error(JZLANG('验证码错误！'));
                         }
                         $_SESSION['message_vercode'] = getRandChar(30);
                     }

@@ -584,8 +584,6 @@ class PluginsController extends CommonController
 		$id = $this->frparam('id');
 		$plugins = M('plugins')->find(['id'=>$id]);
 		if($id && $plugins){
-			//忽略Notice报错
-			error_reporting(E_ALL^E_NOTICE);
 			
 			//执行插件控制器卸载程序
 			$dir = APP_PATH.APP_HOME.'/exts';
@@ -615,8 +613,6 @@ class PluginsController extends CommonController
 			JsonReturn(array('code'=>1,'msg'=>'参数存在安全隐患！'));
 		}
 		if($filepath){
-			//忽略Notice报错
-			error_reporting(E_ALL^E_NOTICE);
 			
 			//执行插件控制器卸载程序
 			$dir = APP_PATH.APP_HOME.'/exts';

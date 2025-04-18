@@ -1384,7 +1384,7 @@ if(!function_exists('get_key_field_select')) {
                 $biaoshi = $classtypedata[$tid]['molds'];
                 $tids = array_column($classtypedata[$tid]['children']['lists'], 'id');
                 $tids[] = $tid;
-                $sql = "id in(" . implode(',', trim($key, ',')) . ") and tid in(" . implode(',', $tids) . ") ";
+                $sql = "id in(" . trim($key, ',') . ")";
                 $data = M($biaoshi)->findAll($sql, null, $value[1]);
                 return array_column($data, $value[1]);
             } else if ($res['fieldtype'] == 21) {

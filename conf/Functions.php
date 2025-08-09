@@ -571,7 +571,7 @@ if(!function_exists('get_fields_data')) {
                             if(webConf('islocal')) {
                                 $text = remote_data_local($text, $data['tid'], $data['molds']);
                             }
-                            $data[$v['field']] = format_param($text, 6);
+                            $data[$v['field']] = format_param($text, 4);
                         }
                         
                         break;
@@ -748,7 +748,7 @@ layui.use("laydate", function(){
 var laydate = layui.laydate;
 laydate.render({elem: "#laydate_' . $v['field'] . '" });});</script>';
                     if (array_key_exists($v['field'], $data)) {
-                        if (format_param($data[$v['field']]) != 0) {
+                        if (format_param($data[$v['field']]) != 0 && format_param($data[$v['field']])!='') {
                             $fields_search_check[] = "  (" . $v['field'] . " >= " . $laytime . " and " . $v['field'] . " < " . ($laytime + 86400) . ") ";
                         }
 

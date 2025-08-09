@@ -182,6 +182,9 @@ class ArticleController extends CommonController
                     }
                 }
             }
+			if(strpos($data['jzattr'],'1')!==false){
+				$data['orders'] = 999;
+			}
 			$r = M('Article')->add($data);
 			if($r){
 				if($data['ownurl']){
@@ -383,6 +386,9 @@ class ArticleController extends CommonController
                 }
                 $data['addtime'] = isset($data['addtime']) ? $data['addtime'] : time();
                 $data['updatetime'] = time();
+				if(strpos($data['jzattr'],'1')!==false){
+					$data['orders'] = 999;
+				}
 				if(M('Article')->update(array('id'=>$this->frparam('id')),$data)){
 					if($old_tags!=$data['tags']){
 						
@@ -668,6 +674,11 @@ class ArticleController extends CommonController
 					}else{
 						$w['jzattr'] = ','.$tj.',';
 					}
+				}
+				if(strpos($w['jzattr'],'1')!==false){
+					$w['orders'] = 999;
+				}else{
+					$w['orders'] = 0;
 				}
 				M('Article')->update(array('id'=>$v['id']),$w);
 			}

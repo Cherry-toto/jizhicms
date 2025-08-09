@@ -124,7 +124,6 @@ class FieldsController extends CommonController
 			$data['tips'] = $this->frparam('tips',1);
 			$data['fieldtype'] = $this->frparam('fieldtype');
 			$data['tids'] = $this->frparam('tids',1);
-			$data['fieldlong'] = $this->frparam('fieldlong',1);
 			$data['body'] = $this->frparam('body',1);
 			$data['orders'] = $this->frparam('orders');
 			$data['ismust'] = $this->frparam('ismust');
@@ -138,6 +137,8 @@ class FieldsController extends CommonController
 			$data['isajax'] = $this->frparam('isajax');
 			$data['listorders'] = $this->frparam('listorders');
 			$data['isext'] = $this->frparam('isext');
+            $data['ldfield'] = $this->frparam('ldfield',1);
+            $data['linkfield'] = $this->frparam('linkfield',1);
 			if($data['fieldname']=='' || $data['field']==''){
 				JsonReturn(array('code'=>1,'msg'=>JZLANG('字段名和字段标识不能为空！')));
 			}
@@ -171,6 +172,7 @@ class FieldsController extends CommonController
 			$data['tids'] = ($data['tids']!='')?(','.$data['tids'].','):$data['tids'];
 			$sql = "ALTER TABLE ".DB_PREFIX.$data['molds']." ADD ".$data['field']." ";
 			$data['fieldlong'] = $this->frparam('fieldlong_'.$data['fieldtype'],1);
+            $data['remote'] = $this->frparam('field_remote_'.$data['fieldtype']);
 			switch($data['fieldtype']){
 				case 1:
 				case 2:
@@ -325,7 +327,6 @@ class FieldsController extends CommonController
 				$data['tips'] = $this->frparam('tips',1);
 				$data['fieldtype'] = $this->frparam('fieldtype');
 				$data['tids'] = $this->frparam('tids',1);
-				$data['fieldlong'] = $this->frparam('fieldlong',1);
 				$data['body'] = $this->frparam('body',1);
 				$data['orders'] = $this->frparam('orders');
 				$data['ismust'] = $this->frparam('ismust');
@@ -339,6 +340,8 @@ class FieldsController extends CommonController
 				$data['isajax'] = $this->frparam('isajax');
 				$data['listorders'] = $this->frparam('listorders');
 				$data['isext'] = $this->frparam('isext');
+                $data['ldfield'] = $this->frparam('ldfield',1);
+                $data['linkfield'] = $this->frparam('linkfield',1);
 				if($data['fieldname']=='' || $data['field']==''){
 					JsonReturn(array('code'=>1,'msg'=>JZLANG('字段名和字段标识不能为空！')));
 				}
@@ -346,6 +349,7 @@ class FieldsController extends CommonController
 				$data['tids'] = ($data['tids']!='')?(','.$data['tids'].','):$data['tids'];
 				$old = M('Fields')->find(array('id'=>$this->frparam('id')));
 				$data['fieldlong'] = $this->frparam('fieldlong_'.$data['fieldtype'],1);
+                $data['remote'] = $this->frparam('field_remote_'.$data['fieldtype']);
 				//只是更改样式，不更改字段属性
 				if($old['field']==$data['field']){
 					
@@ -1069,41 +1073,78 @@ layui.use("laydate", function(){
 							toolbar: { show: true },
 							list: [ "ALL", "CLEAR"],
 							filterable: true,
-							radio:true,
-							remoteSearch: true,
-							remoteMethod: function(val, cb, show){
-//								if(!val){
-//									return cb([]);
-//								}
-								$.get("'.U('Fields/getSelect').'",{id:"'.$v['id'].'",key:val},function(res){
-									if(res.code==0){
-										cb(res.data)
-									}else{
-										layer.alert(res.msg)
-										
-									}
-									
-								},"json")
-								
-							},
+							radio:true,';
+                            if($v['remote']){
+                                $l.='remoteSearch: true,
+                                        remoteMethod: function(val, cb, show){
+            //								if(!val){
+            //									return cb([]);
+            //								}
+                                            $.get("'.U('Fields/getSelect').'",{id:"'.$v['id'].'",key:val},function(res){
+                                                if(res.code==0){
+                                                    cb(res.data)
+                                                }else{
+                                                    layer.alert(res.msg)
+                                                    
+                                                }
+                                                
+                                            },"json")
+                                            
+                                        },';
+                            }
+                            $l.='
 							on:function(r){
 								if(r["arr"].length>0){
-									$("#'.$v['field'].'").val(r["arr"][0].value)
+									$("#'.$v['field'].'").val(r["arr"][0].value)';
+                                if($v['ldfield'] && $v['linkfield']){
+                                    $ldfields = explode('|',$v['ldfield']);
+                                    $linkfields = explode('|',$v['linkfield']);
+                                    foreach($ldfields as $lk=>$ld){
+                                        $fx = M('fields')->find(['field'=>$ld]);
+                                        $l.='
+                                        $.get("'.U('Fields/getliandong').'",
+                                        {id:"'.$fx['id'].'",key:r["arr"][0].value,field:"'.$linkfields[$lk].'"},
+                                        function(res){
+                                                    if(res.code==0){
+                                                        '.$ld.'_xmselect.update({
+                                                            data:res.data
+                                                        });
+                                                        '.$ld.'_xmselect.setValue(['.trim($data[$ld],',').']);
+                                                         $("#'.$ld.'").val('.trim($data[$ld],',').')
+                                                        
+                                                    }else{
+                                                        //layer.alert(res.msg)
+                                                        
+                                                    }
+                                                    
+                                        },"json")
+                                        ';
+                                    }
+                                }
+                                $l.='
 								}else{
 									$("#'.$v['field'].'").val("")
 								}
 							}
-						})
-						$.get("'.U('Fields/getSelect').'",{id:"'.$v['id'].'",value:"'.$data[$v['field']].'",check:1},function(res){
-									if(res.code==0){
-										'.$v['field'].'_xmselect.setValue(res.data);
-										$("#'.$v['field'].'").val("'.$data[$v['field']].'");
-									}else{
-										//layer.alert(res.msg)
-										
-									}
-									
-								},"json")
+						});';
+                        if($v['remote']){
+
+                            $l.=' $.get("'.U('Fields/getSelect').'",{id:"'.$v['id'].'",value:"'.$data[$v['field']].'",check:1},function(res){
+                                if(res.code==0){
+                                    '.$v['field'].'_xmselect.setValue(res.data);
+                                    $("#'.$v['field'].'").val("'.$data[$v['field']].'");
+                                }else{
+                                    //layer.alert(res.msg)
+                                    
+                                }
+                                
+                            },"json");';
+
+                        }else{
+                            $l.=' '.$v['field'].'_xmselect.setValue(['.$data[$v['field']].']);
+                            $("#'.$v['field'].'").val("'.$data[$v['field']].'");';
+                        }
+                        $l.=' 
 						 
 						</script>
 					</div>
@@ -1202,23 +1243,26 @@ layui.use("laydate", function(){
 							autoRow: true,
 							toolbar: { show: true },
 							list: [ "ALL", "CLEAR"],
-							filterable: true,
-							remoteSearch: true,
-							remoteMethod: function(val, cb, show){
-//								if(!val){
-//									return cb([]);
-//								}
-								$.get("'.U('Fields/getSelect').'",{id:"'.$v['id'].'",key:val},function(res){
-									if(res.code==0){
-										cb(res.data)
-									}else{
-										layer.alert(res.msg)
-										
-									}
-									
-								},"json")
-								
-							},
+							filterable: true,';
+                            if($v['remote']){
+                                $l.='remoteSearch: true,
+                                        remoteMethod: function(val, cb, show){
+            //								if(!val){
+            //									return cb([]);
+            //								}
+                                            $.get("'.U('Fields/getSelect').'",{id:"'.$v['id'].'",key:val},function(res){
+                                                if(res.code==0){
+                                                    cb(res.data)
+                                                }else{
+                                                    layer.alert(res.msg)
+                                                    
+                                                }
+                                                
+                                            },"json")
+                                            
+                                        },';
+                            }
+                            $l.='
 							on:function(r){
 								var s = [];
 								for(var i=0;i<r["arr"].length;i++){
@@ -1226,19 +1270,21 @@ layui.use("laydate", function(){
 								}
 								$("#'.$v['field'].'").val(s.join(","))
 							}
-						})
-						
-						$.get("'.U('Fields/getSelect').'",{id:"'.$v['id'].'",value:"'.trim($data[$v['field']],',').'",check:1},function(res){
+						});';
+                     if($v['remote']) {
+                         $l .= '
+						$.get("' . U('Fields/getSelect') . '",{id:"' . $v['id'] . '",value:"' . trim($data[$v['field']], ',') . '",check:1},function(res){
 									if(res.code==0){
-										'.$v['field'].'_xmselect.setValue(res.data);
-										$("#'.$v['field'].'").val("'.trim($data[$v['field']],',').'");
+										' . $v['field'] . '_xmselect.setValue(res.data);
+										$("#' . $v['field'] . '").val("' . trim($data[$v['field']], ',') . '");
 									}else{
 										//layer.alert(res.msg)
 										
 									}
 									
-								},"json")
-						
+								},"json");';
+                     }
+                     $l.='
 						</script>
 					</div>
 					';
@@ -1350,6 +1396,53 @@ layui.use("laydate", function(){
 		}
 		echo $l;
 	}
+
+    function getliandong(){
+
+        $id = $this->frparam('id');
+        if(!$id){
+            JsonReturn(['code'=>1,'msg'=>'ID错误！']);
+        }
+        $fields = M('fields')->find(['id'=>$id]);
+        if(!$fields){
+            JsonReturn(['code'=>1,'msg'=>'未找到字段！']);
+        }
+
+        $body = explode(',',$fields['body']);
+        $key = $this->frparam('key',1);
+        $field = $this->frparam('field',1);
+        $field_show = strtolower($body[1]);
+        switch($fields['fieldtype']){
+            case 13:
+            case 16:
+                $molds = M('molds')->getField(['id'=>$body[0]],'biaoshi');
+                if(!$molds){
+                    JsonReturn(['code'=>1,'msg'=>'关联绑定配置错误！']);
+                }
+                $sql = "$field='$key'";
+                break;
+            case 20:
+            case 21:
+                $tid = (int)$body[0];
+                $molds = $this->classtypedata[$tid]['molds'];
+                $tids = array_column($this->classtypedata[$tid]['children']['lists'],'id');
+                $tids[]=$tid;
+
+                $sql = "$field='$key'";
+                break;
+        }
+        $limit = $key ? null : 10;
+        $lists = M($molds)->findAll($sql,'id desc','id ,'.$field_show,$limit);
+
+        foreach($lists as $k=>$v){
+            $lists[$k]['value'] = $v['id'];
+            $lists[$k]['name'] = $v[$field_show];
+
+        }
+
+        JsonReturn(['code'=>0,'data'=>$lists]);
+
+    }
 
     function getSelect(){
         $id = $this->frparam('id');

@@ -180,7 +180,7 @@ class MessageController extends CommonController
                     $_SESSION['message_num'] = 0;
                     $_SESSION['message_time'] = time();
                 }
-                $_SESSION['message_num']++;
+                $_SESSION['message_num']+=1;
                 if($_SESSION['message_num']>5 && ($_SESSION['message_time']+10*60)>=time()){
                     if($this->frparam('ajax')){
                         JsonReturn(['code'=>0,'msg'=>JZLANG('您操作过于频繁，请10分钟后再尝试！')]);

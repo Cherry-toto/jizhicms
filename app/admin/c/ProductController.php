@@ -194,6 +194,9 @@ class ProductController extends CommonController
                 }
             }
             $data['addtime'] = $data['updatetime'] =  isset($data['addtime']) ? $data['addtime'] : time();
+			if(strpos($data['jzattr'],'1')!==false){
+				$data['orders'] = 999;
+			}
 			$r = M('product')->add($data);
 			if($r){
 				if($data['ownurl']){
@@ -392,6 +395,9 @@ class ProductController extends CommonController
                 }
                 $data['addtime'] = isset($data['addtime']) ? $data['addtime'] : time();
                 $data['updatetime'] = time();
+				if(strpos($data['jzattr'],'1')!==false){
+					$data['orders'] = 999;
+				}
 				if(M('product')->update(array('id'=>$this->frparam('id')),$data)){
 					//tags处理
 					if($old_tags!=$data['tags']){
@@ -684,6 +690,11 @@ class ProductController extends CommonController
 					}else{
 						$w['jzattr'] = ','.$tj.',';
 					}
+				}
+				if(strpos($w['jzattr'],'1')!==false){
+					$w['orders'] = 999;
+				}else{
+					$w['orders'] = 0;
 				}
 				M('Product')->update(array('id'=>$v['id']),$w);
 			}

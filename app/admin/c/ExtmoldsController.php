@@ -221,6 +221,9 @@ class ExtmoldsController extends Controller
                     $data['litpic'] = waterwordmark($data['title'],APP_PATH.$this->frparam('litpic',1),0);
                 }
             }
+			if(strpos($data['jzattr'],'1')!==false){
+				$data['orders'] = 999;
+			}
 			$r = M($molds)->add($data);
 			if($r){
 				if(isset($data['ownurl'])){
@@ -350,6 +353,9 @@ class ExtmoldsController extends Controller
                 }
                 $data['addtime'] = isset($data['addtime']) ? $data['addtime'] : time();
                 $data['updatetime'] = time();
+				if(strpos($data['jzattr'],'1')!==false){
+					$data['orders'] = 999;
+				}
 				if(M($molds)->update(array('id'=>$this->frparam('id')),$data)){
 					
 					if($old_tags!=$data['tags']){
@@ -614,6 +620,11 @@ class ExtmoldsController extends Controller
                         $w['jzattr'] = ','.$tj.',';
                     }
                 }
+				if(strpos($w['jzattr'],'1')!==false){
+					$w['orders'] = 999;
+				}else{
+					$w['orders'] = 0;
+				}
                 M($molds)->update(array('id'=>$v['id']),$w);
             }
             JsonReturn(array('code'=>0,'msg'=>JZLANG('批量修改成功！')));

@@ -165,11 +165,7 @@
 						var r = JSON.parse(r);
 						if(r.code==0){
 							$("#select_data").val('');
-							table.reload('fieldtable', {
-							  url: '{fun U('Fields/index')}?molds={$molds['biaoshi']}&ajax=1'
-							  ,where: {} //设定异步数据接口的额外参数
-							 
-							});
+
 						}else{
 							layer.msg(r.info,{icon: 5,time:1000});
 						}

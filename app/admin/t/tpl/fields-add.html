@@ -178,6 +178,11 @@
 														{/loop}
 													</select>
 													<input type="text" placeholder="{fun JZLANG('列表显示字段')}" class="layui-input" name="molds_list_field" id="molds_list_field">
+													<select name="field_remote_13" >
+														<option>{fun JZLANG('是否远程数据')}</option>
+														<option selected="selected" value="1">是</option>
+														<option value="0">否</option>
+													</select>
 												</div>
 											</td>
 											<td>{fun JZLANG('单选关联，可以直接调用关联模块内容列表，列表显示对应字段内容')}</td>
@@ -194,6 +199,11 @@
 														{/loop}
 													</select>
 													<input type="text" placeholder="{fun JZLANG('列表显示字段')}" class="layui-input" name="molds_list_field_muti" id="molds_list_field_muti">
+													<select name="field_remote_16" >
+														<option>{fun JZLANG('是否远程数据')}</option>
+														<option selected="selected" value="1">是</option>
+														<option value="0">否</option>
+													</select>
 												</div>
 											</td>
 											<td>{fun JZLANG('多选关联，可以直接调用关联模块内容列表，列表显示对应字段内容')}</td>
@@ -210,6 +220,11 @@
 														{/foreach}
 													</select>
 													<input type="text" placeholder="{fun JZLANG('列表显示字段')}" class="layui-input" name="molds_list_field_tid" id="molds_list_field_tid">
+													<select name="field_remote_21" >
+														<option>{fun JZLANG('是否远程数据')}</option>
+														<option selected="selected" value="1">是</option>
+														<option value="0">否</option>
+													</select>
 												</div>
 											</td>
 											<td>{fun JZLANG('栏目关联单选，可以直接绑定某个栏目下的内容，包括子栏目')}</td>
@@ -226,6 +241,11 @@
 														{/foreach}
 													</select>
 													<input type="text" placeholder="{fun JZLANG('列表显示字段')}" class="layui-input" name="molds_list_field_tid_muti" id="molds_list_field_tid_muti">
+													<select name="field_remote_20" >
+														<option>{fun JZLANG('是否远程数据')}</option>
+														<option selected="selected" value="1">是</option>
+														<option value="0">否</option>
+													</select>
 												</div>
 											</td>
 											<td>{fun JZLANG('栏目关联多选，可以直接绑定某个栏目下的多个内容，包括子栏目')}</td>
@@ -357,6 +377,20 @@
 							</div>
 							<div class="layui-form-mid layui-word-aux">{fun JZLANG('由于本系统对json数据封装，限制访问可以提高安全性')}</div>
 						</div>
+						<div class="layui-form-item">
+							<label for="ldfield" class="layui-form-label">
+								<span class="x-red"></span>{fun JZLANG('联动关联')}
+							</label>
+							<div class="layui-input-inline">
+								<input type="text" id="ldfield" placeholder="联动字段" value="" name="ldfield" autocomplete="off" class="layui-input">
+
+							</div>
+							<div class="layui-input-inline">
+								<input type="text" id="linkfield" placeholder="联动字段之关联字段" value="" name="linkfield" autocomplete="off" class="layui-input">
+							</div>
+							<div class="layui-form-mid layui-word-aux">{fun JZLANG('填写联动字段，可以关联多个，用|分隔')}</div>
+						</div>
+
 					</div>
 					<div class="layui-tab-item">
 						{if($molds=='level')}

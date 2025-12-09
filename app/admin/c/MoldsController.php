@@ -103,6 +103,9 @@ class MoldsController extends CommonController
 				`hits` int(11) DEFAULT 0 COMMENT '".JZLANG("点击量")."',
 				`zan` int(11) DEFAULT 0 COMMENT '".JZLANG("点赞数")."',
 				`tags` varchar(255) DEFAULT NULL COMMENT 'TAG',
+				`istop` tinyint(1) DEFAULT 1 COMMENT '".JZLANG("是否置顶")."',
+				`ishot` tinyint(1) DEFAULT 1 COMMENT '".JZLANG("是否热门")."',
+				`istuijian` tinyint(1) DEFAULT 1 COMMENT '".JZLANG("是否推荐")."',
 				`addtime` int(11) DEFAULT 0 COMMENT '".JZLANG("发布时间")."',
 				`updatetime` int(11) DEFAULT 0 COMMENT '".JZLANG("更新时间")."',
 				PRIMARY 
@@ -384,6 +387,51 @@ class MoldsController extends CommonController
 				$w['issearch'] = 1;
 				$w['islist'] = 1;
 				$w['vdata'] = 1;
+				M('fields')->add($w);
+				$w['field'] = 'istop';
+				$w['molds'] = $data['biaoshi'];
+				$w['fieldname'] = JZLANG('是否置顶');
+				$w['tips'] = JZLANG('置顶显示');
+				$w['fieldtype'] = 7;
+				$w['fieldlong'] = 1;
+				$w['format'] = NULL;
+				$w['body'] = JZLANG('是=1,否=0');
+				$w['ismust'] = 0;
+				$w['isshow'] = 1;
+				$w['isadmin'] = 1;
+				$w['issearch'] = 1;
+				$w['islist'] = 1;
+				$w['vdata'] = 0;
+				M('fields')->add($w);
+				$w['field'] = 'ishot';
+				$w['molds'] = $data['biaoshi'];
+				$w['fieldname'] = JZLANG('是否热门');
+				$w['tips'] = JZLANG('热门显示');
+				$w['fieldtype'] = 7;
+				$w['fieldlong'] = 1;
+				$w['format'] = NULL;
+				$w['body'] = JZLANG('是=1,否=0');
+				$w['ismust'] = 0;
+				$w['isshow'] = 1;
+				$w['isadmin'] = 1;
+				$w['issearch'] = 1;
+				$w['islist'] = 1;
+				$w['vdata'] = 0;
+				M('fields')->add($w);
+				$w['field'] = 'istuijian';
+				$w['molds'] = $data['biaoshi'];
+				$w['fieldname'] = JZLANG('是否推荐');
+				$w['tips'] = JZLANG('推荐显示');
+				$w['fieldtype'] = 7;
+				$w['fieldlong'] = 1;
+				$w['format'] = NULL;
+				$w['body'] = JZLANG('是=1,否=0');
+				$w['ismust'] = 0;
+				$w['isshow'] = 1;
+				$w['isadmin'] = 1;
+				$w['issearch'] = 1;
+				$w['islist'] = 1;
+				$w['vdata'] = 0;
 				M('fields')->add($w);
 				
 				//添加权限管理
@@ -738,6 +786,39 @@ class MoldsController extends CommonController
             'isshow'=>[
                 'field'=>'isshow',
                 'title'=>JZLANG('是否显示'),
+                'isshow'=>1,
+                'isadmin'=>1,
+                'islist'=>1,
+                'fieldtype'=>7,
+                'length'=>1,
+				'default'=>0,
+				'type'=>'tinyint(1)',
+            ],
+			'istop'=>[
+                'field'=>'istop',
+                'title'=>JZLANG('是否置顶'),
+                'isshow'=>1,
+                'isadmin'=>1,
+                'islist'=>1,
+                'fieldtype'=>7,
+                'length'=>1,
+				'default'=>0,
+				'type'=>'tinyint(1)',
+            ],
+			'ishot'=>[
+                'field'=>'ishot',
+                'title'=>JZLANG('是否热门'),
+                'isshow'=>1,
+                'isadmin'=>1,
+                'islist'=>1,
+                'fieldtype'=>7,
+                'length'=>1,
+				'default'=>0,
+				'type'=>'tinyint(1)',
+            ],
+			'istuijian'=>[
+                'field'=>'istuijian',
+                'title'=>JZLANG('是否推荐'),
                 'isshow'=>1,
                 'isadmin'=>1,
                 'islist'=>1,

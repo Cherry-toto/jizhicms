@@ -49,8 +49,13 @@ class Model {
 			$conditions = $this->__prepera_format($conditions);
 			$join = array();
 			foreach( $conditions as $key => $value ){
-				$value =  '\''.$value.'\'';
-				$join[] = "{$key} = {$value}";
+                if(is_array($value)){
+                    $va =  '\''.$value[1].'\'';
+                    $join[] = "{$key} ".$value[0]." {$va}";
+                }else{
+                    $value =  '\''.$value.'\'';
+                    $join[] = "{$key} = {$value}";
+                }
 			}
 			if(count($join)){
 				$where = "WHERE ".join(" AND ",$join);
@@ -73,8 +78,13 @@ class Model {
 			$conditions = $this->__prepera_format($conditions);
 			$join = array();
 			foreach( $conditions as $key => $value ){
-				$value = '\''.$value.'\'';
-				$join[] = "{$key} = {$value}";
+                if(is_array($value)){
+                    $va =  '\''.$value[1].'\'';
+                    $join[] = "{$key} ".$value[0]." {$va}";
+                }else{
+                    $value =  '\''.$value.'\'';
+                    $join[] = "{$key} = {$value}";
+                }
 			}
 			if(count($join)){
 				$where = "WHERE ".join(" AND ",$join);
@@ -103,9 +113,14 @@ class Model {
 		if(is_array($conditions)){
 			$conditions = $this->__prepera_format($conditions);
 			$join = array();
-			foreach( $conditions as $key => $condition ){
-				$condition = '\''.$condition.'\'';
-				$join[] = "{$key} = {$condition}";
+			foreach( $conditions as $key => $value ){
+                if(is_array($value)){
+                    $va =  '\''.$value[1].'\'';
+                    $join[] = "{$key} ".$value[0]." {$va}";
+                }else{
+                    $value =  '\''.$value.'\'';
+                    $join[] = "{$key} = {$value}";
+                }
 			}
 			if(count($join)){
 				$where = "WHERE ".join(" AND ",$join);
@@ -142,9 +157,14 @@ class Model {
 			if(is_array($condition)){
 				$condition = $this->__prepera_format($condition);
 				$join = array();
-				foreach( $condition as $key => $condit ){
-					$condit = '\''.$condit.'\'';
-					$join[] = "{$key} = {$condit}";
+				foreach( $condition as $key => $value ){
+                    if(is_array($value)){
+                        $va =  '\''.$value[1].'\'';
+                        $join[] = "{$key} ".$value[0]." {$va}";
+                    }else{
+                        $value =  '\''.$value.'\'';
+                        $join[] = "{$key} = {$value}";
+                    }
 				}
 				if(count($join)){
 					$where = "WHERE ".join(" AND ",$join);
@@ -201,8 +221,13 @@ class Model {
 			$conditions = $this->__prepera_format($conditions);
 			$join = array();
 			foreach( $conditions as $key => $value ){
-				$value =  '\''.$value.'\'';
-				$join[] = "{$key} = {$value}";
+                if(is_array($value)){
+                    $va =  '\''.$value[1].'\'';
+                    $join[] = "{$key} ".$value[0]." {$va}";
+                }else{
+                    $value =  '\''.$value.'\'';
+                    $join[] = "{$key} = {$value}";
+                }
 			}
 			if(count($join)){
 				$where = "WHERE ".join(" AND ",$join);
@@ -239,8 +264,13 @@ class Model {
             $conditions = $this->__prepera_format($conditions);
             $join = array();
             foreach( $conditions as $key => $value ){
-                $value =  '\''.$value.'\'';
-                $join[] = "{$key} = {$value}";
+                if(is_array($value)){
+                    $va =  '\''.$value[1].'\'';
+                    $join[] = "{$key} ".$value[0]." {$va}";
+                }else{
+                    $value =  '\''.$value.'\'';
+                    $join[] = "{$key} = {$value}";
+                }
             }
             if(count($join)){
                 $where = "WHERE ".join(" AND ",$join);
@@ -326,9 +356,14 @@ class Model {
 		if(is_array($conditions)){
 			$conditions = $this->__prepera_format($conditions);
 			$join = array();
-			foreach( $conditions as $key => $condition ){
-				$condition = '\''.$condition.'\'';
-				$join[] = "{$key} = {$condition}";
+			foreach( $conditions as $key => $value ){
+                if(is_array($value)){
+                    $va =  '\''.$value[1].'\'';
+                    $join[] = "{$key} ".$value[0]." {$va}";
+                }else{
+                    $value =  '\''.$value.'\'';
+                    $join[] = "{$key} = {$value}";
+                }
 			}
 			if(count($join)){
 				$where = "WHERE ".join(" AND ",$join);

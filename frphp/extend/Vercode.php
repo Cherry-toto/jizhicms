@@ -14,9 +14,13 @@
 			$this->distrubcode= "1235467890qwertyuipkjhgfdaszxcvbnm";
 			$this->fonturl=$fonturl;
 			$this->session=$this->sessioncode();
+			if(strtolower($code)=='admin' || strtolower($code)=='member'){
+				return false;
+			}
 			if(isset($GLOBALS['Redis']) && $GLOBALS['Redis']!==null){
                 $GLOBALS['Redis']->setex($code,5 * 60 ,md5(md5($this->session)));
             }
+			
             if (!session_id()) {
                 setcookie($code,md5(md5($this->session)),time() + 5*60,'/');
             }else{

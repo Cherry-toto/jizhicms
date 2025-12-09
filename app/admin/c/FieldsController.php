@@ -703,6 +703,9 @@ class FieldsController extends CommonController
 						$l.=' required="" lay-verify="required" ';
 					}
 						$l.=' value="'.$data[$v['field']].'" />
+                            <div class="layui-progress" id="'.$v['field'].'_propress" style="display:none;" lay-filter="'.$v['field'].'_propress" lay-showPercent="yes">
+                          <div class="layui-progress-bar layui-bg-green" lay-percent="0%"></div>
+                        </div>
 					</div>
 					<div class="layui-input-inline">
 						<button class="layui-btn layui-btn-primary" id="LAY_'.$v['field'].'_upload" type="button" >'.JZLANG('选择图片').'</button>
@@ -729,15 +732,25 @@ class FieldsController extends CommonController
 						,data:{tid:function(){ return $("#tid").val();},molds:"'.$molds.'"}
 						,accept:"images"
 						,acceptMime:"image/*"
+						,before:function(){
+						    $("#'.$v['field'].'_propress").show();
+						}
 						,done: function(res){
 						  
 							if(res.code==0){
 								 $("#'.$v['field'].'_img").attr("src",res.url);
 								 $("#'.$v['field'].'").val(res.url);
+								 setTimeout(function() { 
+								 $("#'.$v['field'].'_propress").hide();
+								 },2000)
 							}else{
 								 layer.alert(res.error, {icon: 5});
 							}
 						}
+						,progress: function(n, elem, res, index){ 
+                            var percent = n + "%" //获取进度百分比
+                            element.progress("'.$v['field'].'_propress", percent); 
+                          }
 						,error: function(){
 						  //请求异常回调
 						  layer.alert("'.JZLANG('上传异常！').'");
@@ -772,6 +785,9 @@ class FieldsController extends CommonController
 					}	 
 					$l .= '</span>
 					  </div>
+					  <div class="layui-progress" id="'.$v['field'].'_propress" style="display:none;" lay-filter="'.$v['field'].'_propress" lay-showPercent="yes">
+                          <div class="layui-progress-bar layui-bg-green" lay-percent="0%"></div>
+                        </div>
 				  </div>
 				</fieldset>
 				<script>
@@ -787,18 +803,25 @@ class FieldsController extends CommonController
 						,accept:"images"
 						,multiple: true
 						,acceptMime:"image/*"
-						,before: function(obj){ 		
-							layer.load(); //上传loading
-						  }
+						,before:function(){
+						    $("#'.$v['field'].'_propress").show();
+						}
 						,done: function(res){
 							layer.closeAll("loading"); //关闭loading
 							if(res.code==0){
                                 $(".preview_'.$v['field'].'").append(\'<div class="upload-icon-img layui-input-inline" ><div class="upload-pre-item"><img src="\' + res.url + \'" class="img" width="200px" height="200px" ><input name="'.$v['field'].'_urls[]" type="text" class="layui-input"  value="\' + res.url + \'" /><input name="'.$v['field'].'_des[]" type="text" class="layui-input"  placeholder="'.JZLANG('文字描述').'" value="" /><a class="layui-btn layui-btn-sm layui-btn-radius layui-btn-danger delete_file">'.JZLANG('删除').'</a><a class="layui-btn layui-btn-sm layui-btn-radius imgorder " onclick="goleft(this)">'.JZLANG('左移').'</a><a class="layui-btn layui-btn-sm layui-btn-radius imgorder " onclick="goright(this)">'.JZLANG('右移').'</a></div></div>\');
+                                setTimeout(function() { 
+								 $("#'.$v['field'].'_propress").hide();
+								 },2000)
 								
 							}else{
 								 layer.alert(res.error, {icon: 5});
 							}
 						}
+                        ,progress: function(n, elem, res, index){ 
+                            var percent = n + "%" //获取进度百分比
+                            element.progress("'.$v['field'].'_propress", percent); 
+                          }
 						,error: function(){
 						  //请求异常回调
 						  layer.alert("'.JZLANG('上传异常！').'");
@@ -890,6 +913,9 @@ class FieldsController extends CommonController
 					$l.=' required="" lay-verify="required" ';
 				}
 				$l  .=	'value="'.$data[$v['field']].'" />
+				<div class="layui-progress" id="'.$v['field'].'_propress" style="display:none;" lay-filter="'.$v['field'].'_propress" lay-showPercent="yes">
+                          <div class="layui-progress-bar layui-bg-green" lay-percent="0%"></div>
+                        </div>
 						<button type="button" class="layui-btn" id="LAY_'.$v['field'].'_upload">
 						  <i class="layui-icon">&#xe67c;</i>上传附件
 						</button>
@@ -915,14 +941,24 @@ class FieldsController extends CommonController
 						,data:{tid:function(){ return $("#tid").val();},molds:"'.$molds.'"}
 						,accept:"file"
 						,exts: "'.$this->webconf['fileType'].'"
+						,before:function(){
+						    $("#'.$v['field'].'_propress").show();
+						}
 						,done: function(res){
 							if(res.code==0){
 								
 								 $("#'.$v['field'].'").val(res.url);
+								 setTimeout(function() { 
+								 $("#'.$v['field'].'_propress").hide();
+								 },2000)
 							}else{
 								 layer.alert(res.error, {icon: 5});
 							}
 						}
+						,progress: function(n, elem, res, index){ 
+                            var percent = n + "%" //获取进度百分比
+                            element.progress("'.$v['field'].'_propress", percent); 
+                          }
 						,error: function(){
 						  //请求异常回调
 						  layer.alert("'.JZLANG('上传异常！').'");
@@ -956,6 +992,9 @@ class FieldsController extends CommonController
 					}	 
 					$l .= '</span>
 					  </div>
+					  <div class="layui-progress" id="'.$v['field'].'_propress" style="display:none;" lay-filter="'.$v['field'].'_propress" lay-showPercent="yes">
+                          <div class="layui-progress-bar layui-bg-green" lay-percent="0%"></div>
+                        </div>
 				  </div>
 				</fieldset>
 				<script>
@@ -971,18 +1010,24 @@ class FieldsController extends CommonController
 						,multiple: true
 						,accept:"file"
 						,exts: "'.$this->webconf['fileType'].'"
-						,before: function(obj){ 		
-							layer.load(); //上传loading
-						  }
+						,before:function(){
+						    $("#'.$v['field'].'_propress").show();
+						}
 						,done: function(res){
 							layer.closeAll("loading"); //关闭loading
 							if(res.code==0){
                                 $(".preview_'.$v['field'].'").append(\'<div class="upload-icon-img layui-input-inline" ><div class="upload-pre-item"><input name="'.$v['field'].'_urls[]" type="text" class="layui-input"  value="\' + res.url + \'" /><input name="'.$v['field'].'_des[]" type="text" class="layui-input" placeholder="'.JZLANG('文字描述').'"  value="" /><a class="layui-btn layui-btn-sm layui-btn-radius layui-btn-danger delete_file">'.JZLANG('删除').'</a><a class="layui-btn layui-btn-sm layui-btn-radius imgorder " onclick="goleft(this)">'.JZLANG('左移').'</a><a class="layui-btn layui-btn-sm layui-btn-radius imgorder " onclick="goright(this)">'.JZLANG('右移').'</a></div></div>\');
-							
+							setTimeout(function() { 
+								 $("#'.$v['field'].'_propress").hide();
+								 },2000)
 							}else{
 								 layer.alert(res.error, {icon: 5});
 							}
 						}
+						,progress: function(n, elem, res, index){ 
+                            var percent = n + "%" //获取进度百分比
+                            element.progress("'.$v['field'].'_propress", percent); 
+                          }
 						,error: function(){
 						  //请求异常回调
 						  layer.alert("'.JZLANG('上传异常！').'");

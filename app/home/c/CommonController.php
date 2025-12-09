@@ -66,7 +66,7 @@ class CommonController extends Controller
                 $_SESSION['member'] = json_decode($member,true);
             }
         }
-		if(isset($_SESSION['member'])){
+		if(isset($_SESSION['member']) && $_SESSION['member']['id']){
 			$this->islogin = true;
 			$this->member = $_SESSION['member'];
 			if($this->webconf['isopenhomepower']==1){

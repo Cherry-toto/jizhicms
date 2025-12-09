@@ -26,7 +26,7 @@ class CommonController extends Controller
             
         }
 	    
-      if(!isset($_SESSION['admin']) || $_SESSION['admin']['id']==0){
+      if(!isset($_SESSION['admin']) || !$_SESSION['admin']['id']){
 		   $_SESSION['admin'] = null;
       	   Redirect(U('Login/index'));
         

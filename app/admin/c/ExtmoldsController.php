@@ -19,7 +19,7 @@ use frphp\extend\Page;
 class ExtmoldsController extends Controller
 {
 	function _init(){
-		if(!isset($_SESSION['admin']) || $_SESSION['admin']['id']==0){
+		if(!isset($_SESSION['admin']) || !$_SESSION['admin']['id']){
 			Redirect(U('Login/index'));
 			
 		}
@@ -113,7 +113,7 @@ class ExtmoldsController extends Controller
 			
 			
 			$page = new Page($molds);
-			$data = $page->where($sql)->orderby('orders desc,id desc')->limit($this->frparam('limit',0,10))->page($this->frparam('page',0,1))->go();
+			$data = $page->where($sql)->orderby('istop desc,orders desc,id desc')->limit($this->frparam('limit',0,10))->page($this->frparam('page',0,1))->go();
 			$ajaxdata = [];
 			foreach($data as $k=>$v){
 				if(isset($classtypedata[$v['tid']])){
@@ -221,9 +221,22 @@ class ExtmoldsController extends Controller
                     $data['litpic'] = waterwordmark($data['title'],APP_PATH.$this->frparam('litpic',1),0);
                 }
             }
-			if(strpos($data['jzattr'],'1')!==false){
-				$data['orders'] = 999;
-			}
+            //推荐置顶热门
+            if(strpos($data['jzattr'],'1')!==false){
+                $data['istop'] = 1;
+            }else{
+                $data['istop'] = 0;
+            }
+            if(strpos($data['jzattr'],'2')!==false){
+                $data['ishot'] = 1;
+            }else{
+                $data['ishot'] = 0;
+            }
+            if(strpos($data['jzattr'],'3')!==false){
+                $data['istuijian'] = 1;
+            }else{
+                $data['istuijian'] = 0;
+            }
 			$r = M($molds)->add($data);
 			if($r){
 				if(isset($data['ownurl'])){
@@ -353,9 +366,22 @@ class ExtmoldsController extends Controller
                 }
                 $data['addtime'] = isset($data['addtime']) ? $data['addtime'] : time();
                 $data['updatetime'] = time();
-				if(strpos($data['jzattr'],'1')!==false){
-					$data['orders'] = 999;
-				}
+                //推荐置顶热门
+                if(strpos($data['jzattr'],'1')!==false){
+                    $data['istop'] = 1;
+                }else{
+                    $data['istop'] = 0;
+                }
+                if(strpos($data['jzattr'],'2')!==false){
+                    $data['ishot'] = 1;
+                }else{
+                    $data['ishot'] = 0;
+                }
+                if(strpos($data['jzattr'],'3')!==false){
+                    $data['istuijian'] = 1;
+                }else{
+                    $data['istuijian'] = 0;
+                }
 				if(M($molds)->update(array('id'=>$this->frparam('id')),$data)){
 					
 					if($old_tags!=$data['tags']){
@@ -620,11 +646,21 @@ class ExtmoldsController extends Controller
                         $w['jzattr'] = ','.$tj.',';
                     }
                 }
-				if(strpos($w['jzattr'],'1')!==false){
-					$w['orders'] = 999;
-				}else{
-					$w['orders'] = 0;
-				}
+                if(strpos($w['jzattr'],'1')!==false){
+                    $w['istop'] = 1;
+                }else{
+                    $w['istop'] = 0;
+                }
+                if(strpos($w['jzattr'],'2')!==false){
+                    $w['ishot'] = 1;
+                }else{
+                    $w['ishot'] = 0;
+                }
+                if(strpos($w['jzattr'],'3')!==false){
+                    $w['istuijian'] = 1;
+                }else{
+                    $w['istuijian'] = 0;
+                }
                 M($molds)->update(array('id'=>$v['id']),$w);
             }
             JsonReturn(array('code'=>0,'msg'=>JZLANG('批量修改成功！')));

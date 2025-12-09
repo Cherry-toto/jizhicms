@@ -199,29 +199,29 @@ class ScreenController extends CommonController
 		//筛选分页的特殊性
 		$page->typeurl = 'screen';
 		
-		$orders = 'orders desc,addtime desc,id desc';
+		$orders = 'istop desc,orders desc,addtime desc,id desc';
 		$ot = $this->frparam('orders') ? $this->frparam('orders') : $res['orderstype'];
 		switch($ot){
 			case 1:
-				$orders = 'orders desc,addtime desc,id desc';
+				$orders = 'istop desc,orders desc,addtime desc,id desc';
 			break;
 			case 2:
-				$orders = 'orders desc,id asc';
+				$orders = 'istop desc,orders desc,id asc';
 			break;
 			case 3:
-				$orders = 'orders asc';
+				$orders = 'istop desc,orders asc';
 			break;
 			case 4:
-				$orders = 'addtime desc';
+				$orders = 'istop desc,addtime desc';
 			break;
 			case 5:
-				$orders = 'id asc';
+				$orders = 'istop desc,id asc';
 			break;
 			case 6:
-				$orders = 'hits desc';
+				$orders = 'istop desc,hits desc';
 			break;
 			case 7:
-				$orders = 'addtime asc';
+				$orders = 'istop desc,addtime asc';
 			break;
 		}
 		$this->currentpage = $this->frpage;

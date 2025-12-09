@@ -552,12 +552,6 @@ class View
                     }
                 }
                 
-            }else if($k=='istop'){
-                $w.=" and jzattr like \'%,1,%\' ";
-            }else if($k=='ishot'){
-                $w.=" and jzattr like \'%,2,%\' ";
-            }else if($k=='istuijian'){
-                $w.=" and jzattr like \'%,3,%\' ";
             }else if($k=='jzattr'){
                 if(strpos($v,',')!==false){
                     $s = explode(',',$v);
@@ -619,9 +613,11 @@ class View
             }
         }
         if(webconf('schedule_table')){
-            $tables = explode('|',webconf('schedule_table'));
-            if(in_array($db,$tables)){
-                $w.= ' and addtime<='.time().' ';
+            if(webConf('schedule_table')){
+                $tables = explode('|',webConf('schedule_table'));
+                if(in_array(trim($db,"'"),$tables)){
+                    $w.= ' and addtime<='.time().' ';
+                }
             }
         }
         $w .= $notin_sql;

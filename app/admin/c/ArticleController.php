@@ -45,7 +45,7 @@ class ArticleController extends CommonController
 
 			}
 			$sql .= $get_sql;
-			$data = $page->where($sql)->orderby('orders desc,id desc')->limit($this->frparam('limit',0,10))->page($this->frparam('page',0,1))->go();
+			$data = $page->where($sql)->orderby('istop desc,orders desc,id desc')->limit($this->frparam('limit',0,10))->page($this->frparam('page',0,1))->go();
 			$ajaxdata = [];
 			foreach($data as $k=>$v){
 				
@@ -182,9 +182,22 @@ class ArticleController extends CommonController
                     }
                 }
             }
-			if(strpos($data['jzattr'],'1')!==false){
-				$data['orders'] = 999;
-			}
+            //推荐置顶热门
+            if(strpos($data['jzattr'],'1')!==false){
+                $data['istop'] = 1;
+            }else{
+                $data['istop'] = 0;
+            }
+            if(strpos($data['jzattr'],'2')!==false){
+                $data['ishot'] = 1;
+            }else{
+                $data['ishot'] = 0;
+            }
+            if(strpos($data['jzattr'],'3')!==false){
+                $data['istuijian'] = 1;
+            }else{
+                $data['istuijian'] = 0;
+            }
 			$r = M('Article')->add($data);
 			if($r){
 				if($data['ownurl']){
@@ -386,9 +399,22 @@ class ArticleController extends CommonController
                 }
                 $data['addtime'] = isset($data['addtime']) ? $data['addtime'] : time();
                 $data['updatetime'] = time();
-				if(strpos($data['jzattr'],'1')!==false){
-					$data['orders'] = 999;
-				}
+                //推荐置顶热门
+                if(strpos($data['jzattr'],'1')!==false){
+                    $data['istop'] = 1;
+                }else{
+                    $data['istop'] = 0;
+                }
+                if(strpos($data['jzattr'],'2')!==false){
+                    $data['ishot'] = 1;
+                }else{
+                    $data['ishot'] = 0;
+                }
+                if(strpos($data['jzattr'],'3')!==false){
+                    $data['istuijian'] = 1;
+                }else{
+                    $data['istuijian'] = 0;
+                }
 				if(M('Article')->update(array('id'=>$this->frparam('id')),$data)){
 					if($old_tags!=$data['tags']){
 						
@@ -675,11 +701,22 @@ class ArticleController extends CommonController
 						$w['jzattr'] = ','.$tj.',';
 					}
 				}
-				if(strpos($w['jzattr'],'1')!==false){
-					$w['orders'] = 999;
-				}else{
-					$w['orders'] = 0;
-				}
+
+                if(strpos($w['jzattr'],'1')!==false){
+                    $w['istop'] = 1;
+                }else{
+                    $w['istop'] = 0;
+                }
+                if(strpos($w['jzattr'],'2')!==false){
+                    $w['ishot'] = 1;
+                }else{
+                    $w['ishot'] = 0;
+                }
+                if(strpos($w['jzattr'],'3')!==false){
+                    $w['istuijian'] = 1;
+                }else{
+                    $w['istuijian'] = 0;
+                }
 				M('Article')->update(array('id'=>$v['id']),$w);
 			}
 			JsonReturn(array('code'=>0,'msg'=>JZLANG('批量修改成功！')));

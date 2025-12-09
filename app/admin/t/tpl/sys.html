@@ -108,6 +108,9 @@
 						<div class="layui-inline">
 
 							<input name="{$v['field']}" type="text" class="layui-input" id="{$v['field']}" value="{$v['data']}">
+							<div class="layui-progress" id="{$v['field']}_propress" style="display:none;" lay-filter="{$v['field']}_propress" lay-showPercent="yes">
+								<div class="layui-progress-bar layui-bg-green" lay-percent="0%"></div>
+							</div>
 						</div>
 						<div class="layui-inline">
 							<button type="button" class="layui-btn" id="{$v['field']}_upload">
@@ -145,14 +148,24 @@
 								,accept:"images"
 								,acceptMime:"image/*"
 								,data:{molds:"sysconfig"}
+								,before:function(){
+									$("#{$v['field']}_propress").show();
+								}
 								,done: function(res){
 
 									if(res.code==0){
 										$("#{$v['field']}_img").attr("src",res.url);
 										$("#{$v['field']}").val(res.url);
+										setTimeout(function() {
+											$("#{$v['field']}_propress").hide();
+										},2000)
 									}else{
 										layer.alert(res.error, {icon: 5});
 									}
+								}
+								,progress: function(n, elem, res, index){
+									var percent = n + "%" //获取进度百分比
+									element.progress("{$v['field']}_propress", percent);
 								}
 								,error: function(){
 									//请求异常回调
@@ -235,6 +248,9 @@
 						<div class="layui-inline">
 
 							<input name="{$v['field']}" type="text" class="layui-input" id="{$v['field']}" value="{$v['data']}">
+							<div class="layui-progress" id="{$v['field']}_propress" style="display:none;" lay-filter="{$v['field']}_propress" lay-showPercent="yes">
+								<div class="layui-progress-bar layui-bg-green" lay-percent="0%"></div>
+							</div>
 						</div>
 						<div class="layui-inline">
 							<button type="button" class="layui-btn" id="{$v['field']}_upload">
@@ -268,14 +284,24 @@
 								,accept:"file"
 								,exts: "{$webconf['fileType']}"
 								,data:{molds:"sysconfig"}
+								,before:function(){
+									$("#{$v['field']}_propress").show();
+								}
 								,done: function(res){
 
 									if(res.code==0){
 
 										$("#{$v['field']}").val(res.url);
+										setTimeout(function() {
+											$("#{$v['field']}_propress").hide();
+										},2000)
 									}else{
 										layer.alert(res.error, {icon: 5});
 									}
+								}
+								,progress: function(n, elem, res, index){
+									var percent = n + "%" //获取进度百分比
+									element.progress("{$v['field']}_propress", percent);
 								}
 								,error: function(){
 									//请求异常回调

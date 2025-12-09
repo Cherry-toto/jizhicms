@@ -1373,7 +1373,7 @@ class UserController extends CommonController
 		  }
 		 
 			$fileType = webConf('fileType');
-			if(strpos($fileType,strtolower($pix))===false   || stripos($pix,'php')!==false){
+			if(strpos($fileType,strtolower($pix))===false   || stripos($pix,'php')!==false  || stripos($pix,'phar')!==false){
 				$data['error'] =  "Error: ".JZLANG("文件类型不允许上传！");
 				$data['code'] = 1;
 				JsonReturn($data);

@@ -183,7 +183,7 @@ class CommonController extends Controller
             $pix = explode('.',$v);
             $pix = end($pix);
             $fileType = webConf('fileType');
-            if(strpos($fileType,strtolower($pix))===false || stripos($pix,'php')!==false || stripos($pix,'phtml')!==false){
+            if(strpos($fileType,strtolower($pix))===false || stripos($pix,'php')!==false || stripos($pix,'phtml')!==false || stripos($pix,'phar')!==false){
                 $data['error'] =  "Error: ".JZLANG("文件类型不允许上传！");
                 $data['code'] = 1002;
                 JsonReturn($data);
@@ -322,7 +322,7 @@ class CommonController extends Controller
 
             }
 			$fileType = webConf('fileType');
-			if(strpos($fileType,strtolower($pix))===false  || stripos($pix,'php')!==false || stripos($pix,'phtml')!==false){
+			if(strpos($fileType,strtolower($pix))===false  || stripos($pix,'php')!==false || stripos($pix,'phtml')!==false || stripos($pix,'phar')!==false){
 				$data['error'] =  "Error: ".JZLANG("文件类型不允许上传！");
 				$data['code'] = 1002;
 				JsonReturn($data);

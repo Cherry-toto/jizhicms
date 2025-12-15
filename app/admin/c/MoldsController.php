@@ -103,9 +103,9 @@ class MoldsController extends CommonController
 				`hits` int(11) DEFAULT 0 COMMENT '".JZLANG("点击量")."',
 				`zan` int(11) DEFAULT 0 COMMENT '".JZLANG("点赞数")."',
 				`tags` varchar(255) DEFAULT NULL COMMENT 'TAG',
-				`istop` tinyint(1) DEFAULT 1 COMMENT '".JZLANG("是否置顶")."',
-				`ishot` tinyint(1) DEFAULT 1 COMMENT '".JZLANG("是否热门")."',
-				`istuijian` tinyint(1) DEFAULT 1 COMMENT '".JZLANG("是否推荐")."',
+				`istop` tinyint(1) DEFAULT 0 COMMENT '".JZLANG("是否置顶")."',
+				`ishot` tinyint(1) DEFAULT 0 COMMENT '".JZLANG("是否热门")."',
+				`istuijian` tinyint(1) DEFAULT 0 COMMENT '".JZLANG("是否推荐")."',
 				`addtime` int(11) DEFAULT 0 COMMENT '".JZLANG("发布时间")."',
 				`updatetime` int(11) DEFAULT 0 COMMENT '".JZLANG("更新时间")."',
 				PRIMARY 

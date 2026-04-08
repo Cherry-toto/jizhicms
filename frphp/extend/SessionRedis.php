@@ -130,8 +130,12 @@ class SessionRedis implements SessionHandlerInterface
      * 当session_start()函数被调用的时候该函数被触发
      *
      * @see SessionHandlerInterface::open()
+     * @param string $path
+     * @param string $name
+     * @return bool
      */
-    public function open($save_path, $name)
+    #[\ReturnTypeWillChange]
+    public function open($path, $name)
     {
         /*
          * 首先连接服务器
@@ -146,7 +150,9 @@ class SessionRedis implements SessionHandlerInterface
      * 当session关闭的时候该函数自动被触发
      *
      * @see SessionHandlerInterface::close()
+     * @return bool
      */
+    #[\ReturnTypeWillChange]
     public function close()
     {
         return true;
@@ -158,13 +164,16 @@ class SessionRedis implements SessionHandlerInterface
      * 但是在session_start()函数调用的时候先触发open函数，再触发该函数
      *
      * @see SessionHandlerInterface::read()
+     * @param string $id
+     * @return string|false
      */
-    public function read($session_id)
+    #[\ReturnTypeWillChange]
+    public function read($id)
     {
         /*
          * 根据sessionId 构造键名
          */
-        $key = $this->prefix . ':' . $session_id;
+        $key = $this->prefix . ':' . $id;
 
         //读取当前sessionid下的data数据
         $res = $this->handle->hGet($key, 'data');
@@ -180,13 +189,17 @@ class SessionRedis implements SessionHandlerInterface
      * 当session准备好存储和关闭的时候调用该函数
      *
      * @see SessionHandlerInterface::write()
+     * @param string $id
+     * @param string $data
+     * @return bool
      */
-    public function write($session_id, $session_data)
+    #[\ReturnTypeWillChange]
+    public function write($id, $data)
     {
         /*
          * 根据sessionId 构造键名
          */
-        $key = $this->prefix . ':' . $session_id;
+        $key = $this->prefix . ':' . $id;
         $time = time();
         //查看该键内容是否存在
         if (!$this->handle->exists($key)) {
@@ -199,7 +212,7 @@ class SessionRedis implements SessionHandlerInterface
             /*
              * 存在，则更新该键值
              */
-            $this->handle->hMset($key, array('last_time' => $time, 'data' => $session_data));
+            $this->handle->hMset($key, array('last_time' => $time, 'data' => $data));
         }
         return true;
 
@@ -209,14 +222,17 @@ class SessionRedis implements SessionHandlerInterface
      * 销毁session
      *
      * @see SessionHandlerInterface::destroy()
+     * @param string $id
+     * @return bool
      */
-    public function destroy($session_id)
+    #[\ReturnTypeWillChange]
+    public function destroy($id)
     {
         /*
          * 根据sessionId 构造键名
          */
-        $key = $this->prefix . ':' . $session_id;
-        $this->handle->hDel($key, 'data');
+        $key = $this->prefix . ':' . $id;
+        return $this->handle->hDel($key, 'data') > 0;
     }
 
     /**
@@ -225,7 +241,10 @@ class SessionRedis implements SessionHandlerInterface
      * session.gc_divisor, session.gc_probability 和 session.gc_lifetime所设置的值的
      *
      * @see SessionHandlerInterface::gc()
+     * @param int $maxlifetime
+     * @return bool
      */
+    #[\ReturnTypeWillChange]
     public function gc($maxlifetime)
     {
         /*
@@ -248,6 +267,7 @@ class SessionRedis implements SessionHandlerInterface
 
         }
 
+        return true;
     }
 }
 

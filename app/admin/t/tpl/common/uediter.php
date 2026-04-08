@@ -16,6 +16,29 @@ if(APP_CONTROLLER=='Sys'){
                     <textarea id="editor-content-textarea-'.$v['field'].$rd.'" style="display:none" name="'.$v['field'].'">'.$v['data'].'</textarea>
                   </div>
                   
+                  <!-- 图库模态框 -->
+                  <div id="image-library-modal-'.$v['field'].$rd.'" style="display:none; position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.5); z-index:1000;">
+                    <div style="position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); width:80%; height:80%; background:white; border-radius:5px; overflow:hidden;">
+                      <div style="padding:20px; border-bottom:1px solid #eee; display:flex; justify-content:space-between; align-items:center;">
+                        <h3>本地图库</h3>
+                        <button id="close-library-modal-'.$v['field'].$rd.'" type="button" style="padding:5px 15px; background:#f0f0f0; border:none; border-radius:3px; cursor:pointer;">关闭</button>
+                      </div>
+                      <div id="image-library-content-'.$v['field'].$rd.'" style="padding:20px; height:calc(100% - 170px); overflow-y:auto;">
+                        <div id="image-list-'.$v['field'].$rd.'" style="display:grid; grid-template-columns:repeat(auto-fill, minmax(150px, 1fr)); gap:15px;">
+                          <!-- 图片将通过JS动态加载 -->
+                        </div>
+                      </div>
+                      <div style="padding:15px 20px; border-top:1px solid #eee; display:flex; justify-content:space-between; align-items:center;">
+                        <div id="gallery-page-info-'.$v['field'].$rd.'" style="color:#666; font-size:14px;">第1页 / 共1页</div>
+                        <div style="display:flex; gap:10px;">
+                          <button id="gallery-prev-page-'.$v['field'].$rd.'" type="button" style="padding:6px 15px; background:#f0f0f0; border:none; border-radius:3px; cursor:pointer; color:#666;">上一页</button>
+                          <button id="gallery-next-page-'.$v['field'].$rd.'" type="button" style="padding:6px 15px; background:#f0f0f0; border:none; border-radius:3px; cursor:pointer; color:#666;">下一页</button>
+                          <button id="insert-selected-images-'.$v['field'].$rd.'" type="button" style="padding:6px 20px; background:#1890ff; color:white; border:none; border-radius:3px; cursor:pointer;">插入选中图片</button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  
 				
 			</div>
 		</div>
@@ -133,7 +156,7 @@ if(APP_CONTROLLER=='Sys'){
     })
      class MyMenu'.$v['field'].$rd.' {
       constructor() {
-        this.title = "源码"
+        this.title = "HTML"
         this.tag = "button"
         this.sourceActive = false
       }
@@ -175,26 +198,177 @@ if(APP_CONTROLLER=='Sys'){
 
       }
     }
+    
+    // 图库菜单类
+    class MyGalleryMenu'.$v['field'].$rd.' {
+      constructor() {
+        this.title = "图库"
+        this.tag = "button"
+      }
+      getValue(editor) {
+        return ""
+      }
+      isActive(editor) {
+        return false
+      }
+      isDisabled(editor) {
+        return false
+      }
+      exec(editor, value) {
+        // 显示图库模态框
+        document.getElementById("image-library-modal-'.$v['field'].$rd.'").style.display = "block"
+        // 加载图片列表
+        loadImageLibrary('.$v['field'].$rd.')
+      }
+    }
+    
     const myMenuConf'.$v['field'].$rd.' = {
       key: "'.$v['field'].$rd.'html",
       factory() {
         return new MyMenu'.$v['field'].$rd.'()
       }
     }
+    
+    const myGalleryMenuConf'.$v['field'].$rd.' = {
+      key: "'.$v['field'].$rd.'gallery",
+      factory() {
+        return new MyGalleryMenu'.$v['field'].$rd.'()
+      }
+    }
+    
      E_'.$v['field'].$rd.'.Boot.registerMenu(myMenuConf'.$v['field'].$rd.')
+     E_'.$v['field'].$rd.'.Boot.registerMenu(myGalleryMenuConf'.$v['field'].$rd.')
     window.toolbar = E_'.$v['field'].$rd.'.createToolbar({
       editor,
       selector: "#editor-toolbar-'.$v['field'].$rd.'",
       config: {
       	insertKeys: {
           index: 0,
-          keys: ["'.$v['field'].$rd.'html"],
+          keys: ["'.$v['field'].$rd.'html", "'.$v['field'].$rd.'gallery"],
         }
       }
     })
         
 	})
 	
+	// 加载图片库函数
+	var galleryPage'.$v['field'].$rd.' = 1;
+	var galleryPageSize'.$v['field'].$rd.' = 20;
+	var galleryTotalCount'.$v['field'].$rd.' = 0;
+	
+	function loadImageLibrary(fieldRd, page) {
+		if(page) galleryPage'.$v['field'].$rd.' = page;
+		var imageList = document.getElementById("image-list-"+fieldRd);
+		imageList.innerHTML = `<div style="text-align:center; padding:50px;">加载中...</div>`;
+		
+		// 模拟加载图片，实际项目中应该从服务器获取已上传的图片列表
+		// 这里假设服务器返回JSON格式的图片列表
+		$.ajax({
+			url: "'.U('Sys/pictures').'",
+			type: "GET",
+			data: {ajax:1, page: galleryPage'.$v['field'].$rd.', pageSize: galleryPageSize'.$v['field'].$rd.'},
+			dataType: "json",
+			success: function(res) {
+				if(res.code == 0 && res.data && res.data.length > 0) {
+					imageList.innerHTML = "";
+					res.data.forEach(function(image) {
+						var imageItem = document.createElement("div");
+						imageItem.style.cssText = "position:relative; border:2px solid transparent; cursor:pointer; transition:all 0.3s;";
+						imageItem.innerHTML = `
+															<div style="position:absolute; top:5px; left:5px; z-index:10;">
+																<div class="custom-checkbox" style="width:20px; height:20px; border:2px solid #ccc; border-radius:3px; background:white; display:flex; align-items:center; justify-content:center; cursor:pointer;">
+																	<span class="checkmark" style="display:none; color:#1890ff; font-size:14px; font-weight:bold;">✓</span>
+																</div>
+																<input type="checkbox" style="display:none;" data-src="${image.litpic}">
+															</div>
+															<img src="${image.litpic}" style="width:100%; height:120px; object-fit:cover; border-radius:3px;">
+														`;
+						
+						// 点击图片切换选中状态
+						imageItem.addEventListener("click", function(e) {
+							var checkbox = this.querySelector("input[type=\"checkbox\"]");
+							var customCheckbox = this.querySelector(".custom-checkbox");
+							var checkmark = this.querySelector(".checkmark");
+							
+							checkbox.checked = !checkbox.checked;
+							
+							// 更新自定义复选框显示
+							if(checkbox.checked) {
+								customCheckbox.style.borderColor = "#1890ff";
+								customCheckbox.style.backgroundColor = "#1890ff";
+								checkmark.style.display = "block";
+								checkmark.style.color = "white";
+							} else {
+								customCheckbox.style.borderColor = "#ccc";
+								customCheckbox.style.backgroundColor = "white";
+								checkmark.style.display = "none";
+							}
+							
+							// 更新边框样式
+							this.style.borderColor = checkbox.checked ? "#1890ff" : "transparent";
+						});
+						
+						imageList.appendChild(imageItem);
+					});
+					
+					// 更新分页信息
+					galleryTotalCount'.$v['field'].$rd.' = res.count;
+					var totalPages = Math.ceil(galleryTotalCount'.$v['field'].$rd.' / galleryPageSize'.$v['field'].$rd.');
+					document.getElementById("gallery-page-info-'.$v['field'].$rd.'").textContent = "第"+galleryPage'.$v['field'].$rd.'+"页 / 共"+totalPages+"页";
+					
+					// 更新按钮状态
+					document.getElementById("gallery-prev-page-'.$v['field'].$rd.'").disabled = galleryPage'.$v['field'].$rd.' <= 1;
+					document.getElementById("gallery-next-page-'.$v['field'].$rd.'").disabled = galleryPage'.$v['field'].$rd.' >= totalPages;
+				} else {
+					imageList.innerHTML = "<div style=\"text-align:center; padding:50px;\">暂无图片</div>";
+				}
+			},
+			error: function() {
+				imageList.innerHTML = "<div style=\"text-align:center; padding:50px; color:red;\">加载失败</div>";
+			}
+		});
+	}
+	    // 关闭模态框
+			document.getElementById("close-library-modal-'.$v['field'].$rd.'").addEventListener("click", function() {
+				document.getElementById("image-library-modal-'.$v['field'].$rd.'").style.display = "none";
+			});
+
+			// 插入选中图片
+			document.getElementById("insert-selected-images-'.$v['field'].$rd.'").addEventListener("click", function() {
+				var selectedCheckboxes = document.querySelectorAll("#image-list-'.$v['field'].$rd.' input[type=\"checkbox\"]:checked");
+				var selectedImages = [];
+				
+				selectedCheckboxes.forEach(function(checkbox) {
+					selectedImages.push(checkbox.dataset.src);
+				});
+				
+				if(selectedImages.length > 0) {
+					// 插入图片到编辑器
+					selectedImages.forEach(function(imageUrl) {
+						// 使用 wangEditor 的 API 插入图片
+						window.editor.dangerouslyInsertHtml(`<img src="${imageUrl}" alt="" style="width: 200px;">`);
+					});
+					
+					// 关闭模态框
+					document.getElementById("image-library-modal-'.$v['field'].$rd.'").style.display = "none";
+				} else {
+					alert("请先选择图片");
+				}
+			});
+	// 分页控制函数
+	document.getElementById("gallery-prev-page-'.$v['field'].$rd.'").addEventListener("click", function() {
+		if(galleryPage'.$v['field'].$rd.' > 1) {
+			loadImageLibrary("'.$v['field'].$rd.'", galleryPage'.$v['field'].$rd.' - 1);
+		}
+	});
+	
+	document.getElementById("gallery-next-page-'.$v['field'].$rd.'").addEventListener("click", function() {
+		var totalPages = Math.ceil(galleryTotalCount'.$v['field'].$rd.' / galleryPageSize'.$v['field'].$rd.');
+		if(galleryPage'.$v['field'].$rd.' < totalPages) {
+			loadImageLibrary("'.$v['field'].$rd.'", galleryPage'.$v['field'].$rd.' + 1);
+		}
+	});
+
 		   </script>';
 }else{
     $html = '<div class="layui-form-item layui-form-text">
@@ -210,6 +384,29 @@ if(APP_CONTROLLER=='Sys'){
                   <!-- 显示内容 -->
                   <div style="margin-top: 20px;">
                     <textarea id="editor-content-textarea-'.$v['field'].$rd.'" style="display:none" name="'.$v['field'].'">'.$data[$v['field']].'</textarea>
+                  </div>
+                  
+                  <!-- 图库模态框 -->
+                  <div id="image-library-modal-'.$v['field'].$rd.'" style="display:none; position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.5); z-index:1000;">
+                    <div style="position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); width:80%; height:80%; background:white; border-radius:5px; overflow:hidden;">
+                      <div style="padding:20px; border-bottom:1px solid #eee; display:flex; justify-content:space-between; align-items:center;">
+                        <h3>本地图库</h3>
+                        <button id="close-library-modal-'.$v['field'].$rd.'" type="button" style="padding:5px 15px; background:#f0f0f0; border:none; border-radius:3px; cursor:pointer;">关闭</button>
+                      </div>
+                      <div id="image-library-content-'.$v['field'].$rd.'" style="padding:20px; height:calc(100% - 170px); overflow-y:auto;">
+                        <div id="image-list-'.$v['field'].$rd.'" style="display:grid; grid-template-columns:repeat(auto-fill, minmax(150px, 1fr)); gap:15px;">
+                          <!-- 图片将通过JS动态加载 -->
+                        </div>
+                      </div>
+                      <div style="padding:15px 20px; border-top:1px solid #eee; display:flex; justify-content:space-between; align-items:center;">
+                        <div id="gallery-page-info-'.$v['field'].$rd.'" style="color:#666; font-size:14px;">第1页 / 共1页</div>
+                        <div style="display:flex; gap:10px;">
+                          <button id="gallery-prev-page-'.$v['field'].$rd.'" type="button" style="padding:6px 15px; background:#f0f0f0; border:none; border-radius:3px; cursor:pointer; color:#666;">上一页</button>
+                          <button id="gallery-next-page-'.$v['field'].$rd.'" type="button" style="padding:6px 15px; background:#f0f0f0; border:none; border-radius:3px; cursor:pointer; color:#666;">下一页</button>
+                          <button id="insert-selected-images-'.$v['field'].$rd.'" type="button" style="padding:6px 20px; background:#1890ff; color:white; border:none; border-radius:3px; cursor:pointer;">插入选中图片</button>
+                        </div>
+                      </div>
+                    </div>
                   </div>
            
 				
@@ -371,20 +568,53 @@ if(APP_CONTROLLER=='Sys'){
 
       }
     }
+    
+    // 图库菜单类
+    class MyGalleryMenu'.$v['field'].$rd.' {
+      constructor() {
+        this.title = "图库"
+        this.tag = "button"
+      }
+      getValue(editor) {
+        return ""
+      }
+      isActive(editor) {
+        return false
+      }
+      isDisabled(editor) {
+        return false
+      }
+      exec(editor, value) {
+        // 显示图库模态框
+        document.getElementById("image-library-modal-'.$v['field'].$rd.'").style.display = "block"
+        // 加载图片列表
+        loadImageLibrary("'.$v['field'].$rd.'")
+      }
+    }
+    
     const myMenuConf'.$v['field'].$rd.' = {
       key: "'.$v['field'].$rd.'html",
       factory() {
         return new MyMenu'.$v['field'].$rd.'()
       }
     }
+    
+    const myGalleryMenuConf'.$v['field'].$rd.' = {
+      key: "'.$v['field'].$rd.'gallery",
+      factory() {
+        return new MyGalleryMenu'.$v['field'].$rd.'()
+      }
+    }
+    
      E_'.$v['field'].$rd.'.Boot.registerMenu(myMenuConf'.$v['field'].$rd.')
+     E_'.$v['field'].$rd.'.Boot.registerMenu(myGalleryMenuConf'.$v['field'].$rd.')
     window.toolbar = E_'.$v['field'].$rd.'.createToolbar({
       editor,
       selector: "#editor-toolbar-'.$v['field'].$rd.'",
       config: {
       	insertKeys: {
           index: 0,
-          keys: ["'.$v['field'].$rd.'html"],
+          keys: ["'.$v['field'].$rd.'html", "'.$v['field'].$rd.'gallery"],
         }
       }
     })
@@ -392,6 +622,126 @@ if(APP_CONTROLLER=='Sys'){
 
         
 	})
+
+			// 加载图片库函数
+			var galleryPage'.$v['field'].$rd.' = 1;
+			var galleryPageSize'.$v['field'].$rd.' = 20;
+			var galleryTotalCount'.$v['field'].$rd.' = 0;
+			
+			function loadImageLibrary(fieldRd, page) {
+				if(page) galleryPage'.$v['field'].$rd.' = page;
+				var imageList = document.getElementById("image-list-"+fieldRd);
+				imageList.innerHTML = `<div style="text-align:center; padding:50px;">加载中...</div>`;
+				
+				// 模拟加载图片，实际项目中应该从服务器获取已上传的图片列表
+				// 这里假设服务器返回JSON格式的图片列表
+				$.ajax({
+					url: "'.U('Sys/pictures').'",
+					type: "GET",
+					data: {ajax:1, page: galleryPage'.$v['field'].$rd.', pageSize: galleryPageSize'.$v['field'].$rd.'},
+					dataType: "json",
+					success: function(res) {
+						if(res.code == 0 && res.data && res.data.length > 0) {
+							imageList.innerHTML = "";
+							res.data.forEach(function(image) {
+								var imageItem = document.createElement("div");
+								imageItem.style.cssText = "position:relative; border:2px solid transparent; cursor:pointer; transition:all 0.3s;";
+								imageItem.innerHTML = `
+																<div style="position:absolute; top:5px; left:5px; z-index:10;">
+																	<div class="custom-checkbox" style="width:20px; height:20px; border:2px solid #ccc; border-radius:3px; background:white; display:flex; align-items:center; justify-content:center; cursor:pointer;">
+																		<span class="checkmark" style="display:none; color:#1890ff; font-size:14px; font-weight:bold;">✓</span>
+																	</div>
+																	<input type="checkbox" style="display:none;" data-src="${image.litpic}">
+																</div>
+																<img src="${image.litpic}" style="width:100%; height:120px; object-fit:cover; border-radius:3px;">
+														`;
+								
+								// 点击图片切换选中状态
+								imageItem.addEventListener("click", function(e) {
+									var checkbox = this.querySelector("input[type=\"checkbox\"]");
+									var customCheckbox = this.querySelector(".custom-checkbox");
+									var checkmark = this.querySelector(".checkmark");
+									
+									checkbox.checked = !checkbox.checked;
+									
+									// 更新自定义复选框显示
+									if(checkbox.checked) {
+										customCheckbox.style.borderColor = "#1890ff";
+										customCheckbox.style.backgroundColor = "#1890ff";
+										checkmark.style.display = "block";
+										checkmark.style.color = "white";
+									} else {
+										customCheckbox.style.borderColor = "#ccc";
+										customCheckbox.style.backgroundColor = "white";
+										checkmark.style.display = "none";
+									}
+									
+									// 更新边框样式
+									this.style.borderColor = checkbox.checked ? "#1890ff" : "transparent";
+								});
+								
+								imageList.appendChild(imageItem);
+							});
+							
+							// 更新分页信息
+							galleryTotalCount'.$v['field'].$rd.' = res.count;
+							var totalPages = Math.ceil(galleryTotalCount'.$v['field'].$rd.' / galleryPageSize'.$v['field'].$rd.');
+							document.getElementById("gallery-page-info-'.$v['field'].$rd.'").textContent = "第"+galleryPage'.$v['field'].$rd.'+"页 / 共"+totalPages+"页";
+							
+							// 更新按钮状态
+							document.getElementById("gallery-prev-page-'.$v['field'].$rd.'").disabled = galleryPage'.$v['field'].$rd.' <= 1;
+							document.getElementById("gallery-next-page-'.$v['field'].$rd.'").disabled = galleryPage'.$v['field'].$rd.' >= totalPages;
+						} else {
+							imageList.innerHTML = "<div style=\"text-align:center; padding:50px;\">暂无图片</div>";
+						}
+					},
+					error: function() {
+						imageList.innerHTML = "<div style=\"text-align:center; padding:50px; color:red;\">加载失败</div>";
+					}
+				});
+			}
+
+			// 关闭模态框
+			document.getElementById("close-library-modal-'.$v['field'].$rd.'").addEventListener("click", function() {
+				document.getElementById("image-library-modal-'.$v['field'].$rd.'").style.display = "none";
+			});
+
+			// 插入选中图片
+			document.getElementById("insert-selected-images-'.$v['field'].$rd.'").addEventListener("click", function() {
+				var selectedCheckboxes = document.querySelectorAll("#image-list-'.$v['field'].$rd.' input[type=\"checkbox\"]:checked");
+				var selectedImages = [];
+				
+				selectedCheckboxes.forEach(function(checkbox) {
+					selectedImages.push(checkbox.dataset.src);
+				});
+				
+				if(selectedImages.length > 0) {
+					// 插入图片到编辑器
+					selectedImages.forEach(function(imageUrl) {
+						// 使用 wangEditor 的 API 插入图片
+						window.editor.dangerouslyInsertHtml(`<img src="${imageUrl}" alt="" style="width: 200px;">`);
+					});
+					
+					// 关闭模态框
+					document.getElementById("image-library-modal-'.$v['field'].$rd.'").style.display = "none";
+				} else {
+					alert("请先选择图片");
+				}
+			});
+
+			// 分页控制函数
+			document.getElementById("gallery-prev-page-'.$v['field'].$rd.'").addEventListener("click", function() {
+				if(galleryPage'.$v['field'].$rd.' > 1) {
+					loadImageLibrary("'.$v['field'].$rd.'", galleryPage'.$v['field'].$rd.' - 1);
+				}
+			});
+			
+			document.getElementById("gallery-next-page-'.$v['field'].$rd.'").addEventListener("click", function() {
+				var totalPages = Math.ceil(galleryTotalCount'.$v['field'].$rd.' / galleryPageSize'.$v['field'].$rd.');
+				if(galleryPage'.$v['field'].$rd.' < totalPages) {
+					loadImageLibrary("'.$v['field'].$rd.'", galleryPage'.$v['field'].$rd.' + 1);
+				}
+			});
 
 			</script>';
     return $html;

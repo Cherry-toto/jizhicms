@@ -1,7 +1,7 @@
 <?php
 
 // +----------------------------------------------------------------------
-// | JiZhiCMS { 极致CMS，给您极致的建站体验 }  
+// | JiZhiCMS { 极致CMS，给您极致的建站体验 }
 // +----------------------------------------------------------------------
 // | Copyright (c) 2018-2099 http://www.jizhicms.com All rights reserved.
 // +----------------------------------------------------------------------
@@ -582,127 +582,127 @@ class FieldsController extends CommonController
 		$this->display('fields-edit');
 		
 	}
-	
-	function get_fields(){
-		$tid = $this->frparam('tid',0,0);
-		$isext = $this->frparam('isext',0,0);
-		$sql = array();
-		$molds = strtolower($this->frparam('molds',5));
-		$moldsdata = M('molds')->find(['biaoshi'=>$molds]);
-		if($tid  && !in_array($molds,['orders','level','level_group','tags','attr','chain','collect','collect_type','links','link_type','pictures','comment'])){
-			$sql[] = " (tids like '%,".$tid.",%' or tids is null) ";
-		}
+    
+    function get_fields(){
+        $tid = $this->frparam('tid',0,0);
+        $isext = $this->frparam('isext',0,0);
+        $sql = array();
+        $molds = strtolower($this->frparam('molds',5));
+        $moldsdata = M('molds')->find(['biaoshi'=>$molds]);
+        if($tid  && !in_array($molds,['orders','level','level_group','tags','attr','chain','collect','collect_type','links','link_type','pictures','comment'])){
+            $sql[] = " (tids like '%,".$tid.",%' or tids is null) ";
+        }
         $id = $this->frparam('id');
-		if($id){
-			$data = M($molds)->find(array('id'=>$id));
-		}else{
-			$data = array();
-		}
-		$sql[] = " isext=".$isext;
-		$sql[] = " molds = '".$molds."' and isadmin=1 ";
-		$sql = implode(' and ',$sql);
-		$fields_list = M('Fields')->findAll($sql,'orders desc,id asc');
-		$l = '';
-		$isagree = 0;
-		if($this->admin['isadmin']==1 || ($this->admin['isadmin']!=1 && $this->admin['ischeck']==0)){
-			$isagree = 1;
-		}
-		foreach($fields_list as $k=>$v){
-			if(($v['field']=='isshow' && $isagree==0) || $v['field']=='tid' || $v['field']=='id'){
-				continue;
-			}
-			if(!array_key_exists($v['field'],$data)){
-				//使用默认值
-				$data[$v['field']] = $v['vdata'];
-			}
-			switch($v['fieldtype']){
-				case 1:
-				$l .= '<div class="layui-form-item">
+        if($id){
+            $data = M($molds)->find(array('id'=>$id));
+        }else{
+            $data = array();
+        }
+        $sql[] = " isext=".$isext;
+        $sql[] = " molds = '".$molds."' and isadmin=1 ";
+        $sql = implode(' and ',$sql);
+        $fields_list = M('Fields')->findAll($sql,'orders desc,id asc');
+        $l = '';
+        $isagree = 0;
+        if($this->admin['isadmin']==1 || ($this->admin['isadmin']!=1 && $this->admin['ischeck']==0)){
+            $isagree = 1;
+        }
+        foreach($fields_list as $k=>$v){
+            if(($v['field']=='isshow' && $isagree==0) || $v['field']=='tid' || $v['field']=='id'){
+                continue;
+            }
+            if(!array_key_exists($v['field'],$data)){
+                //使用默认值
+                $data[$v['field']] = $v['vdata'];
+            }
+            switch($v['fieldtype']){
+                case 1:
+                    $l .= '<div class="layui-form-item">
                     <label for="'.$v['field'].'" class="layui-form-label">';
-				if($v['ismust']==1){
-				$l .= '<span class="x-red">*</span>';	
-				}
-                $l .= $v['fieldname'].'
+                    if($v['ismust']==1){
+                        $l .= '<span class="x-red">*</span>';
+                    }
+                    $l .= $v['fieldname'].'
                     </label>
                     <div class="layui-input-inline">
                         <input type="text" id="'.$v['field'].'" value="'.$data[$v['field']].'" name="'.$v['field'].'" ';
-				if($v['ismust']==1){
-					$l.=' required="" lay-verify="required" ';
-				}		
-                $l .=  'autocomplete="off" class="layui-input">
+                    if($v['ismust']==1){
+                        $l.=' required="" lay-verify="required" ';
+                    }
+                    $l .=  'autocomplete="off" class="layui-input">
                     </div>';
-				if($v['tips']){
-					$l.='<div class="layui-form-mid layui-word-aux">
+                    if($v['tips']){
+                        $l.='<div class="layui-form-mid layui-word-aux">
 					  <i data-info="'.$v['tips'].'" data-field="f'.$v['id'].'" class="layui-sys-icon layui-icon layui-icon-about f'.$v['id'].'"></i>
 					</div>';
-				}	
-                $l.='</div>';
-				break;
-				case 2:
-				$l .= '<div class="layui-form-item  layui-form-text">
+                    }
+                    $l.='</div>';
+                    break;
+                case 2:
+                    $l .= '<div class="layui-form-item  layui-form-text">
                     <label for="'.$v['field'].'" class="layui-form-label">';
-				if($v['ismust']==1){
-				$l .= '<span class="x-red">*</span>';	
-				}
-                $l .= $v['fieldname'].'
+                    if($v['ismust']==1){
+                        $l .= '<span class="x-red">*</span>';
+                    }
+                    $l .= $v['fieldname'].'
                     </label>
                     <div class="layui-input-block">
                         <textarea  class="layui-textarea" id="'.$v['field'].'"  name="'.$v['field'].'" ';
-				if($v['ismust']==1){
-					$l.=' required="" lay-verify="required" ';
-				}		
-                $l .=  '>'.$data[$v['field']].'</textarea>
+                    if($v['ismust']==1){
+                        $l.=' required="" lay-verify="required" ';
+                    }
+                    $l .=  '>'.$data[$v['field']].'</textarea>
                     </div>';
-				if($v['tips']){
-					$l.='<div class="layui-form-mid layui-word-aux">
+                    if($v['tips']){
+                        $l.='<div class="layui-form-mid layui-word-aux">
 					  <i data-info="'.$v['tips'].'" data-field="f'.$v['id'].'" class="layui-sys-icon layui-icon layui-icon-about f'.$v['id'].'"></i>
 					</div>';
-				}	
-                $l.='</div>';
-				break;
-				case 3:
-				$l .= include(APP_PATH.APP_HOME.'/'.HOME_VIEW.'/'.Tpl_template.'/common/uediter.php');
-				break;
-				case 4:
-				$l .= '<div class="layui-form-item">
+                    }
+                    $l.='</div>';
+                    break;
+                case 3:
+                    $l .= include(APP_PATH.APP_HOME.'/'.HOME_VIEW.'/'.Tpl_template.'/common/uediter.php');
+                    break;
+                case 4:
+                    $l .= '<div class="layui-form-item">
                     <label for="'.$v['field'].'" class="layui-form-label">';
-				if($v['ismust']==1){
-				$l .= '<span class="x-red">*</span>';	
-				}
-                $l .= $v['fieldname'].'
+                    if($v['ismust']==1){
+                        $l .= '<span class="x-red">*</span>';
+                    }
+                    $l .= $v['fieldname'].'
                     </label>
                     <div class="layui-input-inline">
                         <input type="number" id="'.$v['field'].'" value="'.$data[$v['field']].'" name="'.$v['field'].'" ';
-				if($v['ismust']==1){
-					$l.=' required="" lay-verify="required" ';
-				}		
-                $l .=  'autocomplete="off" class="layui-input">
+                    if($v['ismust']==1){
+                        $l.=' required="" lay-verify="required" ';
+                    }
+                    $l .=  'autocomplete="off" class="layui-input">
                     </div>';
-				if($v['tips']){
-					$l.='<div class="layui-form-mid layui-word-aux">
+                    if($v['tips']){
+                        $l.='<div class="layui-form-mid layui-word-aux">
 					  <i data-info="'.$v['tips'].'" data-field="f'.$v['id'].'" class="layui-sys-icon layui-icon layui-icon-about f'.$v['id'].'"></i>
 					</div>';
-				}	
-                $l.='</div>';
-				break;
-				
-				
-				case 5:
-				$l .= '<div class="layui-form-item">
+                    }
+                    $l.='</div>';
+                    break;
+                
+                
+                case 5:
+                    $l .= '<div class="layui-form-item">
                     <label for="'.$v['field'].'" class="layui-form-label">';
-				if($v['ismust']==1){
-				$l .= '<span class="x-red">*</span>';	
-				}
-                $l .= $v['fieldname'].'  
+                    if($v['ismust']==1){
+                        $l .= '<span class="x-red">*</span>';
+                    }
+                    $l .= $v['fieldname'].'
                     </label>
 					
 					
 					<div class="layui-input-inline">
 						<input name="'.$v['field'].'" placeholder="'.JZLANG('上传图片').'" type="text" class="layui-input" id="'.$v['field'].'" ';
-					if($v['ismust']==1){
-						$l.=' required="" lay-verify="required" ';
-					}
-						$l.=' value="'.$data[$v['field']].'" />
+                    if($v['ismust']==1){
+                        $l.=' required="" lay-verify="required" ';
+                    }
+                    $l.=' value="'.$data[$v['field']].'" />
                             <div class="layui-progress" id="'.$v['field'].'_propress" style="display:none;" lay-filter="'.$v['field'].'_propress" lay-showPercent="yes">
                           <div class="layui-progress-bar layui-bg-green" lay-percent="0%"></div>
                         </div>
@@ -711,20 +711,25 @@ class FieldsController extends CommonController
 						<button class="layui-btn layui-btn-primary" id="LAY_'.$v['field'].'_upload" type="button" >'.JZLANG('选择图片').'</button>
 					</div>
 					<div class="layui-input-inline">
+						<button class="layui-btn layui-btn-warm" id="LAY_'.$v['field'].'_gallery" type="button" >'.JZLANG('图库').'</button>
+					</div>
+					<div class="layui-input-inline">
 						<img id="'.$v['field'].'_img" class="img-responsive img-thumbnail" style="max-width: 200px;" src="'.$data[$v['field']].'" onerror="javascipt:this.src=\''.Tpl_style.'/style/images/nopic.jpg\'; this.title=\''.JZLANG('图片未找到').'\';this.onerror=\'\'">
 						<button type="button" onclick="deleteImage_auto(this,\''.$v['field'].'\')" class="layui-btn layui-btn-sm layui-btn-radius layui-btn-danger " title="'.JZLANG('删除这张图片').'" >'.JZLANG('删除').'</button>
 					</div>';
-				if($v['tips']){
-					$l.='<div class="layui-form-mid layui-word-aux">
+                    if($v['tips']){
+                        $l.='<div class="layui-form-mid layui-word-aux">
 					  <i data-info="'.$v['tips'].'" data-field="f'.$v['id'].'" class="layui-sys-icon layui-icon layui-icon-about f'.$v['id'].'"></i>
 					</div>';
-				}	
-                $l.='</div>
+                    }
+                    $l.='</div>
 				<script>
 				
-				layui.use("upload", function(){
+				layui.use(["upload","layer","element"], function(){
 					  var upload_'.$v['field'].' = layui.upload;
-					   
+					  var layer = layui.layer;
+					  var element = layui.element;
+					  
 					  //执行实例
 					  var uploadInst = upload_'.$v['field'].'.render({
 						elem: "#LAY_'.$v['field'].'_upload" //绑定元素
@@ -736,54 +741,205 @@ class FieldsController extends CommonController
 						    $("#'.$v['field'].'_propress").show();
 						}
 						,done: function(res){
-						  
+						 
 							if(res.code==0){
 								 $("#'.$v['field'].'_img").attr("src",res.url);
 								 $("#'.$v['field'].'").val(res.url);
-								 setTimeout(function() { 
+								 setTimeout(function() {
 								 $("#'.$v['field'].'_propress").hide();
 								 },2000)
 							}else{
 								 layer.alert(res.error, {icon: 5});
 							}
 						}
-						,progress: function(n, elem, res, index){ 
+						,progress: function(n, elem, res, index){
                             var percent = n + "%" //获取进度百分比
-                            element.progress("'.$v['field'].'_propress", percent); 
+                            element.progress("'.$v['field'].'_propress", percent);
                           }
 						,error: function(){
 						  //请求异常回调
 						  layer.alert("'.JZLANG('上传异常！').'");
 						}
 					  });
+					  
+					  //图库按钮点击事件
+					  $("#LAY_'.$v['field'].'_gallery").on("click", function(){
+						  var galleryLayer = layer.open({
+							  type: 1,
+							  title: "'.JZLANG('选择图片').'",
+							  area: ["80%", "80%"],
+							  content: `<div class="gallery-container" style="padding: 15px;">
+								  <div class="gallery-header" style="margin-bottom: 15px;">
+									  <div class="layui-btn-group">
+										  <button type="button" class="layui-btn layui-btn-sm layui-btn-primary" id="gallery_prev_'.$v['field'].'">'.JZLANG('上一页').'</button>
+										  <button type="button" class="layui-btn layui-btn-sm layui-btn-primary" id="gallery_next_'.$v['field'].'">'.JZLANG('下一页').'</button>
+									  </div>
+									  <span id="gallery_page_info_'.$v['field'].'" style="margin-left: 15px;"></span>
+								  </div>
+								  <div id="gallery_list_'.$v['field'].'" class="gallery-list" style="min-height: 400px; display: flex; flex-wrap: wrap; gap: 10px;"></div>
+								  <div class="gallery-footer" style="margin-top: 15px; text-align: center;">
+									  <button type="button" class="layui-btn" id="gallery_confirm_'.$v['field'].'">'.JZLANG('确定').'</button>
+									  <button type="button" class="layui-btn layui-btn-primary" onclick="layer.closeAll();">'.JZLANG('取消').'</button>
+								  </div>
+							  </div>`,
+							  success: function(layero, index){
+								  var currentPage = 1;
+								  var pageSize = 12;
+								  var selectedImages = [];
+								  var totalCount = 0;
+								  
+								  //加载图片列表
+								  function loadGallery(page){
+									  $.ajax({
+										  url: "'.U('Sys/pictures').'",
+										  type: "GET",
+										  data: {ajax:1, page: page, pageSize: pageSize},
+										  dataType: "json",
+										  success: function(res){
+											  if(res.code == 0){
+												  var html = "";
+												  if(res.data.length > 0){
+													  $.each(res.data, function(i, item){
+														  var ext = item.filetype.split('.').pop().toLowerCase();
+														  var imageExts = ["jpg", "jpeg", "png", "gif", "bmp", "webp", "svg"];
+														  var isImage = imageExts.includes(ext);
+														  var contentHtml = "";
+														  if(isImage){
+															  contentHtml = `<img src="${item.litpic}" style="width: 100%; height: 100%; object-fit: cover;">`;
+														  }else{
+															  contentHtml = `<div style="width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; background: #f5f5f5; padding: 10px;">
+																  <i class="layui-icon" style="font-size: 40px; color: #999;">&#xe61e;</i>
+																  <span style="font-size: 12px; color: #666; margin-top: 8px; word-break: break-all; text-align: center;">${item.fileName}</span>
+															  </div>`;
+														  }
+														  
+														  html += `<div class="gallery-item" data-id="`+item.id+`" data-url="`+item.litpic+`" style="width: 140px; height: 140px; border: 2px solid #e6e6e6; border-radius: 4px; cursor: pointer; position: relative; overflow: hidden;">
+															  `+contentHtml+`
+															  <div class="gallery-item-info" style="position: absolute; bottom: 0; left: 0; right: 0; background: rgba(0,0,0,0.6); color: #fff; padding: 5px; font-size: 12px; display: none;">
+																  ${item.fileName}<br>${item.size}kb
+															  </div>
+															  <div class="gallery-item-check" style="position: absolute; top: 5px; right: 5px; width: 20px; height: 20px; border-radius: 50%; border: 2px solid #fff; background: rgba(0,0,0,0.5); display: none;">
+																  <i class="layui-icon" style="color: #fff; font-size: 14px; line-height: 16px;">&#xe605;</i>
+															  </div>
+														  </div>`;
+													  });
+													  $("#gallery_list_'.$v['field'].'").html(html);
+													  totalCount = res.count;
+													  var totalPages = Math.ceil(totalCount / pageSize);
+													  $("#gallery_page_info_'.$v['field'].'").text("第"+page+"页 / 共"+totalPages+"页");
+													  
+													  //图片悬停事件
+													  $(".gallery-item").hover(
+														  function(){
+															  $(this).find(".gallery-item-info").show();
+														  },
+														  function(){
+															  $(this).find(".gallery-item-info").hide();
+														  }
+													  );
+													  
+													  //图片点击事件
+													  $(".gallery-item").on("click", function(){
+														  var url = $(this).data("url");
+														  var id = $(this).data("id");
+														  var index = selectedImages.indexOf(url);
+														  
+														  if(index > -1){
+															  selectedImages.splice(index, 1);
+															  $(this).css("border-color", "#e6e6e6");
+															  $(this).find(".gallery-item-check").hide();
+														  }else{
+															  selectedImages.push(url);
+															  $(this).css("border-color", "#1E9FFF");
+															  $(this).find(".gallery-item-check").show();
+														  }
+													  });
+													  
+													  //恢复已选中的图片
+													  $(".gallery-item").each(function(){
+														  var url = $(this).data("url");
+														  if(selectedImages.indexOf(url) > -1){
+															  $(this).css("border-color", "#1E9FFF");
+															  $(this).find(".gallery-item-check").show();
+														  }
+													  });
+												  }else{
+													  $("#gallery_list_'.$v['field'].'").html(\'<div style="width: 100%; text-align: center; padding: 50px; color: #999;">'.JZLANG('暂无图片').'</div>\');
+													  }
+											  }else{
+												  layer.alert(res.msg || "'.JZLANG('加载失败').'", {icon: 5});
+											  }
+										  },
+										  error: function(){
+											  layer.alert("'.JZLANG('请求失败').'", {icon: 5});
+										  }
+									  });
+								  }
+								  
+								  //上一页
+								  $("#gallery_prev_'.$v['field'].'").on("click", function(){
+									  if(currentPage > 1){
+										  currentPage--;
+										  loadGallery(currentPage);
+									  }
+								  });
+								  
+								  //下一页
+								  $("#gallery_next_'.$v['field'].'").on("click", function(){
+									  var totalPages = Math.ceil(totalCount / pageSize);
+									  if(currentPage < totalPages){
+										  currentPage++;
+										  loadGallery(currentPage);
+									  }
+								  });
+								  
+								  //确定按钮
+								  $("#gallery_confirm_'.$v['field'].'").on("click", function(){
+									  if(selectedImages.length > 0){
+										  $("#'.$v['field'].'").val(selectedImages.join(","));
+										  $("#'.$v['field'].'_img").attr("src", selectedImages[0]);
+										  layer.close(index);
+									  }else{
+										  layer.msg("'.JZLANG('请至少选择一张图片').'", {icon: 0});
+									  }
+								  });
+								  
+								  //初始加载
+								  loadGallery(currentPage);
+							  }
+						  });
+					  });
 					});
+			
+				
 				</script>';
-				break;
-				case 6:
-				//------
-				$l .= '<fieldset class="layui-elem-field">
+                    break;
+                case 6:
+                    //------
+                    $l .= '<fieldset class="layui-elem-field">
 				  <legend>'.$v['fieldname'].'</legend>
 				  <div class="layui-field-box">
 					  <div class="layui-input-block">
 						  <div class="site-demo-upbar">
-							<button type="button" class="layui-btn" id="LAY_'.$v['field'].'_upload">
-							  <i class="layui-icon">&#xe67c;</i>'.JZLANG('上传图片').'
-							</button>
-							 '.$v['tips'].'
-						  </div>
-						   
+						<button type="button" class="layui-btn" id="LAY_'.$v['field'].'_upload">
+						  <i class="layui-icon">&#xe67c;</i>'.JZLANG('上传图片').'
+						</button>
+						<button class="layui-btn layui-btn-warm" id="LAY_'.$v['field'].'_gallery" type="button" >'.JZLANG('图库').'</button>
+						 '.$v['tips'].'
+					  </div>
+						 
 					  </div>
 					 
 					  <div class="layui-input-block">
 					  <span class="preview_'.$v['field'].'" >';
-					if($data[$v['field']]!=''){
-						foreach(explode('||',$data[$v['field']]) as $vv){
+                    if($data[$v['field']]!=''){
+                        foreach(explode('||',$data[$v['field']]) as $vv){
                             $pic = explode('|',$vv);
                             $l.='<div class="upload-icon-img layui-input-inline" ><div class="upload-pre-item"><img src="'.$pic[0].'" class="img" width="200px" height="200px" ><input name="'.$v['field'].'_urls[]" type="text" class="layui-input"  value="'.$pic[0].'" /><input name="'.$v['field'].'_des[]" type="text" class="layui-input" placeholder="'.JZLANG('文字描述').'"  value="'.$pic[1].'" /><a class="layui-btn layui-btn-sm layui-btn-radius layui-btn-danger delete_file">'.JZLANG('删除').'</a><a class="layui-btn layui-btn-sm layui-btn-radius imgorder " onclick="goleft(this)">'.JZLANG('左移').'</a><a class="layui-btn layui-btn-sm layui-btn-radius imgorder " onclick="goright(this)">'.JZLANG('右移').'</a></div></div>';
-							
-						}
-					}	 
-					$l .= '</span>
+                            
+                        }
+                    }
+                    $l .= '</span>
 					  </div>
 					  <div class="layui-progress" id="'.$v['field'].'_propress" style="display:none;" lay-filter="'.$v['field'].'_propress" lay-showPercent="yes">
                           <div class="layui-progress-bar layui-bg-green" lay-percent="0%"></div>
@@ -794,7 +950,7 @@ class FieldsController extends CommonController
 				
 				layui.use("upload", function(){
 					  var upload_'.$v['field'].' = layui.upload;
-					   
+					  
 					  //执行实例
 					  var uploadInst = upload_'.$v['field'].'.render({
 						elem: "#LAY_'.$v['field'].'_upload" //绑定元素
@@ -810,7 +966,7 @@ class FieldsController extends CommonController
 							layer.closeAll("loading"); //关闭loading
 							if(res.code==0){
                                 $(".preview_'.$v['field'].'").append(\'<div class="upload-icon-img layui-input-inline" ><div class="upload-pre-item"><img src="\' + res.url + \'" class="img" width="200px" height="200px" ><input name="'.$v['field'].'_urls[]" type="text" class="layui-input"  value="\' + res.url + \'" /><input name="'.$v['field'].'_des[]" type="text" class="layui-input"  placeholder="'.JZLANG('文字描述').'" value="" /><a class="layui-btn layui-btn-sm layui-btn-radius layui-btn-danger delete_file">'.JZLANG('删除').'</a><a class="layui-btn layui-btn-sm layui-btn-radius imgorder " onclick="goleft(this)">'.JZLANG('左移').'</a><a class="layui-btn layui-btn-sm layui-btn-radius imgorder " onclick="goright(this)">'.JZLANG('右移').'</a></div></div>\');
-                                setTimeout(function() { 
+                                setTimeout(function() {
 								 $("#'.$v['field'].'_propress").hide();
 								 },2000)
 								
@@ -818,122 +974,275 @@ class FieldsController extends CommonController
 								 layer.alert(res.error, {icon: 5});
 							}
 						}
-                        ,progress: function(n, elem, res, index){ 
+                        ,progress: function(n, elem, res, index){
                             var percent = n + "%" //获取进度百分比
-                            element.progress("'.$v['field'].'_propress", percent); 
+                            element.progress("'.$v['field'].'_propress", percent);
                           }
 						,error: function(){
 						  //请求异常回调
 						  layer.alert("'.JZLANG('上传异常！').'");
 						}
 					  });
+					  
+						//图库按钮点击事件
+						$("#LAY_'.$v['field'].'_gallery").on("click", function(){
+							var galleryLayer = layer.open({
+								type: 1,
+								title: "'.JZLANG('选择图片').'",
+								area: ["80%", "80%"],
+								content: `<div class="gallery-container" style="padding: 15px;">
+									<div class="gallery-header" style="margin-bottom: 15px;">
+										<div class="layui-btn-group">
+											<button type="button" class="layui-btn layui-btn-sm layui-btn-primary" id="gallery_prev_'.$v['field'].'">'.JZLANG('上一页').'</button>
+											<button type="button" class="layui-btn layui-btn-sm layui-btn-primary" id="gallery_next_'.$v['field'].'">'.JZLANG('下一页').'</button>
+										</div>
+										<span id="gallery_page_info_'.$v['field'].'" style="margin-left: 15px;"></span>
+									</div>
+									<div id="gallery_list_'.$v['field'].'" class="gallery-list" style="min-height: 400px; display: flex; flex-wrap: wrap; gap: 10px;"></div>
+									<div class="gallery-footer" style="margin-top: 15px; text-align: center;">
+										<button type="button" class="layui-btn" id="gallery_confirm_'.$v['field'].'">'.JZLANG('确定').'</button>
+										<button type="button" class="layui-btn layui-btn-primary" onclick="layer.closeAll();">'.JZLANG('取消').'</button>
+									</div>
+								</div>`,
+								success: function(layero, index){
+									var currentPage = 1;
+									var pageSize = 12;
+									var selectedImages = [];
+									var totalCount = 0;
+									
+									//加载图片列表
+									function loadGallery(page){
+										$.ajax({
+											url: "'.U('Sys/pictures').'",
+											type: "GET",
+											data: {ajax:1, page: page, pageSize: pageSize},
+											dataType: "json",
+											success: function(res){
+												if(res.code == 0){
+													var html = "";
+													if(res.data.length > 0){
+														$.each(res.data, function(i, item){
+															var ext = item.filetype.split('.').pop().toLowerCase();
+															var imageExts = ["jpg", "jpeg", "png", "gif", "bmp", "webp", "svg"];
+															var isImage = imageExts.includes(ext);
+															var contentHtml = "";
+															if(isImage){
+																contentHtml = `<img src="${item.litpic}" style="width: 100%; height: 100%; object-fit: cover;">`;
+															}else{
+																contentHtml = `<div style="width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; background: #f5f5f5; padding: 10px;">
+																	<i class="layui-icon" style="font-size: 40px; color: #999;">&#xe61e;</i>
+																	<span style="font-size: 12px; color: #666; margin-top: 8px; word-break: break-all; text-align: center;">${item.fileName}</span>
+																</div>`;
+															}
+															
+															html += `<div class="gallery-item" data-id="`+item.id+`" data-url="`+item.litpic+`" style="width: 140px; height: 140px; border: 2px solid #e6e6e6; border-radius: 4px; cursor: pointer; position: relative; overflow: hidden;">
+																`+contentHtml+`
+																<div class="gallery-item-info" style="position: absolute; bottom: 0; left: 0; right: 0; background: rgba(0,0,0,0.6); color: #fff; padding: 5px; font-size: 12px; display: none;">
+																	${item.fileName}<br>${item.size}kb
+																</div>
+																<div class="gallery-item-check" style="position: absolute; top: 5px; right: 5px; width: 20px; height: 20px; border-radius: 50%; border: 2px solid #fff; background: rgba(0,0,0,0.5); display: none;">
+																	<i class="layui-icon" style="color: #fff; font-size: 14px; line-height: 16px;">&#xe605;</i>
+																</div>
+															</div>`;
+														});
+														$("#gallery_list_'.$v['field'].'").html(html);
+														totalCount = res.count;
+														var totalPages = Math.ceil(totalCount / pageSize);
+														$("#gallery_page_info_'.$v['field'].'").text("第"+page+"页 / 共"+totalPages+"页");
+														
+														//图片悬停事件
+														$(".gallery-item").hover(
+															function(){
+																$(this).find(".gallery-item-info").show();
+															},
+															function(){
+																$(this).find(".gallery-item-info").hide();
+															}
+														);
+														
+														//图片点击事件
+														$(".gallery-item").on("click", function(){
+															var url = $(this).data("url");
+															var id = $(this).data("id");
+															var index = selectedImages.indexOf(url);
+															
+															if(index > -1){
+																selectedImages.splice(index, 1);
+																$(this).css("border-color", "#e6e6e6");
+																$(this).find(".gallery-item-check").hide();
+															}else{
+																selectedImages.push(url);
+																$(this).css("border-color", "#1E9FFF");
+																$(this).find(".gallery-item-check").show();
+															}
+														});
+														
+														//恢复已选中的图片
+														$(".gallery-item").each(function(){
+															var url = $(this).data("url");
+															if(selectedImages.indexOf(url) > -1){
+																$(this).css("border-color", "#1E9FFF");
+																$(this).find(".gallery-item-check").show();
+															}
+														});
+													}else{
+														$("#gallery_list_'.$v['field'].'").html(\'<div style="width: 100%; text-align: center; padding: 50px; color: #999;">'.JZLANG('暂无图片').'</div>\');
+														}
+												}else{
+													layer.alert(res.msg || "'.JZLANG('加载失败').'", {icon: 5});
+												}
+											},
+											error: function(){
+												layer.alert("'.JZLANG('请求失败').'", {icon: 5});
+											}
+										});
+									}
+									
+									//上一页
+									$("#gallery_prev_'.$v['field'].'").on("click", function(){
+										if(currentPage > 1){
+											currentPage--;
+											loadGallery(currentPage);
+										}
+									});
+									
+									//下一页
+									$("#gallery_next_'.$v['field'].'").on("click", function(){
+										var totalPages = Math.ceil(totalCount / pageSize);
+										if(currentPage < totalPages){
+											currentPage++;
+											loadGallery(currentPage);
+										}
+									});
+									
+									//确定按钮
+									$("#gallery_confirm_'.$v['field'].'").on("click", function(){
+										if(selectedImages.length > 0){
+											// 将选中的图片添加到预览区域
+											for(var i = 0; i < selectedImages.length; i++){
+												var imgHtml = `<div class="upload-icon-img layui-input-inline" ><div class="upload-pre-item"><img src="` + selectedImages[i] + `" class="img" width="200px" height="200px" ><input name="'.$v['field'].'_urls[]" type="text" class="layui-input"  value="` + selectedImages[i] + `" /><input name="'.$v['field'].'_des[]" type="text" class="layui-input" placeholder="'.JZLANG('文字描述').'"  value="" /><a class="layui-btn layui-btn-sm layui-btn-radius layui-btn-danger delete_file">'.JZLANG('删除').'</a><a class="layui-btn layui-btn-sm layui-btn-radius imgorder " onclick="goleft(this)">'.JZLANG('左移').'</a><a class="layui-btn layui-btn-sm layui-btn-radius imgorder " onclick="goright(this)">'.JZLANG('右移').'</a></div></div>`;
+												$(".preview_'.$v['field'].'").append(imgHtml);
+											}
+											layer.close(index);
+										}else{
+											layer.msg("'.JZLANG('请至少选择一张图片').'", {icon: 0});
+										}
+									});
+									
+									//初始加载
+									loadGallery(currentPage);
+								}
+							});
+						});
+				
 					});
 				</script>';
-				break;
-				case 7:
-				$l .= '<div class="layui-form-item">
+                    break;
+                case 7:
+                    $l .= '<div class="layui-form-item">
                     <label for="'.$v['field'].'" class="layui-form-label">';
-				if($v['ismust']==1){
-				$l .= '<span class="x-red">*</span>';	
-				}
-                $l .= $v['fieldname'].'  
+                    if($v['ismust']==1){
+                        $l .= '<span class="x-red">*</span>';
+                    }
+                    $l .= $v['fieldname'].'
                     </label>
                     <div class="layui-input-inline">
 						<select name="'.$v['field'].'" lay-search="" id="'.$v['field'].'" ><option value="">'.JZLANG('请选择').'</option>';
-				foreach(explode(',',$v['body']) as $vv){
-					$s=explode('=',$vv);
-					$l.='<option value="'.$s[1].'" ';
-					if($data[$v['field']]==$s[1]){
-						$l.='selected="selected"';
-					}
-					$l.='>'.$s[0].'</option>';
-				}
-					$l.=  '</select>
+                    foreach(explode(',',$v['body']) as $vv){
+                        $s=explode('=',$vv);
+                        $l.='<option value="'.$s[1].'" ';
+                        if($data[$v['field']]==$s[1]){
+                            $l.='selected="selected"';
+                        }
+                        $l.='>'.$s[0].'</option>';
+                    }
+                    $l.=  '</select>
                     </div>';
-				if($v['tips']){
-					$l.='<div class="layui-form-mid layui-word-aux">
+                    if($v['tips']){
+                        $l.='<div class="layui-form-mid layui-word-aux">
 					  <i data-info="'.$v['tips'].'" data-field="f'.$v['id'].'" class="layui-sys-icon layui-icon layui-icon-about f'.$v['id'].'"></i>
 					</div>';
-				}	
-                $l.='</div>
+                    }
+                    $l.='</div>
 				<script>
 							layui.use("form", function () {
 								var form_'.$v['field'].' = layui.form;
 								form_'.$v['field'].'.render();
 							});
-							 
+							
 						</script>';
-				break;
-				case 8:
-				$l .= '<div class="layui-form-item">
+                    break;
+                case 8:
+                    $l .= '<div class="layui-form-item">
 						<label for="'.$v['field'].'" class="layui-form-label">';
-				if($v['ismust']==1){
-				$l .= '<span class="x-red">*</span>';	
-				}
-                $l .= $v['fieldname'].'  
+                    if($v['ismust']==1){
+                        $l .= '<span class="x-red">*</span>';
+                    }
+                    $l .= $v['fieldname'].'
 						</label>
 						<div class="layui-input-block">';
-				foreach(explode(',',$v['body']) as $vv){
-					$s=explode('=',$vv);
-					$l.='<input type="checkbox" title="'.$s[0].'" name="'.$v['field'].'[]" value="'.$s[1].'" ';
-					if(strpos($data[$v['field']],','.$s[1].',')!==false){
-						$l.='checked="checked"';};
-					$l.='>';
-				}
-				$l 	.= '</div>';
-				if($v['tips']){
-					$l.='<div class="layui-form-mid layui-word-aux">
+                    foreach(explode(',',$v['body']) as $vv){
+                        $s=explode('=',$vv);
+                        $l.='<input type="checkbox" title="'.$s[0].'" name="'.$v['field'].'[]" value="'.$s[1].'" ';
+                        if(strpos($data[$v['field']],','.$s[1].',')!==false){
+                            $l.='checked="checked"';};
+                        $l.='>';
+                    }
+                    $l 	.= '</div>';
+                    if($v['tips']){
+                        $l.='<div class="layui-form-mid layui-word-aux">
 					  <i data-info="'.$v['tips'].'" data-field="f'.$v['id'].'" class="layui-sys-icon layui-icon layui-icon-about f'.$v['id'].'"></i>
 					</div>';
-				}	
-                $l.='</div>
+                    }
+                    $l.='</div>
 					  <script>
 							layui.use("form", function () {
 								var form_'.$v['field'].' = layui.form;
 								form_'.$v['field'].'.render();
 							});
-							 
+							
 						</script>';
-				
-				break;
-				case 9:
-				$l .= '<div class="layui-form-item">
+                    
+                    break;
+                case 9:
+                    $l .= '<div class="layui-form-item">
                     <label for="'.$v['field'].'" class="layui-form-label">';
-				if($v['ismust']==1){
-				$l .= '<span class="x-red">*</span>';	
-				}
-                $l .= $v['fieldname'].'  
+                    if($v['ismust']==1){
+                        $l .= '<span class="x-red">*</span>';
+                    }
+                    $l .= $v['fieldname'].'
                     </label>
 					
                     <div class="layui-input-inline">
                       <div class="site-demo-upbar">
                       
 					  <input name="'.$v['field'].'" type="text" class="layui-input" id="'.$v['field'].'" ';
-				if($v['ismust']==1){
-					$l.=' required="" lay-verify="required" ';
-				}
-				$l  .=	'value="'.$data[$v['field']].'" />
+                    if($v['ismust']==1){
+                        $l.=' required="" lay-verify="required" ';
+                    }
+                    $l  .=	'value="'.$data[$v['field']].'" />
 				<div class="layui-progress" id="'.$v['field'].'_propress" style="display:none;" lay-filter="'.$v['field'].'_propress" lay-showPercent="yes">
                           <div class="layui-progress-bar layui-bg-green" lay-percent="0%"></div>
                         </div>
 						<button type="button" class="layui-btn" id="LAY_'.$v['field'].'_upload">
 						  <i class="layui-icon">&#xe67c;</i>上传附件
 						</button>
+						<button class="layui-btn layui-btn-warm" id="LAY_'.$v['field'].'_gallery" type="button" >'.JZLANG('图库').'</button>
 
 					  
                       </div>
                     </div>';
-				if($v['tips']){
-					$l.='<div class="layui-form-mid layui-word-aux">
+                    if($v['tips']){
+                        $l.='<div class="layui-form-mid layui-word-aux">
 					  <i data-info="'.$v['tips'].'" data-field="f'.$v['id'].'" class="layui-sys-icon layui-icon layui-icon-about f'.$v['id'].'"></i>
 					</div>';
-				}	
-                $l.='</div>
+                    }
+                    $l.='</div>
 				<script>
 				
 				layui.use("upload", function(){
 					  var upload_'.$v['field'].' = layui.upload;
-					   
+					  
 					  //执行实例
 					  var uploadInst = upload_'.$v['field'].'.render({
 						elem: "#LAY_'.$v['field'].'_upload" //绑定元素
@@ -948,49 +1257,197 @@ class FieldsController extends CommonController
 							if(res.code==0){
 								
 								 $("#'.$v['field'].'").val(res.url);
-								 setTimeout(function() { 
+								 setTimeout(function() {
 								 $("#'.$v['field'].'_propress").hide();
 								 },2000)
 							}else{
 								 layer.alert(res.error, {icon: 5});
 							}
 						}
-						,progress: function(n, elem, res, index){ 
+						,progress: function(n, elem, res, index){
                             var percent = n + "%" //获取进度百分比
-                            element.progress("'.$v['field'].'_propress", percent); 
+                            element.progress("'.$v['field'].'_propress", percent);
                           }
 						,error: function(){
 						  //请求异常回调
 						  layer.alert("'.JZLANG('上传异常！').'");
 						}
 					  });
+					  //图库按钮点击事件
+						$("#LAY_'.$v['field'].'_gallery").on("click", function(){
+							var galleryLayer = layer.open({
+								type: 1,
+								title: "'.JZLANG('选择文件').'",
+								area: ["80%", "80%"],
+								content: `<div class="gallery-container" style="padding: 15px;">
+									<div class="gallery-header" style="margin-bottom: 15px;">
+										<div class="layui-btn-group">
+											<button type="button" class="layui-btn layui-btn-sm layui-btn-primary" id="gallery_prev_'.$v['field'].'">'.JZLANG('上一页').'</button>
+											<button type="button" class="layui-btn layui-btn-sm layui-btn-primary" id="gallery_next_'.$v['field'].'">'.JZLANG('下一页').'</button>
+										</div>
+										<span id="gallery_page_info_'.$v['field'].'" style="margin-left: 15px;"></span>
+									</div>
+									<div id="gallery_list_'.$v['field'].'" class="gallery-list" style="min-height: 400px; display: flex; flex-wrap: wrap; gap: 10px;"></div>
+									<div class="gallery-footer" style="margin-top: 15px; text-align: center;">
+										<button type="button" class="layui-btn" id="gallery_confirm_'.$v['field'].'">'.JZLANG('确定').'</button>
+										<button type="button" class="layui-btn layui-btn-primary" onclick="layer.closeAll();">'.JZLANG('取消').'</button>
+									</div>
+								</div>`,
+								success: function(layero, index){
+									var currentPage = 1;
+									var pageSize = 12;
+									var selectedFiles = [];
+									var totalCount = 0;
+									
+									//加载文件列表
+									function loadGallery(page){
+										$.ajax({
+											url: "'.U('Sys/pictures').'",
+											type: "GET",
+											data: {ajax:1, page: page, pageSize: pageSize},
+											dataType: "json",
+											success: function(res){
+												if(res.code == 0){
+													var html = "";
+													if(res.data.length > 0){
+														$.each(res.data, function(i, item){
+															var ext = item.filetype.split('.').pop().toLowerCase();
+															var imageExts = ["jpg", "jpeg", "png", "gif", "bmp", "webp", "svg"];
+															var isImage = imageExts.includes(ext);
+															var contentHtml = "";
+															if(isImage){
+																contentHtml = `<img src="${item.litpic}" style="width: 100%; height: 100%; object-fit: cover;">`;
+															}else{
+																contentHtml = `<div style="width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; background: #f5f5f5; padding: 10px;">
+																	<i class="layui-icon" style="font-size: 40px; color: #999;">&#xe61e;</i>
+																	<span style="font-size: 12px; color: #666; margin-top: 8px; word-break: break-all; text-align: center;">${item.fileName}</span>
+																</div>`;
+															}
+															
+															html += `<div class="gallery-item" data-id="`+item.id+`" data-url="`+item.litpic+`" style="width: 140px; height: 140px; border: 2px solid #e6e6e6; border-radius: 4px; cursor: pointer; position: relative; overflow: hidden;">
+																`+contentHtml+`
+																<div class="gallery-item-info" style="position: absolute; bottom: 0; left: 0; right: 0; background: rgba(0,0,0,0.6); color: #fff; padding: 5px; font-size: 12px; display: none;">
+																	${item.fileName}<br>${item.size}kb
+																</div>
+																<div class="gallery-item-check" style="position: absolute; top: 5px; right: 5px; width: 20px; height: 20px; border-radius: 50%; border: 2px solid #fff; background: rgba(0,0,0,0.5); display: none;">
+																	<i class="layui-icon" style="color: #fff; font-size: 14px; line-height: 16px;">&#xe605;</i>
+																</div>
+															</div>`;
+														});
+														$("#gallery_list_'.$v['field'].'").html(html);
+														totalCount = res.count;
+														var totalPages = Math.ceil(totalCount / pageSize);
+														$("#gallery_page_info_'.$v['field'].'").text("第"+page+"页 / 共"+totalPages+"页");
+														
+														//文件悬停事件
+														$(".gallery-item").hover(
+															function(){
+																$(this).find(".gallery-item-info").show();
+															},
+															function(){
+																$(this).find(".gallery-item-info").hide();
+															}
+														);
+														
+														//文件点击事件（单选模式）
+														$(".gallery-item").on("click", function(){
+															// 清除之前的选择
+															$(".gallery-item").each(function(){
+																$(this).css("border-color", "#e6e6e6");
+																$(this).find(".gallery-item-check").hide();
+															});
+															
+															var url = $(this).data("url");
+															var id = $(this).data("id");
+															
+															// 设置当前选择
+															selectedFiles = [url];
+															$(this).css("border-color", "#1E9FFF");
+															$(this).find(".gallery-item-check").show();
+														});
+														
+														//恢复已选中的文件
+														$(".gallery-item").each(function(){
+															var url = $(this).data("url");
+															if(selectedFiles.indexOf(url) > -1){
+																$(this).css("border-color", "#1E9FFF");
+																$(this).find(".gallery-item-check").show();
+															}
+														});
+													}else{
+														$("#gallery_list_'.$v['field'].'").html(\'<div style="width: 100%; text-align: center; padding: 50px; color: #999;">'.JZLANG('暂无文件').'</div>\');
+														}
+												}else{
+													layer.alert(res.msg || "'.JZLANG('加载失败').'", {icon: 5});
+												}
+											},
+											error: function(){
+												layer.alert("'.JZLANG('请求失败').'", {icon: 5});
+											}
+										});
+									}
+									
+									//上一页
+									$("#gallery_prev_'.$v['field'].'").on("click", function(){
+										if(currentPage > 1){
+											currentPage--;
+											loadGallery(currentPage);
+										}
+									});
+									
+									//下一页
+									$("#gallery_next_'.$v['field'].'").on("click", function(){
+										var totalPages = Math.ceil(totalCount / pageSize);
+										if(currentPage < totalPages){
+											currentPage++;
+											loadGallery(currentPage);
+										}
+									});
+									
+									//确定按钮（单选）
+									$("#gallery_confirm_'.$v['field'].'").on("click", function(){
+										if(selectedFiles.length > 0){
+											$("#'.$v['field'].'").val(selectedFiles[0]);
+											layer.close(index);
+										}else{
+											layer.msg("'.JZLANG('请选择一个文件').'", {icon: 0});
+										}
+									});
+									
+									//初始加载
+									loadGallery(currentPage);
+								}
+							});
+						});
+						
 					});
 				</script>';
-				break;
-				case 10:
-				$l .= '<fieldset class="layui-elem-field">
+                    break;
+                case 10:
+                    $l .= '<fieldset class="layui-elem-field">
 				  <legend>'.$v['fieldname'].'</legend>
 				  <div class="layui-field-box">
 					  <div class="layui-input-block">
 						  <div class="site-demo-upbar">
-							<button type="button" class="layui-btn" id="LAY_'.$v['field'].'_upload">
-							  <i class="layui-icon">&#xe67c;</i>'.JZLANG('上传附件').'
-							</button>
-							 '.$v['tips'].'
-						  </div>
-						   
+						<button type="button" class="layui-btn" id="LAY_'.$v['field'].'_upload">
+						  <i class="layui-icon">&#xe67c;</i>'.JZLANG('上传附件').'
+						</button>
+						<button class="layui-btn layui-btn-warm" id="LAY_'.$v['field'].'_gallery" type="button" >'.JZLANG('图库').'</button>
+						 '.$v['tips'].'
+					  </div>
+						 
 					  </div>
 					 
 					  <div class="layui-input-block">
 					  <span class="preview_'.$v['field'].'" >';
-					if($data[$v['field']]!=''){
-						foreach(explode('||',$data[$v['field']]) as $vv){
+                    if($data[$v['field']]!=''){
+                        foreach(explode('||',$data[$v['field']]) as $vv){
                             $pic = explode('|',$vv);
                             $l.='<div class="upload-icon-img layui-input-inline" ><div class="upload-pre-item"><input name="'.$v['field'].'_urls[]" type="text" class="layui-input"  value="'.$pic[0].'" /><input name="'.$v['field'].'_des[]" type="text" class="layui-input" placeholder="'.JZLANG('文字描述').'"  value="'.$pic[1].'" /><a class="layui-btn layui-btn-sm layui-btn-radius layui-btn-danger delete_file">'.JZLANG('删除').'</a><a class="layui-btn layui-btn-sm layui-btn-radius imgorder " onclick="goleft(this)">'.JZLANG('左移').'</a><a class="layui-btn layui-btn-sm layui-btn-radius imgorder " onclick="goright(this)">'.JZLANG('右移').'</a></div></div>';
-							
-						}
-					}	 
-					$l .= '</span>
+                            
+                        }
+                    }
+                    $l .= '</span>
 					  </div>
 					  <div class="layui-progress" id="'.$v['field'].'_propress" style="display:none;" lay-filter="'.$v['field'].'_propress" lay-showPercent="yes">
                           <div class="layui-progress-bar layui-bg-green" lay-percent="0%"></div>
@@ -1001,7 +1458,7 @@ class FieldsController extends CommonController
 				
 				layui.use("upload", function(){
 					  var upload_'.$v['field'].' = layui.upload;
-					   
+					  
 					  //执行实例
 					  var uploadInst = upload_'.$v['field'].'.render({
 						elem: "#LAY_'.$v['field'].'_upload" //绑定元素
@@ -1017,110 +1474,261 @@ class FieldsController extends CommonController
 							layer.closeAll("loading"); //关闭loading
 							if(res.code==0){
                                 $(".preview_'.$v['field'].'").append(\'<div class="upload-icon-img layui-input-inline" ><div class="upload-pre-item"><input name="'.$v['field'].'_urls[]" type="text" class="layui-input"  value="\' + res.url + \'" /><input name="'.$v['field'].'_des[]" type="text" class="layui-input" placeholder="'.JZLANG('文字描述').'"  value="" /><a class="layui-btn layui-btn-sm layui-btn-radius layui-btn-danger delete_file">'.JZLANG('删除').'</a><a class="layui-btn layui-btn-sm layui-btn-radius imgorder " onclick="goleft(this)">'.JZLANG('左移').'</a><a class="layui-btn layui-btn-sm layui-btn-radius imgorder " onclick="goright(this)">'.JZLANG('右移').'</a></div></div>\');
-							setTimeout(function() { 
+							setTimeout(function() {
 								 $("#'.$v['field'].'_propress").hide();
 								 },2000)
 							}else{
 								 layer.alert(res.error, {icon: 5});
 							}
 						}
-						,progress: function(n, elem, res, index){ 
+						,progress: function(n, elem, res, index){
                             var percent = n + "%" //获取进度百分比
-                            element.progress("'.$v['field'].'_propress", percent); 
+                            element.progress("'.$v['field'].'_propress", percent);
                           }
 						,error: function(){
 						  //请求异常回调
 						  layer.alert("'.JZLANG('上传异常！').'");
 						}
 					  });
+					  
+						//图库按钮点击事件
+						$("#LAY_'.$v['field'].'_gallery").on("click", function(){
+							var galleryLayer = layer.open({
+								type: 1,
+								title: "'.JZLANG('选择文件').'",
+								area: ["80%", "80%"],
+								content: `<div class="gallery-container" style="padding: 15px;">
+									<div class="gallery-header" style="margin-bottom: 15px;">
+										<div class="layui-btn-group">
+											<button type="button" class="layui-btn layui-btn-sm layui-btn-primary" id="gallery_prev_'.$v['field'].'">'.JZLANG('上一页').'</button>
+											<button type="button" class="layui-btn layui-btn-sm layui-btn-primary" id="gallery_next_'.$v['field'].'">'.JZLANG('下一页').'</button>
+										</div>
+										<span id="gallery_page_info_'.$v['field'].'" style="margin-left: 15px;"></span>
+									</div>
+									<div id="gallery_list_'.$v['field'].'" class="gallery-list" style="min-height: 400px; display: flex; flex-wrap: wrap; gap: 10px;"></div>
+									<div class="gallery-footer" style="margin-top: 15px; text-align: center;">
+										<button type="button" class="layui-btn" id="gallery_confirm_'.$v['field'].'">'.JZLANG('确定').'</button>
+										<button type="button" class="layui-btn layui-btn-primary" onclick="layer.closeAll();">'.JZLANG('取消').'</button>
+									</div>
+								</div>`,
+								success: function(layero, index){
+									var currentPage = 1;
+									var pageSize = 12;
+									var selectedFiles = [];
+									var totalCount = 0;
+									
+									//加载文件列表
+									function loadGallery(page){
+										$.ajax({
+											url: "'.U('Sys/pictures').'",
+											type: "GET",
+											data: {ajax:1, page: page, pageSize: pageSize},
+											dataType: "json",
+											success: function(res){
+												if(res.code == 0){
+													var html = "";
+													if(res.data.length > 0){
+														$.each(res.data, function(i, item){
+															var ext = item.filetype.split('.').pop().toLowerCase();
+															var imageExts = ["jpg", "jpeg", "png", "gif", "bmp", "webp", "svg"];
+															var isImage = imageExts.includes(ext);
+															var contentHtml = "";
+															if(isImage){
+																contentHtml = `<img src="${item.litpic}" style="width: 100%; height: 100%; object-fit: cover;">`;
+															}else{
+																contentHtml = `<div style="width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; background: #f5f5f5; padding: 10px;">
+																	<i class="layui-icon" style="font-size: 40px; color: #999;">&#xe61e;</i>
+																	<span style="font-size: 12px; color: #666; margin-top: 8px; word-break: break-all; text-align: center;">${item.fileName}</span>
+																</div>`;
+															}
+															
+															html += `<div class="gallery-item" data-id="`+item.id+`" data-url="`+item.litpic+`" style="width: 140px; height: 140px; border: 2px solid #e6e6e6; border-radius: 4px; cursor: pointer; position: relative; overflow: hidden;">
+																`+contentHtml+`
+																<div class="gallery-item-info" style="position: absolute; bottom: 0; left: 0; right: 0; background: rgba(0,0,0,0.6); color: #fff; padding: 5px; font-size: 12px; display: none;">
+																	${item.fileName}<br>${item.size}kb
+																</div>
+																<div class="gallery-item-check" style="position: absolute; top: 5px; right: 5px; width: 20px; height: 20px; border-radius: 50%; border: 2px solid #fff; background: rgba(0,0,0,0.5); display: none;">
+																	<i class="layui-icon" style="color: #fff; font-size: 14px; line-height: 16px;">&#xe605;</i>
+																</div>
+															</div>`;
+														});
+														$("#gallery_list_'.$v['field'].'").html(html);
+														totalCount = res.count;
+														var totalPages = Math.ceil(totalCount / pageSize);
+														$("#gallery_page_info_'.$v['field'].'").text("第"+page+"页 / 共"+totalPages+"页");
+														
+														//文件悬停事件
+														$(".gallery-item").hover(
+															function(){
+																$(this).find(".gallery-item-info").show();
+															},
+															function(){
+																$(this).find(".gallery-item-info").hide();
+															}
+														);
+														
+														//文件点击事件（多选模式）
+														$(".gallery-item").on("click", function(){
+															var url = $(this).data("url");
+															var id = $(this).data("id");
+															var index = selectedFiles.indexOf(url);
+															
+															if(index > -1){
+																selectedFiles.splice(index, 1);
+																$(this).css("border-color", "#e6e6e6");
+																$(this).find(".gallery-item-check").hide();
+															}else{
+																selectedFiles.push(url);
+																$(this).css("border-color", "#1E9FFF");
+																$(this).find(".gallery-item-check").show();
+															}
+														});
+														
+														//恢复已选中的文件
+														$(".gallery-item").each(function(){
+															var url = $(this).data("url");
+															if(selectedFiles.indexOf(url) > -1){
+																$(this).css("border-color", "#1E9FFF");
+																$(this).find(".gallery-item-check").show();
+															}
+														});
+													}else{
+														$("#gallery_list_'.$v['field'].'").html(\'<div style="width: 100%; text-align: center; padding: 50px; color: #999;">'.JZLANG('暂无文件').'</div>\');
+														}
+												}else{
+													layer.alert(res.msg || "'.JZLANG('加载失败').'", {icon: 5});
+												}
+											},
+											error: function(){
+												layer.alert("'.JZLANG('请求失败').'", {icon: 5});
+											}
+										});
+									}
+									
+									//上一页
+									$("#gallery_prev_'.$v['field'].'").on("click", function(){
+										if(currentPage > 1){
+											currentPage--;
+											loadGallery(currentPage);
+										}
+									});
+									
+									//下一页
+									$("#gallery_next_'.$v['field'].'").on("click", function(){
+										var totalPages = Math.ceil(totalCount / pageSize);
+										if(currentPage < totalPages){
+											currentPage++;
+											loadGallery(currentPage);
+										}
+									});
+									
+									//确定按钮（多选）
+									$("#gallery_confirm_'.$v['field'].'").on("click", function(){
+										if(selectedFiles.length > 0){
+											// 将选中的文件添加到预览区域
+											for(var i = 0; i < selectedFiles.length; i++){
+												var fileHtml = `<div class="upload-icon-img layui-input-inline" ><div class="upload-pre-item"><input name="'.$v['field'].'_urls[]" type="text" class="layui-input"  value="` + selectedFiles[i] + `" /><input name="'.$v['field'].'_des[]" type="text" class="layui-input" placeholder="'.JZLANG('文字描述').'"  value="" /><a class="layui-btn layui-btn-sm layui-btn-radius layui-btn-danger delete_file">'.JZLANG('删除').'</a><a class="layui-btn layui-btn-sm layui-btn-radius imgorder " onclick="goleft(this)">'.JZLANG('左移').'</a><a class="layui-btn layui-btn-sm layui-btn-radius imgorder " onclick="goright(this)">'.JZLANG('右移').'</a></div></div>`;
+												$(".preview_'.$v['field'].'").append(fileHtml);
+											}
+											layer.close(index);
+										}else{
+											layer.msg("'.JZLANG('请至少选择一个文件').'", {icon: 0});
+										}
+									});
+									
+									//初始加载
+									loadGallery(currentPage);
+								}
+							});
+						});
 					});
 				</script>';
-				break;
-				case 11:
-				$laydate = ($data[$v['field']]=='' || $data[$v['field']]==0)?time():$data[$v['field']];
-				$l .= '<div class="layui-form-item">
-                    <label for="'.$v['field'].'" class="layui-form-label">';
-				if($v['ismust']==1){
-				$l .= '<span class="x-red">*</span>';	
-				}
-                $l .= $v['fieldname'].'
-                    </label>
-                    <div class="layui-input-inline">
-                        <input id="laydate_'.$v['field'].'" value="'.date('Y-m-d H:i:s',$laydate).'" name="'.$v['field'].'" ';
-				if($v['ismust']==1){
-					$l.=' required="" lay-verify="required" ';
-				}		
-                $l .=  'autocomplete="off" class="layui-input">
-                    </div>';
-				if($v['tips']){
-					$l.='<div class="layui-form-mid layui-word-aux">
-					  <i data-info="'.$v['tips'].'" data-field="f'.$v['id'].'" class="layui-sys-icon layui-icon layui-icon-about f'.$v['id'].'"></i>
-					</div>';
-				}	
-				$randt = getRandChar(5);
-                $l.='</div>
-				<script>
-layui.use("laydate", function(){
-  var laydate'.$randt.' = layui.laydate;
-  laydate'.$randt.'.render({elem: "#laydate_'.$v['field'].'",type:"datetime",trigger: "click" });});</script>';
-				break;
-				case 12:
-				$l .= '<div class="layui-form-item" pane>
-                    <label for="'.$v['field'].'" class="layui-form-label">';
-				if($v['ismust']==1){
-				$l .= '<span class="x-red">*</span>';	
-				}
-                $l .= $v['fieldname'].'  
-                    </label>
-                    <div class="layui-input-inline">';
-				foreach(explode(',',$v['body']) as $vv){
-					$s=explode('=',$vv);
-					$l.='<input type="radio" name="'.$v['field'].'" value="'.$s[1].'" title="'.$s[0].'" ';
-					if($data[$v['field']]==$s[1]){
-						$l.='checked="checked"';
-					}
-					$l.=' >';
-				}
-					$l.='</div>';
-				if($v['tips']){
-					$l.='<div class="layui-form-mid layui-word-aux">
-					  <i data-info="'.$v['tips'].'" data-field="f'.$v['id'].'" class="layui-sys-icon layui-icon layui-icon-about f'.$v['id'].'"></i>
-					</div>';
-				}	
-                $l.='</div>
-					<script>
-							layui.use("form", function () {
-								var form_'.$v['field'].' = layui.form;
-								form_'.$v['field'].'.render();
-							});
-							 
-						</script>';
-				break;
-
-                case 13:
-                case 21:
-                    //tid,field
-
+                    break;
+                case 11:
+                    $laydate = ($data[$v['field']]=='' || $data[$v['field']]==0)?time():$data[$v['field']];
                     $l .= '<div class="layui-form-item">
                     <label for="'.$v['field'].'" class="layui-form-label">';
                     if($v['ismust']==1){
                         $l .= '<span class="x-red">*</span>';
                     }
-                    $l .= $v['fieldname'].'  
+                    $l .= $v['fieldname'].'
+                    </label>
+                    <div class="layui-input-inline">
+                        <input id="laydate_'.$v['field'].'" value="'.date('Y-m-d H:i:s',$laydate).'" name="'.$v['field'].'" ';
+                    if($v['ismust']==1){
+                        $l.=' required="" lay-verify="required" ';
+                    }
+                    $l .=  'autocomplete="off" class="layui-input">
+                    </div>';
+                    if($v['tips']){
+                        $l.='<div class="layui-form-mid layui-word-aux">
+					  <i data-info="'.$v['tips'].'" data-field="f'.$v['id'].'" class="layui-sys-icon layui-icon layui-icon-about f'.$v['id'].'"></i>
+					</div>';
+                    }
+                    $randt = getRandChar(5);
+                    $l.='</div>
+					<script>
+					layui.use("laydate", function(){
+					var laydate'.$randt.' = layui.laydate;
+					laydate'.$randt.'.render({elem: "#laydate_'.$v['field'].'",type:"datetime",trigger: "click" });});</script>';
+                    break;
+                case 12:
+                    $l .= '<div class="layui-form-item" pane>
+                    <label for="'.$v['field'].'" class="layui-form-label">';
+                    if($v['ismust']==1){
+                        $l .= '<span class="x-red">*</span>';
+                    }
+                    $l .= $v['fieldname'].'
+                    </label>
+                    <div class="layui-input-inline">';
+                    foreach(explode(',',$v['body']) as $vv){
+                        $s=explode('=',$vv);
+                        $l.='<input type="radio" name="'.$v['field'].'" value="'.$s[1].'" title="'.$s[0].'" ';
+                        if($data[$v['field']]==$s[1]){
+                            $l.='checked="checked"';
+                        }
+                        $l.=' >';
+                    }
+                    $l.='</div>';
+                    if($v['tips']){
+                        $l.='<div class="layui-form-mid layui-word-aux">
+					  <i data-info="'.$v['tips'].'" data-field="f'.$v['id'].'" class="layui-sys-icon layui-icon layui-icon-about f'.$v['id'].'"></i>
+					</div>';
+                    }
+                    $l.='</div>
+					<script>
+							layui.use("form", function () {
+								var form_'.$v['field'].' = layui.form;
+								form_'.$v['field'].'.render();
+							});
+							
+						</script>';
+                    break;
+                
+                case 13:
+                case 21:
+                    //tid,field
+                    
+                    $l .= '<div class="layui-form-item">
+                    <label for="'.$v['field'].'" class="layui-form-label">';
+                    if($v['ismust']==1){
+                        $l .= '<span class="x-red">*</span>';
+                    }
+                    $l .= $v['fieldname'].'
                     </label>
 					<div class="layui-input-inline">
 					<input type="hidden" id="'.$v['field'].'" name="'.$v['field'].'" value="">
 					<div id="'.$v['field'].'_xmselect"></div>
 					<script>
 					var '.$v['field'].'_xmselect = xmSelect.render({
-							el: "#'.$v['field'].'_xmselect", 
+							el: "#'.$v['field'].'_xmselect",
 							autoRow: true,
 							toolbar: { show: true },
 							list: [ "ALL", "CLEAR"],
 							filterable: true,
 							radio:true,';
-                            if($v['remote']){
-                                $l.='remoteSearch: true,
+                    if($v['remote']){
+                        $l.='remoteSearch: true,
                                         remoteMethod: function(val, cb, show){
             //								if(!val){
             //									return cb([]);
@@ -1136,17 +1744,17 @@ layui.use("laydate", function(){
                                             },"json")
                                             
                                         },';
-                            }
-                            $l.='
+                    }
+                    $l.='
 							on:function(r){
 								if(r["arr"].length>0){
 									$("#'.$v['field'].'").val(r["arr"][0].value)';
-                                if($v['ldfield'] && $v['linkfield']){
-                                    $ldfields = explode('|',$v['ldfield']);
-                                    $linkfields = explode('|',$v['linkfield']);
-                                    foreach($ldfields as $lk=>$ld){
-                                        $fx = M('fields')->find(['field'=>$ld]);
-                                        $l.='
+                    if($v['ldfield'] && $v['linkfield']){
+                        $ldfields = explode('|',$v['ldfield']);
+                        $linkfields = explode('|',$v['linkfield']);
+                        foreach($ldfields as $lk=>$ld){
+                            $fx = M('fields')->find(['field'=>$ld]);
+                            $l.='
                                         $.get("'.U('Fields/getliandong').'",
                                         {id:"'.$fx['id'].'",key:r["arr"][0].value,field:"'.$linkfields[$lk].'"},
                                         function(res){
@@ -1164,17 +1772,17 @@ layui.use("laydate", function(){
                                                     
                                         },"json")
                                         ';
-                                    }
-                                }
-                                $l.='
+                        }
+                    }
+                    $l.='
 								}else{
 									$("#'.$v['field'].'").val("")
 								}
 							}
 						});';
-                        if($v['remote']){
-
-                            $l.=' $.get("'.U('Fields/getSelect').'",{id:"'.$v['id'].'",value:"'.$data[$v['field']].'",check:1},function(res){
+                    if($v['remote']){
+                        
+                        $l.=' $.get("'.U('Fields/getSelect').'",{id:"'.$v['id'].'",value:"'.$data[$v['field']].'",check:1},function(res){
                                 if(res.code==0){
                                     '.$v['field'].'_xmselect.setValue(res.data);
                                     $("#'.$v['field'].'").val("'.$data[$v['field']].'");
@@ -1184,17 +1792,17 @@ layui.use("laydate", function(){
                                 }
                                 
                             },"json");';
-
-                        }else{
-                            $l.=' '.$v['field'].'_xmselect.setValue(['.$data[$v['field']].']);
+                        
+                    }else{
+                        $l.=' '.$v['field'].'_xmselect.setValue(['.$data[$v['field']].']);
                             $("#'.$v['field'].'").val("'.$data[$v['field']].'");';
-                        }
-                        $l.=' 
+                    }
+                    $l.='
 						 
 						</script>
 					</div>
 					';
-
+                    
                     if($v['tips']){
                         $l.='<div class="layui-form-mid layui-word-aux">
 					  <i data-info="'.$v['tips'].'" data-field="f'.$v['id'].'" class="layui-sys-icon layui-icon layui-icon-about f'.$v['id'].'"></i>
@@ -1206,47 +1814,47 @@ layui.use("laydate", function(){
 								var form_'.$v['field'].' = layui.form;
 								form_'.$v['field'].'.render();
 							});
-							 
+							
 						</script>';
                     break;
-				case 14:
-				$l .= '<div class="layui-form-item">
+                case 14:
+                    $l .= '<div class="layui-form-item">
                     <label for="'.$v['field'].'" class="layui-form-label">';
-				if($v['ismust']==1){
-				$l .= '<span class="x-red">*</span>';	
-				}
-                $l .= $v['fieldname'].'
+                    if($v['ismust']==1){
+                        $l .= '<span class="x-red">*</span>';
+                    }
+                    $l .= $v['fieldname'].'
                     </label>
                     <div class="layui-input-inline">
                         <input type="text" id="'.$v['field'].'" value="'.$data[$v['field']].'" name="'.$v['field'].'" ';
-				if($v['ismust']==1){
-					$l.=' required="" lay-verify="required" ';
-				}		
-                $l .=  'autocomplete="off" class="layui-input">
+                    if($v['ismust']==1){
+                        $l.=' required="" lay-verify="required" ';
+                    }
+                    $l .=  'autocomplete="off" class="layui-input">
                     </div>';
-				if($v['tips']){
-					$l.='<div class="layui-form-mid layui-word-aux">
+                    if($v['tips']){
+                        $l.='<div class="layui-form-mid layui-word-aux">
 					  <i data-info="'.$v['tips'].'" data-field="f'.$v['id'].'" class="layui-sys-icon layui-icon layui-icon-about f'.$v['id'].'"></i>
 					</div>';
-				}	
-                $l.='</div>';
-				break;
-				case 15:
-				$l .= '<fieldset class="layui-elem-field">
+                    }
+                    $l.='</div>';
+                    break;
+                case 15:
+                    $l .= '<fieldset class="layui-elem-field">
 				  <legend>'.$v['fieldname'].'</legend>
 				  <div class="layui-field-box">
 					  <div class="layui-input-block" id="'.$v['field'].'_space">';
-				if($data[$v['field']]){
-					$rs = explode('||',$data[$v['field']]);
-					foreach($rs as $vv){
-						$l.='<div class="layui-input-block"><input type="text"  style="width:500px;" value="'.$vv.'" name="'.$v['field'].'[]" autocomplete="off" class="layui-input layui-input-inline"><button type="button" class="layui-btn layui-btn-danger layui-btn-sm  layui-input-inline '.$v['field'].'_del" >'.JZLANG('删除').'</button></div>';
-					}
-				}else{
-					$l .='<div class="layui-input-block">
+                    if($data[$v['field']]){
+                        $rs = explode('||',$data[$v['field']]);
+                        foreach($rs as $vv){
+                            $l.='<div class="layui-input-block"><input type="text"  style="width:500px;" value="'.$vv.'" name="'.$v['field'].'[]" autocomplete="off" class="layui-input layui-input-inline"><button type="button" class="layui-btn layui-btn-danger layui-btn-sm  layui-input-inline '.$v['field'].'_del" >'.JZLANG('删除').'</button></div>';
+                        }
+                    }else{
+                        $l .='<div class="layui-input-block">
 							<input type="text"  style="width:500px;" value="'.$data[$v['field']].'" name="'.$v['field'].'[]" autocomplete="off" class="layui-input">
 						</div>';
-				}
-				$l	.=  '</div>
+                    }
+                    $l	.=  '</div>
 					  <div class="layui-form-mid layui-word-aux">
 						  <button type="button" class="layui-btn" id="'.$v['field'].'_add">新增</button>'.$v['tips'].'
 				      </div>
@@ -1268,29 +1876,29 @@ layui.use("laydate", function(){
 					
 				})
 				</script>';
-				break;
+                    break;
                 case 16:
                 case 20:
-
+                    
                     $l .= '<div class="layui-form-item">
                     <label for="'.$v['field'].'" class="layui-form-label">';
                     if($v['ismust']==1){
                         $l .= '<span class="x-red">*</span>';
                     }
-                    $l .= $v['fieldname'].'  
+                    $l .= $v['fieldname'].'
                     </label>
 					<div class="layui-input-inline">
 					<input type="hidden" id="'.$v['field'].'" name="'.$v['field'].'" value="">
 					<div id="'.$v['field'].'_xmselect"></div>
 					<script>
 					var '.$v['field'].'_xmselect = xmSelect.render({
-							el: "#'.$v['field'].'_xmselect", 
+							el: "#'.$v['field'].'_xmselect",
 							autoRow: true,
 							toolbar: { show: true },
 							list: [ "ALL", "CLEAR"],
 							filterable: true,';
-                            if($v['remote']){
-                                $l.='remoteSearch: true,
+                    if($v['remote']){
+                        $l.='remoteSearch: true,
                                         remoteMethod: function(val, cb, show){
             //								if(!val){
             //									return cb([]);
@@ -1306,8 +1914,8 @@ layui.use("laydate", function(){
                                             },"json")
                                             
                                         },';
-                            }
-                            $l.='
+                    }
+                    $l.='
 							on:function(r){
 								var s = [];
 								for(var i=0;i<r["arr"].length;i++){
@@ -1316,8 +1924,8 @@ layui.use("laydate", function(){
 								$("#'.$v['field'].'").val(s.join(","))
 							}
 						});';
-                     if($v['remote']) {
-                         $l .= '
+                    if($v['remote']) {
+                        $l .= '
 						$.get("' . U('Fields/getSelect') . '",{id:"' . $v['id'] . '",value:"' . trim($data[$v['field']], ',') . '",check:1},function(res){
 									if(res.code==0){
 										' . $v['field'] . '_xmselect.setValue(res.data);
@@ -1328,12 +1936,12 @@ layui.use("laydate", function(){
 									}
 									
 								},"json");';
-                     }
-                     $l.='
+                    }
+                    $l.='
 						</script>
 					</div>
 					';
-
+                    
                     if($v['tips']){
                         $l.='<div class="layui-form-mid layui-word-aux">
 					  <i data-info="'.$v['tips'].'" data-field="f'.$v['id'].'" class="layui-sys-icon layui-icon layui-icon-about f'.$v['id'].'"></i>
@@ -1345,12 +1953,12 @@ layui.use("laydate", function(){
 								var form_'.$v['field'].' = layui.form;
 								form_'.$v['field'].'.render();
 							});
-							 
+							
 						</script>';
                     break;
-				
-				case 18:
-					$l.='<div class="layui-form-item">
+                
+                case 18:
+                    $l.='<div class="layui-form-item">
                     <label for="tids" class="layui-form-label">
                         '.JZLANG('副栏目').'
                     </label>
@@ -1366,29 +1974,29 @@ layui.use("laydate", function(){
         		toolbar: { show: true },
 				list: [ "ALL", "CLEAR"],
         		data: [';
-					foreach($this->classtypetree as $vv){
+                    foreach($this->classtypetree as $vv){
                         if($vv['molds']==$molds){
                             if($this->admin['classcontrol']==0 || $this->admin['isadmin']==1 || strpos($this->tids,','.$vv['id'].',')!==false || $moldsdata['iscontrol']==0){
-                              $l.='{name: "'.str_repeat('--', $vv['level']).$vv['classname'].'", value: '.$vv['id'].'},';
+                                $l.='{name: "'.str_repeat('--', $vv['level']).$vv['classname'].'", value: '.$vv['id'].'},';
                             }
-
+                            
                         }
-
-					}
-                $l.=']
+                        
+                    }
+                    $l.=']
               })
                 tids_obj.setValue([';
-
-                foreach($this->classtypetree as $vv){
-                    if(strpos($data['tids'],','.$vv['id'].',')!==false){
-                        $l.='{name: "'.str_repeat('--', $vv['level']).$vv['classname'].'", value: '.$vv['id'].'},';
+                    
+                    foreach($this->classtypetree as $vv){
+                        if(strpos($data['tids'],','.$vv['id'].',')!==false){
+                            $l.='{name: "'.str_repeat('--', $vv['level']).$vv['classname'].'", value: '.$vv['id'].'},';
+                        }
                     }
-                }
-        	   $l.=' ])
+                    $l.=' ])
                     </script>';
-				break;
-				case 19:
-				$l.='<div class="layui-form-item layui-form-text">
+                    break;
+                case 19:
+                    $l.='<div class="layui-form-item layui-form-text">
                     <label for="'.$v['field'].'" class="layui-form-label">
                         '.JZLANG('TAG标签').' [ '.JZLANG('按Enter回车自动添加').' ]
                     </label>
@@ -1403,45 +2011,45 @@ layui.use("laydate", function(){
 					defaultText:"'.JZLANG('添加一个标签').'",
                     });
                 })</script>';
-				break;
-				case 20:
-				$laydate = ($data[$v['field']]=='' || $data[$v['field']]==0)?time():$data[$v['field']];
-				$l .= '<div class="layui-form-item">
+                    break;
+                case 20:
+                    $laydate = ($data[$v['field']]=='' || $data[$v['field']]==0)?time():$data[$v['field']];
+                    $l .= '<div class="layui-form-item">
                     <label for="'.$v['field'].'" class="layui-form-label">';
-				if($v['ismust']==1){
-				$l .= '<span class="x-red">*</span>';	
-				}
-                $l .= $v['fieldname'].'
+                    if($v['ismust']==1){
+                        $l .= '<span class="x-red">*</span>';
+                    }
+                    $l .= $v['fieldname'].'
                     </label>
                     <div class="layui-input-inline">
                         <input id="laydate_'.$v['field'].'" value="'.date('Y-m-d H:i:s',$laydate).'" name="'.$v['field'].'" ';
-				if($v['ismust']==1){
-					$l.=' required="" lay-verify="required" ';
-				}		
-                $l .=  'autocomplete="off" class="layui-input">
+                    if($v['ismust']==1){
+                        $l.=' required="" lay-verify="required" ';
+                    }
+                    $l .=  'autocomplete="off" class="layui-input">
                     </div>';
-				if($v['tips']){
-					$l.='<div class="layui-form-mid layui-word-aux">
+                    if($v['tips']){
+                        $l.='<div class="layui-form-mid layui-word-aux">
 					  <i data-info="'.$v['tips'].'" data-field="f'.$v['id'].'" class="layui-sys-icon layui-icon layui-icon-about f'.$v['id'].'"></i>
 					</div>';
-				}
-				$randt = getRandChar(5);
-                $l.='</div>
-				<script>
-layui.use("laydate", function(){
-  var laydate'.$randt.' = layui.laydate;
-  laydate'.$randt.'.render({elem: "#laydate_'.$v['field'].'",type:"datetime",trigger: "click",range:"~" });});</script>';
-				break;
-				
-				
-				
-				
-			}
-			
-		}
-		echo $l;
-	}
-
+                    }
+                    $randt = getRandChar(5);
+                    $l.='</div>
+					<script>
+					layui.use("laydate", function(){
+					var laydate'.$randt.' = layui.laydate;
+					laydate'.$randt.'.render({elem: "#laydate_'.$v['field'].'",type:"datetime",trigger: "click",range:"~" });});</script>';
+                    break;
+                
+                
+                
+                
+            }
+            
+        }
+        echo $l;
+    }
+    
     function getliandong(){
 
         $id = $this->frparam('id');

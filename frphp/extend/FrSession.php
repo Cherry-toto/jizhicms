@@ -44,6 +44,7 @@ class FrSession implements SessionHandlerInterface
      *
      * @see SessionHandlerInterface::open()
      */
+    #[\ReturnTypeWillChange]
     public function open($save_path, $name)
     {
       
@@ -56,7 +57,9 @@ class FrSession implements SessionHandlerInterface
      * 当session关闭的时候该函数自动被触发
      *
      * @see SessionHandlerInterface::close()
+     * @return bool
      */
+    #[\ReturnTypeWillChange]
     public function close()
     {
         return true;
@@ -68,13 +71,15 @@ class FrSession implements SessionHandlerInterface
      * 但是在session_start()函数调用的时候先触发open函数，再触发该函数
      *
      * @see SessionHandlerInterface::read()
+     * @return string|false
      */
-    public function read($session_id)
+    #[\ReturnTypeWillChange]
+    public function read($id)
     {	
         if(!is_dir($this->save_path)){
 			$this->checkmkdirs($this->save_path);
 		}
-		$session_id = str_replace(['..','/','\\'],'',$session_id);
+		$session_id = str_replace(['..','/','\\'],'',$id);
         $sfile = $this->save_path.'/'.$this->prefix.$session_id.'.php';
         $res = $this->sesstime($sfile);
 		if($res){
@@ -90,10 +95,12 @@ class FrSession implements SessionHandlerInterface
      * 当session准备好存储和关闭的时候调用该函数
      *
      * @see SessionHandlerInterface::write()
+     * @return bool
      */
-    public function write($session_id, $session_data)
+    #[\ReturnTypeWillChange]
+    public function write($id, $data)
     {
-		$session_id = str_replace(['..','/','\\'],'',$session_id);
+		$session_id = str_replace(['..','/','\\'],'',$id);
         if(!is_dir($this->save_path)){
 			$this->checkmkdirs($this->save_path);
 		}
@@ -103,7 +110,7 @@ class FrSession implements SessionHandlerInterface
         $sfile = $this->save_path.'/'.$this->prefix.$session_id.'.php';
 		$life_time = ( -1 == $this->life_time ) ? '300000000' : $this->life_time;
 		
-		$value = '<?php die();?>'.( time() + $life_time ).serialize($session_data);
+		$value = '<?php die();?>'.( time() + $life_time ).serialize($data);
 		$res = file_put_contents($sfile, $value);
 		if($res){
 			return true;
@@ -116,10 +123,12 @@ class FrSession implements SessionHandlerInterface
      * 销毁session
      *
      * @see SessionHandlerInterface::destroy()
+     * @return bool
      */
-    public function destroy($session_id)
+    #[\ReturnTypeWillChange]
+    public function destroy($id)
     {
-		$sfile = $this->save_path.'/'.$this->prefix.$session_id.'.php';
+		$sfile = $this->save_path.'/'.$this->prefix.$id.'.php';
 		if(file_exists($sfile)){
 			return @unlink($sfile);
 		}
@@ -133,6 +142,7 @@ class FrSession implements SessionHandlerInterface
      *
      * @see SessionHandlerInterface::gc()
      */
+    #[\ReturnTypeWillChange]
     public function gc($maxlifetime)
     {
         

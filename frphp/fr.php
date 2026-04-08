@@ -111,7 +111,7 @@ class frphp
 					if(!session_id()){ session_start();}
 				} else {
 					if(!session_id()){ session_start();}
-					setcookie('PHPSESSID', $_COOKIE['PHPSESSID'], time() + $this->config['redis']['EXPIRE'],'/',null,null,true);
+					setcookie('PHPSESSID', $_COOKIE['PHPSESSID'], time() + $this->config['redis']['EXPIRE'],'/',"","",true);
 				}
 				//全局Redis
                 $redis = new \Redis();
@@ -126,7 +126,7 @@ class frphp
 			}else{
 				
 				//开启SESSION,并设置600s缓存时间
-				//start_session(SessionTime);
+				start_session(SessionTime);
 				$session = new \FrSession(array('save_path'=>Session_Path,'life_time'=>SessionTime));
 				session_set_save_handler($session,true);
 				if (!isset($_COOKIE['PHPSESSID'])) {
@@ -134,7 +134,7 @@ class frphp
 					if(!session_id()){ session_start();}
 				} else {
 					if(!session_id()){ session_start();}
-					setcookie('PHPSESSID', $_COOKIE['PHPSESSID'], time() + SessionTime,'/',null,null,true);
+					setcookie('PHPSESSID', $_COOKIE['PHPSESSID'], time() + SessionTime,'/',"","",true);
 				}
 				
 				
@@ -333,10 +333,14 @@ class frphp
 			foreach($hookconfig as $v){
 				if("app\\".$v['module']==$app_home && $v['controller']==APP_CONTROLLER && (strpos(','.$v['action'].',',','.APP_ACTION.',')!==false || $v['all_action']==1)){
 					$newhook_controller = '\\app\\'.$v['module'].'\\plugins\\'.$v['hook_controller'].'Controller';
-					$newhook = new $newhook_controller($param);
-					$hook_action = $v['hook_action'];
-					$newhook->$hook_action($param);
-					$newhook = null;
+					if(class_exists($newhook_controller)){
+						$newhook = new $newhook_controller($param);
+						$hook_action = $v['hook_action'];
+						$newhook->$hook_action($param);
+						$newhook = null;
+					}
+					
+					
 				}
 			
 			}
@@ -370,7 +374,7 @@ class frphp
 		ini_set("session.cookie_httponly", 1);
         if (APP_DEBUG === true) {
             //error_reporting(E_ALL);
-			error_reporting(E_ALL & ~E_NOTICE & ~E_WARNING);
+			error_reporting(E_ALL & ~E_NOTICE & ~E_WARNING & ~E_DEPRECATED);
             ini_set('display_errors','On');
         } else {
             error_reporting(0);

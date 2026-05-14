@@ -1,7 +1,7 @@
 <?php
 
 // +----------------------------------------------------------------------
-// | JiZhiCMS { 极致CMS，给您极致的建站体验 }  
+// | JiZhiCMS { 极致CMS，给您极致的建站体验 }
 // +----------------------------------------------------------------------
 // | Copyright (c) 2018-2099 http://www.jizhicms.com All rights reserved.
 // +----------------------------------------------------------------------
@@ -213,7 +213,7 @@ class SysController extends CommonController
 			}else{
 				JsonReturn(['code'=>1,'msg'=>JZLANG('删除失败！系统字段不允许删除！')]);
 			}
-		    
+		  
 	   }
 	    JsonReturn(['code'=>1,'msg'=>JZLANG('删除失败！')]);
 	   
@@ -301,6 +301,15 @@ class SysController extends CommonController
 		//$classtype = M('classtype')->findAll(null,'orders desc');
 		//$classtype = getTree($classtype);
 		$this->classtypes = $this->classtypetree;
+        if($this->frparam('ajax')){
+            foreach($data as $k=>$v){
+                $data[$k]['fileName'] = basename($v['litpic']);
+            }
+            
+            $res = ['code'=>0,'data'=>$data,'count'=>$this->sum];
+            JsonReturn($res);
+            
+        }
 		$this->display('pictures');
 		
 	}
@@ -400,15 +409,15 @@ class SysController extends CommonController
 			}else{
 				$data['error'] =  "Error: ".JZLANG("请检查目录")."[static/upload/cert]".JZLANG("写入权限");
 				$data['code'] = 1001;
-				  
-			} 
+				
+			}
 
-			  
-		  
+			
+		 
 		}
 
 		JsonReturn($data);
-		  
+		
 	}
 
 	public function datacache(){

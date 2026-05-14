@@ -35,7 +35,7 @@
 	            <div class="card-body">
 					<!--body-->
 					<h2>运行环境需求</h2>
-				        <p>1.要求PHP5.6以上，建议使用7.0以上版本，本系统已支持PHP7.2，支持Windows和Linux主机</p>
+				        <p>1.要求PHP7.0以上，建议使用7.4以上版本，本系统已支持PHP8.0+，支持Windows和Linux主机</p>
 				        <p>2.安装环境建议Linux服务器，当然Windows也是可以安装的，云服务器建议安装宝塔面板【<a href="http://www.bt.cn/" style="color:green" target="_blank">查看</a>】</p>
 				        <p>3.无论是Windows还是Linux建议安装Apache、mysql、phpMyAdmin配件</p>
 				        <p>4.本系统目前仅支持mysql数据库，且数据库字符集必须是UTF-8或utf8_general_ci</p>
@@ -49,7 +49,7 @@
 						<tr>
 							<th>PHP</th>
 							<td><?php echo check_version();?></td>
-							<td>5.6 ~ 7.4</td>
+							<td>7.0 ~ 8.5</td>
 						</tr>
 				         <tr>
 				          <th>路径</th> 

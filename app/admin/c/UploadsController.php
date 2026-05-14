@@ -112,6 +112,29 @@ class UploadsController extends CommonController
         ];
         $action = $_GET['action'];
 
+        // 安全加固:禁止通过GET参数覆盖关键配置
+        // 防止攻击者通过GET参数修改fileAllowFiles、filePathFormat、fileMaxSize等
+        $dangerousBaseKeys = ['fileAllowFiles', 'imageAllowFiles', 'videoAllowFiles', 
+                             'catcherAllowFiles', 'fileManagerAllowFiles', 'imageManagerAllowFiles',
+                             'filePathFormat', 'imagePathFormat', 'videoPathFormat', 'scrawlPathFormat',
+                             'catcherPathFormat', 'fileManagerListPath', 'imageManagerListPath',
+                             'fileMaxSize', 'imageMaxSize', 'videoMaxSize', 'scrawlMaxSize', 'catcherMaxSize',
+                             'fileFieldName', 'imageFieldName', 'videoFieldName', 'scrawlFieldName',
+                             'fileActionName', 'imageActionName', 'videoActionName',
+                             'imageManagerActionName', 'fileManagerActionName', 'catcherActionName',
+                             'scrawlActionName', 'snapscreenActionName', 'catcherLocalDomain',
+                             'imageCompressEnable', 'imageCompressBorder', 'imageInsertAlign',
+                             'imageUrlPrefix', 'scrawlUrlPrefix', 'snapscreenUrlPrefix',
+                             'videoUrlPrefix', 'fileUrlPrefix', 'imageManagerUrlPrefix',
+                             'fileManagerUrlPrefix', 'snapscreenPathFormat', 'imageManagerListSize',
+                             'fileManagerListSize', 'scrawlInsertAlign', 'snapscreenInsertAlign'];
+        
+        foreach ($dangerousBaseKeys as $baseKey) {
+            if (isset($_GET[$baseKey])) {
+                unset($_GET[$baseKey]);
+            }
+        }
+
         switch ($action) {
             case 'config':
                 $result =  json_encode($CONFIG);

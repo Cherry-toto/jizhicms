@@ -136,6 +136,54 @@ class UploadsController extends CommonController
         ];
         $action = $_GET['action'];
 
+        // 安全加固:禁止通过GET参数覆盖关键配置
+        // 防止攻击者通过GET参数修改fileAllowFiles、filePathFormat、fileMaxSize等
+        $dangerousKeys = [
+            'imageActionName', 'imageFieldName', 'imageMaxSize', 'imageAllowFiles',
+            'scrawlActionName', 'scrawlFieldName', 'scrawlPathFormat', 'scrawlMaxSize',
+            'snapscreenActionName', 'snapscreenPathFormat',
+            'catcherLocalDomain', 'catcherActionName', 'catcherFieldName', 'catcherPathFormat', 
+            'catcherMaxSize', 'catcherAllowFiles',
+            'videoActionName', 'videoFieldName', 'videoPathFormat', 'videoMaxSize', 'videoAllowFiles',
+            'fileActionName', 'fileFieldName', 'filePathFormat', 'fileMaxSize', 'fileAllowFiles',
+            'imageManagerActionName', 'imageManagerListPath', 'imageManagerListSize', 
+            'imageManagerAllowFiles',
+            'fileManagerActionName', 'fileManagerListPath', 'fileManagerListSize', 
+            'fileManagerAllowFiles'
+        ];
+        
+        foreach ($dangerousKeys as $key) {
+            if (isset($_GET[$key])) {
+                unset($_GET[$key]);
+            }
+            // 同时处理数组形式的参数,如 fileAllowFiles[0]
+            if (strpos($key, 'Files') !== false) {
+                $baseKey = str_replace(['fileAllowFiles', 'imageAllowFiles', 'videoAllowFiles', 
+                                       'catcherAllowFiles', 'fileManagerAllowFiles', 'imageManagerAllowFiles'], 
+                                       ['fileAllowFiles', 'imageAllowFiles', 'videoAllowFiles',
+                                        'catcherAllowFiles', 'fileManagerAllowFiles', 'imageManagerAllowFiles'], 
+                                       $key);
+                if (isset($_GET[$baseKey])) {
+                    unset($_GET[$baseKey]);
+                }
+            }
+        }
+        
+        // 额外清理可能通过数组形式传入的危险参数
+        $dangerousBaseKeys = ['fileAllowFiles', 'imageAllowFiles', 'videoAllowFiles', 
+                             'catcherAllowFiles', 'fileManagerAllowFiles', 'imageManagerAllowFiles',
+                             'filePathFormat', 'imagePathFormat', 'videoPathFormat', 'scrawlPathFormat',
+                             'catcherPathFormat', 'fileManagerListPath', 'imageManagerListPath',
+                             'fileMaxSize', 'imageMaxSize', 'videoMaxSize', 'scrawlMaxSize', 'catcherMaxSize',
+                             'fileFieldName', 'imageFieldName', 'videoFieldName', 'scrawlFieldName',
+                             'fileActionName', 'imageActionName', 'videoActionName'];
+        
+        foreach ($dangerousBaseKeys as $baseKey) {
+            if (isset($_GET[$baseKey])) {
+                unset($_GET[$baseKey]);
+            }
+        }
+
         switch ($action) {
             case 'config':
                 $result =  json_encode($CONFIG);

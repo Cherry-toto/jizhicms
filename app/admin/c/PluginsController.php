@@ -846,14 +846,48 @@ class PluginsController extends CommonController
 	  //打开压缩包
 	  $resource = zip_open($filename);
 	  $i = 1;
+	  //获取目标目录的真实路径用于后续验证
+	  $real_base_path = realpath($path);
+	  if($real_base_path === false){
+	   JsonReturn(['code'=>1,'msg'=>'目标目录不存在！']);
+	  }
 	  //遍历读取压缩包里面的一个个文件
 	  while ($dir_resource = zip_read($resource)) {
 		//如果能打开则继续
 		if (zip_entry_open($resource,$dir_resource)) {
 		  //获取当前项目的名称,即压缩包里面当前对应的文件名
-		  $file_name = $path.zip_entry_name($dir_resource);
+		  $entry_name = zip_entry_name($dir_resource);
+		  
+		  //防止路径穿越攻击：移除所有 ../ 和 ..\ 序列
+		  $entry_name = str_replace(['../', '..\\'], '', $entry_name);
+		  
+		  //检查文件名是否为空
+		  if(empty(trim($entry_name, '/'))){
+			  zip_entry_close($dir_resource);
+			  continue;
+		  }
+		  
+		  //构建完整的文件路径
+		  $file_name = $path . $entry_name;
 		  //以最后一个“/”分割,再用字符串截取出路径部分
 		  $file_path = substr($file_name,0,strrpos($file_name, "/"));
+		  
+		  //验证路径是否在目标目录内
+		  //对于不存在的目录，检查其最近的已存在父目录
+		  $check_path = $file_path;
+		  while(!is_dir($check_path) && $check_path !== ''){
+			  $check_path = dirname($check_path);
+		  }
+		  
+		  if(is_dir($check_path)){
+			  $real_check_path = realpath($check_path);
+			  if($real_check_path === false || strpos($real_check_path, $real_base_path) !== 0){
+				  //路径逃逸，跳过该条目
+				  zip_entry_close($dir_resource);
+				  continue;
+			  }
+		  }
+		  
 		  //如果路径不存在，则创建一个目录，true表示可以创建多级目录
 		  if(!is_dir($file_path)){
 			mkdir($file_path,0777,true);

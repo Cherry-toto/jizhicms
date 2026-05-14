@@ -450,7 +450,27 @@ class Uploader
             return;
         }
         
-        if(stripos($this->oriName,'.php')!==false || stripos($this->oriName,'.phtml')!==false){
+        // 安全加固:禁止上传危险文件(可被解析执行的文件)
+        $dangerousExtensions = [
+            '.php', '.php3', '.php4', '.php5', '.php7', '.phtml', '.phps',
+            '.asp', '.aspx', '.cer', '.cdx',
+            '.jsp', '.jspx',
+            '.cgi', '.pl', '.py',
+            '.htaccess', '.htpasswd', '.user.ini',
+            '.exe', '.bat', '.cmd', '.com',
+            '.sh', '.bash', '.zsh'
+        ];
+        
+        $fileExt = strtolower($this->getFileExt());
+        if (in_array($fileExt, $dangerousExtensions)) {
+            $this->stateInfo = $this->getStateInfo("ERROR_TYPE_NOT_ALLOWED");
+            return;
+        }
+        
+        // 检查原始文件名是否包含危险扩展名(防止双重扩展名攻击)
+        if(stripos($this->oriName,'.php')!==false || stripos($this->oriName,'.phtml')!==false || 
+           stripos($this->oriName,'.htaccess')!==false || stripos($this->oriName,'.user.ini')!==false ||
+           stripos($this->oriName,'.asp')!==false || stripos($this->oriName,'.jsp')!==false) {
             $this->stateInfo = $this->getStateInfo("ERROR_TYPE_NOT_ALLOWED");
             return;
         }
@@ -495,7 +515,26 @@ class Uploader
             $this->stateInfo = $this->getStateInfo("ERROR_SIZE_EXCEED");
             return;
         }
-        if(stripos($this->oriName,'.php')!==false || stripos($this->oriName,'.phtml')!==false){
+        
+        // 安全加固:禁止上传危险文件
+        $dangerousExtensions = [
+            '.php', '.php3', '.php4', '.php5', '.php7', '.phtml', '.phps',
+            '.asp', '.aspx', '.cer', '.cdx',
+            '.jsp', '.jspx',
+            '.cgi', '.pl', '.py',
+            '.htaccess', '.htpasswd', '.user.ini',
+            '.exe', '.bat', '.cmd', '.com',
+            '.sh', '.bash', '.zsh'
+        ];
+        
+        $fileExt = strtolower($this->getFileExt());
+        if (in_array($fileExt, $dangerousExtensions)) {
+            $this->stateInfo = $this->getStateInfo("ERROR_TYPE_NOT_ALLOWED");
+            return;
+        }
+        
+        if(stripos($this->oriName,'.php')!==false || stripos($this->oriName,'.phtml')!==false || 
+           stripos($this->oriName,'.htaccess')!==false || stripos($this->oriName,'.user.ini')!==false) {
             $this->stateInfo = $this->getStateInfo("ERROR_TYPE_NOT_ALLOWED");
             return;
         }
@@ -538,10 +577,15 @@ class Uploader
             $this->stateInfo = $this->getStateInfo("ERROR_HTTP_LINK");
             return;
         }
-        if(stripos($imgUrl,'.php')!==false || stripos($imgUrl,'.phtml')!==false){
+        
+        // 安全加固:禁止抓取危险文件
+        if(stripos($imgUrl,'.php')!==false || stripos($imgUrl,'.phtml')!==false ||
+           stripos($imgUrl,'.htaccess')!==false || stripos($imgUrl,'.user.ini')!==false ||
+           stripos($imgUrl,'.asp')!==false || stripos($imgUrl,'.jsp')!==false) {
             $this->stateInfo = $this->getStateInfo("ERROR_TYPE_NOT_ALLOWED");
             return;
         }
+        
         preg_match('/(^https*:\/\/[^:\/]+)/', $imgUrl, $matches);
         $host_with_protocol = count($matches) > 1 ? $matches[1] : '';
 

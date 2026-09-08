@@ -107,10 +107,16 @@ class DBholder{
 	
 	//获取表信息
 	public function getTable($table){
-		$stmt = $this->pdo->prepare("DESC {$table}");  
+		$table = str_replace('`', '', $table);
+		$stmt = $this->pdo->prepare("DESC `{$table}`");  
 		return $stmt;
 	}
 	
+	public function execute($sql,$bindParams){
+		$stmt = $this->pdo->prepare($sql);
+		$result = $stmt->execute($bindParams);
+		return $result;
+	}
 	
 	
 	

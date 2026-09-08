@@ -65,6 +65,9 @@
 						<button class="layui-btn layui-btn-primary" id="litpic_upload" type="button" >{fun JZLANG('选择图片')}</button>
 					</div>
 					<div class="layui-input-inline">
+						<button class="layui-btn layui-btn-warm" id="litpic_gallery" type="button" >{fun JZLANG('图库')}</button>
+					</div>
+					<div class="layui-input-inline">
 						<img id="litpic_img" class="img-responsive img-thumbnail" style="max-width: 200px;" src="" onerror="javascipt:this.src='{__Tpl_style__}/style/images/nopic.jpg'; this.title='{fun JZLANG('图片未找到')}';this.onerror=''">
 						<button type="button" onclick="deleteImage(this)" class="layui-btn layui-btn-sm layui-btn-radius layui-btn-danger " title="{fun JZLANG('删除这张图片')}" >{fun JZLANG('删除')}</button>
 					</div>
@@ -214,6 +217,145 @@
                  
                 }
               });
+
+		  //图库按钮点击事件
+		  $("#litpic_gallery").on("click", function(){
+			  var galleryLayer = layer.open({
+				  type: 1,
+				  title: "{fun JZLANG('选择图片')}",
+				  area: ["80%", "80%"],
+				  content: `<div class="gallery-container" style="padding: 15px;">
+					  <div class="gallery-header" style="margin-bottom: 15px;">
+						  <div class="layui-btn-group">
+							  <button type="button" class="layui-btn layui-btn-sm layui-btn-primary" id="gallery_prev_litpic">{fun JZLANG('上一页')}</button>
+							  <button type="button" class="layui-btn layui-btn-sm layui-btn-primary" id="gallery_next_litpic">{fun JZLANG('下一页')}</button>
+						  </div>
+						  <span id="gallery_page_info_litpic" style="margin-left: 15px;"></span>
+					  </div>
+					  <div id="gallery_list_litpic" class="gallery-list" style="min-height: 400px; display: flex; flex-wrap: wrap; gap: 10px;"></div>
+					  <div class="gallery-footer" style="margin-top: 15px; text-align: center;">
+						  <button type="button" class="layui-btn" id="gallery_confirm_litpic">{fun JZLANG('确定')}</button>
+						  <button type="button" class="layui-btn layui-btn-primary" onclick="layer.closeAll();">{fun JZLANG('取消')}</button>
+					  </div>
+				  </div>`,
+				  success: function(layero, index){
+					  var currentPage = 1;
+					  var pageSize = 12;
+					  var selectedImages = [];
+					  var totalCount = 0;
+					  
+					  function loadGallery(page){
+						  $.ajax({
+							  url: "{fun U('Sys/pictures')}",
+							  type: "GET",
+							  data: {ajax: 1, page: page, pageSize: pageSize},
+							  dataType: "json",
+							  success: function(res){
+								  if(res.code == 0){
+									  var html = "";
+									  if(res.data.length > 0){
+										$.each(res.data, function(i, item){
+											var ext = item.filetype.split('.').pop().toLowerCase();
+											var imageExts = ["jpg", "jpeg", "png", "gif", "bmp", "webp", "svg"];
+											var isImage = imageExts.includes(ext);
+											var contentHtml = "";
+											if(isImage){
+												contentHtml = `<img src="${item.litpic}" style="width: 100%; height: 100%; object-fit: cover;">`;
+											}else{
+												contentHtml = `<div style="width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; background: #f5f5f5; padding: 10px;">
+													<i class="layui-icon" style="font-size: 40px; color: #999;">&#xe61e;</i>
+													<span style="font-size: 12px; color: #666; margin-top: 8px; word-break: break-all; text-align: center;">${item.fileName}</span>
+												</div>`;
+											}
+											
+											html += `<div class="gallery-item" data-id="`+item.id+`" data-url="`+item.litpic+`" style="width: 140px; height: 140px; border: 2px solid #e6e6e6; border-radius: 4px; cursor: pointer; position: relative; overflow: hidden;">
+												`+contentHtml+
+												`<div class="gallery-item-info" style="position: absolute; bottom: 0; left: 0; right: 0; background: rgba(0,0,0,0.6); color: #fff; padding: 5px; font-size: 12px; display: none;">
+													${item.fileName}<br>${item.size}kb
+												</div>
+												<div class="gallery-item-check" style="position: absolute; top: 5px; right: 5px; width: 20px; height: 20px; border-radius: 50%; border: 2px solid #fff; background: rgba(0,0,0,0.5); display: none;">
+													<i class="layui-icon" style="color: #fff; font-size: 14px; line-height: 16px;">&#xe605;</i>
+												</div>
+											</div>`;
+										});
+										$("#gallery_list_litpic").html(html);
+										totalCount = res.count;
+										var totalPages = Math.ceil(totalCount / pageSize);
+										$("#gallery_page_info_litpic").text("第"+page+"页 / 共"+totalPages+"页");
+									
+									  $("#gallery_list_litpic .gallery-item").hover(
+										  function(){
+											  $(this).find(".gallery-item-info").show();
+										  },
+										  function(){
+											  $(this).find(".gallery-item-info").hide();
+										  }
+									  );
+									  
+									  $("#gallery_list_litpic .gallery-item").on("click", function(){
+										  var url = $(this).data("url");
+										  var index = selectedImages.indexOf(url);
+									  
+										  if(index > -1){
+											  selectedImages.splice(index, 1);
+											  $(this).css("border-color", "#e6e6e6");
+											  $(this).find(".gallery-item-check").hide();
+										  }else{
+											  selectedImages.push(url);
+											  $(this).css("border-color", "#1E9FFF");
+											  $(this).find(".gallery-item-check").show();
+										  }
+									  });
+									  
+									  $("#gallery_list_litpic .gallery-item").each(function(){
+										  var url = $(this).data("url");
+										  if(selectedImages.indexOf(url) > -1){
+											  $(this).css("border-color", "#1E9FFF");
+											  $(this).find(".gallery-item-check").show();
+										  }
+									  });
+								  }else{
+									  $("#gallery_list_litpic").html('<div style="width: 100%; text-align: center; padding: 50px; color: #999;">{fun JZLANG('暂无图片')}</div>');
+								  }
+							  }else{
+								  layer.alert(res.msg || "{fun JZLANG('加载失败')}", {icon: 5});
+							  }
+						  },
+						  error: function(){
+							  layer.alert("{fun JZLANG('请求失败')}", {icon: 5});
+						  }
+					  });
+				  	  }
+				  
+						$("#gallery_prev_litpic").on("click", function(){
+							if(currentPage > 1){
+								currentPage--;
+								loadGallery(currentPage);
+							}
+						});
+						
+						$("#gallery_next_litpic").on("click", function(){
+							var totalPages = Math.ceil(totalCount / pageSize);
+							if(currentPage < totalPages){
+								currentPage++;
+								loadGallery(currentPage);
+							}
+						});
+						
+						$("#gallery_confirm_litpic").on("click", function(){
+							if(selectedImages.length > 0){
+								$("#litpic").val(selectedImages.join(","));
+								$("#litpic_img").attr("src", selectedImages[0]);
+								layer.closeAll();
+							}else{
+								layer.alert("{fun JZLANG('请选择至少一张图片')}", {icon: 5});
+							}
+						});
+				  
+						loadGallery(currentPage);
+			  		}
+		  });
+		  });
 			  
 			  
 			    //监听提交

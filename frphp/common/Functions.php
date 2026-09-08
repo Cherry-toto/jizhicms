@@ -56,6 +56,7 @@ function format_param($value=null,$int=0,$default=false){
 		case 0://整数
 			return (int)$value;
 		case 1://字符串
+			$value = stripslashes($value);
 			$value = SafeFilter($value);
 			$value=htmlspecialchars(trim($value), ENT_QUOTES);
             $value = addslashes($value);
@@ -68,16 +69,19 @@ function format_param($value=null,$int=0,$default=false){
 		case 3://浮点
 			return (float)$value;
 		case 4:
+			$value = stripslashes($value);
             $value = addslashes($value);
             $value = SafeFilter($value);
 			return trim($value);
         case 5:
+			$value = stripslashes($value);
             $value = SafeFilter($value);
             $value=htmlspecialchars(trim($value), ENT_QUOTES);
             $value = addslashes($value);
             $ra=Array('select','insert','update','delete');
             return str_ireplace($ra,'',$value);
         case 6:
+			$value = stripslashes($value);
             $value= strip_tags($value, "<a><p><img><table><span><strong><h1><h2><h3><h4><h5><h6><div><ul><ol><li><form><input><header><td><tr><th><thead><tbody><source><area><aside><video><pre><code><i><font><audio><b><article><cite><dd><dl><em><section><small><del><hr><br>");
             $value = SafeFilter($value);
             $value=htmlspecialchars(trim($value), ENT_QUOTES);
@@ -381,7 +385,7 @@ function start_session($expire = 0)  {
 		session_start();
 	} else {
 		session_start();
-		setcookie('PHPSESSID', $_COOKIE['PHPSESSID'], time() + $expire,'/',null,null,true);
+		setcookie('PHPSESSID', $_COOKIE['PHPSESSID'], time() + $expire,'/',"","",true);
 	}
 
 } 

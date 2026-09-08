@@ -2326,116 +2326,175 @@ if(!function_exists('deldir')) {
  * direct=1 中间开始裁剪  direct=0 左上角开始裁剪
  * debug=1 调试状态，每次请求都生成缓存 debug=0 会直接调用已生成的缩略图
  */
-if(!function_exists('jzresize')) {
-    function jzresize($src_image, $out_width = NULL, $out_height = NULL, $mode = 1, $out_image = NULL, $direct = 1, $debug = 0, $img_quality = 90)
-    {
-        if (!file_exists('.' . $src_image)) {
-            if (strpos($src_image, 'http') !== false) {
-                return $src_image;
-            }
-        } else {
-            list($width, $height, $type, $attr) = getimagesize('.' . $src_image);
-            if ($width == $out_width && $height == $out_height) {
-                return $src_image;
-            }
-            if (!is_dir(APP_PATH . 'cache/image')) {
-                if (!mkdir(APP_PATH . 'cache/image', 0777)) {
-                    exit('没有权限[cache/image]');
-                }
-            }
-            if (!$out_image) {
-                $imageinfo = pathinfo($src_image);
-                $filename = str_replace('.' . $imageinfo['extension'], '_' . $out_width . 'x' . $out_height . '.' . $imageinfo['extension'], $imageinfo['basename']);
-                $out_image = 'cache/image/' . $filename;
-            }
-            if (file_exists(APP_PATH . $out_image) && !$debug) {
-                return '/' . $out_image;
+ if(!function_exists('jzresize')) {
+    function jzresize($src_image, $out_width = NULL, $out_height = NULL, $mode = 1, $out_image = NULL, $direct = 0, $debug = 0, $img_quality = 90, $thumb_type = 2) {
+        if(empty($src_image) || $src_image == '错误链接') return '';
+
+        $root = rtrim($_SERVER['DOCUMENT_ROOT'], '/');
+        $cache_rel_path = '/cache/image';
+        $cache_abs_dir = $root . $cache_rel_path;
+
+        // 1. 规范化源路径
+        $src_image_rel = '/' . ltrim($src_image, '/');
+        $src_file_full = $root . $src_image_rel;
+
+        // 2. 远程图片下载优化逻辑
+        if (strpos($src_image, 'http') !== false) {
+            // 如果是本站域名，转为本地路径
+            $host = $_SERVER['HTTP_HOST'];
+            if (strpos($src_image, $host) !== false) {
+                $src_image_rel = '/' . ltrim(str_replace(['http://' . $host, 'https://' . $host], '', $src_image), '/');
+                $src_file_full = $root . $src_image_rel;
             } else {
-                if (!copy(APP_PATH . $src_image, $out_image)) {
-                    return '';
-                }
-                list($width, $height, $type, $attr) = getimagesize($out_image);
-                switch ($type) {
-                    case 1:
-                        $img = imagecreatefromgif($out_image);
-                        break;
-                    case 2:
-                        $img = imagecreatefromjpeg($out_image);
-                        break;
-                    case 3:
-                        $img = imagecreatefrompng($out_image);
-                        break;
-                }
-                $out_scale = $out_height / $out_width;
-                $src_scale = $height / $width;
-                if ($mode == 1) {
-                    $w = $out_width;
-                    $h = $out_height;
-                } else {
-                    $w = $width;
-                    $h = intval($out_scale * $w);
-                    if ($h > $height) {
-                        $h = $height;
-                        $w = intval($h / $out_scale);
-                    }
-                }
+                // 真正的第三方远程图
+                if (!is_dir($cache_abs_dir)) @mkdir($cache_abs_dir, 0755, true);
+                $filename = md5($src_image) . '.' . pathinfo(parse_url($src_image, PHP_URL_PATH), PATHINFO_EXTENSION);
+                $local_rel = $cache_rel_path . '/' . $filename;
+                $local_abs = $root . $local_rel;
 
-                if ($direct == 1) {
-                    if ($src_scale >= $out_scale) {
-                        $w = intval($width);
-                        $h = intval($out_scale * $w);
-                        $start_x = 0;
-                        $start_y = ($height - $h) / 2;
+                // 如果本地不存在远程缓存图，则抓取
+                if (!file_exists($local_abs)) {
+                    $ch = curl_init();
+                    curl_setopt($ch, CURLOPT_URL, $src_image);
+                    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+                    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+                    curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 10);
+                    curl_setopt($ch, CURLOPT_TIMEOUT, 30);
+                    $file_content = curl_exec($ch);
+                    
+                    $http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+                    $content_type = curl_getinfo($ch, CURLINFO_CONTENT_TYPE);
+                    curl_close($ch);
+
+                    // 优化：仅当状态码200且确实是图片时才保存
+                    if ($http_code == 200 && strpos($content_type, 'image/') !== false && !empty($file_content)) {
+                        file_put_contents($local_abs, $file_content);
+                        $src_file_full = $local_abs;
                     } else {
-                        $h = intval($height);
-                        $w = intval($h / $out_scale);
-                        $start_x = ($width - $w) / 2;
-                        $start_y = 0;
+                        return $src_image; // 下载失败或非图片，直接返回原链接，不处理
                     }
                 } else {
-                    $w = intval($width);
-                    $h = intval($height);
-                    $start_x = 0;
-                    $start_y = 0;
+                    $src_file_full = $local_abs;
                 }
-
-                $scale = $out_width / $w;
-                $new_img = imagecreatetruecolor($out_width, $out_height);
-                // 根据图像类型处理透明度
-                switch ($type) {
-                    case 1: // GIF
-                        $transparent = imagecolorallocatealpha($new_img, 0, 0, 0, 127);
-                        imagefill($new_img, 0, 0, $transparent);
-                        imagecolortransparent($new_img, $transparent); // 使背景透明
-                        break;
-                    case 3: // PNG
-                        imagesavealpha($new_img, true); // 保存透明通道信息
-                        $transparent = imagecolorallocatealpha($new_img, 0, 0, 0, 127);
-                        imagefill($new_img, 0, 0, $transparent);
-                        break;
-                    default: // 对于不支持透明度的图像类型（如 JPEG），使用白色背景
-                        $white = imagecolorallocate($new_img, 255, 255, 255);
-                        imagefill($new_img, 0, 0, $white);
-                        break;
-                }
-                imagecopyresampled($new_img, $img, 0, 0, $start_x, $start_y, $out_width, $out_height, $w, $h);
-                switch ($type) {
-                    case 1: // GIF
-                        imagegif($new_img, $out_image); // 保存GIF图像，不需要质量参数
-                        break;
-                    case 2: // JPEG
-                        imagejpeg($new_img, $out_image, $img_quality); // 保存JPEG图像，需要质量参数
-                        break;
-                    case 3: // PNG
-                        imagesavealpha($new_img, true); // 确保保存透明度信息
-                        imagepng($new_img, $out_image); // 保存PNG图像，不需要质量参数，但可以设置压缩级别
-                        break;
-                }
-                imagedestroy($img);
-                imagedestroy($new_img);
-                return '/' . $out_image;
             }
         }
+
+        // 3. 再次确认源文件物理存在
+        if (!file_exists($src_file_full) || is_dir($src_file_full)) {
+            return ''; 
+        }
+
+        // 4. 确定缩略图输出路径
+        if (!$out_image) {
+            $info = pathinfo($src_file_full);
+            $out_name = $info['filename'] . "_{$out_width}x{$out_height}." . ($info['extension'] ?? 'jpg');
+            $out_image_rel = $cache_rel_path . '/' . $out_name;
+        } else {
+            $out_image_rel = '/' . ltrim($out_image, '/');
+        }
+        $out_file_full = $root . $out_image_rel;
+
+        // 5. 缓存有效性检查 (包含文件存在检测 & 原图更新检测)
+        if (file_exists($out_file_full) && !$debug) {
+            // 核心优化点：如果原图的修改时间 晚于 缩略图时间，则重新生成
+            if (filemtime($src_file_full) <= filemtime($out_file_full)) {
+                return $out_image_rel;
+            }
+        }
+
+        // 6. 载入图片资源
+        $size = @getimagesize($src_file_full);
+        if(!$size) return $src_image;
+        list($width, $height, $type) = $size;
+
+		switch ($type) {
+			case 1: $img = @imagecreatefromgif($src_file_full); break;
+			case 2: $img = @imagecreatefromjpeg($src_file_full); break;
+			case 3: $img = @imagecreatefrompng($src_file_full); break;
+			case 18: // WebP 类型值为 18
+				if (function_exists('imagecreatefromwebp')) {
+					$img = @imagecreatefromwebp($src_file_full);
+				} else {
+					return $src_image;
+				}
+				break;
+			default: return $src_image;
+		}
+        if(!$img) return $src_image;
+
+        // 7. 计算尺寸
+        $dst_x = 0; $dst_y = 0; $start_x = 0; $start_y = 0;
+        $scr_w = $width; $scr_h = $height;
+
+        if ($mode == 1) {
+            $new_w = $out_width; $new_h = $out_height;
+        } else {
+            $new_w = $width;
+            $new_h = $width / ($out_width / $out_height);
+            if ($new_h > $height) {
+                $new_h = $height;
+                $new_w = $height * ($out_width / $out_height);
+            }
+        }
+        $draw_w = $new_w; $draw_h = $new_h;
+
+        if ($direct == 1) {
+            switch ($thumb_type) {
+                case 1: // 居中缩放留白
+                    $scale = min($new_w / $width, $new_h / $height);
+                    $draw_w = $width * $scale; $draw_h = $height * $scale;
+                    $dst_x = ($new_w - $draw_w) / 2; $dst_y = ($new_h - $draw_h) / 2;
+                    break;
+                case 2: // 居中裁剪
+                    $scale = max($new_w / $width, $new_h / $height);
+                    $scr_w = $new_w / $scale; $scr_h = $new_h / $scale;
+                    $start_x = ($width - $scr_w) / 2; $start_y = ($height - $scr_h) / 2;
+                    break;
+            }
+        }
+
+        // 8. 创建画布并处理透明度 (修复黑边)
+        if (!is_dir($cache_abs_dir)) @mkdir($cache_abs_dir, 0755, true);
+        $new_img = imagecreatetruecolor($new_w, $new_h);
+        
+		if ($type == 1 || $type == 3 || $type == 18) { // 加入 18 (WebP)
+			imagealphablending($new_img, false);
+			imagesavealpha($new_img, true);
+			$alpha = imagecolorallocatealpha($new_img, 255, 255, 255, 127);
+			imagefill($new_img, 0, 0, $alpha);
+		} else {
+            $white = imagecolorallocate($new_img, 255, 255, 255);
+            imagefill($new_img, 0, 0, $white);
+        }
+
+        // 9. 重采样
+        imagecopyresampled($new_img, $img, $dst_x, $dst_y, $start_x, $start_y, $draw_w, $draw_h, $scr_w, $scr_h);
+
+        // 10. 保存文件 (优化：PNG 质量处理)
+		switch ($type) {
+			case 1: imagegif($new_img, $out_file_full); break;
+			case 2: imagejpeg($new_img, $out_file_full, $img_quality); break;
+			case 3: 
+				imagepng($new_img, $out_file_full); 
+				break;
+			case 18:
+				if (function_exists('imagewebp')) {
+					// imagewebp 的质量参数和 jpeg 一样，是 0-100
+					imagewebp($new_img, $out_file_full, $img_quality); 
+				} else {
+					// 如果服务器不支持 webp 导出，降级保存为 jpg
+					$out_file_full = preg_replace('/\.webp$/i', '.jpg', $out_file_full);
+					$out_image_rel = preg_replace('/\.webp$/i', '.jpg', $out_image_rel);
+					imagejpeg($new_img, $out_file_full, $img_quality);
+				}
+				break;
+			default: imagejpeg($new_img, $out_file_full, $img_quality);
+		}
+
+        imagedestroy($new_img);
+        imagedestroy($img);
+
+        return $out_image_rel;
     }
 }
 if(!function_exists('jzcachedata')) {

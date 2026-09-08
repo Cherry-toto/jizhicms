@@ -369,13 +369,13 @@ class IndexController extends CommonController
 			$left_layout = array();
 			$top_layout = array();
 			foreach($leftNav as $v){
-				if($v['title'] && count($v['children'])>0){
+				if($v['title'] && isset($v['children']) && count($v['children'])>0){
 					$left_layout[] = array('name'=>$v['title'],'icon'=>$v['icon'],'nav'=>$v['children']);
 				}
 				
 			}
 			foreach($topNav as $v){
-				if($v['title'] && count($v['children'])>0){
+				if($v['title'] && isset($v['children']) && count($v['children'])>0){
 					$top_layout[] = array('name'=>$v['title'],'icon'=>$v['icon'],'nav'=>$v['children']);
 				}
 				
@@ -467,84 +467,198 @@ class IndexController extends CommonController
 	  setcookie('PHPSESSID', $_COOKIE['PHPSESSID'], time() + $cache_time,'/',null,null,null,true);
 	  
     }
+	private function clearCacheDir($dir, $skip = array())
+	{
+		if (!is_dir($dir)) {
+			return;
+		}
+		$handle = opendir($dir);
+		if (!$handle) {
+			return;
+		}
+		while (($file = readdir($handle)) !== false) {
+			if ($file === '.' || $file === '..') {
+				continue;
+			}
+			if (in_array($file, $skip, true)) {
+				continue;
+			}
+			$path = $dir . '/' . $file;
+			if (is_file($path)) {
+				@unlink($path);
+			}
+		}
+		closedir($handle);
+	}
+
+	private function getCacheDirSize($dir, $skip = array())
+	{
+		$size = 0;
+		if (!is_dir($dir)) {
+			return $size;
+		}
+		$handle = opendir($dir);
+		if (!$handle) {
+			return $size;
+		}
+		while (($file = readdir($handle)) !== false) {
+			if ($file === '.' || $file === '..') {
+				continue;
+			}
+			if (in_array($file, $skip, true)) {
+				continue;
+			}
+			$path = $dir . '/' . $file;
+			if (is_file($path)) {
+				$size += round(filesize($path) / 1024, 2);
+			}
+		}
+		closedir($handle);
+		return $size;
+	}
+
+	private function clearTplCache($dir)
+	{
+		$skipDirs = array('tmp', 'log', 'data', 'image');
+		if (!is_dir($dir)) {
+			return;
+		}
+		$handle = opendir($dir);
+		if (!$handle) {
+			return;
+		}
+		while (($file = readdir($handle)) !== false) {
+			if ($file === '.' || $file === '..') {
+				continue;
+			}
+			if (in_array($file, $skipDirs, true)) {
+				continue;
+			}
+			$path = $dir . '/' . $file;
+			if (is_file($path)) {
+				@unlink($path);
+			}
+		}
+		closedir($handle);
+	}
+
+	private function getTplCacheSize($dir)
+	{
+		$skipDirs = array('tmp', 'log', 'data', 'image');
+		$size = 0;
+		if (!is_dir($dir)) {
+			return $size;
+		}
+		$handle = opendir($dir);
+		if (!$handle) {
+			return $size;
+		}
+		while (($file = readdir($handle)) !== false) {
+			if ($file === '.' || $file === '..') {
+				continue;
+			}
+			if (in_array($file, $skipDirs, true)) {
+				continue;
+			}
+			$path = $dir . '/' . $file;
+			if (is_file($path)) {
+				$size += round(filesize($path) / 1024, 2);
+			}
+		}
+		closedir($handle);
+		return $size;
+	}
+
+	private function clearSessionCache($dir, $keepSessionId = '')
+	{
+		if (!is_dir($dir)) {
+			return;
+		}
+		$keepFiles = array();
+		if ($keepSessionId) {
+			$keepFiles = array(
+				'frses_' . $keepSessionId . '.php',
+				'sess_' . $keepSessionId,
+				'sess_' . $keepSessionId . '.php',
+			);
+		}
+		$skipRoot = array('.htaccess', 'web.config');
+		$handle = opendir($dir);
+		if (!$handle) {
+			return;
+		}
+		while (($entry = readdir($handle)) !== false) {
+			if ($entry === '.' || $entry === '..') {
+				continue;
+			}
+			$path = $dir . '/' . $entry;
+			if (is_dir($path)) {
+				$this->clearCacheDir($path, $keepFiles);
+				continue;
+			}
+			if (in_array($entry, $skipRoot, true) || in_array($entry, $keepFiles, true)) {
+				continue;
+			}
+			@unlink($path);
+		}
+		closedir($handle);
+	}
+
+	private function getSessionCacheSize($dir)
+	{
+		$size = 0;
+		if (!is_dir($dir)) {
+			return $size;
+		}
+		$skipRoot = array('.htaccess', 'web.config');
+		$handle = opendir($dir);
+		if (!$handle) {
+			return $size;
+		}
+		while (($entry = readdir($handle)) !== false) {
+			if ($entry === '.' || $entry === '..') {
+				continue;
+			}
+			$path = $dir . '/' . $entry;
+			if (is_dir($path)) {
+				$size += $this->getCacheDirSize($path);
+				continue;
+			}
+			if (!in_array($entry, $skipRoot, true) && is_file($path)) {
+				$size += round(filesize($path) / 1024, 2);
+			}
+		}
+		closedir($handle);
+		return $size;
+	}
+
 	//清空缓存
 	function cleanCache(){
+		$cacheRoot = APP_PATH . 'cache';
 		if($_POST){
-			
 			$_SESSION['terminal'] = null;
-			$cache =$this->frparam('cache_data',2);
+			$cache = $this->frparam('cache_data', 2);
+			if (!is_array($cache)) {
+				$cache = array();
+			}
 			foreach($cache as $v){
 				switch($v){
 					case 'log':
-					if(is_dir(APP_PATH.'cache/log')){
-						if($handle = opendir(APP_PATH.'cache/log')){
-			
-						  while (false !== ($file = readdir($handle))){
-							 if($file!='.' && $file!='..'){
-								
-								unlink(APP_PATH.'cache/log/'.$file);
-							 }
-						  }
-						  closedir($handle);
-						}
-					}
+					$this->clearCacheDir($cacheRoot . '/log');
 					break;
 					case 'image':
-					if(is_dir(APP_PATH.'cache/image')){
-						if($handle = opendir(APP_PATH.'cache/image')){
-			
-						  while (false !== ($file = readdir($handle))){
-							 if($file!='.' && $file!='..'){
-								
-								unlink(APP_PATH.'cache/image/'.$file);
-							 }
-						  }
-						  closedir($handle);
-						}
-					}
+					$this->clearCacheDir($cacheRoot . '/image');
 					break;
 					case 'tpl':
-					if(is_dir(APP_PATH.'cache')){
-						if($handle = opendir(APP_PATH.'cache')){
-			
-						  while (false !== ($file = readdir($handle))){
-							 if($file!='.' && $file!='..' && $file!='tmp' && $file!='log' && $file!='data'){
-								
-								unlink(APP_PATH.'cache/'.$file);
-							 }
-						  }
-						  closedir($handle);
-						}
-					}
+					$this->clearTplCache($cacheRoot);
 					break;
 					case 'login':
-					if(is_dir(APP_PATH.'cache/tmp')){
-						if($handle = opendir(APP_PATH.'cache/tmp')){
-			
-						  while (false !== ($file = readdir($handle))){
-							 if($file!='.' && $file!='..' && $file!='sess_'.$_COOKIE['PHPSESSID'] && $file!='.htaccess' && $file!='web.config'){
-								
-								unlink(APP_PATH.'cache/tmp/'.$file);
-							 }
-						  }
-						  closedir($handle);
-						}
-					}
+					$sessionId = isset($_COOKIE['PHPSESSID']) ? $_COOKIE['PHPSESSID'] : session_id();
+					$this->clearSessionCache($cacheRoot . '/tmp', $sessionId);
 					break;
 					case 'data':
 					$ip = getCache(session_id());
-					if(is_dir(APP_PATH.'cache/data')){
-						if($handle = opendir(APP_PATH.'cache/data')){
-			
-						  while (false !== ($file = readdir($handle))){
-							 if($file!='.' && $file!='..' ){
-								
-								unlink(APP_PATH.'cache/data/'.$file);
-							 }
-						  }
-						  closedir($handle);
-						}
-					}
+					$this->clearCacheDir($cacheRoot . '/data');
 					$datacache = M('cachedata')->findAll();
 					if($datacache){
 						foreach($datacache as $v){
@@ -570,101 +684,20 @@ class IndexController extends CommonController
 							setCache('jzcache_'.$v['field'],$result,$time);
 						}
 					}
-					
-					
 					setCache(session_id(),$ip);
 					break;
 					case 'pc_html':
-					
-					
 					break;
-					
-					
 				}
 			}
-			
-			
-			
 			JsonReturn(['code'=>0,'msg'=>'success']);
-			
-			
 		}
-		//计算缓存数据大小
-		$datacache = 0;
-		if(is_dir(APP_PATH.'cache/data')){
-			if($handle = opendir(APP_PATH.'cache/data')){
-			
-			  while (false !== ($file = readdir($handle))){
-				 if($file!='.' && $file!='..'){
-					
-					 $datacache+=round(filesize(APP_PATH.'cache/data/'.$file)/1024,2);
-				 }
-			  }
-			  closedir($handle);
-			}
-		}
-		//登录缓存
-		$logincache = 0;
-		if(is_dir(APP_PATH.'cache/tmp')){
-			if($handle = opendir(APP_PATH.'cache/tmp')){
-			
-			  while (false !== ($file = readdir($handle))){
-				 if($file!='.' && $file!='..' && $file!='.htaccess' && $file!='web.config'){
-					 $logincache+=round(filesize(APP_PATH.'cache/tmp/'.$file)/1024,2);
-				 }
-			  }
-			  closedir($handle);
-			}
-		}
-		//日志缓存
-		$logcache = 0;
-		if(is_dir(APP_PATH.'cache/log')){
-			if($handle = opendir(APP_PATH.'cache/log')){
-			
-			  while (false !== ($file = readdir($handle))){
-				 if($file!='.' && $file!='..'){
-					 $logcache+=round(filesize(APP_PATH.'cache/log/'.$file)/1024,2);
-				 }
-			  }
-			  closedir($handle);
-			}	
-		}
-		
-		//缩略图缓存
-		$imagecache = 0;
-		if(is_dir(APP_PATH.'cache/image')){
-			if($handle = opendir(APP_PATH.'cache/image')){
-			
-			  while (false !== ($file = readdir($handle))){
-				 if($file!='.' && $file!='..'){
-					 $imagecache+=round(filesize(APP_PATH.'cache/image/'.$file)/1024,2);
-				 }
-			  }
-			  closedir($handle);
-			}	
-		}
-		
-		//模板缓存
-		$tplcache = 0;
-		if(is_dir(APP_PATH.'cache')){
-			if($handle = opendir(APP_PATH.'cache')){
-			
-			  while (false !== ($file = readdir($handle))){
-				 if($file!='.' && $file!='..' && $file!='tmp' && $file!='log' && $file!='data'){
-					 $tplcache+=round(filesize(APP_PATH.'cache/'.$file)/1024,2);
-				 }
-			  }
-			  closedir($handle);
-			}
-		}
-		$this->datacache = $datacache;
-		$this->imagecache = $imagecache;
-		$this->logcache = $logcache;
-		$this->tplcache = $tplcache;
-		$this->logincache = $logincache;
+		$this->datacache = $this->getCacheDirSize($cacheRoot . '/data');
+		$this->logincache = $this->getSessionCacheSize($cacheRoot . '/tmp');
+		$this->logcache = $this->getCacheDirSize($cacheRoot . '/log');
+		$this->imagecache = $this->getCacheDirSize($cacheRoot . '/image');
+		$this->tplcache = $this->getTplCacheSize($cacheRoot);
 		$this->display('cache');
-		
-		
 	}
 
 	//模板标签生成

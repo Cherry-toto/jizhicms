@@ -230,11 +230,11 @@
 				  beforeSend:function(){
 					  //请求前的处理
 					  if(parseInt(type)==1){
-						  layer.msg('{fun JZLANG('正在安装中，请稍等~')}');
+						  layer.msg('{fun JZLANG('正在安装中，请稍等~')}',{icon: 16,shade: 0.3,time: 0});
 					  }else if(parseInt(type)==-1){
-						  layer.msg('{fun JZLANG('正在删除中，请稍等~')}');
+						  layer.msg('{fun JZLANG('正在删除中，请稍等~')}',{icon: 16,shade: 0.3,time: 0});
 					  }else{
-						  layer.msg('{fun JZLANG('正在卸载中，请稍等~')}');
+						  layer.msg('{fun JZLANG('正在卸载中，请稍等~')}',{icon: 16,shade: 0.3,time: 0});
 					  }
 
 				  },

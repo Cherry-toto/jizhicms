@@ -1,10 +1,10 @@
 <?php return array (
   'db' => 
   array (
-    'host' => '',
-    'dbname' => '',
-    'username' => '',
-    'password' => '',
+    'host' => '127.0.0.1',
+    'dbname' => 'www_jizhicms_mm',
+    'username' => 'root',
+    'password' => 'root',
     'prefix' => 'jz_',
     'port' => '3306',
   ),

@@ -34,6 +34,22 @@
 			}
 		}
 		.copy{ cursor:pointer;}
+		.sys-save-bar {
+			position: fixed;
+			right: 24px;
+			top: 50%;
+			transform: translateY(-50%);
+			z-index: 999;
+			padding: 0;
+			margin: 0;
+		}
+		.sys-save-bar .layui-btn {
+			min-width: 100px;
+			height: 44px;
+			line-height: 44px;
+			font-size: 15px;
+			box-shadow: 0 4px 12px rgba(255, 120, 0, 0.35);
+		}
 	</style>
 
 </head>
@@ -46,7 +62,7 @@
             </span>
 	<a class="layui-btn layui-btn-sm" style="line-height:1.6em;margin-top:3px;float:right"  href="javascript:location.replace(location.href);" title="{fun JZLANG('刷新')}"><i class="iconfont" style="line-height:30px">&#xe6aa;</i></a>
 </div>
-<form class="layui-form layui-form-pane" >
+
 	<div class="x-body">
 		<div class="layui-tab layui-tab-brief" lay-filter="docDemoTabBrief">
 			<ul class="layui-tab-title">
@@ -97,6 +113,7 @@
 			<div class="layui-tab-content" >
 				{foreach $ctype as $s}
 				<div class="layui-tab-item {if($s_n==1)}layui-show{/if}">
+					<form class="layui-form layui-form-pane" >
 					{foreach $newconfig[$s['id']] as $v}
 
 					{if($v['type']==1)}
@@ -117,6 +134,9 @@
 								<i class="layui-icon layui-icon-add-circle"></i>{fun JZLANG('上传图片')}
 							</button><input class="layui-upload-file" type="file" accept="image/*" name="file">
 						</div>
+						<div class="layui-inline">
+							<button type="button" class="layui-btn layui-btn-warm" id="{$v['field']}_gallery">{fun JZLANG('图库')}</button>
+						</div>
 						{if($v['tip'])}
 						<i data-info="{fun JZLANG($v['tip'])}" data-field="f{$v['id']}" class="layui-sys-icon layui-icon layui-icon-about f{$v['id']}"></i>
 						{/if}
@@ -132,13 +152,14 @@
 						{/if}
 
 						<div class="layui-block">
-							<img src="{$v['data']}"  id="{$v['field']}_img">
+							<img src="{$v['data']}" width="200"  id="{$v['field']}_img">
 						</div>
 
 					</div>
 					<script>
 
-						layui.use("upload", function(){
+						layui.use(["upload", "jquery"], function(){
+							var $ = layui.jquery;
 							var upload_{$v['field']} = layui.upload;
 
 							//执行实例
@@ -171,6 +192,139 @@
 									//请求异常回调
 									layer.alert("{fun JZLANG('上传异常！')}");
 								}
+							});
+
+							$("#{$v['field']}_gallery").on("click", function(){
+								var field = "{$v['field']}";
+								layer.open({
+									type: 1,
+									title: "{fun JZLANG('选择图片')}",
+									area: ["80%", "80%"],
+									content: '<div class="gallery-container" style="padding: 15px;">' +
+										'<div class="gallery-header" style="margin-bottom: 15px;">' +
+											'<div class="layui-btn-group">' +
+												'<button type="button" class="layui-btn layui-btn-sm layui-btn-primary" id="gallery_prev_'+field+'">{fun JZLANG('上一页')}</button>' +
+												'<button type="button" class="layui-btn layui-btn-sm layui-btn-primary" id="gallery_next_'+field+'">{fun JZLANG('下一页')}</button>' +
+											'</div>' +
+											'<span id="gallery_page_info_'+field+'" style="margin-left: 15px;"></span>' +
+										'</div>' +
+										'<div id="gallery_list_'+field+'" class="gallery-list" style="min-height: 400px; display: flex; flex-wrap: wrap; gap: 10px;"></div>' +
+										'<div class="gallery-footer" style="margin-top: 15px; text-align: center;">' +
+											'<button type="button" class="layui-btn" id="gallery_confirm_'+field+'">{fun JZLANG('确定')}</button>' +
+											'<button type="button" class="layui-btn layui-btn-primary" onclick="layer.closeAll();">{fun JZLANG('取消')}</button>' +
+										'</div>' +
+									'</div>',
+									success: function(){
+										var currentPage = 1;
+										var pageSize = 12;
+										var selectedImages = [];
+										var totalCount = 0;
+
+										function loadGallery(page){
+											$.ajax({
+												url: "{fun U('Sys/pictures')}",
+												type: "GET",
+												data: {ajax: 1, page: page, pageSize: pageSize},
+												dataType: "json",
+												success: function(res){
+													if(res.code == 0){
+														var html = "";
+														if(res.data.length > 0){
+															$.each(res.data, function(i, item){
+																var ext = item.filetype.split('.').pop().toLowerCase();
+																var imageExts = ["jpg", "jpeg", "png", "gif", "bmp", "webp", "svg"];
+																var isImage = imageExts.indexOf(ext) > -1;
+																var contentHtml = "";
+																if(isImage){
+																	contentHtml = '<img src="'+item.litpic+'" style="width: 100%; height: 100%; object-fit: cover;">';
+																}else{
+																	contentHtml = '<div style="width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; background: #f5f5f5; padding: 10px;">' +
+																		'<i class="layui-icon" style="font-size: 40px; color: #999;">&#xe61e;</i>' +
+																		'<span style="font-size: 12px; color: #666; margin-top: 8px; word-break: break-all; text-align: center;">'+item.fileName+'</span>' +
+																	'</div>';
+																}
+																html += '<div class="gallery-item" data-url="'+item.litpic+'" style="width: 140px; height: 140px; border: 2px solid #e6e6e6; border-radius: 4px; cursor: pointer; position: relative; overflow: hidden;">' +
+																	contentHtml +
+																	'<div class="gallery-item-info" style="position: absolute; bottom: 0; left: 0; right: 0; background: rgba(0,0,0,0.6); color: #fff; padding: 5px; font-size: 12px; display: none;">' +
+																		item.fileName+'<br>'+item.size+'kb' +
+																	'</div>' +
+																	'<div class="gallery-item-check" style="position: absolute; top: 5px; right: 5px; width: 20px; height: 20px; border-radius: 50%; border: 2px solid #fff; background: rgba(0,0,0,0.5); display: none;">' +
+																		'<i class="layui-icon" style="color: #fff; font-size: 14px; line-height: 16px;">&#xe605;</i>' +
+																	'</div>' +
+																'</div>';
+															});
+															$("#gallery_list_"+field).html(html);
+															totalCount = res.count;
+															var totalPages = Math.ceil(totalCount / pageSize);
+															$("#gallery_page_info_"+field).text("第"+page+"页 / 共"+totalPages+"页");
+
+															$("#gallery_list_"+field+" .gallery-item").hover(
+																function(){ $(this).find(".gallery-item-info").show(); },
+																function(){ $(this).find(".gallery-item-info").hide(); }
+															);
+
+															$("#gallery_list_"+field+" .gallery-item").on("click", function(){
+																var url = $(this).data("url");
+																var index = selectedImages.indexOf(url);
+																if(index > -1){
+																	selectedImages.splice(index, 1);
+																	$(this).css("border-color", "#e6e6e6");
+																	$(this).find(".gallery-item-check").hide();
+																}else{
+																	selectedImages.push(url);
+																	$(this).css("border-color", "#1E9FFF");
+																	$(this).find(".gallery-item-check").show();
+																}
+															});
+
+															$("#gallery_list_"+field+" .gallery-item").each(function(){
+																var url = $(this).data("url");
+																if(selectedImages.indexOf(url) > -1){
+																	$(this).css("border-color", "#1E9FFF");
+																	$(this).find(".gallery-item-check").show();
+																}
+															});
+														}else{
+															$("#gallery_list_"+field).html('<div style="width: 100%; text-align: center; padding: 50px; color: #999;">{fun JZLANG('暂无图片')}</div>');
+														}
+													}else{
+														layer.alert(res.msg || "{fun JZLANG('加载失败')}", {icon: 5});
+													}
+												},
+												error: function(){
+													layer.alert("{fun JZLANG('请求失败')}", {icon: 5});
+												}
+											});
+										}
+
+										$("#gallery_prev_"+field).on("click", function(){
+											if(currentPage > 1){
+												currentPage--;
+												loadGallery(currentPage);
+											}
+										});
+
+										$("#gallery_next_"+field).on("click", function(){
+											var totalPages = Math.ceil(totalCount / pageSize);
+											if(currentPage < totalPages){
+												currentPage++;
+												loadGallery(currentPage);
+											}
+										});
+
+										$("#gallery_confirm_"+field).on("click", function(){
+											if(selectedImages.length > 0){
+												$("#"+field).val(selectedImages.join(","));
+												$("#"+field+"_img").attr("src", selectedImages[0]);
+												layer.closeAll();
+											}else{
+												layer.alert("{fun JZLANG('请选择至少一张图片')}", {icon: 5});
+											}
+										});
+
+										loadGallery(currentPage);
+									}
+								});
 							});
 						});
 					</script>
@@ -257,6 +411,9 @@
 								<i class="layui-icon layui-icon-add-circle"></i>{fun JZLANG('上传文件')}
 							</button><input class="layui-upload-file" type="file" name="file">
 						</div>
+						<div class="layui-inline">
+							<button type="button" class="layui-btn layui-btn-warm" id="{$v['field']}_gallery">{fun JZLANG('图库')}</button>
+						</div>
 						{if($v['tip'])}
 						<i data-info="{$v['tip']}" data-field="f{$v['id']}" class="layui-sys-icon layui-icon layui-icon-about f{$v['id']}"></i>
 						{/if}
@@ -274,7 +431,8 @@
 					</div>
 					<script>
 
-						layui.use("upload", function(){
+						layui.use(["upload", "jquery"], function(){
+							var $ = layui.jquery;
 							var upload_{$v['field']} = layui.upload;
 
 							//执行实例
@@ -307,6 +465,138 @@
 									//请求异常回调
 									layer.alert("{fun JZLANG('上传异常！')}");
 								}
+							});
+
+							$("#{$v['field']}_gallery").on("click", function(){
+								var field = "{$v['field']}";
+								layer.open({
+									type: 1,
+									title: "{fun JZLANG('选择文件')}",
+									area: ["80%", "80%"],
+									content: '<div class="gallery-container" style="padding: 15px;">' +
+										'<div class="gallery-header" style="margin-bottom: 15px;">' +
+											'<div class="layui-btn-group">' +
+												'<button type="button" class="layui-btn layui-btn-sm layui-btn-primary" id="gallery_prev_'+field+'">{fun JZLANG('上一页')}</button>' +
+												'<button type="button" class="layui-btn layui-btn-sm layui-btn-primary" id="gallery_next_'+field+'">{fun JZLANG('下一页')}</button>' +
+											'</div>' +
+											'<span id="gallery_page_info_'+field+'" style="margin-left: 15px;"></span>' +
+										'</div>' +
+										'<div id="gallery_list_'+field+'" class="gallery-list" style="min-height: 400px; display: flex; flex-wrap: wrap; gap: 10px;"></div>' +
+										'<div class="gallery-footer" style="margin-top: 15px; text-align: center;">' +
+											'<button type="button" class="layui-btn" id="gallery_confirm_'+field+'">{fun JZLANG('确定')}</button>' +
+											'<button type="button" class="layui-btn layui-btn-primary" onclick="layer.closeAll();">{fun JZLANG('取消')}</button>' +
+										'</div>' +
+									'</div>',
+									success: function(){
+										var currentPage = 1;
+										var pageSize = 12;
+										var selectedFiles = [];
+										var totalCount = 0;
+
+										function loadGallery(page){
+											$.ajax({
+												url: "{fun U('Sys/pictures')}",
+												type: "GET",
+												data: {ajax: 1, page: page, pageSize: pageSize},
+												dataType: "json",
+												success: function(res){
+													if(res.code == 0){
+														var html = "";
+														if(res.data.length > 0){
+															$.each(res.data, function(i, item){
+																var ext = item.filetype.split('.').pop().toLowerCase();
+																var imageExts = ["jpg", "jpeg", "png", "gif", "bmp", "webp", "svg"];
+																var isImage = imageExts.indexOf(ext) > -1;
+																var contentHtml = "";
+																if(isImage){
+																	contentHtml = '<img src="'+item.litpic+'" style="width: 100%; height: 100%; object-fit: cover;">';
+																}else{
+																	contentHtml = '<div style="width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; background: #f5f5f5; padding: 10px;">' +
+																		'<i class="layui-icon" style="font-size: 40px; color: #999;">&#xe61e;</i>' +
+																		'<span style="font-size: 12px; color: #666; margin-top: 8px; word-break: break-all; text-align: center;">'+item.fileName+'</span>' +
+																	'</div>';
+																}
+																html += '<div class="gallery-item" data-url="'+item.litpic+'" style="width: 140px; height: 140px; border: 2px solid #e6e6e6; border-radius: 4px; cursor: pointer; position: relative; overflow: hidden;">' +
+																	contentHtml +
+																	'<div class="gallery-item-info" style="position: absolute; bottom: 0; left: 0; right: 0; background: rgba(0,0,0,0.6); color: #fff; padding: 5px; font-size: 12px; display: none;">' +
+																		item.fileName+'<br>'+item.size+'kb' +
+																	'</div>' +
+																	'<div class="gallery-item-check" style="position: absolute; top: 5px; right: 5px; width: 20px; height: 20px; border-radius: 50%; border: 2px solid #fff; background: rgba(0,0,0,0.5); display: none;">' +
+																		'<i class="layui-icon" style="color: #fff; font-size: 14px; line-height: 16px;">&#xe605;</i>' +
+																	'</div>' +
+																'</div>';
+															});
+															$("#gallery_list_"+field).html(html);
+															totalCount = res.count;
+															var totalPages = Math.ceil(totalCount / pageSize);
+															$("#gallery_page_info_"+field).text("第"+page+"页 / 共"+totalPages+"页");
+
+															$("#gallery_list_"+field+" .gallery-item").hover(
+																function(){ $(this).find(".gallery-item-info").show(); },
+																function(){ $(this).find(".gallery-item-info").hide(); }
+															);
+
+															$("#gallery_list_"+field+" .gallery-item").on("click", function(){
+																var url = $(this).data("url");
+																var index = selectedFiles.indexOf(url);
+																if(index > -1){
+																	selectedFiles.splice(index, 1);
+																	$(this).css("border-color", "#e6e6e6");
+																	$(this).find(".gallery-item-check").hide();
+																}else{
+																	selectedFiles.push(url);
+																	$(this).css("border-color", "#1E9FFF");
+																	$(this).find(".gallery-item-check").show();
+																}
+															});
+
+															$("#gallery_list_"+field+" .gallery-item").each(function(){
+																var url = $(this).data("url");
+																if(selectedFiles.indexOf(url) > -1){
+																	$(this).css("border-color", "#1E9FFF");
+																	$(this).find(".gallery-item-check").show();
+																}
+															});
+														}else{
+															$("#gallery_list_"+field).html('<div style="width: 100%; text-align: center; padding: 50px; color: #999;">{fun JZLANG('暂无文件')}</div>');
+														}
+													}else{
+														layer.alert(res.msg || "{fun JZLANG('加载失败')}", {icon: 5});
+													}
+												},
+												error: function(){
+													layer.alert("{fun JZLANG('请求失败')}", {icon: 5});
+												}
+											});
+										}
+
+										$("#gallery_prev_"+field).on("click", function(){
+											if(currentPage > 1){
+												currentPage--;
+												loadGallery(currentPage);
+											}
+										});
+
+										$("#gallery_next_"+field).on("click", function(){
+											var totalPages = Math.ceil(totalCount / pageSize);
+											if(currentPage < totalPages){
+												currentPage++;
+												loadGallery(currentPage);
+											}
+										});
+
+										$("#gallery_confirm_"+field).on("click", function(){
+											if(selectedFiles.length > 0){
+												$("#"+field).val(selectedFiles.join(","));
+												layer.closeAll();
+											}else{
+												layer.alert("{fun JZLANG('请选择至少一个文件')}", {icon: 5});
+											}
+										});
+
+										loadGallery(currentPage);
+									}
+								});
 							});
 						});
 					</script>
@@ -410,12 +700,19 @@
 					</div>
 					{/if}
 
-					<div style="height:100px;"></div>
+
+					<div class="layui-form-item sys-save-bar">
+						<button class="layui-btn layui-btn-warm" lay-submit="" lay-filter="*">
+							{fun JZLANG('保存')}
+						</button>
+					</div>
+					</form>
 				</div>
 
 
 				{/foreach}
 				<div class="layui-tab-item ">
+					<form class="layui-form layui-form-pane" >
 					{if($admin['gid']==1)}
 
 					<fieldset class="layui-elem-field">
@@ -498,25 +795,28 @@
 
 
 					{/if}
-					<div style="height:100px;"></div>
+
+					<div class="layui-form-item sys-save-bar">
+						<button class="layui-btn layui-btn-warm" lay-submit="" lay-filter="*">
+							{fun JZLANG('保存')}
+						</button>
+					</div>
+					</form>
+					
 				</div>
 
 
 
 
 
-				<div class="layui-form-item">
-					<button class="layui-btn" lay-submit="" lay-filter="*">
-						{fun JZLANG('保存')}
-					</button>
-				</div>
+			
 
 
 			</div>
 		</div>
 
 	</div>
-</form>
+
 
 <script>
 
@@ -537,11 +837,7 @@
 				//console.log(r);
 				var r = JSON.parse(r);
 				if(r.code==0){
-					layer.alert(r.msg, {icon: 6},function(){
-
-						window.location.reload();
-
-					});
+					layer.alert(r.msg, {icon: 6});
 
 				}else{
 					layer.alert(r.msg, {icon: 5});

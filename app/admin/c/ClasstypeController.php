@@ -50,7 +50,7 @@ class ClasstypeController extends CommonController
 
 			$htmlurl = $this->frparam('htmlurl',1);
 			if($htmlurl==''){
-				$htmlurl = str_replace(' ','',pinyin($this->frparam('classname',1)));
+				$htmlurl = str_replace(' ','-',pinyin($this->frparam('classname',1)));
 			}
 			if($this->webconf['islevelurl'] && $this->frparam('pid')!=0){
 				//层级
@@ -156,7 +156,7 @@ class ClasstypeController extends CommonController
 		if($this->frparam('go')==1){
 			$htmlurl = $this->frparam('htmlurl',1);
 			if($htmlurl==''){
-				$htmlurl = str_replace(' ','',pinyin($this->frparam('classname',1)));
+				$htmlurl = str_replace(' ','-',pinyin($this->frparam('classname',1)));
 			}
 			
 			if(in_array(strtolower($htmlurl),array('message','user','comment','home','common','order','tags','wechat','login'))){
@@ -337,7 +337,7 @@ class ClasstypeController extends CommonController
 		
 		$classname = $this->frparam('classname',1);
 		if($classname){
-			$data = pinyin($classname,'first');
+			$data = str_replace(' ','-',pinyin($classname,'first'));
 			JsonReturn(['code'=>0,'data'=>$data]);
 		}
 		
@@ -360,7 +360,7 @@ class ClasstypeController extends CommonController
                         if(strpos($v,'|')!==false){
                             $d = explode('|',$v);
                         }else{
-                            $d = [$v,pinyin($v,'first')];
+                            $d = [$v,str_replace(' ','-',pinyin($v,'first'))];
                         }
                         $w['molds'] = $molds;
                         $w['classname'] = $d[0];
@@ -417,7 +417,7 @@ class ClasstypeController extends CommonController
                         $w['molds'] = $data_0[$k];
                         $w['classname'] = $v;
                         $w['pid'] = $data_2[$k];
-                        $data_3[$k] = $data_3[$k] ? : pinyin($data_3[$k],'first');
+                        $data_3[$k] = $data_3[$k] ? : str_replace(' ','-',pinyin($data_3[$k],'first'));
                         if($this->webconf['islevelurl'] && $w['pid']!=0){
                             //层级
                             $html = $classtypetree[$w['pid']]['htmlurl'].'/'.$data_3[$k];

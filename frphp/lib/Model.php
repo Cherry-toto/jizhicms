@@ -382,17 +382,21 @@ class Model {
        if(!is_array($row))return FALSE;
 		$row = $this->__prepera_format($row);
 		if(empty($row))return FALSE;
+		$cols = [];
+		$bindCols = [];
+		$vals = [];
 		foreach($row as $key => $value){
 			if($value!==null){
 				$cols[] = $key;
-				$vals[] = '\''.$value.'\'';
+				$bindCols[] = ':'.$key;
+				$vals[$key] = $value;
 			}
 		}
 		$col = join(',', $cols);
-		$val = join(',', $vals);
+		$bindColsLine = join(',', $bindCols);
 		$table = self::$table;
-		$sql = "INSERT INTO {$table} ({$col}) VALUES ({$val})";
-		if( FALSE != $this->runSql($sql) ){
+		$sql = "INSERT INTO {$table} ({$col}) VALUES ({$bindColsLine})";
+		if( $this->db->execute($sql,$vals)){
 			if( $newinserid = $this->db->lastInsertId() ){
 				return $newinserid;
 			}else{

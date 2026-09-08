@@ -22,16 +22,68 @@ class TemplateController extends CommonController
 	private $tables = array();
 	private $handler;
 	private $config = array(
-	  'host' => 'localhost',
+	  'host' => '',
 	  'port' => 3306,
-	  'user' => 'root',
-	  'password' => 'root',
-	  'database' => 'test',
+	  'user' => '',
+	  'password' => '',
+	  'database' => '',
 	  'charset' => 'utf-8',
 	  'target' => ''
 	 );
 	private $limit = 300;//每个备份文件存储的sql条数
     private $template_name = '';//模板文件夹
+	
+	/**
+	 * 安全路径验证函数
+	 * 防止路径遍历攻击
+	 * @param string $path 待验证的路径
+	 * @param string $baseDir 允许的基础目录
+	 * @return bool
+	 */
+	private function validatePath($path, $baseDir) {
+		$realBase = realpath($baseDir);
+		$realPath = realpath($baseDir . '/' . $path);
+		return ($realPath !== false && strpos($realPath, $realBase) === 0);
+	}
+	
+	/**
+	 * 安全文件名验证
+	 * @param string $filename 文件名
+	 * @return bool
+	 */
+	private function validateFilename($filename) {
+		// 只允许字母、数字、下划线和短横线
+		return preg_match('/^[a-zA-Z0-9_-]+$/', $filename) === 1;
+	}
+	
+	/**
+	 * 远程URL验证，防止SSRF攻击
+	 * @param string $url
+	 * @return bool
+	 */
+	private function validateRemoteUrl($url) {
+		if(empty($url)){
+			return false;
+		}
+		$parsed = parse_url($url);
+		if(!isset($parsed['scheme']) || !in_array($parsed['scheme'], ['http', 'https'])){
+			return false;
+		}
+		if(!isset($parsed['host'])){
+			return false;
+		}
+		// 禁止访问内网地址
+		$host = strtolower($parsed['host']);
+		$blockedHosts = ['localhost', '127.0.0.1', '0.0.0.0', '::1'];
+		if(in_array($host, $blockedHosts)){
+			return false;
+		}
+		// 禁止IP地址直接访问
+		if(filter_var($host, FILTER_VALIDATE_IP)){
+			return false;
+		}
+		return true;
+	}
 	
 	public function index(){
 		//检查更新链接是否可以访问
@@ -286,37 +338,54 @@ class TemplateController extends CommonController
 	//安装说明
 	function desc(){
 		$filepath = $this->frparam('filepath',1);
-		if(strpos($filepath,'.')!==false){
+		if(empty($filepath)){
+			JsonReturn(array('code'=>1,'msg'=>JZLANG('参数错误,必须携带插件ID！')));
+		}
+		if(!$this->validateFilename($filepath)){
 			JsonReturn(array('code'=>1,'msg'=>JZLANG('参数存在安全隐患！')));
 		}
-		if($filepath){
-			//忽略Notice报错
-			error_reporting(E_ALL^E_NOTICE);
-			
-			//执行插件控制器卸载程序
-			$dir = APP_PATH.APP_HOME.'/exts';
-			require_once($dir.'/'.$filepath.'/PluginsController.php');
-			$plg = new \A\exts\PluginsController($this->frparam());
-			
-			$plg->desc();
-			exit;
+		$dir = APP_PATH.APP_HOME.'/exts';
+		if(!$this->validatePath($filepath, $dir)){
+			JsonReturn(array('code'=>1,'msg'=>JZLANG('参数存在安全隐患！')));
 		}
-		JsonReturn(array('code'=>1,'msg'=>JZLANG('参数错误,必须携带插件ID！')));
+		if(!file_exists($dir.'/'.$filepath.'/PluginsController.php')){
+			JsonReturn(array('code'=>1,'msg'=>JZLANG('文件不存在！')));
+		}
+		error_reporting(E_ALL^E_NOTICE);
+		require_once($dir.'/'.$filepath.'/PluginsController.php');
+		$plg = new \A\exts\PluginsController($this->frparam());
+		$plg->desc();
+		exit;
 	}
 	
 	//下载安装更新
 	function update(){
 		$template = $this->frparam('template',1);
-		if(strpos($template,'.')!==false){
+		if(empty($template)){
+			JsonReturn(array('code'=>1,'msg'=>JZLANG('参数错误,请选择对应模板！')));
+		}
+		if(!$this->validateFilename($template)){
 			JsonReturn(array('code'=>1,'msg'=>JZLANG('参数存在安全隐患！')));
 		}
         $this->template_name = $template;
 		$dir = APP_PATH.'static';
+		if(!$this->validatePath($template, $dir)){
+			JsonReturn(array('code'=>1,'msg'=>JZLANG('参数存在安全隐患！')));
+		}
 		if($template){
 			if($this->frparam('action',1)){
 				$action = $this->frparam('action',1);
+				// 验证action参数
+				$allowedActions = ['prepare-download', 'start-download', 'get-file-size', 'file-upzip', 'template-install', 'backup'];
+				if(!in_array($action, $allowedActions)){
+					JsonReturn(array('code'=>1,'msg'=>JZLANG('非法操作！')));
+				}
 				// 自己获取这些信息
 				$remote_url  = urldecode($this->frparam('download_url',1));
+				// 验证远程URL，防止SSRF攻击
+				if(!$this->validateRemoteUrl($remote_url)){
+					JsonReturn(array('code'=>1,'msg'=>JZLANG('非法下载地址！')));
+				}
 				$remote_url = strpos($remote_url,'?')!==false ? $remote_url.'&version='.$this->webconf['web_version'] : $remote_url.'?version='.$this->webconf['web_version'];
 				$file_size   = $this->frparam('filesize',1);
 				$tmp_path    = Cache_Path."/update_".$template.".zip";//临时下载文件路径
@@ -487,36 +556,54 @@ class TemplateController extends CommonController
 	function get_zip_originalsize($filename, $path) {
 	  //先判断待解压的文件是否存在
 	  if(!file_exists($filename)){
-		 //die("文件 $filename 不存在！");
 		 JsonReturn(['code'=>1,'msg'=>$filename.JZLANG('文件不存在！')]);
+	  }
+	  // 获取真实路径，防止路径遍历
+	  $realPath = realpath($path);
+	  if($realPath === false){
+		 JsonReturn(['code'=>1,'msg'=>JZLANG('解压目标路径不存在！')]);
 	  }
 	  $starttime = explode(' ',microtime()); //解压开始的时间
 
-	  //将文件名和路径转成windows系统默认的gb2312编码，否则将会读取不到
-	  //$filename = iconv("utf-8","gb2312",$filename);
-	  //$path = iconv("utf-8","gb2312",$path);
 	  //打开压缩包
 	  $resource = zip_open($filename);
-	  $i = 1;
+	  if($resource === false){
+		 JsonReturn(['code'=>1,'msg'=>JZLANG('无法打开压缩包！')]);
+	  }
 	  //遍历读取压缩包里面的一个个文件
 	  while ($dir_resource = zip_read($resource)) {
 		//如果能打开则继续
 		if (zip_entry_open($resource,$dir_resource)) {
 		  //获取当前项目的名称,即压缩包里面当前对应的文件名
-		  $file_name = $path.zip_entry_name($dir_resource);
+		  $entryName = zip_entry_name($dir_resource);
+		  // 安全检查：防止路径遍历攻击
+		  $entryName = str_replace(['../', '..\\'], '', $entryName);
+		  // 获取规范化路径
+		  $file_name = $realPath . '/' . $entryName;
+		  $file_name = realpath(dirname($file_name)) . '/' . basename($file_name);
+		  // 验证路径是否在允许范围内
+		  if(strpos($file_name, $realPath) !== 0){
+			zip_entry_close($dir_resource);
+			continue;
+		  }
 		  //以最后一个“/”分割,再用字符串截取出路径部分
-		  $file_path = substr($file_name,0,strrpos($file_name, "/"));
+		  $file_path = dirname($file_name);
 		  //如果路径不存在，则创建一个目录，true表示可以创建多级目录
 		  if(!is_dir($file_path)){
-			mkdir($file_path,0777,true);
+			mkdir($file_path,0755,true);
 		  }
 		  //如果不是目录，则写入文件
 		  if(!is_dir($file_name)){
 			//读取这个文件
 			$file_size = zip_entry_filesize($dir_resource);
 			//最大读取6M，如果文件过大，跳过解压，继续下一个
+			if($file_size > 6 * 1024 * 1024){
+				zip_entry_close($dir_resource);
+				continue;
+			}
 			$file_content = zip_entry_read($dir_resource,$file_size);
 			file_put_contents($file_name,$file_content);
+			chmod($file_name, 0644);
 		  }
 		  //关闭当前
 		  zip_entry_close($dir_resource);
@@ -656,7 +743,8 @@ class TemplateController extends CommonController
 		if($v==='' || $v===null){
 		  $dataSql .= " NULL,";
 		}else{
-		  $dataSql .= "'{$v}',";
+		  // 使用PDO转义防止SQL注入
+		  $dataSql .= "'" . $this->handler->quote($v) . "',";
 		}
 		
 	   }

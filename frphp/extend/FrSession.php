@@ -3,7 +3,7 @@
 /**
  * ************
  * FrSession类  重写session机制
- * 将session存到redis数据库中
+ * 将session分目录存储到文件系统中
  * ************
  */
  
@@ -14,8 +14,10 @@ class FrSession implements SessionHandlerInterface
     private $save_handle = '';
     private $prefix = 'frses_';//前缀
     private $expire = null;
-	private $save_path = 'cache/tmp';//存储目录
+	private $save_path = 'cache/tmp';//存储根目录
 	private $life_time = 1800;//过期时间，单位s  -1表示不过期
+	private $dir_count = 64;//分目录数量
+	private $max_files = 500;//每目录最大session文件数，超出后清理最旧的
     private $config = array(
 			
     );
@@ -24,8 +26,18 @@ class FrSession implements SessionHandlerInterface
     {
 
         if (!empty($config)){
-			$this->save_path = $config['save_path'];
-			$this->life_time = $config['life_time'];
+			if (isset($config['save_path'])) {
+				$this->save_path = $config['save_path'];
+			}
+			if (isset($config['life_time'])) {
+				$this->life_time = $config['life_time'];
+			}
+			if (isset($config['dir_count'])) {
+				$this->dir_count = max(1, (int)$config['dir_count']);
+			}
+			if (isset($config['max_files'])) {
+				$this->max_files = max(1, (int)$config['max_files']);
+			}
 		} 
 
         
@@ -39,6 +51,55 @@ class FrSession implements SessionHandlerInterface
         return true;
     }
 
+	private function sanitizeId($id)
+	{
+		return str_replace(['..', '/', '\\'], '', $id);
+	}
+
+	private function getSubDirName($session_id)
+	{
+		$index = crc32($session_id) % $this->dir_count;
+		$pad = max(2, strlen((string)($this->dir_count - 1)));
+		return str_pad((string)$index, $pad, '0', STR_PAD_LEFT);
+	}
+
+	private function getSessionDir($session_id)
+	{
+		$dir = $this->save_path . '/' . $this->getSubDirName($session_id);
+		if (!is_dir($dir)) {
+			$this->checkmkdirs($dir);
+		}
+		return $dir;
+	}
+
+	private function getSessionFile($session_id)
+	{
+		$session_id = $this->sanitizeId($session_id);
+		return $this->getSessionDir($session_id) . '/' . $this->prefix . $session_id . '.php';
+	}
+
+	private function cleanDirIfNeeded($dir)
+	{
+		if (!is_dir($dir) || !is_readable($dir)) {
+			return;
+		}
+		$files = glob($dir . '/' . $this->prefix . '*.php');
+		if ($files === false || count($files) <= $this->max_files) {
+			return;
+		}
+		$fileStats = array();
+		foreach ($files as $file) {
+			$fileStats[] = array('path' => $file, 'mtime' => @filemtime($file));
+		}
+		usort($fileStats, function ($a, $b) {
+			return $a['mtime'] - $b['mtime'];
+		});
+		$toDelete = count($files) - $this->max_files;
+		for ($i = 0; $i < $toDelete; $i++) {
+			@unlink($fileStats[$i]['path']);
+		}
+	}
+
     /**
      * 当session_start()函数被调用的时候该函数被触发
      *
@@ -47,7 +108,9 @@ class FrSession implements SessionHandlerInterface
     #[\ReturnTypeWillChange]
     public function open($save_path, $name)
     {
-      
+		if (!is_dir($this->save_path)) {
+			$this->checkmkdirs($this->save_path);
+		}
         return true;
 
     }
@@ -76,11 +139,7 @@ class FrSession implements SessionHandlerInterface
     #[\ReturnTypeWillChange]
     public function read($id)
     {	
-        if(!is_dir($this->save_path)){
-			$this->checkmkdirs($this->save_path);
-		}
-		$session_id = str_replace(['..','/','\\'],'',$id);
-        $sfile = $this->save_path.'/'.$this->prefix.$session_id.'.php';
+        $sfile = $this->getSessionFile($id);
         $res = $this->sesstime($sfile);
 		if($res){
 			return $res;
@@ -100,19 +159,18 @@ class FrSession implements SessionHandlerInterface
     #[\ReturnTypeWillChange]
     public function write($id, $data)
     {
-		$session_id = str_replace(['..','/','\\'],'',$id);
-        if(!is_dir($this->save_path)){
-			$this->checkmkdirs($this->save_path);
-		}
-        if( !is_readable($this->save_path) ){
+		$session_id = $this->sanitizeId($id);
+        $dir = $this->getSessionDir($session_id);
+        if( !is_readable($dir) ){
             return false;
         }
-        $sfile = $this->save_path.'/'.$this->prefix.$session_id.'.php';
+        $sfile = $dir . '/' . $this->prefix . $session_id . '.php';
 		$life_time = ( -1 == $this->life_time ) ? '300000000' : $this->life_time;
 		
 		$value = '<?php die();?>'.( time() + $life_time ).serialize($data);
 		$res = file_put_contents($sfile, $value);
 		if($res){
+			$this->cleanDirIfNeeded($dir);
 			return true;
 		}else{
 			return false;
@@ -128,7 +186,7 @@ class FrSession implements SessionHandlerInterface
     #[\ReturnTypeWillChange]
     public function destroy($id)
     {
-		$sfile = $this->save_path.'/'.$this->prefix.$id.'.php';
+		$sfile = $this->getSessionFile($id);
 		if(file_exists($sfile)){
 			return @unlink($sfile);
 		}
@@ -145,14 +203,42 @@ class FrSession implements SessionHandlerInterface
     #[\ReturnTypeWillChange]
     public function gc($maxlifetime)
     {
-        
-		$dirName=@opendir($this->save_path);
-		while(($file = @readdir($dirName)) !== false){
-			if($file!='.' && $file!='..'){
-				$this->sesstime($this->save_path.'/'.$file);
-			}
+		if (!is_dir($this->save_path)) {
+			return 0;
 		}
-		closedir($dirName);
+		$deleted = 0;
+		$dirs = @scandir($this->save_path);
+		if ($dirs === false) {
+			return 0;
+		}
+		foreach ($dirs as $entry) {
+			if ($entry === '.' || $entry === '..') {
+				continue;
+			}
+			$dir = $this->save_path . '/' . $entry;
+			if (!is_dir($dir)) {
+				if (strpos($entry, $this->prefix) === 0) {
+					if (!$this->sesstime($dir)) {
+						$deleted++;
+					}
+				}
+				continue;
+			}
+			$dirHandle = @opendir($dir);
+			if ($dirHandle === false) {
+				continue;
+			}
+			while (($file = @readdir($dirHandle)) !== false) {
+				if ($file != '.' && $file != '..') {
+					if (!$this->sesstime($dir . '/' . $file)) {
+						$deleted++;
+					}
+				}
+			}
+			closedir($dirHandle);
+			$this->cleanDirIfNeeded($dir);
+		}
+		return $deleted;
 
     }
 	private function sesstime($sfile){
@@ -167,13 +253,6 @@ class FrSession implements SessionHandlerInterface
 		return unserialize(substr($arg_data, 24));
 	}
 }
-
-
-
-
-
-
-
 
 
 

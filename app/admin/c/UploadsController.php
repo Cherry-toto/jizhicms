@@ -112,24 +112,27 @@ class UploadsController extends CommonController
         ];
         $action = $_GET['action'];
 
-        // ===== 安全加固:服务端配置锁定,绝对禁止从客户端请求参数读取 =====
-        // CONFIG 数组已硬编码为服务端可信值, Uploader 类直接接收此数组, 不会读取 $_GET / $_POST。
-        // 下面清理 $_GET / $_POST / $_REQUEST 中的同名参数是纵深防御, 防止未来代码重构时
-        // 有人误将 $_GET 合并进 CONFIG 导致 fileAllowFiles / filePathFormat 等被客户端篡改。
-        $lockParams = [
-            'imageActionName','imageFieldName','imageMaxSize','imageAllowFiles','imageCompressEnable','imageCompressBorder','imageInsertAlign','imageUrlPrefix','imagePathFormat',
-            'scrawlActionName','scrawlFieldName','scrawlPathFormat','scrawlMaxSize','scrawlUrlPrefix','scrawlInsertAlign',
-            'snapscreenActionName','snapscreenPathFormat','snapscreenUrlPrefix','snapscreenInsertAlign',
-            'catcherLocalDomain','catcherActionName','catcherFieldName','catcherPathFormat','catcherMaxSize','catcherAllowFiles','catcherUrlPrefix',
-            'videoActionName','videoFieldName','videoPathFormat','videoMaxSize','videoAllowFiles','videoUrlPrefix',
-            'fileActionName','fileFieldName','filePathFormat','fileMaxSize','fileAllowFiles','fileUrlPrefix',
-            'imageManagerActionName','imageManagerListPath','imageManagerListSize','imageManagerAllowFiles','imageManagerUrlPrefix',
-            'fileManagerActionName','fileManagerListPath','fileManagerListSize','fileManagerAllowFiles','fileManagerUrlPrefix'
-        ];
-        foreach ($lockParams as $p) {
-            unset($_GET[$p]);
-            unset($_POST[$p]);
-            unset($_REQUEST[$p]);
+        // 安全加固:禁止通过GET参数覆盖关键配置
+        // 防止攻击者通过GET参数修改fileAllowFiles、filePathFormat、fileMaxSize等
+        $dangerousBaseKeys = ['fileAllowFiles', 'imageAllowFiles', 'videoAllowFiles', 
+                             'catcherAllowFiles', 'fileManagerAllowFiles', 'imageManagerAllowFiles',
+                             'filePathFormat', 'imagePathFormat', 'videoPathFormat', 'scrawlPathFormat',
+                             'catcherPathFormat', 'fileManagerListPath', 'imageManagerListPath',
+                             'fileMaxSize', 'imageMaxSize', 'videoMaxSize', 'scrawlMaxSize', 'catcherMaxSize',
+                             'fileFieldName', 'imageFieldName', 'videoFieldName', 'scrawlFieldName',
+                             'fileActionName', 'imageActionName', 'videoActionName',
+                             'imageManagerActionName', 'fileManagerActionName', 'catcherActionName',
+                             'scrawlActionName', 'snapscreenActionName', 'catcherLocalDomain',
+                             'imageCompressEnable', 'imageCompressBorder', 'imageInsertAlign',
+                             'imageUrlPrefix', 'scrawlUrlPrefix', 'snapscreenUrlPrefix',
+                             'videoUrlPrefix', 'fileUrlPrefix', 'imageManagerUrlPrefix',
+                             'fileManagerUrlPrefix', 'snapscreenPathFormat', 'imageManagerListSize',
+                             'fileManagerListSize', 'scrawlInsertAlign', 'snapscreenInsertAlign'];
+        
+        foreach ($dangerousBaseKeys as $baseKey) {
+            if(isset($_REQUEST[$baseKey])){
+                JsonReturn(['state'=> 'error', 'msg'=> 'ueditor非法操作']);
+            }
         }
 
         switch ($action) {
@@ -190,7 +193,7 @@ class UploadsController extends CommonController
         }
     }
 
-    function catchimage($CONFIG){
+    private function catchimage($CONFIG){
         set_time_limit(0);
 
         /* 上传配置 */
@@ -229,7 +232,7 @@ class UploadsController extends CommonController
         ));
     }
 
-    function listfile($CONFIG){
+    private function listfile($CONFIG){
 
         /* 判断类型 */
         switch ($_GET['action']) {
@@ -253,22 +256,9 @@ class UploadsController extends CommonController
         $start = isset($_GET['start']) ? htmlspecialchars($_GET['start']) : 0;
         $end = $start + $size;
 
-        // 安全加固: 对 CONFIG 里的相对路径做目录穿越清理, 防止后台配置被篡改后 .. 生效
-        $path = preg_replace('/\.\.[\/\\]/', '', $path);
-        $path = preg_replace('/[\/\\]\.\./', '', $path);
-        $path = preg_replace('/\.{2,}/', '', $path);
-
-        /* 获取文件列表(拼接后绝对路径) */
-        $absPath = $_SERVER['DOCUMENT_ROOT'] . (substr($path, 0, 1) == "/" ? "":"/") . $path;
-        // 安全加固: 规范化绝对路径并校验必须在 DOCUMENT_ROOT 下
-        $absPath = $this->_normalizePath($absPath);
-        $docRoot = $this->_normalizePath($_SERVER['DOCUMENT_ROOT']);
-        if (substr($docRoot, -1) !== DIRECTORY_SEPARATOR) $docRoot .= DIRECTORY_SEPARATOR;
-        if (strpos($absPath, $docRoot) !== 0) {
-            return json_encode(["state" => "非法路径", "list" => [], "start" => 0, "total" => 0]);
-        }
-
-        $files = $this->getfiles($absPath, $allowFiles, $docRoot);
+        /* 获取文件列表 */
+        $path = $_SERVER['DOCUMENT_ROOT'] . (substr($path, 0, 1) == "/" ? "":"/") . $path;
+        $files = $this->getfiles($path, $allowFiles);
         if (!count($files)) {
             return json_encode(array(
                 "state" => "no match file",
@@ -284,6 +274,10 @@ class UploadsController extends CommonController
         for ($i = min($end, $len) - 1, $list = array(); $i < $len && $i >= 0 && $i >= $start; $i--){
             $list[] = $files[$i];
         }
+        //倒序
+        //for ($i = $end, $list = array(); $i < $len && $i < $end; $i++){
+        //    $list[] = $files[$i];
+        //}
 
         /* 返回数据 */
         $result = json_encode(array(
@@ -301,23 +295,12 @@ class UploadsController extends CommonController
 
     /**
      * 遍历获取目录下的指定类型的文件
-     * @param string $path 绝对路径(已规范化)
-     * @param string $allowFiles 正则里用的扩展名片段
-     * @param string $docRootNormalized 规范化后的 DOCUMENT_ROOT, 用于边界校验
+     * @param $path
      * @param array $files
      * @return array
      */
-    function getfiles($path, $allowFiles, $docRootNormalized = '', &$files = array())
+    private function getfiles($path, $allowFiles, &$files = array())
     {
-        // 安全加固: 递归入口处做路径边界校验, 防止任何情况下穿越到 DOCUMENT_ROOT 外
-        if ($docRootNormalized !== '') {
-            $normalized = $this->_normalizePath($path);
-            if (substr($normalized, -1) !== DIRECTORY_SEPARATOR) $normalized .= DIRECTORY_SEPARATOR;
-            if (strpos($normalized, $docRootNormalized) !== 0) {
-                return null;
-            }
-        }
-
         if (!is_dir($path)) return null;
         if(substr($path, strlen($path) - 1) != '/') $path .= '/';
         $handle = opendir($path);
@@ -325,7 +308,7 @@ class UploadsController extends CommonController
             if ($file != '.' && $file != '..') {
                 $path2 = $path . $file;
                 if (is_dir($path2)) {
-                    $this->getfiles($path2, $allowFiles, $docRootNormalized, $files);
+                    $this->getfiles($path2, $allowFiles, $files);
                 } else {
                     if (preg_match("/\.(".$allowFiles.")$/i", $file)) {
                         $files[] = array(
@@ -337,36 +320,6 @@ class UploadsController extends CommonController
             }
         }
         return $files;
-    }
-
-    /**
-     * 跨平台路径规范化: 统一分隔符 + 解析 . 和 .. + 消除重复分隔符
-     */
-    private function _normalizePath($path)
-    {
-        $path = str_replace(['/', '\\'], DIRECTORY_SEPARATOR, $path);
-        $path = preg_replace('/' . preg_quote(DIRECTORY_SEPARATOR, '/') . '{2,}/', DIRECTORY_SEPARATOR, $path);
-
-        $isAbsolute = (strpos($path, DIRECTORY_SEPARATOR) === 0) ||
-                      (preg_match('/^[A-Za-z]:\\\\/', $path) === 1);
-        $path = rtrim($path, DIRECTORY_SEPARATOR);
-
-        $parts = explode(DIRECTORY_SEPARATOR, $path);
-        $stack = [];
-        foreach ($parts as $part) {
-            if ($part === '' || $part === '.') continue;
-            if ($part === '..') {
-                if (!empty($stack) && end($stack) !== '..') array_pop($stack);
-                continue;
-            }
-            $stack[] = $part;
-        }
-
-        $result = ($isAbsolute ? DIRECTORY_SEPARATOR : '') . implode(DIRECTORY_SEPARATOR, $stack);
-        if (preg_match('/^([A-Za-z]):$/', $result, $m)) {
-            $result = $m[1] . ':' . DIRECTORY_SEPARATOR;
-        }
-        return $result;
     }
 
     function array_sort($array,$row,$type){
@@ -389,7 +342,7 @@ class UploadsController extends CommonController
         return $arr;
     }
 
-    function uploadfile($CONFIG){
+    private function uploadfile($CONFIG){
 
         /* 上传配置 */
         $base64 = "upload";

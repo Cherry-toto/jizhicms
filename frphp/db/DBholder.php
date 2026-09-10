@@ -27,15 +27,18 @@ class DBholder{
 	private function __construct(){
 		class_exists('PDO') or exit("not found PDO");
 		try{
-			$this->pdo = new PDO("mysql:host=".DB_HOST.";port=".DB_PORT.";dbname=".DB_NAME,DB_USER, DB_PASS); 
+			$dsn = "mysql:host=".DB_HOST.";dbname=".DB_NAME.";port=".DB_PORT.";charset=utf8mb4";
+			$pdo_options = [
+				PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION, // 异常模式
+				PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC, // 默认返回关联数组
+				PDO::ATTR_EMULATE_PREPARES => false, // 关闭模拟预处理，使用mysql原生预处理
+			];
+			$this->pdo = new PDO($dsn, DB_USER, DB_PASS, $pdo_options);
 		}catch(PDOException $e){
 			//数据库无法链接，如果您是第一次使用，请先配置数据库！
 			exit('<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />数据库无法链接，如果您是第一次使用，请先执行<a href="/install/">安装程序</a><br /><br /><a href="http://jizhicms.com" target="_blank">极致CMS建站程序 jizhicms.com</a>');
 		}
-		
-
 		ini_set("memory_limit","800M");
-		$this->pdo->exec("SET NAMES utf8mb4");
 	}
 	
 	public static function getInstance(){
@@ -46,37 +49,30 @@ class DBholder{
 	}
 	
 	//执行 SQL 语句，返回PDOStatement对象,可以理解为结果集
-	public function query($sql){
+	public function query($sql,$bindParams=array()){
         if(!isset($_SESSION['admin'])){
             if( (stripos($sql,DB_PREFIX.'level')!==false || stripos($sql,DB_PREFIX.'level_group')!==false) && (stripos($sql,'insert')!==false ||  stripos($sql,'update')!==false || stripos($sql,'delete')!==false)){
                 return false;
             }
         }
-		$this->arrSql[] = $sql;
-        $this->Statement = $this->pdo->query($sql);
-        if ($this->Statement) {
-			return $this;
-        }else{
-			$msg = $this->pdo->errorInfo();
-			if($msg[2]){
-				//Error_msg('数据库错误：' . $msg[2] . end($this->arrSql));
-				$log_name = date('Y-m-d-H-i-s-').time();
-				register_log('数据库错误：' . $msg[2] . end($this->arrSql),$log_name);
-				exit;
-			}
+		try{
+			$Statement = $this->pdo->prepare($sql);
+			$Statement->execute($bindParams);
+			return  $Statement->fetchAll();
+		}catch(PDOException $e){
+			$log_name = date('Y-m-d-H-i-s-').time();
+			register_log('数据库错误：' . $e->getMessage() . $sql,$log_name);
+			exit;
 		}
+		
 	}
 	
 	
 	//执行SQL语句返回数组
-	public function getArray($sql){
-		if(!$result = $this->query($sql))return array();
-		if(!$this->Statement->rowCount())return array();
-		$rows = array();
-		while($rows[] = $this->Statement->fetch(PDO::FETCH_ASSOC)){}
-		$this->Statement=null;
-		array_pop($rows);
-		return $rows;
+	public function getArray($sql,$bindParams=array()){
+		if(!$sql)return array();
+		if(!$result = $this->query($sql,$bindParams))return array();
+		return $result;
 	}
 	
 	//执行一条 SQL 语句，并返回受影响的行数
@@ -108,14 +104,25 @@ class DBholder{
 	//获取表信息
 	public function getTable($table){
 		$table = str_replace('`', '', $table);
+		// 仅允许字母、数字、下划线，防止SQL注入
+		if(!preg_match('/^[a-zA-Z0-9_]+$/', $table)){
+			return false;
+		}
 		$stmt = $this->pdo->prepare("DESC `{$table}`");  
-		return $stmt;
+		$stmt->execute();
+		return $stmt->fetchAll();
 	}
 	
 	public function execute($sql,$bindParams){
-		$stmt = $this->pdo->prepare($sql);
-		$result = $stmt->execute($bindParams);
-		return $result;
+		try{
+			$stmt = $this->pdo->prepare($sql);
+			$stmt->execute($bindParams);
+		}catch(PDOException $e){
+			$log_name = date('Y-m-d-H-i-s-').time();
+			register_log('数据库错误：' . $e->getMessage() . $sql,$log_name);
+			exit;
+		}
+		return $stmt->rowCount();
 	}
 	
 	

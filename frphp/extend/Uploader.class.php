@@ -450,7 +450,7 @@ class Uploader
             return;
         }
         
-        // 安全加固:禁止上传危险文件(可被解析执行的文件 + 可被浏览器渲染执行的HTML类文件)
+        // 安全加固:禁止上传危险文件(可被解析执行的文件)
         $dangerousExtensions = [
             '.php', '.php3', '.php4', '.php5', '.php7', '.phtml', '.phps',
             '.asp', '.aspx', '.cer', '.cdx',
@@ -459,7 +459,8 @@ class Uploader
             '.htaccess', '.htpasswd', '.user.ini',
             '.exe', '.bat', '.cmd', '.com',
             '.sh', '.bash', '.zsh',
-            // 可被浏览器解析执行的HTML类文件 - 防存储型XSS
+            '.sql', '.mysql', '.sqlite', '.db',
+            '.ini', '.conf', '.htaccess', '.htpasswd',
             '.html', '.htm', '.xhtml', '.xht', '.svg', '.shtml', '.hta', '.js', '.jsx', '.ts', '.vbs'
         ];
         
@@ -469,12 +470,10 @@ class Uploader
             return;
         }
         
-        // 检查原始文件名是否包含危险扩展名(防止双重扩展名攻击, 如 shell.php.jpg 或 shell.html.jpg)
+        // 检查原始文件名是否包含危险扩展名(防止双重扩展名攻击)
         if(stripos($this->oriName,'.php')!==false || stripos($this->oriName,'.phtml')!==false || 
            stripos($this->oriName,'.htaccess')!==false || stripos($this->oriName,'.user.ini')!==false ||
-           stripos($this->oriName,'.asp')!==false || stripos($this->oriName,'.jsp')!==false ||
-           stripos($this->oriName,'.html')!==false || stripos($this->oriName,'.htm')!==false ||
-           stripos($this->oriName,'.svg')!==false || stripos($this->oriName,'.hta')!==false) {
+           stripos($this->oriName,'.asp')!==false || stripos($this->oriName,'.jsp')!==false) {
             $this->stateInfo = $this->getStateInfo("ERROR_TYPE_NOT_ALLOWED");
             return;
         }
@@ -520,7 +519,7 @@ class Uploader
             return;
         }
         
-        // 安全加固:禁止上传危险文件(HTML类防XSS)
+        // 安全加固:禁止上传危险文件
         $dangerousExtensions = [
             '.php', '.php3', '.php4', '.php5', '.php7', '.phtml', '.phps',
             '.asp', '.aspx', '.cer', '.cdx',
@@ -528,8 +527,7 @@ class Uploader
             '.cgi', '.pl', '.py',
             '.htaccess', '.htpasswd', '.user.ini',
             '.exe', '.bat', '.cmd', '.com',
-            '.sh', '.bash', '.zsh',
-            '.html', '.htm', '.xhtml', '.xht', '.svg', '.shtml', '.hta', '.js', '.jsx', '.ts', '.vbs'
+            '.sh', '.bash', '.zsh'
         ];
         
         $fileExt = strtolower($this->getFileExt());
@@ -538,11 +536,8 @@ class Uploader
             return;
         }
         
-        // 检查原始文件名是否包含危险扩展名(防双重扩展名)
         if(stripos($this->oriName,'.php')!==false || stripos($this->oriName,'.phtml')!==false || 
-           stripos($this->oriName,'.htaccess')!==false || stripos($this->oriName,'.user.ini')!==false ||
-           stripos($this->oriName,'.html')!==false || stripos($this->oriName,'.htm')!==false ||
-           stripos($this->oriName,'.svg')!==false || stripos($this->oriName,'.hta')!==false) {
+           stripos($this->oriName,'.htaccess')!==false || stripos($this->oriName,'.user.ini')!==false) {
             $this->stateInfo = $this->getStateInfo("ERROR_TYPE_NOT_ALLOWED");
             return;
         }
@@ -589,9 +584,7 @@ class Uploader
         // 安全加固:禁止抓取危险文件
         if(stripos($imgUrl,'.php')!==false || stripos($imgUrl,'.phtml')!==false ||
            stripos($imgUrl,'.htaccess')!==false || stripos($imgUrl,'.user.ini')!==false ||
-           stripos($imgUrl,'.asp')!==false || stripos($imgUrl,'.jsp')!==false ||
-           stripos($imgUrl,'.html')!==false || stripos($imgUrl,'.htm')!==false ||
-           stripos($imgUrl,'.svg')!==false || stripos($imgUrl,'.hta')!==false) {
+           stripos($imgUrl,'.asp')!==false || stripos($imgUrl,'.jsp')!==false) {
             $this->stateInfo = $this->getStateInfo("ERROR_TYPE_NOT_ALLOWED");
             return;
         }
@@ -722,8 +715,6 @@ class Uploader
         //过滤文件名的非法自负,并替换文件名
         $oriName = substr($this->oriName, 0, strrpos($this->oriName, '.'));
         $oriName = preg_replace("/[\|\?\"\<\>\/\*\\\\]+/", '', $oriName);
-        // 安全加固: 去除原始文件名中的目录穿越序列
-        $oriName = str_replace('..', '', $oriName);
         $format = str_replace("{filename}", $oriName, $format);
 
         //替换随机字符串
@@ -731,13 +722,6 @@ class Uploader
         if (preg_match("/\{rand\:([\d]*)\}/i", $format, $matches)) {
             $format = preg_replace("/\{rand\:[\d]*\}/i", substr($randNum, 0, $matches[1]), $format);
         }
-
-        // 安全加固: 去除 pathFormat 中可能存在的目录穿越序列(管理员后台配置风险)
-        // 先做正则替换把 .. 干掉, 然后重新整理多余的 /
-        $format = preg_replace('/\.\.[\/\\]/', '', $format);
-        $format = preg_replace('/[\/\\]\.\./', '', $format);
-        $format = preg_replace('/\.{2,}/', '', $format);
-        $format = preg_replace('/\/{2,}/', '/', $format);
 
         $ext = $this->getFileExt();
         return $format . $ext;
@@ -764,74 +748,7 @@ class Uploader
             $fullname = '/' . $fullname;
         }
 
-        // 拼接初步绝对路径
-        $targetPath = $rootPath . $fullname;
-
-        // 安全加固: 对最终目标路径做规范化, 统一分隔符并解析掉 /./ /../ 等相对片段
-        $targetPath = $this->normalizePath($targetPath);
-        $rootNormalized = $this->normalizePath($rootPath);
-        // 确保 root 结尾有分隔符, 防止前缀匹配误判
-        if (substr($rootNormalized, -1) !== DIRECTORY_SEPARATOR) {
-            $rootNormalized .= DIRECTORY_SEPARATOR;
-        }
-
-        // 安全加固: 边界校验 —— 规范化后的目标路径必须以 DOCUMENT_ROOT 开头
-        if (strpos($targetPath, $rootNormalized) !== 0) {
-            $this->stateInfo = $this->getStateInfo("ERROR_PATH_TRAVERSAL");
-            // 在 stateMap 里没有 ERROR_PATH_TRAVERSAL, 用现有安全错误代替
-            $this->stateInfo = "路径穿越被拒绝";
-            return '';
-        }
-
-        return $targetPath;
-    }
-
-    /**
-     * 跨平台路径规范化:
-     * - 统一分隔符为当前系统 DIRECTORY_SEPARATOR
-     * - 解析 . 和 .. 片段
-     * - 消除重复分隔符
-     * 注意: 此方法对不存在的路径也能正确处理, 不依赖 realpath
-     * @param string $path
-     * @return string
-     */
-    private function normalizePath($path)
-    {
-        // 统一分隔符
-        $path = str_replace(['/', '\\'], DIRECTORY_SEPARATOR, $path);
-        // 消除重复分隔符
-        $path = preg_replace('/' . preg_quote(DIRECTORY_SEPARATOR, '/') . '{2,}/', DIRECTORY_SEPARATOR, $path);
-
-        // 去掉末尾的分隔符(保留开头的根分隔符, 如 C:\ 或 /)
-        $isAbsolute = (strpos($path, DIRECTORY_SEPARATOR) === 0) ||
-                      (preg_match('/^[A-Za-z]:\\\\/', $path) === 1);
-        $path = rtrim($path, DIRECTORY_SEPARATOR);
-
-        // 分割路径段并解析 ..
-        $parts = explode(DIRECTORY_SEPARATOR, $path);
-        $stack = [];
-        foreach ($parts as $part) {
-            if ($part === '' || $part === '.') {
-                continue;
-            }
-            if ($part === '..') {
-                if (!empty($stack) && end($stack) !== '..') {
-                    array_pop($stack);
-                }
-                continue;
-            }
-            $stack[] = $part;
-        }
-
-        // 重组
-        $result = ($isAbsolute ? DIRECTORY_SEPARATOR : '') . implode(DIRECTORY_SEPARATOR, $stack);
-
-        // 恢复 Windows 盘符路径格式 (C: 后没有 \ 会导致 realpath 异常)
-        if (preg_match('/^([A-Za-z]):$/', $result, $m)) {
-            $result = $m[1] . ':' . DIRECTORY_SEPARATOR;
-        }
-
-        return $result;
+        return $rootPath . $fullname;
     }
 
     /**

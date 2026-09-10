@@ -45,16 +45,17 @@ class Model {
 	//查询数据条数
 	public function getCount($conditions=null){
 		$where = '';
+		$bindParams = array();
 		if(is_array($conditions)){
 			$conditions = $this->__prepera_format($conditions);
 			$join = array();
 			foreach( $conditions as $key => $value ){
                 if(is_array($value)){
-                    $va =  '\''.$value[1].'\'';
-                    $join[] = "{$key} ".$value[0]." {$va}";
+                    $join[] = "{$key} ".$value[0]." ?";
+                    $bindParams[] = $value[1];
                 }else{
-                    $value =  '\''.$value.'\'';
-                    $join[] = "{$key} = {$value}";
+                    $join[] = "{$key} = ?";
+                    $bindParams[] = $value;
                 }
 			}
 			if(count($join)){
@@ -66,7 +67,7 @@ class Model {
 		}
 		$table = self::$table;
 		$sql = "SELECT count(*) as Frcount FROM {$table} {$where}";
-        $result = $this->db->getArray($sql);
+        $result = $this->db->getArray($sql,$bindParams);
 		return $result[0]['Frcount'];
 		
 	}
@@ -74,16 +75,17 @@ class Model {
 	//递增数据
 	public function goInc($conditions,$field,$vp=1){
 		$where = "";
+		$bindParams = array();
 		if(is_array($conditions)){
 			$conditions = $this->__prepera_format($conditions);
 			$join = array();
 			foreach( $conditions as $key => $value ){
                 if(is_array($value)){
-                    $va =  '\''.$value[1].'\'';
-                    $join[] = "{$key} ".$value[0]." {$va}";
+                    $join[] = "{$key} ".$value[0]." ?";
+                    $bindParams[] = $value[1];
                 }else{
-                    $value =  '\''.$value.'\'';
-                    $join[] = "{$key} = {$value}";
+                    $join[] = "{$key} = ?";
+                    $bindParams[] = $value;
                 }
 			}
 			if(count($join)){
@@ -95,8 +97,7 @@ class Model {
 		$values = "{$field} = {$field} + {$vp}";
 		$table = self::$table;
 		$sql = "UPDATE {$table} SET {$values} {$where}";
-		
-		return $this->runSql($sql);
+        return  $this->db->execute($sql,$bindParams);
 		
 	}
 	
@@ -110,16 +111,26 @@ class Model {
         $where = "";
 		$row = $this->__prepera_format($row);
 		if(empty($row))return FALSE;
+		$bindParams = array();
+		foreach($row as $key => $value){
+			if($value!==null){
+				$vals[] = "{$key} = ?";
+				$bindParams[] = $value;
+			}else{
+				$vals[] = "{$key} = null";
+			}
+			
+		}
 		if(is_array($conditions)){
 			$conditions = $this->__prepera_format($conditions);
 			$join = array();
 			foreach( $conditions as $key => $value ){
                 if(is_array($value)){
-                    $va =  '\''.$value[1].'\'';
-                    $join[] = "{$key} ".$value[0]." {$va}";
+                    $join[] = "{$key} ".$value[0]." ?";
+                    $bindParams[] = $value[1];
                 }else{
-                    $value =  '\''.$value.'\'';
-                    $join[] = "{$key} = {$value}";
+                    $join[] = "{$key} = ?";
+                    $bindParams[] = $value;
                 }
 			}
 			if(count($join)){
@@ -128,19 +139,11 @@ class Model {
 		}else{
 			if(null != $conditions)$where = "WHERE ".$conditions;
 		}
-		foreach($row as $key => $value){
-			if($value!==null){
-				$value = '\''.$value.'\'';
-				$vals[] = "{$key} = {$value}";
-			}else{
-				$vals[] = "{$key} = null";
-			}
-			
-		}
+		
 		$values = join(", ",$vals);
 		$table = self::$table;
 		$sql = "UPDATE {$table} SET {$values} {$where}";
-		return $this->runSql($sql);
+        return  $this->db->execute($sql,$bindParams);
 		
 		
     }
@@ -149,67 +152,13 @@ class Model {
 		
 		if(count($conditions)!=count($rows)){
 			throw new Exception('数组不匹配');
-			return false;
 		}
-		$whereArr = [];
-		foreach($conditions as $condition){
-			
-			if(is_array($condition)){
-				$condition = $this->__prepera_format($condition);
-				$join = array();
-				foreach( $condition as $key => $value ){
-                    if(is_array($value)){
-                        $va =  '\''.$value[1].'\'';
-                        $join[] = "{$key} ".$value[0]." {$va}";
-                    }else{
-                        $value =  '\''.$value.'\'';
-                        $join[] = "{$key} = {$value}";
-                    }
-				}
-				if(count($join)){
-					$where = "WHERE ".join(" AND ",$join);
-				}
-			}else{
-				if(null != $condition)$where = "WHERE ".$condition;
-			}
-			
-			$whereArr[] = $where;
+		foreach($conditions as $k=>$condition){
+			$this->update($condition,$rows[$k]);
 		}
+		return true;
 		
-		$valuesArr = [];
-		foreach($rows as $row){
-			$row = $this->__prepera_format($row);
-			if(!empty($row)){
-				
-				foreach($row as $key => $value){
-					if($value!==null){
-						$value = '\''.$value.'\'';
-						$vals[] = "{$key} = {$value}";
-					}else{
-						$vals[] = "{$key} = null";
-					}
-					
-				}
-				$values = join(", ",$vals);
-				
-				$valuesArr[]=$values;
-			}
-			
-			
-		}
-		if(count($whereArr)!=count($valuesArr)){
-			throw new Exception('数组不匹配');
-			return false;
-		}
 		
-		$sqlArr=[];
-		$table = self::$table;
-		foreach($whereArr as $k=>$where){
-			$sqlArr[] = "UPDATE {$table} SET {$valuesArr[$k]} {$where};";
-			
-		}
-		$sql=implode('',$sqlArr);
-		return $this->runSql($sql);
 	}
 
 
@@ -217,16 +166,17 @@ class Model {
     public function findAll($conditions=null,$order=null,$fields=null,$limit=null)
     {
 		$where = '';
+		$bindParams = array();
 		if(is_array($conditions)){
 			$conditions = $this->__prepera_format($conditions);
 			$join = array();
 			foreach( $conditions as $key => $value ){
                 if(is_array($value)){
-                    $va =  '\''.$value[1].'\'';
-                    $join[] = "{$key} ".$value[0]." {$va}";
+                    $bindParams[] = $value[1];
+                    $join[] = "{$key} ".$value[0]." ?";
                 }else{
-                    $value =  '\''.$value.'\'';
-                    $join[] = "{$key} = {$value}";
+                    $bindParams[] = $value;
+                    $join[] = "{$key} = ?";
                 }
 			}
 			if(count($join)){
@@ -251,8 +201,7 @@ class Model {
 		$fields = empty($fields) ? "*" : $fields;
 		$table = self::$table;
 		$sql = "SELECT {$fields} FROM {$table} {$where}";
-		
-        return $this->db->getArray($sql);
+        return $this->db->getArray($sql,$bindParams);
 
     }
 
@@ -260,16 +209,17 @@ class Model {
     public function findPage($conditions=null,$order=null,$fields=null,$limit=null)
     {
         $where = '';
+        $bindParams = array();
         if(is_array($conditions)){
             $conditions = $this->__prepera_format($conditions);
             $join = array();
             foreach( $conditions as $key => $value ){
                 if(is_array($value)){
-                    $va =  '\''.$value[1].'\'';
-                    $join[] = "{$key} ".$value[0]." {$va}";
+                    $bindParams[] = $value[1];
+                    $join[] = "{$key} ".$value[0]." ?";
                 }else{
-                    $value =  '\''.$value.'\'';
-                    $join[] = "{$key} = {$value}";
+                    $bindParams[] = $value;
+                    $join[] = "{$key} = ?";
                 }
             }
             if(count($join)){
@@ -293,14 +243,13 @@ class Model {
         }
         $fields = empty($fields) ? "*" : $fields;
         $table = self::$table;
-        $sql = "SELECT SQL_CALC_FOUND_ROWS {$fields} FROM {$table} {$where}";
+        $sql = "SELECT {$fields} FROM {$table} {$where}";
+        $data = $this->db->getArray($sql,$bindParams);
+        $sql = "SELECT count(*) as n FROM {$table} {$where}";
+        $result = $this->db->getArray($sql,$bindParams);
 
-        $data = $this->db->getArray($sql);
-        $sql = 'SELECT FOUND_ROWS()';
-        $result = $this->db->getArray($sql);
 
-
-        return ['lists'=>$data,'sum'=>$result[0]['FOUND_ROWS()']];
+        return ['lists'=>$data,'sum'=>$result[0]['n']];
 
     }
 
@@ -342,27 +291,28 @@ class Model {
 	}
 	//执行SQL获取分页
     public function findSqlPage($sql,$orderlimit=''){
-        $sql = "select SQL_CALC_FOUND_ROWS * from (".$sql.") a ".$orderlimit;
+        $sql = "select * from (".$sql.") a ".$orderlimit;
         $data = $this->db->getArray($sql);
-        $sql = 'SELECT FOUND_ROWS()';
+        $sql =  "select count(*) as n from (".$sql.") a ".$orderlimit;
         $result = $this->db->getArray($sql);
-        return ['lists'=>$data,'sum'=>$result[0]['FOUND_ROWS()']];
+        return ['lists'=>$data,'sum'=>$result[0]['n']];
     }
 	
     // 根据条件 (conditions) 删除
     public function delete($conditions)
     {
        $where = "";
+	   $bindParams = [];
 		if(is_array($conditions)){
 			$conditions = $this->__prepera_format($conditions);
 			$join = array();
 			foreach( $conditions as $key => $value ){
                 if(is_array($value)){
-                    $va =  '\''.$value[1].'\'';
-                    $join[] = "{$key} ".$value[0]." {$va}";
+					$bindParams[] = $value[1];
+                    $join[] = "{$key} ".$value[0]." ?";
                 }else{
-                    $value =  '\''.$value.'\'';
-                    $join[] = "{$key} = {$value}";
+                    $bindParams[] = $value;
+                    $join[] = "{$key} = ?";
                 }
 			}
 			if(count($join)){
@@ -373,7 +323,7 @@ class Model {
 		}
 		$table = self::$table;
 		$sql = "DELETE FROM {$table} {$where}";
-		return $this->runSql($sql);
+		return $this->db->execute($sql,$bindParams);
     }
 
     // 新增数据
@@ -411,13 +361,11 @@ class Model {
 	private function __prepera_format($rows)
 	{
 		$table = self::$table;
-		$stmt = $this->db->getTable($table);  
-		$stmt->execute();  
-		$columns = $stmt->fetchAll(PDO::FETCH_CLASS);
+		$columns = $this->db->getTable($table);  
 		$newcol = array();
 		foreach ($columns as $key => $value) {
-			$field = strtolower($value->Field);
-			if(stripos($value->Type,'int')!==false || stripos($value->Type,'decimal')!==false){
+			$field = strtolower($value['Field']);
+			if(stripos($value['Type'],'int')!==false || stripos($value['Type'],'decimal')!==false){
 				
 				if(isset($rows[$field])){
 					if($rows[$field]!=='' && $rows[$field]!==false){
@@ -440,7 +388,6 @@ class Model {
 			}
 		}
 		return $newcol;
-		//return array_intersect_key($rows,$newcol);
 	}
 	
 	

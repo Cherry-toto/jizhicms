@@ -70,7 +70,6 @@ function format_param($value=null,$int=0,$default=false){
 			return (float)$value;
 		case 4:
 			$value = stripslashes($value);
-            $value = addslashes($value);
             $value = SafeFilter($value);
 			return trim($value);
         case 5:

@@ -234,7 +234,9 @@ class Model {
         }else{
             if($order!=null)$where .= " ORDER BY  ".$order;
         }
-
+		$table = self::$table;
+		$sql = "SELECT count(*) as n FROM {$table} {$where}";
+        $result = $this->db->getArray($sql,$bindParams);
         if(!empty($limit)){
             if(strpos($limit,',')===false){
                 $limit = ($limit<=0) ? 1 : $limit;
@@ -242,12 +244,10 @@ class Model {
             $where .= " LIMIT {$limit}";
         }
         $fields = empty($fields) ? "*" : $fields;
-        $table = self::$table;
+       
         $sql = "SELECT {$fields} FROM {$table} {$where}";
         $data = $this->db->getArray($sql,$bindParams);
-        $sql = "SELECT count(*) as n FROM {$table} {$where}";
-        $result = $this->db->getArray($sql,$bindParams);
-
+       
 
         return ['lists'=>$data,'sum'=>$result[0]['n']];
 
@@ -290,10 +290,10 @@ class Model {
 		return $this->db->getArray($sql);
 	}
 	//执行SQL获取分页
-    public function findSqlPage($sql,$orderlimit=''){
-        $sql = "select * from (".$sql.") a ".$orderlimit;
+    public function findSqlPage($sql,$orderby='',$limit=''){
+        $sql = "select * from (".$sql.") a ".$orderby.$limit;
         $data = $this->db->getArray($sql);
-        $sql =  "select count(*) as n from (".$sql.") a ".$orderlimit;
+        $sql =  "select count(*) as n from (".$sql.") a ";
         $result = $this->db->getArray($sql);
         return ['lists'=>$data,'sum'=>$result[0]['n']];
     }

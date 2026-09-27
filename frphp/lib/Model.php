@@ -291,10 +291,10 @@ class Model {
 	}
 	//执行SQL获取分页
     public function findSqlPage($sql,$orderby='',$limit=''){
-        $sql = "select * from (".$sql.") a ".$orderby.$limit;
-        $data = $this->db->getArray($sql);
-        $sql =  "select count(*) as n from (".$sql.") a ";
-        $result = $this->db->getArray($sql);
+        $sql1 = "select * from (".$sql.") a ".$orderby.$limit;
+        $data = $this->db->getArray($sql1);
+        $sql2 =  "select count(*) as n from (".$sql.") a ";
+        $result = $this->db->getArray($sql2);
         return ['lists'=>$data,'sum'=>$result[0]['n']];
     }
 	

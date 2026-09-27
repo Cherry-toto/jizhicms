@@ -2,9 +2,9 @@
   'db' => 
   array (
     'host' => '127.0.0.1',
-    'dbname' => 'www_jizhicms_mm',
-    'username' => 'root',
-    'password' => 'root',
+    'dbname' => '',
+    'username' => '',
+    'password' => '',
     'prefix' => 'jz_',
     'port' => '3306',
   ),

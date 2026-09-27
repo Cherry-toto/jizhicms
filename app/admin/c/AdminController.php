@@ -244,8 +244,7 @@ class AdminController extends CommonController
 			$data = get_fields_data($data,'level');
 			$data['gid'] = $this->frparam('gid',0,$this->admin['gid']);
 			//防止越权操作
-			$change_admin = M('level')->find(['id'=>$id]);
-			if($this->admin['gid']!=1 && $change_admin['gid']==1){
+			if($this->admin['gid']!=1 && $data['gid']==1){
 				JsonReturn(array('code'=>1,'msg'=>JZLANG('您没有权限操作！')));
 			}
 			

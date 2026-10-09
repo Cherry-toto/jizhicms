@@ -150,7 +150,7 @@ class OrderController extends CommonController
 			$w['receive_address'] = $this->frparam('address',1);
 			$paytype = $this->frparam('paytype',0,1);//默认支付宝支付1，2微信支付
 			
-			$order = M('orders')->find(['orderno'=>$w['orderno']]);
+			$order = M('orders')->find(['orderno'=>$w['orderno'],'userid'=>$this->member['id']]);
 			if(!$order || !$w['orderno']){
 				if($this->frparam('ajax')){
 					

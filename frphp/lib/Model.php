@@ -30,6 +30,10 @@ class Model {
 			self::$instance = new self($table);
 		}
 		if($table!=null){
+			// 安全过滤：表名仅允许字母、数字、下划线，防止SQL注入
+			if(!is_string($table) || !preg_match('/^[A-Za-z0-9_]+$/', $table)){
+				throw new \Exception('非法的数据表名: '.$table);
+			}
 			self::$table = $table;
 		}
 		if($prefix){

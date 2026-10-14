@@ -1,0 +1,117 @@
+<!doctype html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	{include="style"}
+	<style>
+	.vs-cards{display:flex;flex-wrap:wrap;gap:12px;margin-bottom:14px;}
+	.vs-card{flex:1 1 180px;background:#fff;border-radius:8px;padding:16px 18px;box-shadow:0 1px 6px rgba(0,0,0,.06);border-left:4px solid #16baaa;}
+	.vs-card .t{color:#8a94a6;font-size:13px;}
+	.vs-card .n{font-size:26px;font-weight:700;color:#333;margin-top:6px;line-height:1.2;}
+	.vs-card .s{color:#9aa4b2;font-size:12px;margin-top:4px;}
+	.vs-card.c2{border-left-color:#ff5722;}
+	.vs-card.c3{border-left-color:#1e9fff;}
+	.vs-card.c4{border-left-color:#ffb800;}
+	.vs-box{background:#fff;border-radius:8px;padding:16px;box-shadow:0 1px 6px rgba(0,0,0,.06);margin-bottom:14px;}
+	.vs-box h4{margin:0 0 12px;font-size:15px;color:#333;font-weight:600;}
+	.vs-bar{display:flex;align-items:center;gap:10px;margin-bottom:6px;}
+	.vs-bar .name{width:130px;color:#666;font-size:13px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+	.vs-bar .track{flex:1;height:14px;background:#f2f4f7;border-radius:7px;overflow:hidden;}
+	.vs-bar .fill{height:100%;background:linear-gradient(90deg,#16baaa,#5fd6c9);border-radius:7px;}
+	.vs-bar .val{width:70px;text-align:right;color:#ff5722;font-size:13px;font-weight:600;}
+	.vs-trend{display:flex;align-items:flex-end;gap:8px;height:180px;padding:10px 4px 0;border-bottom:1px solid #eee;overflow-x:auto;}
+	.vs-trend .col{flex:1;min-width:26px;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;height:100%;}
+	.vs-trend .bar{width:70%;background:linear-gradient(180deg,#5fd6c9,#16baaa);border-radius:4px 4px 0 0;min-height:2px;transition:.3s;}
+	.vs-trend .uv{font-size:11px;color:#ff5722;margin-bottom:2px;}
+	.vs-trend .lb{font-size:11px;color:#98a2b3;margin-top:6px;}
+	.vs-empty{color:#98a2b3;font-size:13px;padding:10px 0;}
+	.vs-so .layui-input-inline{margin-right:10px;margin-bottom:10px;}
+	</style>
+</head>
+<body>
+	<div class="x-nav">
+		<span class="layui-breadcrumb">
+			<a><cite>{fun JZLANG('首页')}</cite></a>
+			<a><cite>{fun JZLANG('访问统计')}</cite></a>
+			<a><cite>{fun JZLANG('统计概览')}</cite></a>
+		</span>
+		<a class="layui-btn layui-btn-small" style="line-height:1.6em;margin-top:3px;float:right" href="javascript:location.replace(location.href);" title="{fun JZLANG('刷新')}"><i class="iconfont" style="line-height:30px">&#xe6aa;</i></a>
+	</div>
+	<div class="x-body">
+		<div class="layui-card">
+			<div class="layui-card-body">
+
+				<form class="layui-form vs-so" onsubmit="return false;" style="margin-bottom:10px;">
+					<div class="layui-input-inline" style="width:150px;">
+						<select name="days" id="days" lay-filter="days">
+							<option value="7">{fun JZLANG('最近7天')}</option>
+							<option value="15">{fun JZLANG('最近15天')}</option>
+							<option value="30">{fun JZLANG('最近30天')}</option>
+						</select>
+					</div>
+				</form>
+
+				<div class="vs-cards" id="cards"></div>
+
+				<div class="vs-box">
+					<h4>{fun JZLANG('访问趋势（PV）')}</h4>
+					<div class="vs-trend" id="trend"></div>
+				</div>
+
+				<div class="vs-box">
+					<h4>{fun JZLANG('栏目浏览量排行')}</h4>
+					<div id="classrank"></div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<script>
+	layui.use(['form','layer'],function(){
+		var form = layui.form, $ = layui.jquery, layer = layui.layer;
+
+		function load(){
+			var days = $('#days').val();
+			$.get('{fun U("Visit/indexdata")}',{days:days,ajax:1},function(res){
+				if(res.code!=0){ layer.msg(res.msg); return; }
+				var c = res.today, y = res.yest, a = res.all;
+				var html = ''
+				 + '<div class="vs-card"><div class="t">{fun JZLANG("今日浏览量(PV)")}</div><div class="n">'+c.pv+'</div><div class="s">{fun JZLANG("独立访客 UV")}：'+c.uv+'</div></div>'
+				 + '<div class="vs-card c2"><div class="t">{fun JZLANG("昨日浏览量(PV)")}</div><div class="n">'+y.pv+'</div><div class="s">{fun JZLANG("独立访客 UV")}：'+y.uv+'</div></div>'
+				 + '<div class="vs-card c3"><div class="t">{fun JZLANG("累计浏览量")}</div><div class="n">'+a.pv+'</div><div class="s">{fun JZLANG("累计独立访客")}：'+a.uv+'</div></div>'
+				 + '<div class="vs-card c4"><div class="t">{fun JZLANG("今日蜘蛛访问")}</div><div class="n">'+c.spider+'</div><div class="s">{fun JZLANG("不计入 PV/UV")}</div></div>';
+				$('#cards').html(html);
+
+				//趋势图
+				var max = 1;
+				$.each(res.trend,function(i,v){ if(v.pv>max) max = v.pv; });
+				var t = '';
+				$.each(res.trend,function(i,v){
+					var h = Math.round(v.pv/max*140);
+					t += '<div class="col" title="'+v.day+' PV:'+v.pv+' UV:'+v.uv+'"><div class="uv">'+v.pv+'</div><div class="bar" style="height:'+(h<2?2:h)+'px"></div><div class="lb">'+v.day+'</div></div>';
+				});
+				$('#trend').html(t ? t : '<div class="vs-empty">{fun JZLANG("暂无数据")}</div>');
+
+				//栏目排行
+				if(!res['class'] || !res['class'].length){
+					$('#classrank').html('<div class="vs-empty">{fun JZLANG("暂无数据")}</div>');
+				}else{
+					var m = 1;
+					$.each(res['class'],function(i,v){ if(v.pv>m) m = v.pv; });
+					var s = '';
+					$.each(res['class'],function(i,v){
+						s += '<div class="vs-bar"><div class="name" title="'+v.classname+'">'+v.classname+'</div>'
+						  +  '<div class="track"><div class="fill" style="width:'+Math.round(v.pv/m*100)+'%"></div></div>'
+						  +  '<div class="val">'+v.pv+'</div></div>';
+					});
+					$('#classrank').html(s);
+				}
+			},'json');
+		}
+
+		form.on('select(days)',function(){ load(); });
+		load();
+	});
+	</script>
+</body>
+</html>

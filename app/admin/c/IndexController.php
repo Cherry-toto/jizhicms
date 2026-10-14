@@ -519,7 +519,7 @@ class IndexController extends CommonController
 
 	private function clearTplCache($dir)
 	{
-		$skipDirs = array('tmp', 'log', 'data', 'image');
+		$skipDirs = array('tmp', 'log', 'data', 'image', 'ai');
 		if (!is_dir($dir)) {
 			return;
 		}
@@ -544,7 +544,7 @@ class IndexController extends CommonController
 
 	private function getTplCacheSize($dir)
 	{
-		$skipDirs = array('tmp', 'log', 'data', 'image');
+		$skipDirs = array('tmp', 'log', 'data', 'image', 'ai');
 		$size = 0;
 		if (!is_dir($dir)) {
 			return $size;
@@ -649,6 +649,9 @@ class IndexController extends CommonController
 					case 'image':
 					$this->clearCacheDir($cacheRoot . '/image');
 					break;
+					case 'ai':
+					$this->clearCacheDir($cacheRoot . '/ai');
+					break;
 					case 'tpl':
 					$this->clearTplCache($cacheRoot);
 					break;
@@ -696,6 +699,7 @@ class IndexController extends CommonController
 		$this->logincache = $this->getSessionCacheSize($cacheRoot . '/tmp');
 		$this->logcache = $this->getCacheDirSize($cacheRoot . '/log');
 		$this->imagecache = $this->getCacheDirSize($cacheRoot . '/image');
+		$this->aicache = $this->getCacheDirSize($cacheRoot . '/ai');
 		$this->tplcache = $this->getTplCacheSize($cacheRoot);
 		$this->display('cache');
 	}

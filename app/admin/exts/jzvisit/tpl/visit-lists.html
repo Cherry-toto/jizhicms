@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	{include="style"}
+	<style>
+	.vs-so .layui-input-inline{margin-right:10px;margin-bottom:10px;}
+	.vs-so .layui-input-inline select{height:38px;}
+	.vs-so input.layui-input{width:150px;}
+	</style>
+</head>
+<body>
+	<div class="x-nav">
+		<span class="layui-breadcrumb">
+			<a><cite>{fun JZLANG('首页')}</cite></a>
+			<a><cite>{fun JZLANG('访问统计')}</cite></a>
+			<a><cite>{fun JZLANG('浏览记录')}</cite></a>
+		</span>
+		<a class="layui-btn layui-btn-small" style="line-height:1.6em;margin-top:3px;float:right" href="javascript:location.replace(location.href);" title="{fun JZLANG('刷新')}"><i class="iconfont" style="line-height:30px">&#xe6aa;</i></a>
+	</div>
+	<div class="x-body">
+		<div class="layui-card">
+			<div class="layui-card-body">
+
+				<div class="layui-collapse" style="margin-bottom:15px;">
+					<div class="layui-colla-item">
+						<h2 class="layui-colla-title">{fun JZLANG('搜索')}</h2>
+						<div class="layui-colla-content">
+							<div class="layui-row">
+								<form class="layui-form layui-col-md12 x-so vs-so" onsubmit="return false;">
+
+									<div class="layui-input-inline" style="width:180px;">
+										<select name="tid" id="tid" lay-search>
+											<option value="0">{fun JZLANG('全部栏目')}</option>
+											{foreach $classtypetree as $v}
+											<option value="{$v['id']}">{fun str_repeat('--', $v['level'])}{$v['classname']}</option>
+											{/foreach}
+										</select>
+									</div>
+
+									<div class="layui-input-inline" style="width:150px;">
+										<select name="stype" id="stype">
+											<option value="0">{fun JZLANG('全部访问')}</option>
+											<option value="2">{fun JZLANG('内容详情')}</option>
+											<option value="3">{fun JZLANG('栏目/首页')}</option>
+											<option value="4">{fun JZLANG('仅手机端')}</option>
+											<option value="5">{fun JZLANG('有来源')}</option>
+											<option value="1">{fun JZLANG('仅蜘蛛')}</option>
+										</select>
+									</div>
+
+									<div class="layui-input-inline">
+										<input type="text" name="ip" id="ip" placeholder="{fun JZLANG('访客IP')}" autocomplete="off" class="layui-input">
+									</div>
+
+									<div class="layui-input-inline">
+										<input type="text" name="word" id="word" placeholder="{fun JZLANG('标题/地址关键词')}" autocomplete="off" class="layui-input">
+									</div>
+
+									<div class="layui-input-inline">
+										<input type="text" name="start" id="start" placeholder="{fun JZLANG('开始日期')}" autocomplete="off" class="layui-input">
+									</div>
+
+									<div class="layui-input-inline">
+										<input type="text" name="end" id="end" placeholder="{fun JZLANG('结束日期')}" autocomplete="off" class="layui-input">
+									</div>
+
+									<button class="layui-btn" lay-submit lay-filter="search">{fun JZLANG('搜索')}</button>
+								</form>
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<table class="layui-hide" lay-data="{id: 'vsTable'}" id="vsTable" lay-filter="vsTable"></table>
+			</div>
+		</div>
+	</div>
+
+	<script type="text/html" id="vs-url">
+		{{# if(d.url){ }}
+		<a href="{{ d.url }}" target="_blank" title="{{ d.url }}" style="color:#1e9fff;">{{ d.url }}</a>
+		{{# } }}
+	</script>
+	<script type="text/html" id="vs-title">
+		{{# if(d.aid && d.url){ }}
+		<a href="{{ d.url }}" target="_blank" title="{{ d.title }}" style="color:#1e9fff;">{{ d.title }}</a>
+		{{# } else { }}
+		{{ d.title }}
+		{{# } }}
+	</script>
+
+	<script>
+	layui.use(['table','form','laydate','layer'],function(){
+		var table  = layui.table;
+		var form   = layui.form;
+		var laydate= layui.laydate;
+		var $      = layui.jquery;
+
+		laydate.render({elem:'#start'});
+		laydate.render({elem:'#end'});
+
+		table.render({
+			elem:'#vsTable',
+			url:'{fun U("Visit/lists")}?ajax=1',
+			page:true,
+			limit:20,
+			limits:[20,50,100],
+			cellMinWidth:80,
+			text:{none:'{fun JZLANG("暂无浏览记录")}'},
+			cols:[[
+				{field:'time',title:'{fun JZLANG("访问时间")}',width:170},
+				{field:'title',title:'{fun JZLANG("访问页面")}',minWidth:220,templet:'#vs-title'},
+				{field:'classname',title:'{fun JZLANG("栏目")}',width:130},
+				{field:'ip',title:'IP',width:140},
+				{field:'dev',title:'{fun JZLANG("设备/系统/浏览器")}',width:220},
+				{field:'referer',title:'{fun JZLANG("来源")}',minWidth:180},
+				{field:'url',title:'{fun JZLANG("地址")}',minWidth:180,templet:'#vs-url'}
+			]]
+		});
+
+		form.on('submit(search)',function(){
+			table.reload('vsTable',{
+				where:{
+					tid:$('#tid').val(),
+					stype:$('#stype').val(),
+					ip:$('#ip').val(),
+					word:$('#word').val(),
+					start:$('#start').val(),
+					end:$('#end').val()
+				},
+				page:{curr:1}
+			});
+			return false;
+		});
+	});
+	</script>
+</body>
+</html>

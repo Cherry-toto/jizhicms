@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="zh">
+<head>
+	<meta charset="UTF-8">
+	{include="style"}
+	<style>
+	.jz-tips{color:#98a2b3;font-size:12px;line-height:1.7;margin-top:4px;}
+	.layui-form-label{width:130px;}
+	.layui-input-block{margin-left:160px;}
+	</style>
+</head>
+<body>
+	<div class="layui-rows" style="margin:10px;">
+		<form class="layui-form layui-form-pane" action="">
+			<input type="hidden" name="id" value="{$plugins['id']}">
+
+			<blockquote class="layui-elem-quote">{fun JZLANG('访问统计插件配置（前台浏览量 / 浏览记录）')}</blockquote>
+
+			<div class="layui-form-item">
+				<label class="layui-form-label">{fun JZLANG('开启前台统计')}</label>
+				<div class="layui-input-block">
+					<input type="checkbox" name="isopen" lay-skin="switch" lay-text="{fun JZLANG('开启|关闭')}" {if($config['isopen'])}checked{/if}>
+					<div class="jz-tips">{fun JZLANG('关闭后前台不再记录任何浏览数据（已有记录保留）。')}</div>
+				</div>
+			</div>
+
+			<div class="layui-form-item">
+				<label class="layui-form-label">{fun JZLANG('记录蜘蛛访问')}</label>
+				<div class="layui-input-block">
+					<input type="checkbox" name="record_spider" lay-skin="switch" lay-text="{fun JZLANG('记录|忽略')}" {if($config['record_spider'])}checked{/if}>
+					<div class="jz-tips">{fun JZLANG('蜘蛛不计入 PV/UV，只单独统计，方便查看抓取情况。')}</div>
+				</div>
+			</div>
+
+			<div class="layui-form-item">
+				<label class="layui-form-label">{fun JZLANG('不统计管理员')}</label>
+				<div class="layui-input-block">
+					<input type="checkbox" name="ignore_admin" lay-skin="switch" lay-text="{fun JZLANG('是|否')}" {if($config['ignore_admin'])}checked{/if}>
+					<div class="jz-tips">{fun JZLANG('已登录后台时浏览前台页面不记录，避免自己刷数据。')}</div>
+				</div>
+			</div>
+
+			<div class="layui-form-item">
+				<label class="layui-form-label">{fun JZLANG('只记录详情页')}</label>
+				<div class="layui-input-block">
+					<input type="checkbox" name="only_detail" lay-skin="switch" lay-text="{fun JZLANG('是|否')}" {if($config['only_detail'])}checked{/if}>
+					<div class="jz-tips">{fun JZLANG('开启后只记录内容详情页，不记录首页/栏目页。')}</div>
+				</div>
+			</div>
+
+			<div class="layui-form-item">
+				<label class="layui-form-label">{fun JZLANG('同步内容浏览量')}</label>
+				<div class="layui-input-block">
+					<input type="checkbox" name="sync_hits" lay-skin="switch" lay-text="{fun JZLANG('开启|关闭')}" {if($config['sync_hits'])}checked{/if}>
+					<div class="jz-tips" style="color:#ff5722;">{fun JZLANG('注意：默认模板详情页已通过 /common/gohits 自动加1，开启此处会造成重复计数，通常在“关闭”状态使用。')}</div>
+				</div>
+			</div>
+
+			<div class="layui-form-item">
+				<label class="layui-form-label">{fun JZLANG('同IP同页间隔')}</label>
+				<div class="layui-input-block">
+					<input type="number" name="record_interval" value="{$config['record_interval']}" class="layui-input" min="0">
+					<div class="jz-tips">{fun JZLANG('单位秒。同一IP访问同一地址，在此时间内只记一次；填 0 表示每次都记录。建议 30~300。')}</div>
+				</div>
+			</div>
+
+			<div class="layui-form-item">
+				<label class="layui-form-label">{fun JZLANG('明细保留天数')}</label>
+				<div class="layui-input-block">
+					<input type="number" name="keep_days" value="{$config['keep_days']}" class="layui-input" min="0">
+					<div class="jz-tips">{fun JZLANG('仅作为“清理记录”页面的默认值，不自动删除。')}</div>
+				</div>
+			</div>
+
+			<div class="layui-form-item">
+				<label class="layui-form-label">{fun JZLANG('不统计的IP')}</label>
+				<div class="layui-input-block">
+					<input type="text" name="ignore_ip" value="{$config['ignore_ip']}" class="layui-input" placeholder="{fun JZLANG('例如：127.0.0.1,192.168.1.10')}">
+					<div class="jz-tips">{fun JZLANG('多个IP用英文逗号分隔。')}</div>
+				</div>
+			</div>
+
+			<div class="layui-form-item">
+				<label class="layui-form-label"></label>
+				<div class="layui-input-block">
+					<button class="layui-btn" lay-submit lay-filter="formDemo">{fun JZLANG('保存配置')}</button>
+				</div>
+			</div>
+		</form>
+	</div>
+
+	<script>
+	$(function(){
+		layui.use(['form','layer'],function(){
+			var form = layui.form, $ = layui.jquery, layer = layui.layer;
+			form.on('submit(formDemo)',function(data){
+				$.post("{fun U('setconf')}",data.field,function(res){
+					if(typeof res === 'string'){ res = JSON.parse(res); }
+					if(res.code==1){
+						layer.msg(res.msg);
+					}else{
+						layer.msg(res.msg,{icon:6,time:1500},function(){
+							parent.location.reload();
+						});
+					}
+				});
+				return false;
+			});
+		});
+	});
+	</script>
+</body>
+</html>

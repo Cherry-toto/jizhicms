@@ -1,0 +1,606 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    {include="style"}
+    <style>
+        html, body { height: 100%; margin: 0; }
+        body { background: #f2f3f7; }
+        .ai-app { display: flex; height: 100vh; }
+        .ai-side { width: 250px; background: #fff; border-right: 1px solid #eee; display: flex; flex-direction: column; }
+        .ai-side .side-head { padding: 12px; border-bottom: 1px solid #f0f0f0; }
+        .ai-side .side-head button { width: 100%; }
+        .ai-convs { flex: 1; overflow-y: auto; padding: 6px; }
+        .ai-conv { padding: 9px 10px; border-radius: 6px; cursor: pointer; font-size: 13px; color: #444; display: flex; align-items: center; }
+        .ai-conv:hover { background: #f4f6f8; }
+        .ai-conv.active { background: #e8f4ff; color: #1e9fff; }
+        .ai-conv .t { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .ai-conv .del { visibility: hidden; color: #ff5722; font-size: 12px; margin-left: 6px; }
+        .ai-conv:hover .del { visibility: visible; }
+        .ai-main { flex: 1; display: flex; flex-direction: column; min-width: 0; }
+        .ai-top { display: flex; align-items: center; flex-wrap: wrap; gap: 10px; padding: 10px 16px; background: #fff; border-bottom: 1px solid #eee; }
+        .ai-top .title { font-size: 15px; font-weight: 600; color: #333; }
+        .ai-top .spacer { flex: 1; }
+        .ai-top select { height: 32px; border: 1px solid #ddd; border-radius: 4px; padding: 0 6px; }
+        .ai-body { flex: 1; overflow-y: auto; padding: 20px 16px; }
+        .ai-msg { max-width: 900px; margin: 0 auto 14px auto; display: flex; }
+        .ai-msg .avatar { width: 32px; height: 32px; border-radius: 6px; flex: 0 0 32px; margin-right: 10px; text-align: center; line-height: 32px; color: #fff; font-size: 12px; }
+        .ai-msg.user .avatar { background: #16baaa; }
+        .ai-msg.assistant .avatar { background: #1e9fff; }
+        .ai-msg .bubble { background: #fff; border-radius: 8px; padding: 11px 14px; box-shadow: 0 1px 3px rgba(0,0,0,.06); color: #333; line-height: 1.7; word-break: break-word; flex: 1; white-space: pre-wrap; }
+        .ai-msg.user .bubble { background: #e8f7f5; }
+        .ai-msg.user .bubble .rb-wrap { margin-top: 8px; }
+        .ai-msg.user .bubble .rb { display: inline-block; font-size: 12px; color: #1e9fff; cursor: pointer; border: 1px solid #cfe6ff; border-radius: 12px; padding: 1px 10px; background: #fff; }
+        .ai-msg.user .bubble .rb:hover { background: #eaf5ff; }
+        .ai-msg .bubble pre { background: #282c34; color: #abb2bf; padding: 10px 12px; border-radius: 6px; overflow-x: auto; font-size: 13px; white-space: pre; }
+        .ai-msg .bubble code { background: #f0f0f0; padding: 1px 4px; border-radius: 3px; font-size: 13px; }
+        .ai-action { max-width: 900px; margin: 0 auto 12px auto; font-size: 12px; color: #666; background: #fbfbfb; border: 1px dashed #e2e2e2; border-radius: 6px; padding: 8px 12px; }
+        .ai-action .name { color: #1e9fff; font-weight: 600; }
+        .ai-action.denied { border-color: #ffd2c9; background: #fff5f2; color: #c0392b; }
+        .ai-action .act-head { display: flex; align-items: center; gap: 8px; }
+        .ai-action .name { color: #1e9fff; font-weight: 600; }
+        .ai-action .sum { color: #333; }
+        .ai-action .detail { margin-left: auto; color: #1e9fff; cursor: pointer; font-size: 12px; white-space: nowrap; }
+        .ai-action .res { color: #888; margin-top: 4px; word-break: break-all; white-space: pre-wrap; }
+        .ai-action .detail-box { display: none; background: #282c34; color: #abb2bf; border-radius: 6px; padding: 8px 10px; margin-top: 6px; font-size: 12px; max-height: 260px; overflow: auto; white-space: pre-wrap; word-break: break-all; }
+        .ai-empty { max-width: 900px; margin: 40px auto; color: #888; }
+        .ai-empty .quick { display: inline-block; margin: 6px 8px 0 0; padding: 6px 12px; background: #fff; border: 1px solid #ddd; border-radius: 16px; cursor: pointer; font-size: 13px; color: #555; }
+        .ai-empty .quick:hover { border-color: #1e9fff; color: #1e9fff; }
+        .ai-input { border-top: 1px solid #eee; background: #fff; padding: 12px 16px; }
+        .ai-input-inner { max-width: 900px; margin: 0 auto; display: flex; gap: 10px; }
+        .ai-input textarea { flex: 1; min-height: 58px; max-height: 160px; resize: vertical; border: 1px solid #ddd; border-radius: 6px; padding: 8px 10px; font-size: 14px; outline: none; }
+        .ai-tip { max-width: 900px; margin: 6px auto 0 auto; font-size: 12px; color: #999; }
+    </style>
+</head>
+<body>
+<div class="ai-app">
+    <aside class="ai-side">
+        <div class="side-head">
+            <button class="layui-btn layui-btn-sm" id="new-chat">{fun JZLANG('+ 新会话')}</button>
+        </div>
+        <div class="ai-convs" id="conv-list"></div>
+    </aside>
+    <main class="ai-main">
+        <div class="ai-top">
+            <span class="title" id="ai-title">{fun JZLANG('AI 助手')}</span>
+            <select id="ai-platform">
+                {if(count($platforms)==0)}<option value="">{fun JZLANG('未配置平台')}</option>{/if}
+                {foreach $platforms as $k=>$p}
+                <option value="{$k}" {if($k==$active)}selected{/if}>{$p['name']}</option>
+                {/foreach}
+            </select>
+            <select id="ai-mode" {if($isadmin!=1)}disabled{/if}>
+                <option value="confirm">{fun JZLANG('需要确认')}</option>
+                <option value="full">{fun JZLANG('完全控制')}</option>
+            </select>
+            <span class="spacer"></span>
+            <a class="layui-btn layui-btn-sm layui-btn-primary" href="{fun U('Ai/visual')}" target="_blank" rel="noopener">{fun JZLANG('页面可视化')}</a>
+            <a class="layui-btn layui-btn-sm layui-btn-primary" href="{fun U('Ai/config')}">{fun JZLANG('平台配置')}</a>
+        </div>
+        <div class="ai-body" id="ai-body">
+            <div class="ai-empty">
+                <p>{fun JZLANG('我是极致CMS AI 助手，可以帮你：')}</p>
+                <p>{fun JZLANG('· 修改前台模板 / 栏目页面；· 增删查改数据库内容；· 导出统计数据；· 编写插件扩展系统功能。')}</p>
+                <div>
+                    <span class="quick">{fun JZLANG('列出所有栏目，并告诉我每个栏目对应的前台模板文件')}</span>
+                    <span class="quick">{fun JZLANG('统计文章总数，以及每个栏目的文章数量')}</span>
+                    <span class="quick">{fun JZLANG('把首页 banner 区的标题改成「极致建站」')}</span>
+                    <span class="quick">{fun JZLANG('帮我写一个插件，给文章详情页底部增加一行版权信息')}</span>
+                </div>
+            </div>
+        </div>
+        <div class="ai-input">
+            <div class="ai-input-inner">
+                <textarea id="ai-text" placeholder="{fun JZLANG('请描述你要完成的操作，Ctrl+回车 发送')}"></textarea>
+                <button class="layui-btn" id="ai-send" style="height:auto;padding:0 22px;">{fun JZLANG('发送')}</button>
+            </div>
+            <div class="ai-tip">{fun JZLANG('「需要确认」模式下，改文件/删文件/改数据会先弹窗询问；「完全控制」模式下由 AI 直接执行。所有写操作都会自动备份。')}</div>
+        </div>
+    </main>
+</div>
+
+<script>
+(function () {
+    var cfgDefault = { mode: "{fun $mode}", isadmin: {fun $isadmin} };
+    var st = { convId: '', sending: false, curBubble: null, curText: '', pending: '', typeTimer: null, placeholder: false, lastUserBubble: null, pendingTurn: null, gotDone: false, awaiting: false };
+
+    var U_CHAT = "{fun U('Ai/chat')}";
+    var U_CONFIRM = "{fun U('Ai/confirm')}";
+    var U_CONVS = "{fun U('Ai/conversations')}";
+    var U_LOAD = "{fun U('Ai/loadchat')}";
+    var U_DEL = "{fun U('Ai/deletechat')}";
+    var U_ROLLBACK = "{fun U('Ai/rollback')}";
+
+    var $body = $('#ai-body'), $text = $('#ai-text'), $send = $('#ai-send'), $list = $('#conv-list');
+    var layer = null;
+    layui.use(['layer'], function () { layer = layui.layer; });
+
+    function esc(s) {
+        return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    }
+    function md(text) {
+        var s = esc(text);
+        s = s.replace(/```([\s\S]*?)```/g, function (m, c) { return '<pre>' + c + '</pre>'; });
+        s = s.replace(/`([^`]+)`/g, '<code>$1</code>');
+        s = s.replace(/\*\*([^*]+)\*\*/g, '<b>$1</b>');
+        return s;
+    }
+    function scroll() { $body.scrollTop($body[0].scrollHeight); }
+    function clearEmpty() { $('.ai-empty').remove(); }
+
+    function addUser(text) {
+        clearEmpty();
+        var $m = $('<div class="ai-msg user"><div class="avatar">我</div><div class="bubble">' + md(text) + '</div></div>');
+        $body.append($m);
+        st.lastUserBubble = $m.find('.bubble');
+        scroll();
+        st.curBubble = null;
+    }
+
+    // ---- 回滚：撤销该轮 AI 的文件/数据改动，删除对应对话，并把原提问回填输入框 ----
+    function rollbackBtn(turn) {
+        if (turn === null || turn === undefined) return '';
+        return '<div class="rb-wrap"><span class="rb" data-turn="' + turn + '">↩ 回滚到此</span></div>';
+    }
+    function addRollbackToLastUser() {
+        if (st.pendingTurn === null || !st.lastUserBubble) return;
+        if (st.lastUserBubble.find('.rb').length) { st.lastUserBubble = null; st.pendingTurn = null; return; }
+        st.lastUserBubble.append(rollbackBtn(st.pendingTurn));
+        scroll();
+        st.lastUserBubble = null;
+        st.pendingTurn = null;
+    }
+    function doRollback(turn) {
+        if (st.sending) { layer && layer.msg('正在处理中，请稍候…'); return; }
+        layer.confirm('确定回滚到这条提问之前吗？<br>AI 该轮及之后对<b>文件 / 数据库</b>的改动将被还原，相关对话记录也会被删除。', { title: '回滚确认', btn: ['确认回滚', '取消'] }, function (idx) {
+            layer.close(idx);
+            $.ajax({
+                url: U_ROLLBACK, type: 'POST', dataType: 'json', contentType: 'application/json',
+                data: JSON.stringify({ conversation_id: st.convId, turn: turn }),
+                success: function (res) {
+                    if (!res || res.code !== 0) { layer && layer.msg(res ? res.msg : '回滚失败'); return; }
+                    layer && layer.msg(res.msg || '已回滚');
+                    // 原提问回填输入框（不自动发送）
+                    $text.val(res.content || '').focus();
+                    if (res.display) { renderDisplay(res.display); }
+                    else if (st.convId) { openConv(st.convId); }
+                    st.lastUserBubble = null; st.pendingTurn = null;
+                    loadConvs();
+                },
+                error: function () { layer && layer.msg('回滚请求失败'); }
+            });
+        });
+    }
+    // ---- 打字机渲染：无论上游是流式还是一次性整段返回，都逐字渐进显示 ----
+    function typeTick() {
+        if (!st.pending.length) { stopTyping(); return; }
+        var step = Math.max(1, Math.min(10, Math.ceil(st.pending.length / 15)));
+        st.curText += st.pending.substr(0, step);
+        st.pending = st.pending.substr(step);
+        if (st.curBubble) st.curBubble.text(st.curText);
+        scroll();
+    }
+    function startTyping() { if (!st.typeTimer) st.typeTimer = setInterval(typeTick, 18); }
+    function stopTyping() { if (st.typeTimer) { clearInterval(st.typeTimer); st.typeTimer = null; } }
+    function flushTyping() {
+        stopTyping();
+        if (st.pending) { st.curText += st.pending; st.pending = ''; }
+        if (st.curBubble) st.curBubble.text(st.curText);
+    }
+
+    function pushDelta(t) {
+        clearEmpty();
+        if (!st.curBubble) {
+            $body.append('<div class="ai-msg assistant"><div class="avatar">AI</div><div class="bubble"></div></div>');
+            st.curBubble = $body.find('.ai-msg.assistant:last .bubble');
+            st.curText = '';
+        }
+        st.pending += t;
+        startTyping();
+    }
+    function endBubble() {
+        flushTyping();
+        if (st.curBubble) {
+            if (st.curText && !st.placeholder) {
+                st.curBubble.html(md(st.curText));
+            } else {
+                st.curBubble.closest('.ai-msg').remove();
+            }
+        }
+        st.curBubble = null;
+        st.curText = '';
+        st.pending = '';
+        st.placeholder = false;
+    }
+    // ---- 工具调用展示（人类可读摘要 + 可折叠详情） ----
+    var TOOL_LABEL = {
+        site_info: '获取站点结构', list_dir: '列出目录', read_file: '读取文件', search_files: '搜索文件',
+        write_file: '写入文件', delete_file: '删除文件', list_tables: '列出数据表', describe_table: '查看表结构',
+        db_query: '查询数据', db_exec: '执行数据写操作', backup_db: '备份数据库', create_plugin: '创建插件'
+    };
+    var actionStore = {};
+    var pendingActions = {};
+
+    function byteText(n) {
+        n = Number(n) || 0;
+        if (n < 1024) return n + ' B';
+        if (n < 1024 * 1024) return (n / 1024).toFixed(1) + ' KB';
+        return (n / 1024 / 1024).toFixed(2) + ' MB';
+    }
+    function shortText(s, n) {
+        s = String(s == null ? '' : s);
+        return s.length > n ? s.substring(0, n) + '…' : s;
+    }
+    function toolSummary(name, args) {
+        args = args || {};
+        if (name === 'write_file') return (args.path || '') + '（' + byteText((args.content || '').length) + '）';
+        if (name === 'delete_file') return args.path || '';
+        if (name === 'read_file') return args.path || '';
+        if (name === 'list_dir') return args.path || '.';
+        if (name === 'search_files') return '「' + shortText(args.keyword, 30) + '」in ' + (args.path || 'static');
+        if (name === 'describe_table') return args.table || '';
+        if (name === 'db_query' || name === 'db_exec') return shortText(args.sql, 140);
+        if (name === 'create_plugin') return args.name || '';
+        return '';
+    }
+    function resultSummary(name, result) {
+        if (result == null) return '';
+        if (typeof result === 'string') {
+            var t = result.trim();
+            if ((t.charAt(0) === '{' || t.charAt(0) === '[') && t.length < 20000) {
+                try { return resultSummary(name, JSON.parse(t)); } catch (e) {}
+            }
+            return shortText(result, 160);
+        }
+        if (typeof result !== 'object') return String(result);
+        if (result.ok === true) return '✓ ' + (result.msg || '成功') + (result.bytes != null ? '（' + byteText(result.bytes) + '）' : '');
+        if (result.ok === false) return '✗ ' + (result.msg || '失败');
+        if (result.count != null) return '完成，共 ' + result.count + ' 条';
+        if (result.items) return '列出 ' + result.items.length + ' 项';
+        if (result.tables) return '共 ' + result.tables.length + ' 张表';
+        if (result.columns) return '共 ' + result.columns.length + ' 个字段';
+        if (result.files) return '命中 ' + (result.count || result.files.length) + ' 个文件';
+        if (result.classtype) return '栏目 ' + result.classtype.length + ' 个';
+        if (result.content != null) return '已读取 ' + byteText(result.size || result.content.length);
+        return shortText(JSON.stringify(result), 160);
+    }
+    function clipArgs(args) {
+        var a = {};
+        if (!args) return a;
+        for (var k in args) {
+            if (!Object.prototype.hasOwnProperty.call(args, k)) continue;
+            var v = args[k];
+            if (typeof v === 'string' && v.length > 3000) v = v.substring(0, 3000) + '…（内容过长已截断）';
+            a[k] = v;
+        }
+        return a;
+    }
+    function prettyDetail(name, args, result) {
+        var s = '';
+        try { s += '参数：\n' + JSON.stringify(clipArgs(args), null, 2); } catch (e) {}
+        if (result !== undefined) { try { s += '\n\n结果：\n' + JSON.stringify(result, null, 2); } catch (e) {} }
+        if (s.length > 6000) s = s.substring(0, 6000) + '\n…（已截断）';
+        return s;
+    }
+    function cardHtml(name, args, status, result) {
+        var label = TOOL_LABEL[name] || name;
+        var sum = toolSummary(name, args);
+        var cls = status === 'denied' ? ' denied' : '';
+        var html = '<div class="ai-action' + cls + '">';
+        html += '<div class="act-head"><span class="name">' + esc(label) + '</span>' + (sum ? '<span class="sum">' + esc(sum) + '</span>' : '') + '<a class="detail">详情</a></div>';
+        html += '<div class="res">' + (result === undefined ? '执行中...' : esc(resultSummary(name, result))) + '</div>';
+        html += '<pre class="detail-box">' + esc(prettyDetail(name, args, result)) + '</pre>';
+        html += '</div>';
+        return html;
+    }
+
+    function addAction(name, args) {
+        endBubble();
+        clearEmpty();
+        var id = 'act_' + Math.random().toString(36).slice(2, 9);
+        actionStore[id] = { name: name, args: args || {} };
+        pendingActions[id] = true;
+        var html = cardHtml(name, args, 'ok', undefined);
+        html = html.replace('<div class="ai-action', '<div id="' + id + '" class="ai-action');
+        $body.append(html);
+        scroll();
+        return id;
+    }
+    function setAction(id, status, result) {
+        var store = actionStore[id];
+        if (!store) return;
+        var $a = $('#' + id);
+        if (!$a.length) return;
+        delete pendingActions[id];
+        if (status === 'denied') $a.addClass('denied');
+        $a.find('.res').text(resultSummary(store.name, result));
+        $a.find('.detail-box').text(prettyDetail(store.name, store.args, result));
+        scroll();
+    }
+    // 流异常中断（如后端出错）时，把仍停在「执行中...」的卡片标记为中断
+    function failPendingActions(msg) {
+        var n = 0;
+        for (var id in pendingActions) {
+            var $a = $('#' + id);
+            if ($a.length) {
+                $a.addClass('denied');
+                $a.find('.res').text(msg || '执行被中断，请重试');
+            }
+            delete pendingActions[id];
+            n++;
+        }
+        return n;
+    }
+
+    // 流中断后提供「继续」：不填内容直接重新进入生成循环，接着上次进度做
+    function addContinueBtn() {
+        if (!st.convId) return;
+        var $m = $('<div class="ai-msg assistant"><div class="avatar">AI</div><div class="bubble"></div></div>');
+        var $btn = $('<button class="layui-btn layui-btn-sm" style="margin-top:8px;">继续</button>');
+        $m.find('.bubble').append('<div style="color:#e6a23c;">（本次响应提前结束，任务可能未完成。点「继续」接着做，无需重新描述需求。）</div>').append($btn);
+        $body.append($m);
+        scroll();
+        $btn.on('click', function () {
+            if (st.sending) return;
+            $(this).prop('disabled', true).text('继续中…');
+            st.sending = true; lock(true);
+            stream(U_CHAT, { conversation_id: st.convId, content: '', mode: $('#ai-mode').val() });
+        });
+    }
+
+    function showConfirm(tools) {
+        var html = '<div style="max-height:420px;overflow:auto;font-size:13px;">';
+        html += '<p style="color:#c0392b;">AI 请求执行以下<b>关键操作</b>，请确认：</p>';
+        for (var i = 0; i < tools.length; i++) {
+            var argStr = '';
+            try { argStr = JSON.stringify(tools[i].args); } catch (e) { argStr = ''; }
+            if (argStr.length > 600) argStr = argStr.substring(0, 600) + '...';
+            html += '<div style="margin:8px 0;padding:8px 10px;background:#fafafa;border:1px solid #eee;border-radius:6px;">';
+            html += '<b style="color:#1e9fff;">' + esc(tools[i].name) + '</b><div style="color:#666;word-break:break-all;white-space:pre-wrap;margin-top:4px;">' + esc(argStr) + '</div></div>';
+        }
+        html += '</div>';
+        layer.confirm(html, { title: '需要确认', btn: ['执行', '取消'], area: '560px' }, function (idx) {
+            layer.close(idx);
+            runConfirm(1);
+        }, function (idx) {
+            layer.close(idx);
+            runConfirm(0);
+        });
+    }
+
+    function runChat(content) {
+        if (st.sending) { layer && layer.msg('正在处理中，请稍候…'); return; }
+        if (!content) return;
+        if ($('#ai-platform').val() === '') { layer && layer.msg('请先到「平台配置」添加并选择大模型平台'); return; }
+        st.sending = true; lock(true);
+        addUser(content);
+        $text.val('');
+        if (!st.curBubble) {
+            $body.append('<div class="ai-msg assistant"><div class="avatar">AI</div><div class="bubble" style="color:#aaa;">已发送，等待 AI 响应…</div></div>');
+            st.curBubble = $body.find('.ai-msg.assistant:last .bubble');
+            st.curText = '';
+            st.placeholder = true;
+        }
+        stream(U_CHAT, { conversation_id: st.convId, content: content, mode: $('#ai-mode').val() });
+    }
+
+    function runConfirm(approve) {
+        if (st.sending) return; // 允许在待确认时发起
+        st.sending = true; lock(true);
+        stream(U_CONFIRM, { conversation_id: st.convId, mode: $('#ai-mode').val(), approve: approve });
+    }
+
+    // 处理 SSE 事件
+    function handle(ev, data) {
+        if (ev === 'conv') {
+            st.convId = data.id;
+            $('#ai-title').text(data.title || 'AI 助手');
+            if (data.turn !== null && data.turn !== undefined) st.pendingTurn = data.turn;
+        } else if (ev === 'delta') {
+            if (st.placeholder) { if (st.curBubble) st.curBubble.text(''); st.curText = ''; st.placeholder = false; }
+            pushDelta(data.text);
+        } else if (ev === 'thinking') {
+            waitStep = 'AI 正在思考…（已生成 ' + (data.len || 0) + ' 字推理）';
+            if (st.curBubble && !st.curText && !st.pending) st.curBubble.text(waitStep);
+        } else if (ev === 'tool_run') {
+            st.lastAction = addAction(data.name, data.args);
+            waitStep = '正在执行：' + (TOOL_LABEL[data.name] || data.name) + ' ' + toolSummary(data.name, data.args);
+        } else if (ev === 'tool_result') {
+            if (st.lastAction) { setAction(st.lastAction, data.status, data.result); st.lastAction = null; }
+        } else if (ev === 'confirm_required') {
+            st.awaiting = true;
+            endBubble();
+            st.sending = false; lock(false);
+            showConfirm(data.tools || []);
+        } else if (ev === 'error') {
+            endBubble();
+            clearEmpty();
+            $body.append('<div class="ai-msg assistant"><div class="avatar">AI</div><div class="bubble" style="color:#c0392b;">【出错】' + esc(data.msg) + '</div></div>');
+            scroll();
+        } else if (ev === 'done') {
+            st.gotDone = true;
+            st.awaiting = !!data.awaiting;
+            endBubble();
+            if (!data.awaiting) { st.sending = false; lock(false); addRollbackToLastUser(); loadConvs(); }
+        }
+    }
+
+    // ---- 发送状态：禁用按钮 + 计时，避免重复点击 ----
+    var waitTimer = null, waitStart = 0, waitStep = '';
+    function startWait() {
+        waitStart = Date.now();
+        if (waitTimer) clearInterval(waitTimer);
+        waitTimer = setInterval(function () {
+            if (st.curText || st.pending) { stopWait(); return; }
+            var s = Math.floor((Date.now() - waitStart) / 1000);
+            if (st.curBubble) st.curBubble.text('思考中… 已用 ' + s + ' 秒' + (waitStep ? '\n' + waitStep : ''));
+        }, 500);
+    }
+    function stopWait() { if (waitTimer) { clearInterval(waitTimer); waitTimer = null; } waitStep = ''; }
+
+    function lock(on) {
+        if (on) {
+            $send.attr('disabled', true).addClass('layui-btn-disabled').text('处理中…');
+            startWait();
+        } else {
+            stopWait();
+            $send.removeAttr('disabled').removeClass('layui-btn-disabled').text('发送');
+        }
+    }
+
+    function stream(url, payload) {
+        st.gotDone = false;
+        fetch(url, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'same-origin',
+            body: JSON.stringify(payload)
+        }).then(function (resp) {
+            if (!resp.ok) { throw new Error('HTTP ' + resp.status); }
+            var reader = resp.body.getReader();
+            var dec = new TextDecoder('utf-8');
+            var buf = '';
+            function pump() {
+                return reader.read().then(function (r) {
+                    if (r.done) return;
+                    buf += dec.decode(r.value, { stream: true });
+                    var idx;
+                    while ((idx = buf.indexOf('\n\n')) >= 0) {
+                        var block = buf.slice(0, idx); buf = buf.slice(idx + 2);
+                        var ev = 'message', data = '';
+                        var lines = block.split('\n');
+                        for (var i = 0; i < lines.length; i++) {
+                            var line = lines[i];
+                            if (line.indexOf('event:') === 0) ev = line.slice(6).trim();
+                            else if (line.indexOf('data:') === 0) data += line.slice(5).trim();
+                        }
+                        if (data) { try { handle(ev, JSON.parse(data)); } catch (e) {} }
+                    }
+                    return pump();
+                });
+            }
+            return pump();
+        }).then(function () {
+            var interrupted = failPendingActions('执行被中断，请重试');
+            endBubble();
+            st.sending = false;
+            lock(false);
+            if (interrupted) {
+                $body.append('<div class="ai-msg assistant"><div class="avatar">AI</div><div class="bubble" style="color:#c0392b;">（本次工具执行被中断，AI 未能继续。请重试；若反复出现，请查看服务器错误日志。）</div></div>');
+                scroll();
+                addContinueBtn();
+            } else if (!st.gotDone && !st.awaiting) {
+                $body.append('<div class="ai-msg assistant"><div class="avatar">AI</div><div class="bubble" style="color:#c0392b;">（连接意外结束，任务可能未完成。）</div></div>');
+                scroll();
+                addContinueBtn();
+            } else if (!$body.find('.ai-msg.assistant, .ai-action').length) {
+                $body.append('<div class="ai-msg assistant"><div class="avatar">AI</div><div class="bubble" style="color:#c0392b;">（AI 未返回内容，请重试，或检查平台是否支持工具调用 / Chat Completions 接口）</div></div>');
+                scroll();
+            }
+        }).catch(function (e) {
+            failPendingActions('执行被中断，请重试');
+            endBubble();
+            clearEmpty();
+            $body.append('<div class="ai-msg assistant"><div class="avatar">AI</div><div class="bubble" style="color:#c0392b;">【请求失败】' + esc(e.message) + '</div></div>');
+            scroll();
+            st.sending = false; lock(false);
+        });
+    }
+
+    // ------- 会话列表 -------
+    function loadConvs() {
+        $.getJSON(U_CONVS, function (res) {
+            if (!res || res.code !== 0) return;
+            var html = '';
+            var data = res.data || [];
+            for (var i = 0; i < data.length; i++) {
+                var c = data[i];
+                html += '<div class="ai-conv' + (c.id === st.convId ? ' active' : '') + '" data-id="' + c.id + '">';
+                html += '<span class="t">' + esc(c.title) + '</span><span class="del" title="删除">✕</span></div>';
+            }
+            $list.html(html);
+        });
+    }
+
+    function renderDisplay(items) {
+        $body.html('');
+        if (!items || !items.length) {
+            $body.html('<div class="ai-empty"><p>空会话</p></div>');
+            return;
+        }
+        for (var i = 0; i < items.length; i++) {
+            var it = items[i];
+            if (it.role === 'user') {
+                $body.append('<div class="ai-msg user"><div class="avatar">我</div><div class="bubble">' + md(it.content) + rollbackBtn(it.turn) + '</div></div>');
+            } else if (it.role === 'assistant') {
+                if (it.content) $body.append('<div class="ai-msg assistant"><div class="avatar">AI</div><div class="bubble">' + md(it.content) + '</div></div>');
+            } else if (it.role === 'action') {
+                $body.append(cardHtml(it.tool, it.args, it.status, it.result));
+            }
+        }
+        scroll();
+    }
+
+    function openConv(id) {
+        $.ajax({ url: U_LOAD, type: 'GET', dataType: 'json', data: { id: id }, success: function (res) {
+            if (!res || res.code !== 0) { layer && layer.msg(res ? res.msg : '加载失败'); return; }
+            st.convId = res.data.id;
+            $('#ai-title').text(res.data.title || 'AI 助手');
+            renderDisplay(res.data.display);
+            st.curBubble = null;
+            st.placeholder = false;
+            st.lastUserBubble = null; st.pendingTurn = null;
+            stopTyping(); st.pending = '';
+            loadConvs();
+            if (res.data.awaiting && res.data.pending && res.data.pending.length) showConfirm(res.data.pending);
+        }});
+    }
+
+    // ------- 事件绑定 -------
+    $send.on('click', function () { runChat($text.val().trim()); });
+    $text.on('keydown', function (e) {
+        if (e.keyCode === 13 && (e.ctrlKey || e.metaKey)) { e.preventDefault(); runChat($text.val().trim()); }
+    });
+    $body.on('click', '.detail', function () {
+        $(this).closest('.ai-action').find('.detail-box').toggle();
+    });
+    $body.on('click', '.rb', function () {
+        doRollback($(this).data('turn'));
+    });
+    $('#new-chat').on('click', function () {
+        st.convId = ''; st.curBubble = null; st.placeholder = false;
+        st.lastUserBubble = null; st.pendingTurn = null;
+        stopTyping(); st.pending = '';
+        $('#ai-title').text('AI 助手');
+        $body.html('<div class="ai-empty"><p>新的会话已开始，请输入你的需求。</p></div>');
+        loadConvs();
+    });
+    $list.on('click', '.ai-conv', function (e) {
+        if ($(e.target).hasClass('del')) return;
+        openConv($(this).data('id'));
+    });
+    $list.on('click', '.del', function (e) {
+        e.stopPropagation();
+        var id = $(this).closest('.ai-conv').data('id');
+        layer.confirm('确定删除该会话？', function (idx) {
+            layer.close(idx);
+            $.ajax({ url: U_DEL, type: 'GET', dataType: 'json', data: { id: id }, success: function () {
+                if (id === st.convId) { st.convId = ''; $body.html('<div class="ai-empty"><p>新的会话已开始。</p></div>'); }
+                loadConvs();
+            }});
+        });
+    });
+    $('.ai-empty').on('click', '.quick', function () { runChat($(this).text()); });
+
+    // 模式初始化
+    var savedMode = localStorage.getItem('ai_mode');
+    if (savedMode) $('#ai-mode').val(savedMode);
+    else $('#ai-mode').val(cfgDefault.mode);
+    $('#ai-mode').on('change', function () { localStorage.setItem('ai_mode', $(this).val()); });
+
+    loadConvs();
+})();
+</script>
+{include="footer"}
+</body>
+</html>

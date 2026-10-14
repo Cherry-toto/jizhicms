@@ -1,0 +1,592 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    {include="style"}
+    <style>
+        html, body { height: 100%; margin: 0; background: #f2f3f7; }
+        .v-wrap { display: flex; flex-direction: column; height: 100vh; }
+        .v-top { display: flex; align-items: center; gap: 10px; padding: 8px 14px; background: #fff; border-bottom: 1px solid #eee; flex-wrap: wrap; }
+        .v-top input[type=text] { flex: 1; height: 34px; border: 1px solid #ddd; border-radius: 4px; padding: 0 10px; min-width: 180px; }
+        .v-top select { height: 32px; border: 1px solid #ddd; border-radius: 4px; padding: 0 6px; }
+        .v-top label { font-size: 13px; color: #666; white-space: nowrap; }
+        .v-dev { display: inline-flex; border: 1px solid #ddd; border-radius: 4px; overflow: hidden; }
+        .v-dev button { height: 32px; line-height: 30px; padding: 0 12px; border: 0; background: #fff; color: #666; font-size: 13px; cursor: pointer; }
+        .v-dev button + button { border-left: 1px solid #ddd; }
+        .v-dev button.active { background: #1e9fff; color: #fff; }
+        .v-main { flex: 1; display: flex; min-height: 0; }
+        .v-left { flex: 1; min-width: 0; position: relative; background: #eef0f4; overflow: auto; }
+        .v-left .v-stage { width: 100%; height: 100%; margin: 0 auto; background: #fff; transition: width .15s; }
+        .v-left .v-stage iframe { width: 100%; height: 100%; border: 0; display: block; background: #fff; }
+        .v-left.dev-pc .v-stage { min-width: 1280px; }
+        .v-left.dev-mobile .v-stage { width: 390px; box-shadow: 0 0 14px rgba(0,0,0,.12); }
+        .v-right { width: 470px; background: #fff; border-left: 1px solid #eee; display: flex; flex-direction: column; min-height: 0; }
+        .v-sel { border-bottom: 1px solid #f0f0f0; padding: 8px 12px; background: #fbfcfd; }
+        .v-sel .line { font-size: 12px; color: #666; margin-bottom: 6px; word-break: break-all; }
+        .v-sel .line b { color: #333; }
+        .v-sel .code-box { background: #282c34; color: #abb2bf; border-radius: 4px; padding: 6px 8px; font-size: 12px; max-height: 92px; overflow: auto; white-space: pre-wrap; word-break: break-all; }
+        .v-thread { flex: 1; overflow-y: auto; padding: 12px; background: #fafbfc; min-height: 0; }
+        .vt-msg { margin-bottom: 12px; display: flex; }
+        .vt-msg .bubble { border-radius: 8px; padding: 9px 12px; font-size: 13px; line-height: 1.7; word-break: break-word; white-space: pre-wrap; max-width: 100%; }
+        .vt-msg.user { justify-content: flex-end; }
+        .vt-msg.user .bubble { background: #e8f7f5; color: #1c4a44; }
+        .vt-msg.user .bubble .sel { margin-top: 6px; font-size: 12px; color: #6b8b86; white-space: pre-wrap; word-break: break-all; }
+        .vt-msg.user .bubble .rb-wrap { margin-top: 6px; }
+        .vt-msg.user .bubble .rb { display: inline-block; font-size: 12px; color: #1e9fff; cursor: pointer; border: 1px solid #cfe6ff; border-radius: 12px; padding: 1px 10px; background: #fff; }
+        .vt-msg.user .bubble .rb:hover { background: #eaf5ff; }
+        .vt-msg.assistant .bubble { background: #fff; color: #333; box-shadow: 0 1px 3px rgba(0,0,0,.06); }
+        .vt-msg.assistant .bubble pre { background: #282c34; color: #abb2bf; border-radius: 6px; padding: 8px 10px; overflow-x: auto; font-size: 12px; white-space: pre; }
+        .vt-msg.assistant .bubble code { background: #f0f0f0; padding: 1px 4px; border-radius: 3px; }
+        .vt-msg.system .bubble { background: #fff7e6; color: #a4700d; font-size: 12px; }
+        .vt-action { font-size: 12px; color: #666; background: #fff; border: 1px dashed #e2e2e2; border-radius: 6px; padding: 7px 10px; margin-bottom: 10px; }
+        .vt-action.denied { border-color: #ffd2c9; background: #fff5f2; color: #c0392b; }
+        .vt-action .head { display: flex; align-items: center; gap: 6px; }
+        .vt-action .sum { color: #333; }
+        .vt-action .detail { margin-left: auto; color: #1e9fff; cursor: pointer; white-space: nowrap; }
+        .vt-action .res { color: #888; margin-top: 4px; word-break: break-all; white-space: pre-wrap; }
+        .vt-action .detail-box { display: none; background: #282c34; color: #abb2bf; border-radius: 4px; padding: 6px 8px; margin-top: 5px; max-height: 220px; overflow: auto; white-space: pre-wrap; }
+        .v-compose { border-top: 1px solid #eee; background: #fff; padding: 10px 12px; }
+        .v-compose textarea { width: 100%; min-height: 64px; max-height: 140px; border: 1px solid #ddd; border-radius: 6px; padding: 8px; font-size: 13px; box-sizing: border-box; resize: vertical; }
+        .v-compose .row { display: flex; align-items: center; gap: 8px; margin-top: 8px; }
+        .v-compose .v-hint { font-size: 12px; color: #999; flex: 1; }
+        .v-empty { color: #999; font-size: 13px; text-align: center; margin-top: 30px; }
+    </style>
+</head>
+<body>
+<div class="v-wrap">
+    <div class="v-top">
+        <span style="font-size:15px;font-weight:600;color:#333;">{fun JZLANG('页面可视化编辑')}</span>
+        <input type="text" id="v-url" value="{$homeurl}">
+        <button class="layui-btn layui-btn-sm" id="v-load">{fun JZLANG('加载')}</button>
+        <select id="v-mode" {if($isadmin!=1)}disabled{/if}>
+            <option value="confirm">{fun JZLANG('需要确认')}</option>
+            <option value="full">{fun JZLANG('完全控制')}</option>
+        </select>
+        <button class="layui-btn layui-btn-sm layui-btn-primary" id="v-refresh">{fun JZLANG('刷新页面')}</button>
+        <div class="v-dev" id="v-dev">
+            <button type="button" class="active" data-device="pc">{fun JZLANG('PC')}</button>
+            <button type="button" data-device="mobile">{fun JZLANG('手机')}</button>
+        </div>
+        <button class="layui-btn layui-btn-sm layui-btn-primary" id="v-history">{fun JZLANG('历史会话')}</button>
+        <label><input type="checkbox" id="v-select" checked> {fun JZLANG('选取模式')}</label>
+    </div>
+    <div class="v-main">
+        <div class="v-left dev-pc" id="v-left">
+            <div class="v-stage">
+                <iframe id="v-frame" src="{$homeurl}"></iframe>
+            </div>
+        </div>
+        <div class="v-right">
+            <div class="v-sel">
+                <div class="line" id="v-sel-meta"><b>{fun JZLANG('选中元素')}：</b>{fun JZLANG('请到左侧页面点选一个区域')}</div>
+                <div class="code-box" id="v-sel-html">-</div>
+            </div>
+            <div class="v-thread" id="v-thread">
+                <div class="v-empty" id="v-empty">{fun JZLANG('在左侧点选要修改的区域，然后在下方描述你的修改要求，可连续对话。')}</div>
+            </div>
+            <div class="v-compose">
+                <textarea id="v-inst" placeholder="{fun JZLANG('例如：把这个标题文字改成「极致建站」，字体加大并居中')}"></textarea>
+                <div class="row">
+                    <button class="layui-btn layui-btn-sm" id="v-send">{fun JZLANG('发送给 AI 修改')}</button>
+                    <span class="v-hint">{fun JZLANG('修改后点「刷新页面」查看效果；可连续追问。')}</span>
+                    <button class="layui-btn layui-btn-sm layui-btn-primary" id="v-new">{fun JZLANG('新会话')}</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+(function () {
+    var state = { selector: '', html: '', curUrl: '', convId: '', sending: false, lastUserBubble: null, pendingTurn: null };
+    var layer = null;
+    layui.use(['layer'], function () { layer = layui.layer; });
+
+    var U_CHAT = "{fun U('Ai/chat')}";
+    var U_CONFIRM = "{fun U('Ai/confirm')}";
+    var U_LOAD = "{fun U('Ai/loadchat')}";
+    var U_CONVS = "{fun U('Ai/conversations')}";
+    var U_ROLLBACK = "{fun U('Ai/rollback')}";
+
+    var $thread = $('#v-thread'), $inst = $('#v-inst'), $send = $('#v-send');
+    var frame = document.getElementById('v-frame');
+
+    function esc(s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
+    function md(text) {
+        var s = esc(text);
+        s = s.replace(/```([\s\S]*?)```/g, function (m, c) { return '<pre>' + c + '</pre>'; });
+        s = s.replace(/`([^`]+)`/g, '<code>$1</code>');
+        s = s.replace(/\*\*([^*]+)\*\*/g, '<b>$1</b>');
+        return s;
+    }
+    function threadScroll() { $thread.scrollTop($thread[0].scrollHeight); }
+    function clearEmpty() { $('#v-empty').remove(); }
+
+    // ---------- 元素选取 ----------
+    function cssPath(el) {
+        if (!el || el.nodeType !== 1) return '';
+        var parts = [];
+        while (el && el.nodeType === 1 && parts.length < 6) {
+            var seg = el.tagName.toLowerCase();
+            if (el.id) { seg += '#' + el.id; parts.unshift(seg); break; }
+            var cls = (el.className && typeof el.className === 'string') ? el.className.trim().split(/\s+/) : [];
+            if (cls.length) seg += '.' + cls.slice(0, 2).join('.');
+            var p = el.parentNode;
+            if (p) {
+                var sib = p.children, idx = 1;
+                for (var i = 0; i < sib.length; i++) { if (sib[i] === el) break; if (sib[i].tagName === el.tagName) idx++; }
+                seg += ':nth-of-type(' + idx + ')';
+            }
+            parts.unshift(seg);
+            el = el.parentNode;
+        }
+        return parts.join(' > ');
+    }
+
+    function bindFrame() {
+        var doc;
+        try { doc = frame.contentDocument || frame.contentWindow.document; } catch (e) { return; }
+        if (!doc) return;
+        var last = null;
+        doc.addEventListener('mouseover', function (e) {
+            if (!$('#v-select').prop('checked')) return;
+            var el = e.target;
+            if (!el || el.nodeType !== 1) return;
+            el.style.outline = '2px solid #ff5722';
+            if (last && last !== el) last.style.outline = '';
+            last = el;
+        }, true);
+        doc.addEventListener('mouseout', function (e) { if (e.target && e.target.style) e.target.style.outline = ''; }, true);
+        doc.addEventListener('click', function (e) {
+            if (!$('#v-select').prop('checked')) return;
+            e.preventDefault(); e.stopPropagation();
+            var el = e.target;
+            if (!el || el.nodeType !== 1) return;
+            state.selector = cssPath(el);
+            state.html = el.outerHTML || '';
+            $('#v-sel-meta').html('<b>选中元素：</b>' + esc(el.tagName.toLowerCase()) + '　' + esc(state.selector));
+            $('#v-sel-html').text(state.html.length > 4000 ? state.html.substring(0, 4000) + '...' : state.html);
+        }, true);
+    }
+
+    frame.addEventListener('load', function () {
+        state.curUrl = frame.contentWindow.location.href;
+        $('#v-url').val(state.curUrl);
+        bindFrame();
+    });
+    $('#v-load').on('click', function () { frame.src = $('#v-url').val(); });
+    $('#v-refresh').on('click', function () { frame.contentWindow.location.reload(); });
+
+    // 设备预览切换：PC（宽屏，保证顶部导航等桌面布局可见）/ 手机（窄屏）
+    $('#v-dev').on('click', 'button', function () {
+        var dev = $(this).data('device');
+        $('#v-dev button').removeClass('active');
+        $(this).addClass('active');
+        $('#v-left').removeClass('dev-pc dev-mobile').addClass('dev-' + dev);
+    });
+
+    // ---------- 工具调用展示（摘要 + 折叠详情） ----------
+    var TOOL_LABEL = {
+        site_info: '获取站点结构', list_dir: '列出目录', read_file: '读取文件', search_files: '搜索文件',
+        write_file: '写入文件', delete_file: '删除文件', list_tables: '列出数据表', describe_table: '查看表结构',
+        db_query: '查询数据', db_exec: '执行数据写操作', backup_db: '备份数据库', create_plugin: '创建插件'
+    };
+    var actionStore = {};
+
+    function byteText(n) {
+        n = Number(n) || 0;
+        if (n < 1024) return n + ' B';
+        if (n < 1024 * 1024) return (n / 1024).toFixed(1) + ' KB';
+        return (n / 1024 / 1024).toFixed(2) + ' MB';
+    }
+    function shortText(s, n) { s = String(s == null ? '' : s); return s.length > n ? s.substring(0, n) + '…' : s; }
+    function toolSummary(name, args) {
+        args = args || {};
+        if (name === 'write_file') return (args.path || '') + '（' + byteText((args.content || '').length) + '）';
+        if (name === 'delete_file' || name === 'read_file') return args.path || '';
+        if (name === 'list_dir') return args.path || '.';
+        if (name === 'search_files') return '「' + shortText(args.keyword, 30) + '」in ' + (args.path || 'static');
+        if (name === 'describe_table') return args.table || '';
+        if (name === 'db_query' || name === 'db_exec') return shortText(args.sql, 140);
+        if (name === 'create_plugin') return args.name || '';
+        return '';
+    }
+    function resultSummary(name, result) {
+        if (result == null) return '';
+        if (typeof result === 'string') {
+            var t = result.trim();
+            if ((t.charAt(0) === '{' || t.charAt(0) === '[') && t.length < 20000) {
+                try { return resultSummary(name, JSON.parse(t)); } catch (e) {}
+            }
+            return shortText(result, 160);
+        }
+        if (typeof result !== 'object') return String(result);
+        if (result.ok === true) return '✓ ' + (result.msg || '成功') + (result.bytes != null ? '（' + byteText(result.bytes) + '）' : '');
+        if (result.ok === false) return '✗ ' + (result.msg || '失败');
+        if (result.count != null) return '完成，共 ' + result.count + ' 条';
+        if (result.items) return '列出 ' + result.items.length + ' 项';
+        if (result.files) return '命中 ' + (result.count || result.files.length) + ' 个文件';
+        if (result.columns) return '共 ' + result.columns.length + ' 个字段';
+        if (result.content != null) return '已读取 ' + byteText(result.size || result.content.length);
+        return shortText(JSON.stringify(result), 160);
+    }
+    function clipArgs(args) {
+        var a = {};
+        if (!args) return a;
+        for (var k in args) {
+            if (!Object.prototype.hasOwnProperty.call(args, k)) continue;
+            var v = args[k];
+            if (typeof v === 'string' && v.length > 3000) v = v.substring(0, 3000) + '…（内容过长已截断）';
+            a[k] = v;
+        }
+        return a;
+    }
+    function prettyDetail(name, args, result) {
+        var s = '';
+        try { s += '参数：\n' + JSON.stringify(clipArgs(args), null, 2); } catch (e) {}
+        if (result !== undefined) { try { s += '\n\n结果：\n' + JSON.stringify(result, null, 2); } catch (e) {} }
+        if (s.length > 6000) s = s.substring(0, 6000) + '\n…（已截断）';
+        return s;
+    }
+    function cardHtml(name, args, status, result) {
+        var label = TOOL_LABEL[name] || name;
+        var sum = toolSummary(name, args);
+        var cls = status === 'denied' ? ' denied' : '';
+        var html = '<div class="vt-action' + cls + '">';
+        html += '<div class="head"><b style="color:#1e9fff;">' + esc(label) + '</b>' + (sum ? '<span class="sum">' + esc(sum) + '</span>' : '') + '<a class="detail">详情</a></div>';
+        html += '<div class="res">' + (result === undefined ? '执行中...' : esc(resultSummary(name, result))) + '</div>';
+        html += '<pre class="detail-box">' + esc(prettyDetail(name, args, result)) + '</pre>';
+        html += '</div>';
+        return html;
+    }
+
+    // ---------- 对话线程渲染 ----------
+    var curBubble = null, streamText = '', lastCard = null, turnOut = 0, pending = '', typeTimer = null;
+
+    // 打字机渲染：无论上游是流式还是一次性整段返回，都逐字渐进显示
+    function typeTick() {
+        if (!pending.length) { stopTyping(); return; }
+        var step = Math.max(1, Math.min(10, Math.ceil(pending.length / 15)));
+        streamText += pending.substr(0, step);
+        pending = pending.substr(step);
+        if (curBubble) curBubble.text(streamText);
+        threadScroll();
+    }
+    function startTyping() { if (!typeTimer) typeTimer = setInterval(typeTick, 18); }
+    function stopTyping() { if (typeTimer) { clearInterval(typeTimer); typeTimer = null; } }
+    function flushTyping() {
+        stopTyping();
+        if (pending) { streamText += pending; pending = ''; }
+        if (curBubble) curBubble.text(streamText);
+    }
+
+    function appendUser(text, sel) {
+        clearEmpty();
+        var html = '<div class="vt-msg user"><div class="bubble">' + esc(text) + (sel ? '<div class="sel">选中：' + esc(sel) + '</div>' : '') + '</div></div>';
+        $thread.append(html);
+        state.lastUserBubble = $thread.find('.vt-msg.user:last .bubble');
+        threadScroll();
+        curBubble = null; streamText = ''; turnOut = 0; stopTyping(); pending = '';
+    }
+
+    // ---- 回滚：撤销该轮 AI 的文件/数据改动，删除对应对话，并把原提问回填输入框 ----
+    function rollbackBtn(turn) {
+        if (turn === null || turn === undefined) return '';
+        return '<div class="rb-wrap"><span class="rb" data-turn="' + turn + '">↩ 回滚到此</span></div>';
+    }
+    function addRollbackToLastUser() {
+        if (state.pendingTurn === null || !state.lastUserBubble) return;
+        if (state.lastUserBubble.find('.rb').length) { state.lastUserBubble = null; state.pendingTurn = null; return; }
+        state.lastUserBubble.append(rollbackBtn(state.pendingTurn));
+        threadScroll();
+        state.lastUserBubble = null;
+        state.pendingTurn = null;
+    }
+    function doRollback(turn) {
+        if (state.sending) { layer && layer.msg('正在处理中，请稍候…'); return; }
+        layer.confirm('确定回滚到这条提问之前吗？<br>AI 该轮及之后对<b>文件 / 数据库</b>的改动将被还原，相关对话记录也会被删除。', { title: '回滚确认', btn: ['确认回滚', '取消'] }, function (idx) {
+            layer.close(idx);
+            $.ajax({
+                url: U_ROLLBACK, type: 'POST', dataType: 'json', contentType: 'application/json',
+                data: JSON.stringify({ conversation_id: state.convId, turn: turn }),
+                success: function (res) {
+                    if (!res || res.code !== 0) { layer && layer.msg(res ? res.msg : '回滚失败'); return; }
+                    layer && layer.msg(res.msg || '已回滚');
+                    // 原提问回填输入框（不自动发送）
+                    $inst.val(res.content || '').focus();
+                    if (res.display) { renderDisplay(res.display); }
+                    else if (state.convId) { loadHistory(state.convId); }
+                    state.lastUserBubble = null; state.pendingTurn = null;
+                },
+                error: function () { layer && layer.msg('回滚请求失败'); }
+            });
+        });
+    }
+    function pushDelta(t) {
+        clearEmpty();
+        $('#v-wait').remove();
+        if (!curBubble) {
+            $thread.append('<div class="vt-msg assistant"><div class="bubble"></div></div>');
+            curBubble = $thread.find('.vt-msg.assistant:last .bubble');
+            streamText = '';
+        }
+        pending += t;
+        startTyping();
+    }
+    function endBubble() {
+        flushTyping();
+        if (curBubble && streamText) curBubble.html(md(streamText));
+        else if (curBubble && !streamText) curBubble.closest('.vt-msg').remove();
+        curBubble = null; streamText = ''; pending = '';
+    }
+    function addActionCard(name, args) {
+        endBubble();
+        clearEmpty();
+        turnOut++;
+        var id = 'vact_' + Math.random().toString(36).slice(2, 9);
+        actionStore[id] = { name: name, args: args || {} };
+        var html = cardHtml(name, args, 'ok', undefined);
+        html = html.replace('<div class="vt-action', '<div id="' + id + '" class="vt-action');
+        $thread.append(html);
+        threadScroll();
+        return id;
+    }
+    function setActionCard(id, status, result) {
+        var store = actionStore[id];
+        if (!store) return;
+        var $a = $('#' + id);
+        if (!$a.length) return;
+        if (status === 'denied') $a.addClass('denied');
+        $a.find('.res').text(resultSummary(store.name, result));
+        $a.find('.detail-box').text(prettyDetail(store.name, store.args, result));
+        threadScroll();
+    }
+    $thread.on('click', '.detail', function () {
+        $(this).closest('.vt-action').find('.detail-box').toggle();
+    });
+    $thread.on('click', '.rb', function () {
+        doRollback($(this).data('turn'));
+    });
+
+    function renderDisplay(items) {
+        stopTyping(); pending = ''; streamText = ''; curBubble = null;
+        state.lastUserBubble = null; state.pendingTurn = null;
+        $thread.html('');
+        if (!items || !items.length) {
+            $thread.html('<div class="v-empty" id="v-empty">在左侧点选要修改的区域，然后在下方描述你的修改要求，可连续对话。</div>');
+            return;
+        }
+        for (var i = 0; i < items.length; i++) {
+            var it = items[i];
+            if (it.role === 'user') {
+                $thread.append('<div class="vt-msg user"><div class="bubble">' + esc(it.content) + rollbackBtn(it.turn) + '</div></div>');
+            } else if (it.role === 'assistant') {
+                if (it.content) $thread.append('<div class="vt-msg assistant"><div class="bubble">' + md(it.content) + '</div></div>');
+            } else if (it.role === 'action') {
+                $thread.append(cardHtml(it.tool, it.args, it.status, it.result));
+            }
+        }
+        threadScroll();
+    }
+
+    function loadHistory(id) {
+        $.ajax({ url: U_LOAD, type: 'GET', dataType: 'json', data: { id: id }, success: function (res) {
+            if (!res || res.code !== 0) { localStorage.removeItem('ai_visual_conv'); state.convId = ''; return; }
+            renderDisplay(res.data.display);
+            if (res.data.awaiting && res.data.pending && res.data.pending.length) showConfirm(res.data.pending);
+        }});
+    }
+
+    // ---------- 发送状态 ----------
+    var sendTimer = null, sendStart = 0, curStep = '';
+    function setSending(on) {
+        state.sending = on;
+        if (on) {
+            sendStart = Date.now();
+            $send.attr('disabled', true).addClass('layui-btn-disabled').text('处理中…');
+            if (sendTimer) clearInterval(sendTimer);
+            sendTimer = setInterval(function () {
+                var s = Math.floor((Date.now() - sendStart) / 1000);
+                if (!streamText && !pending) {
+                    if (!$('#v-wait').length) {
+                        clearEmpty();
+                        $thread.append('<div class="vt-msg system" id="v-wait"><div class="bubble"></div></div>');
+                    }
+                    $('#v-wait .bubble').text('AI 正在处理…（已用 ' + s + ' 秒）' + (curStep ? '\n' + curStep : ''));
+                    threadScroll();
+                } else {
+                    $('#v-wait').remove();
+                }
+            }, 500);
+        } else {
+            if (sendTimer) { clearInterval(sendTimer); sendTimer = null; }
+            $('#v-wait').remove();
+            curStep = '';
+            $send.removeAttr('disabled').removeClass('layui-btn-disabled').text('发送给 AI 修改');
+        }
+    }
+
+    function showConfirm(tools) {
+        var html = '<div style="max-height:400px;overflow:auto;font-size:13px;"><p style="color:#c0392b;">AI 请求执行以下<b>关键操作</b>，请确认：</p>';
+        for (var i = 0; i < tools.length; i++) {
+            var argStr = ''; try { argStr = JSON.stringify(tools[i].args); } catch (e) {}
+            if (argStr.length > 600) argStr = argStr.substring(0, 600) + '...';
+            html += '<div style="margin:8px 0;padding:8px 10px;background:#fafafa;border:1px solid #eee;border-radius:6px;"><b style="color:#1e9fff;">' + esc(tools[i].name) + '</b><div style="color:#666;word-break:break-all;white-space:pre-wrap;margin-top:4px;">' + esc(argStr) + '</div></div>';
+        }
+        html += '</div>';
+        layer.confirm(html, { title: '需要确认', btn: ['执行', '取消'], area: '560px' }, function (idx) {
+            layer.close(idx); stream(U_CONFIRM, { conversation_id: state.convId, mode: $('#v-mode').val(), approve: 1 });
+        }, function (idx) {
+            layer.close(idx); stream(U_CONFIRM, { conversation_id: state.convId, mode: $('#v-mode').val(), approve: 0 });
+        });
+    }
+
+    function handle(ev, data) {
+        if (ev === 'conv') {
+            state.convId = data.id;
+            localStorage.setItem('ai_visual_conv', data.id);
+            if (data.turn !== null && data.turn !== undefined) state.pendingTurn = data.turn;
+        } else if (ev === 'delta') {
+            pushDelta(data.text);
+        } else if (ev === 'thinking') {
+            curStep = 'AI 正在思考…（已生成 ' + (data.len || 0) + ' 字推理）';
+            if (!$('#v-wait').length && !streamText && !pending) {
+                clearEmpty();
+                $thread.append('<div class="vt-msg system" id="v-wait"><div class="bubble"></div></div>');
+            }
+            if ($('#v-wait').length) { $('#v-wait .bubble').text(curStep); threadScroll(); }
+        } else if (ev === 'tool_run') {
+            lastCard = addActionCard(data.name, data.args);
+            curStep = '正在执行：' + (TOOL_LABEL[data.name] || data.name) + ' ' + toolSummary(data.name, data.args);
+        } else if (ev === 'tool_result') {
+            if (lastCard) { setActionCard(lastCard, data.status, data.result); lastCard = null; }
+        } else if (ev === 'confirm_required') {
+            setSending(false);
+            showConfirm(data.tools || []);
+        } else if (ev === 'error') {
+            endBubble();
+            clearEmpty();
+            turnOut++;
+            $thread.append('<div class="vt-msg assistant"><div class="bubble" style="color:#c0392b;">【出错】' + esc(data.msg) + '</div></div>');
+            threadScroll();
+        } else if (ev === 'done') {
+            endBubble();
+            setSending(false);
+            if (!data.awaiting) addRollbackToLastUser();
+        }
+    }
+
+    function stream(url, payload) {
+        if (state.sending) return;
+        setSending(true);
+        fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, credentials: 'same-origin', body: JSON.stringify(payload) })
+            .then(function (resp) {
+                if (!resp.ok) throw new Error('HTTP ' + resp.status);
+                var reader = resp.body.getReader(), dec = new TextDecoder('utf-8'), buf = '';
+                function pump() {
+                    return reader.read().then(function (r) {
+                        if (r.done) return;
+                        buf += dec.decode(r.value, { stream: true });
+                        var idx;
+                        while ((idx = buf.indexOf('\n\n')) >= 0) {
+                            var block = buf.slice(0, idx); buf = buf.slice(idx + 2);
+                            var ev = 'message', data = '';
+                            var lines = block.split('\n');
+                            for (var i = 0; i < lines.length; i++) {
+                                if (lines[i].indexOf('event:') === 0) ev = lines[i].slice(6).trim();
+                                else if (lines[i].indexOf('data:') === 0) data += lines[i].slice(5).trim();
+                            }
+                            if (data) { try { handle(ev, JSON.parse(data)); } catch (e) {} }
+                        }
+                        return pump();
+                    });
+                }
+                return pump();
+            })
+            .then(function () {
+                var had = !!streamText || !!pending || turnOut > 0;
+                setSending(false);
+                endBubble();
+                if (!had) {
+                    $thread.append('<div class="vt-msg assistant"><div class="bubble" style="color:#c0392b;">（AI 未返回内容，请重试，或检查平台是否支持工具调用 / Chat Completions 接口）</div></div>');
+                    threadScroll();
+                }
+            })
+            .catch(function (e) {
+                endBubble();
+                $thread.append('<div class="vt-msg assistant"><div class="bubble" style="color:#c0392b;">【请求失败】' + esc(e.message) + '</div></div>');
+                threadScroll();
+                setSending(false);
+            });
+    }
+
+    $('#v-send').on('click', function () {
+        if (state.sending) { layer && layer.msg('正在处理中，请稍候…'); return; }
+        var inst = $inst.val().trim();
+        if (!state.selector) { layer && layer.msg('请先在左侧页面点选一个区域'); return; }
+        if (!inst) { layer && layer.msg('请输入修改要求'); return; }
+        appendUser(inst, state.selector);
+        $inst.val('');
+        stream(U_CHAT, {
+            conversation_id: state.convId,
+            content: inst,
+            mode: $('#v-mode').val(),
+            context: { url: state.curUrl, selector: state.selector, html: state.html }
+        });
+    });
+    $inst.on('keydown', function (e) {
+        if (e.keyCode === 13 && (e.ctrlKey || e.metaKey)) { e.preventDefault(); $send.trigger('click'); }
+    });
+
+    $('#v-new').on('click', function () {
+        if (state.sending) { layer && layer.msg('正在处理中，请稍候…'); return; }
+        state.convId = '';
+        localStorage.removeItem('ai_visual_conv');
+        renderDisplay([]);
+    });
+
+    // 历史会话列表
+    function fmtTime(ts) {
+        if (!ts) return '';
+        var d = new Date(ts * 1000);
+        function p(n) { return n < 10 ? '0' + n : '' + n; }
+        return (d.getMonth() + 1) + '-' + p(d.getDate()) + ' ' + p(d.getHours()) + ':' + p(d.getMinutes());
+    }
+    $('#v-history').on('click', function () {
+        if (state.sending) { layer && layer.msg('正在处理中，请稍候…'); return; }
+        $.getJSON(U_CONVS, function (res) {
+            var list = (res && res.data) || [];
+            if (!list.length) { layer && layer.msg('暂无历史会话'); return; }
+            var html = '<div style="max-height:420px;overflow:auto;font-size:13px;">';
+            for (var i = 0; i < list.length; i++) {
+                var c = list[i];
+                var stl = 'padding:8px 12px;border-bottom:1px solid #f0f0f0;cursor:pointer;' + (c.id === state.convId ? 'background:#e8f4ff;' : '');
+                html += '<div class="vhist" data-id="' + c.id + '" style="' + stl + '">';
+                html += '<div style="color:#333;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + esc(c.title) + '</div>';
+                html += '<div style="color:#999;font-size:12px;margin-top:3px;">' + esc(c.admin || '') + ' · ' + fmtTime(c.updated) + ' · ' + (c.count || 0) + ' 条</div>';
+                html += '</div>';
+            }
+            html += '</div>';
+            layer.open({
+                type: 1, title: '历史会话（点击载入）', area: '540px', content: html,
+                success: function () {
+                    $('.vhist').on('click', function () {
+                        var id = $(this).data('id');
+                        layer.closeAll();
+                        state.convId = id;
+                        localStorage.setItem('ai_visual_conv', id);
+                        loadHistory(id);
+                    });
+                }
+            });
+        });
+    });
+
+    // 恢复上次会话
+    var savedConv = localStorage.getItem('ai_visual_conv');
+    if (savedConv) { state.convId = savedConv; loadHistory(savedConv); }
+})();
+</script>
+{include="footer"}
+</body>
+</html>

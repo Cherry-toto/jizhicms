@@ -1,0 +1,304 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    {include="style"}
+    <style>
+        body { background: #f2f3f7; padding: 16px; }
+        .box { background: #fff; border-radius: 8px; padding: 18px 20px; max-width: 980px; margin: 0 auto 16px auto; box-shadow: 0 1px 3px rgba(0,0,0,.06); }
+        .box h3 { margin: 0 0 14px 0; font-size: 15px; color: #333; }
+        .plat { border: 1px solid #eee; border-radius: 6px; padding: 12px; margin-bottom: 12px; }
+        .plat .row { display: flex; gap: 10px; margin-bottom: 8px; flex-wrap: wrap; }
+        .plat .row label { width: 92px; font-size: 13px; color: #666; line-height: 34px; }
+        .plat input[type=text] { flex: 1; min-width: 200px; height: 34px; border: 1px solid #ddd; border-radius: 4px; padding: 0 8px; }
+        .plat .head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
+        .plat .head .active { font-size: 13px; color: #666; }
+        .plat .hint { font-size: 12px; color: #999; line-height: 1.7; margin: -2px 0 8px 102px; word-break: break-all; }
+        .plat .hint code { background: #f5f5f5; padding: 1px 5px; border-radius: 3px; color: #c0392b; }
+        .plat .test-result { font-size: 12px; margin-right: 6px; }
+        .presets button { margin: 0 8px 8px 0; }
+        .row-inline { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; font-size: 13px; color: #555; }
+        .row-inline input[type=number] { width: 120px; height: 32px; border: 1px solid #ddd; border-radius: 4px; padding: 0 8px; }
+        .guide { font-size: 13px; color: #777; line-height: 1.8; }
+        .guide code { background: #f5f5f5; padding: 1px 5px; border-radius: 3px; }
+    </style>
+</head>
+<body>
+<div class="box">
+    <h3>{fun JZLANG('大模型平台配置')}</h3>
+    <div class="presets">
+        <button class="layui-btn layui-btn-sm layui-btn-primary" data-tpl="openai">OpenAI</button>
+        <button class="layui-btn layui-btn-sm layui-btn-primary" data-tpl="deepseek">DeepSeek</button>
+        <button class="layui-btn layui-btn-sm layui-btn-primary" data-tpl="qwen">通义千问</button>
+        <button class="layui-btn layui-btn-sm layui-btn-primary" data-tpl="zhipu">智谱 GLM</button>
+        <button class="layui-btn layui-btn-sm layui-btn-primary" data-tpl="moonshot">Moonshot</button>
+        <button class="layui-btn layui-btn-sm layui-btn-primary" data-tpl="volc">火山豆包</button>
+    </div>
+    <div id="plats"></div>
+    <button class="layui-btn layui-btn-sm" id="add-plat">+ {fun JZLANG('新增平台')}</button>
+    <button class="layui-btn layui-btn-sm layui-btn-primary" id="init-menu">{fun JZLANG('初始化后台菜单/权限')}</button>
+</div>
+
+<div class="box">
+    <h3>{fun JZLANG('运行参数')}</h3>
+    <div class="row-inline">
+        {fun JZLANG('温度 temperature')}：<input type="number" id="temperature" step="0.1" min="0" max="2">
+    </div>
+    <div class="row-inline">
+        {fun JZLANG('最大生成长度 max_tokens')}：<input type="number" id="max_tokens" min="256">
+        <span style="color:#999;font-size:12px;">{fun JZLANG('推理模型（如 deepseek-reasoner）思考也消耗该额度，建议 8192 以上')}</span>
+    </div>
+    <div class="row-inline">
+        {fun JZLANG('最大工具调用步数 max_steps')}：<input type="number" id="max_steps" min="1" max="50">
+    </div>
+    <button class="layui-btn" id="save">保存配置</button>
+</div>
+
+<div class="box">
+    <h3>{fun JZLANG('AI 记忆与指引')}</h3>
+    <div style="font-size:13px;color:#666;margin-bottom:6px;">
+        {fun JZLANG('每行一条，会注入 AI 的系统提示词。用来记录两类信息：')}<br>
+        1. {fun JZLANG('用户画像与偏好（如称呼、性别、爱好、常用风格）——AI 也会在对话中自动记录；')}<br>
+        2. {fun JZLANG('「哪里可以找什么」的指引（如栏目模板在哪个表/字段、模板文件在哪个目录、某数据用什么工具查）。')}
+    </div>
+    <textarea id="mem-text" style="width:100%;height:180px;border:1px solid #ddd;border-radius:4px;padding:8px;font-size:13px;box-sizing:border-box;" placeholder="例如：栏目模板见 classtype.lists_html / details_html；前台模板文件在 static/模板目录/"></textarea>
+    <div style="margin-top:8px;">
+        <button class="layui-btn layui-btn-sm" id="mem-save">{fun JZLANG('保存')}</button>
+        <button class="layui-btn layui-btn-sm layui-btn-primary" id="mem-default">{fun JZLANG('填入默认指引')}</button>
+        <button class="layui-btn layui-btn-sm layui-btn-danger" id="mem-clear">{fun JZLANG('清空')}</button>
+    </div>
+    <div style="font-size:12px;color:#999;line-height:1.7;margin-top:8px;">
+        {fun JZLANG('提示：内容越具体，AI 越少重复探索、回答越快。写清「什么信息」在「哪里／用什么工具」即可，不必抄录全部表结构。')}
+    </div>
+</div>
+
+<div class="box">
+    <h3>{fun JZLANG('使用说明')}</h3>
+    <div class="guide">
+        1. 本助手兼容所有「OpenAI 接口规范」的平台，只要填对 <code>base_url</code>、<code>api_key</code>、<code>model</code> 即可。<br>
+        2. <code>base_url</code> 是「接口根地址」，格式为 <code>https://域名/版本路径</code>，<b>只填到版本号为止</b>，不要带 <code>/chat/completions</code>。系统会自动补全，最终请求 <code>base_url + /chat/completions</code>。<br>
+        3. 配置好后点「测试连接」验证：会向该地址发一次最小请求；成功会提示模型回复，失败会显示具体原因和实际请求地址。<br>
+        4. 常见平台 base_url 示例：
+        <table style="border-collapse:collapse;margin:8px 0;font-size:12px;">
+            <tr style="background:#f7f7f7;"><th style="border:1px solid #eee;padding:5px 10px;text-align:left;">平台</th><th style="border:1px solid #eee;padding:5px 10px;text-align:left;">base_url</th></tr>
+            <tr><td style="border:1px solid #eee;padding:5px 10px;">OpenAI</td><td style="border:1px solid #eee;padding:5px 10px;"><code>https://api.openai.com/v1</code></td></tr>
+            <tr><td style="border:1px solid #eee;padding:5px 10px;">DeepSeek</td><td style="border:1px solid #eee;padding:5px 10px;"><code>https://api.deepseek.com/v1</code></td></tr>
+            <tr><td style="border:1px solid #eee;padding:5px 10px;">通义千问（兼容模式）</td><td style="border:1px solid #eee;padding:5px 10px;"><code>https://dashscope.aliyuncs.com/compatible-mode/v1</code></td></tr>
+            <tr><td style="border:1px solid #eee;padding:5px 10px;">智谱 GLM</td><td style="border:1px solid #eee;padding:5px 10px;"><code>https://open.bigmodel.cn/api/paas/v4</code></td></tr>
+            <tr><td style="border:1px solid #eee;padding:5px 10px;">Moonshot</td><td style="border:1px solid #eee;padding:5px 10px;"><code>https://api.moonshot.cn/v1</code></td></tr>
+            <tr><td style="border:1px solid #eee;padding:5px 10px;">火山豆包</td><td style="border:1px solid #eee;padding:5px 10px;"><code>https://ark.cn-beijing.volces.com/api/v3</code></td></tr>
+            <tr><td style="border:1px solid #eee;padding:5px 10px;">本地 Ollama</td><td style="border:1px solid #eee;padding:5px 10px;"><code>http://127.0.0.1:11434/v1</code></td></tr>
+            <tr><td style="border:1px solid #eee;padding:5px 10px;">中转 / OneAPI 服务</td><td style="border:1px solid #eee;padding:5px 10px;"><code>https://你的中转域名/v1</code></td></tr>
+        </table>
+        5. 上方按钮为常见平台预设，点击后请把 <code>api_key</code> 替换为你自己的密钥。<br>
+        6. 本页仅超级管理员可访问。
+    </div>
+</div>
+
+<script>
+(function () {
+    var presets = {
+        openai:   { name: 'OpenAI',   base_url: 'https://api.openai.com/v1',        model: 'gpt-4o-mini' },
+        deepseek: { name: 'DeepSeek', base_url: 'https://api.deepseek.com/v1',      model: 'deepseek-chat' },
+        qwen:     { name: '通义千问', base_url: 'https://dashscope.aliyuncs.com/compatible-mode/v1', model: 'qwen-plus' },
+        zhipu:    { name: '智谱 GLM', base_url: 'https://open.bigmodel.cn/api/paas/v4', model: 'glm-4-flash' },
+        moonshot: { name: 'Moonshot', base_url: 'https://api.moonshot.cn/v1',       model: 'moonshot-v1-8k' },
+        volc:     { name: '火山豆包', base_url: 'https://ark.cn-beijing.volces.com/api/v3', model: 'doubao-pro-32k' }
+    };
+    var saved = {fun json_encode($cfg, JSON_UNESCAPED_UNICODE|JSON_UNESCAPED_SLASHES)};
+    var memItems = {fun json_encode($memory, JSON_UNESCAPED_UNICODE)};
+    var platforms = (saved.platforms || []);
+    var active = saved.active || 0;
+    var $plats = $('#plats');
+
+    layui.use(['layer'], function () { window.__aiLayer = layui.layer; });
+
+    function esc(s) { return String(s == null ? '' : s).replace(/"/g, '&quot;').replace(/</g, '&lt;'); }
+
+    function render() {
+        var html = '';
+        for (var i = 0; i < platforms.length; i++) {
+            var p = platforms[i];
+            html += '<div class="plat" data-i="' + i + '">';
+            html += '<div class="head"><div class="active"><label><input type="radio" name="active" value="' + i + '"' + (i === active ? ' checked' : '') + '> 设为当前使用</label></div>';
+            html += '<div><span class="test-result"></span><button type="button" class="layui-btn layui-btn-sm layui-btn-normal test">测试连接</button> <button type="button" class="layui-btn layui-btn-sm layui-btn-danger del">删除</button></div></div>';
+            html += '<div class="row"><label>平台名称</label><input type="text" class="f-name" value="' + esc(p.name) + '"></div>';
+            html += '<div class="row"><label>base_url</label><input type="text" class="f-base" placeholder="https://api.deepseek.com/v1" value="' + esc(p.base_url) + '"></div>';
+            html += '<div class="hint">只填到版本号为止（如 <code>https://api.deepseek.com/v1</code>），不要带 <code>/chat/completions</code>。系统会自动补全，最终请求 <code>https://api.deepseek.com/v1/chat/completions</code></div>';
+            html += '<div class="row"><label>api_key</label><input type="text" class="f-key" value="' + esc(p.api_key) + '"></div>';
+            html += '<div class="row"><label>模型 model</label><input type="text" class="f-model" value="' + esc(p.model) + '"></div>';
+            html += '</div>';
+        }
+        $plats.html(html);
+    }
+
+    function collect() {
+        var out = [];
+        $plats.find('.plat').each(function () {
+            out.push({
+                name: $(this).find('.f-name').val(),
+                base_url: $(this).find('.f-base').val(),
+                api_key: $(this).find('.f-key').val(),
+                model: $(this).find('.f-model').val()
+            });
+        });
+        return out;
+    }
+
+    render();
+    $('#temperature').val(saved.temperature != null ? saved.temperature : 0.3);
+    $('#max_tokens').val(saved.max_tokens != null ? saved.max_tokens : 4096);
+    $('#max_steps').val(saved.max_steps != null ? saved.max_steps : 20);
+
+    var memList = [];
+    if (memItems && memItems.items) {
+        for (var mi = 0; mi < memItems.items.length; mi++) {
+            var it = memItems.items[mi];
+            if (typeof it === 'string') memList.push(it);
+            else if (it && it.text) memList.push(it.text);
+        }
+    }
+    $('#mem-text').val(memList.join('\n'));
+
+    $plats.on('click', '.del', function () {
+        var i = $(this).closest('.plat').data('i');
+        platforms = collect();
+        platforms.splice(i, 1);
+        if (active >= platforms.length) active = 0;
+        render();
+    });
+
+    $plats.on('change', 'input[name=active]', function () {
+        active = parseInt($(this).val(), 10);
+    });
+
+    $('#add-plat').on('click', function () {
+        platforms = collect();
+        platforms.push({ name: '', base_url: '', api_key: '', model: '' });
+        render();
+    });
+
+    $('.presets button').on('click', function () {
+        var key = $(this).data('tpl');
+        var t = presets[key];
+        if (!t) return;
+        platforms = collect();
+        platforms.push({ name: t.name, base_url: t.base_url, api_key: '', model: t.model });
+        render();
+        window.__aiLayer && window.__aiLayer.msg('已添加 ' + t.name + ' 预设，请填写 api_key');
+    });
+
+    $plats.on('click', '.test', function () {
+        var $plat = $(this).closest('.plat');
+        var payload = {
+            base_url: $plat.find('.f-base').val(),
+            api_key: $plat.find('.f-key').val(),
+            model: $plat.find('.f-model').val()
+        };
+        var $r = $plat.find('.test-result');
+        if (!payload.base_url || !payload.api_key || !payload.model) {
+            window.__aiLayer && window.__aiLayer.msg('请先填写 base_url、api_key、model');
+            return;
+        }
+        $r.css('color', '#999').text('测试中...');
+        $.ajax({
+            url: "{fun U('Ai/testconn')}",
+            type: 'POST',
+            contentType: 'application/json',
+            dataType: 'json',
+            data: JSON.stringify(payload),
+            success: function (res) {
+                if (res.code === 0) {
+                    var st = res.stream ? '流式：支持' : '流式：不支持（将一次性返回）';
+                    $r.css('color', res.stream ? '#16baaa' : '#e6a23c').text('连接成功 · ' + st);
+                    window.__aiLayer && window.__aiLayer.msg('连接成功！模型返回：' + (res.reply || '(空)').substring(0, 30)
+                        + (res.stream ? '' : '\n注意：该平台不支持流式，回复会一次性显示（界面仍会模拟打字机效果）'));
+                } else {
+                    $r.css('color', '#c0392b').text('连接失败');
+                    window.__aiLayer && window.__aiLayer.alert((res.msg || '连接失败') + '<br><br>请求地址：' + (res.url || ''), { title: '连接失败', area: '620px' });
+                }
+            },
+            error: function (xhr) {
+                $r.css('color', '#c0392b').text('请求失败');
+                window.__aiLayer && window.__aiLayer.msg('请求失败：' + xhr.status);
+            }
+        });
+    });
+
+    function memPost(url, payload) {
+        $.ajax({
+            url: url, type: 'POST', contentType: 'application/json', dataType: 'json',
+            data: JSON.stringify(payload || {}),
+            success: function (res) {
+                window.__aiLayer && window.__aiLayer.msg(res.msg || (res.code === 0 ? '操作成功' : '操作失败'));
+            },
+            error: function (xhr) { window.__aiLayer && window.__aiLayer.msg('请求失败：' + xhr.status); }
+        });
+    }
+
+    // 默认指引：告诉 AI「哪里可以找什么」，可按自己站点修改
+    var DEFAULT_GUIDE = [
+        '栏目与模板：栏目表 classtype 的 lists_html / details_html 即该栏目列表页/详情页模板（相对前台模板目录）；模型默认模板见 molds 表。',
+        '前台模板文件在 static/<当前模板目录>/ 下，首页为 index.html。',
+        '数据表结构与字段注释：用 describe_table 查看；统计/查询用 db_query，写用 db_exec。',
+        '系统配置项在 sysconfig 表（field、title）；后台菜单权限在 ruler 表。',
+        '查询栏目、模型、模板概览用 site_info；已按上述指引能定位时不要重复调用。'
+    ].join('\n');
+
+    $('#mem-save').on('click', function () {
+        memPost("{fun U('Ai/savememory')}", { text: $('#mem-text').val() });
+    });
+
+    $('#mem-default').on('click', function () {
+        var cur = $.trim($('#mem-text').val());
+        $('#mem-text').val(cur ? (cur + '\n' + DEFAULT_GUIDE) : DEFAULT_GUIDE);
+    });
+
+    $('#mem-clear').on('click', function () {
+        window.__aiLayer && window.__aiLayer.confirm('确定清空全部记忆与指引？', { title: '提示' }, function (idx) {
+            window.__aiLayer.close(idx);
+            $.ajax({
+                url: "{fun U('Ai/clearmemory')}", type: 'POST', dataType: 'json',
+                success: function (res) {
+                    window.__aiLayer && window.__aiLayer.msg(res.msg || '已清空');
+                    $('#mem-text').val('');
+                }
+            });
+        });
+    });
+
+    $('#init-menu').on('click', function () {
+        $.ajax({
+            url: "{fun U('Ai/install')}",
+            type: 'POST',
+            dataType: 'json',
+            success: function (res) {
+                window.__aiLayer && window.__aiLayer.msg(res.msg);
+            }
+        });
+    });
+
+    $('#save').on('click', function () {
+        var payload = {
+            platforms: collect(),
+            active: active,
+            temperature: parseFloat($('#temperature').val()) || 0.3,
+            max_tokens: parseInt($('#max_tokens').val(), 10) || 4096,
+            max_steps: parseInt($('#max_steps').val(), 10) || 20
+        };
+        $.ajax({
+            url: "{fun U('Ai/saveconfig')}",
+            type: 'POST',
+            contentType: 'application/json',
+            dataType: 'json',
+            data: JSON.stringify(payload),
+            success: function (res) {
+                window.__aiLayer && window.__aiLayer.msg(res.msg);
+            }
+        });
+    });
+})();
+</script>
+{include="footer"}
+</body>
+</html>

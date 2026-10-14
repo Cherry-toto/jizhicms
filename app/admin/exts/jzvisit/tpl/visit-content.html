@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	{include="style"}
+	<style>
+	.vs-so .layui-input-inline{margin-right:10px;margin-bottom:10px;}
+	.vs-so input.layui-input{width:150px;}
+	</style>
+</head>
+<body>
+	<div class="x-nav">
+		<span class="layui-breadcrumb">
+			<a><cite>{fun JZLANG('首页')}</cite></a>
+			<a><cite>{fun JZLANG('访问统计')}</cite></a>
+			<a><cite>{fun JZLANG('内容排行')}</cite></a>
+		</span>
+		<a class="layui-btn layui-btn-small" style="line-height:1.6em;margin-top:3px;float:right" href="javascript:location.replace(location.href);" title="{fun JZLANG('刷新')}"><i class="iconfont" style="line-height:30px">&#xe6aa;</i></a>
+	</div>
+	<div class="x-body">
+		<div class="layui-card">
+			<div class="layui-card-body">
+
+				<div class="layui-collapse" style="margin-bottom:15px;">
+					<div class="layui-colla-item">
+						<h2 class="layui-colla-title">{fun JZLANG('搜索')}</h2>
+						<div class="layui-colla-content">
+							<div class="layui-row">
+								<form class="layui-form layui-col-md12 x-so vs-so" onsubmit="return false;">
+
+									<div class="layui-input-inline" style="width:150px;">
+										<select name="days" id="days">
+											<option value="30">{fun JZLANG('最近30天')}</option>
+											<option value="7">{fun JZLANG('最近7天')}</option>
+											<option value="1">{fun JZLANG('仅今天')}</option>
+											<option value="0">{fun JZLANG('全部时间')}</option>
+										</select>
+									</div>
+
+									<div class="layui-input-inline" style="width:200px;">
+										<select name="tid" id="tid" lay-search>
+											<option value="0">{fun JZLANG('全部栏目')}</option>
+											{foreach $classtypetree as $v}
+											<option value="{$v['id']}">{fun str_repeat('--', $v['level'])}{$v['classname']}</option>
+											{/foreach}
+										</select>
+									</div>
+
+									<div class="layui-input-inline">
+										<input type="text" name="word" id="word" placeholder="{fun JZLANG('标题关键词')}" autocomplete="off" class="layui-input">
+									</div>
+
+									<button class="layui-btn" lay-submit lay-filter="search">{fun JZLANG('搜索')}</button>
+								</form>
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<table class="layui-hide" lay-data="{id: 'vsTable'}" id="vsTable" lay-filter="vsTable"></table>
+			</div>
+		</div>
+	</div>
+
+	<script type="text/html" id="vs-content-title">
+		{{# if(d.url){ }}
+		<a href="{{ d.url }}" target="_blank" title="{{ d.title }}" style="color:#1e9fff;">{{ d.title }}</a>
+		{{# } else { }}
+		{{ d.title }}
+		{{# } }}
+	</script>
+
+	<script>
+	layui.use(['table','form','layer'],function(){
+		var table = layui.table;
+		var form  = layui.form;
+		var $     = layui.jquery;
+
+		table.render({
+			elem:'#vsTable',
+			url:'{fun U("Visit/content")}?ajax=1',
+			where:{days:30},
+			page:true,
+			limit:20,
+			limits:[20,50,100],
+			cellMinWidth:80,
+			text:{none:'{fun JZLANG("暂无统计数据")}'},
+			cols:[[
+				{type:'numbers',title:'{fun JZLANG("排名")}',width:70},
+				{field:'title',title:'{fun JZLANG("内容标题")}',minWidth:260,templet:'#vs-content-title'},
+				{field:'classname',title:'{fun JZLANG("栏目")}',width:150},
+				{field:'molds',title:'{fun JZLANG("模型")}',width:100},
+				{field:'pv',title:'PV',width:100},
+				{field:'uv',title:'UV',width:100},
+				{field:'lasttime',title:'{fun JZLANG("最近访问")}',width:180}
+			]]
+		});
+
+		form.on('submit(search)',function(){
+			table.reload('vsTable',{
+				where:{
+					days:$('#days').val(),
+					tid:$('#tid').val(),
+					word:$('#word').val()
+				},
+				page:{curr:1}
+			});
+			return false;
+		});
+	});
+	</script>
+</body>
+</html>

@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	{include="style"}
+	<style>
+	.vs-tip{background:#fff;border-radius:8px;padding:18px;box-shadow:0 1px 6px rgba(0,0,0,.06);margin-bottom:14px;line-height:1.9;color:#555;}
+	.vs-tip b{color:#ff5722;}
+	.vs-num{font-size:22px;color:#16baaa;font-weight:700;}
+	</style>
+</head>
+<body>
+	<div class="x-nav">
+		<span class="layui-breadcrumb">
+			<a>{fun JZLANG('首页')}</a>
+			<a><cite>{fun JZLANG('访问统计')}</cite></a>
+			<a><cite>{fun JZLANG('清理记录')}</cite></a>
+		</span>
+	</div>
+	<div class="x-body">
+		<div class="vs-tip">
+			<p>{fun JZLANG('当前浏览明细')}：<span class="vs-num">{$sum}</span> {fun JZLANG('条')}　　{fun JZLANG('按天汇总')}：<span class="vs-num">{$sumday}</span> {fun JZLANG('条')}</p>
+			{if($first)}
+			<p>{fun JZLANG('最早一条记录')}：{fun date('Y-m-d H:i:s',$first['addtime'])}</p>
+			{/if}
+			<p>{fun JZLANG('说明：浏览明细会随访问量增长，建议定期清理；清理不影响内容本身的数据。')}</p>
+		</div>
+
+		<div class="layui-card">
+			<div class="layui-card-body">
+				<div class="layui-form layui-form-pane" style="max-width:600px;">
+					<div class="layui-form-item">
+						<label class="layui-form-label">{fun JZLANG('保留天数')}</label>
+						<div class="layui-input-inline">
+							<input type="number" id="day" value="90" class="layui-input" min="1">
+						</div>
+						<div class="layui-form-mid">{fun JZLANG('只保留最近 N 天的浏览记录，更早的被删除')}</div>
+					</div>
+					<div class="layui-form-item">
+						<button class="layui-btn" onclick="doClear()">{fun JZLANG('开始清理')}</button>
+						{if($admin['isadmin']==1)}
+						<button class="layui-btn layui-btn-danger" onclick="doAll()">{fun JZLANG('清空全部记录')}</button>
+						{/if}
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<script>
+	layui.use(['layer'],function(){
+		var $ = layui.jquery, layer = layui.layer;
+		window.doClear = function(){
+			var day = parseInt($('#day').val()) || 0;
+			if(day<=0){ layer.msg('{fun JZLANG("请输入正确的天数")}'); return; }
+			layer.confirm('{fun JZLANG("确定保留最近")} '+day+' {fun JZLANG("天，删除更早的浏览记录吗？")}',function(i){
+				layer.close(i);
+				$.post('{fun U("Visit/clear")}',{ajax:1,isgo:1,day:day},function(res){
+					layer.msg(res.msg,{icon:res.code==0?1:5},function(){ if(res.code==0) location.reload(); });
+				},'json');
+			});
+		}
+		window.doAll = function(){
+			layer.confirm('{fun JZLANG("确定清空全部浏览记录吗？此操作不可恢复！")}',function(i){
+				layer.close(i);
+				$.post('{fun U("Visit/clear")}',{ajax:1,clearall:1},function(res){
+					layer.msg(res.msg,{icon:res.code==0?1:5},function(){ if(res.code==0) location.reload(); });
+				},'json');
+			});
+		}
+	});
+	</script>
+</body>
+</html>

@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="zh">
+<head>
+	<meta charset="UTF-8">
+	{include="style"}
+	<style>
+	blockquote.layui-elem-quote{font-size:14px;}
+	.jz-doc{padding:20px 30px;font-size:14px;line-height:1.9;color:#555;}
+	.jz-doc h3{margin:18px 0 8px;font-size:16px;color:#222;}
+	.jz-doc code{background:#f6f8fa;padding:1px 5px;border-radius:3px;color:#ff5722;}
+	</style>
+</head>
+<body>
+	<div class="layui-rows" style="margin:10px;">
+		<h1 style="text-align:center">访问统计插件 v1.0</h1>
+		<div class="layui-content" style="text-align:center;color:#8a94a6;margin:8px 0 0;">前台浏览量统计 + 浏览记录（PV / UV / 来源 / 设备 / 蜘蛛）</div>
+
+		<div class="jz-doc">
+			<fieldset class="layui-elem-field" style="border:none;border-top:1px solid #eee;padding:0;">
+				<legend>{fun JZLANG('插件功能')}</legend>
+				<div class="layui-field-box">
+					<blockquote class="layui-elem-quote">
+						安装后自动统计前台所有页面的访问情况，无需修改任何模板代码：<br>
+						1、<b>统计概览</b>：今日/昨日 PV、独立访客 UV、累计数据、近 N 天趋势、栏目排行；<br>
+						2、<b>浏览记录</b>：每一条访问的时间、页面、标题、栏目、IP、系统/浏览器、手机端、来源（Referer）；<br>
+						3、<b>内容排行</b>：按文章/商品等内容统计 PV、UV、最近访问时间，并给出前台链接；<br>
+						4、<b>清理记录</b>：按天数保留或整体清空，明细数据可随时瘦身。
+					</blockquote>
+				</div>
+			</fieldset>
+
+			<fieldset class="layui-elem-field" style="border:none;border-top:1px solid #eee;padding:0;">
+				<legend>{fun JZLANG('工作原理')}</legend>
+				<div class="layui-field-box">
+					<blockquote class="layui-elem-quote">
+					安装时插件会向系统钩子表 <code>jz_hook</code> 注册一个钩子（模块 home、控制器 Home、全部方法），
+					并在 <code>app/home/plugins/</code> 下放入采集器 <code>VisitController.php</code>。<br>
+					每次前台页面被访问时先执行采集，再渲染页面，因此：<br>
+					① 无需改动 <code>frphp/</code>、<code>app/home/c/</code> 等系统文件；<br>
+					② 卸载时自动移除钩子与后台菜单，系统保持干净。
+					</blockquote>
+				</div>
+			</fieldset>
+
+			<fieldset class="layui-elem-field" style="border:none;border-top:1px solid #eee;padding:0;">
+				<legend>{fun JZLANG('浏览量显示说明')}</legend>
+				<div class="layui-field-box">
+					<blockquote class="layui-elem-quote">
+						当前模板详情页已自带 <code>/common/gohits</code> 访问计数（显示为“热度”），
+						因此插件的“同步内容浏览量”默认<b>关闭</b>，避免重复计数。<br>
+						如需在别处读取浏览量，可用插件接口：<br>
+						<code>/visit/num/molds/article/id/12.html</code>　返回该内容的浏览量（纯数字，可直接 AJAX 使用）。
+					</blockquote>
+				</div>
+			</fieldset>
+
+			<fieldset class="layui-elem-field" style="border:none;border-top:1px solid #eee;padding:0;">
+				<legend>{fun JZLANG('转移到其他网站')}</legend>
+				<div class="layui-field-box">
+					<blockquote class="layui-elem-quote">
+						在「插件管理 → 插件列表」中点击本插件的 <b>导出</b>，得到一个 zip 安装包；<br>
+						在其他极致CMS站点把该 zip 放到 <code>app/admin/exts/</code> 解压（或使用后台“下载插件”流程），
+						然后在插件列表点击 <b>安装</b> 即可自动建表、注册钩子与菜单，无需手工配置。
+					</blockquote>
+				</div>
+			</fieldset>
+		</div>
+	</div>
+</body>
+</html>

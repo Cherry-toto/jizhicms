@@ -21,5 +21,4 @@
     'EXPIRE' => 1800,
   ),
   'APP_DEBUG' => true,
-  'File_TXT_HIDE' => false,
 ); ?>

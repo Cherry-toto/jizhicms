@@ -20,7 +20,9 @@ class WxpayServiceCheck
         );
         $postStr = file_get_contents('php://input');
 		//禁止引用外部xml实体
-		libxml_disable_entity_loader(true);        
+		if (PHP_VERSION_ID < 80000) {
+			libxml_disable_entity_loader(true);
+		}
         $postObj = simplexml_load_string($postStr, 'SimpleXMLElement', LIBXML_NOCDATA);
         if ($postObj === false) {
             die('parse xml error');

@@ -173,7 +173,9 @@ class WechatController extends CommonController
 			
 			/* libxml_disable_entity_loader is to prevent XML eXternal Entity Injection,
 			   the best way is to check the validity of xml by yourself */
-			libxml_disable_entity_loader(true);
+			if (PHP_VERSION_ID < 80000) {
+				libxml_disable_entity_loader(true);
+			}
 			$postObj = simplexml_load_string($postStr, 'SimpleXMLElement', LIBXML_NOCDATA);
 			$this->postObj = $postObj;
 			$fromUsername = $postObj->FromUserName;

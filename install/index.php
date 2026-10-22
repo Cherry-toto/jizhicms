@@ -42,9 +42,9 @@ function check_chinese(){
 
 function check_version(){
     
-    if (PHP_VERSION < 7.0) {
+    if (PHP_VERSION_ID < 80000) {
         $GLOBALS['errmsg']=1;
-        return '<b>'.PHP_VERSION.'不满足</b>';
+        return '<b>'.PHP_VERSION.' 不满足，最低要求 PHP 8.0</b>';
     }else{
         return PHP_VERSION;
     }

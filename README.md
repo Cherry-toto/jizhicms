@@ -6,7 +6,7 @@
 
 <p align="center">
 <img src="https://img.shields.io/badge/jizhicms-v2.0-important.svg" title="jizhicms" />
-<img src="https://img.shields.io/badge/PHP-5.6+-blue.svg" title="PHP" />
+<img src="https://img.shields.io/badge/PHP-8.0+-blue.svg" title="PHP" />
 <img src="https://img.shields.io/badge/MySQL-4.8+-red.svg" title="MySQL" />
 </p>
 <p align="center">
@@ -44,13 +44,13 @@ QQ交流群：774764507 , 869094463 , 651403450 [【加群】](https://jq.qq.com
 
 *****
 ## 安装环境
-* jizhicms的开发语言是PHP，支持PHP5.6+，发布之日起就已经兼容到PHP7.4版本，推荐使用PHP7.0版本以上。
+* jizhicms的开发语言是PHP，要求PHP8.0及以上版本，<b>不再支持PHP8.0以下版本</b>，并可直接运行在最新PHP版本（如PHP8.4）上。
 * 安装环境建议Linux服务器，当然Windows也是可以安装的，云服务器建议安装宝塔面板 [查看](http://www.bt.cn/)
 * 无论是Windows还是Linux建议安装Apache、mysql、phpMyAdmin配件 
 * 本系统当前版本2.0仅支持mysql数据库
 
 ## 安装须知  
-* PHP5.6+   
+* PHP8.0+（不支持PHP8.0以下版本，兼容最新PHP8.x版本）   
 * MySQL4.8+，数据编码 <b>utf-8</b> 或者 <b>utf8-general-ci</b>   
 * 部署环境必须支持伪静态  
 * 支持Apache、Nginx、IIS     

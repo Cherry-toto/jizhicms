@@ -16,6 +16,8 @@ namespace frphp\lib;
 /**
  * 控制器基类
  */
+// 控制器会把模板变量直接挂到 $this 上，PHP 8.2+ 需显式允许动态属性（8.0/8.1 会忽略该属性）
+#[\AllowDynamicProperties]
 class Controller
 {
     protected $_controller;

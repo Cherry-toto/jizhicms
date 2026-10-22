@@ -154,8 +154,8 @@ class Model {
 	
 	public function updateMuti($conditions=null,$rows=null){
 		
-		if(count($conditions)!=count($rows)){
-			throw new Exception('数组不匹配');
+		if(!is_array($conditions) || !is_array($rows) || count($conditions)!=count($rows)){
+			throw new \Exception('数组不匹配');
 		}
 		foreach($conditions as $k=>$condition){
 			$this->update($condition,$rows[$k]);
@@ -355,7 +355,7 @@ class Model {
 				return $newinserid;
 			}else{
 				$a=$this->find($row, "{$this->primary} DESC",$this->primary);
-				return array_pop($a);
+				return is_array($a) ? array_pop($a) : FALSE;
 			}
 		}
 		return FALSE;
